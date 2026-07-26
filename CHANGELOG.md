@@ -1,5 +1,28 @@
 # website-design-ultra
 
+## 1.5.3 — Codex Git Marketplace & Automatic Sync (2026-07-26)
+
+### Codex distribution
+
+- Added `.agents/plugins/marketplace.json` at the repository root. Codex can now
+  install the plugin directly from `Kaytm93/website-design-ultra` as the
+  `kay-design` Git marketplace.
+- The marketplace points at the existing `website-design-ultra/` artifact, so
+  Claude and Codex consume the same versioned plugin tree without a duplicate
+  package.
+
+### Automatic updates
+
+- Added `scripts/sync-codex-marketplace.sh`, which refreshes the configured Git
+  marketplace snapshot and reinstalls `website-design-ultra@kay-design`.
+- Added `scripts/install-codex-sync.sh`, which installs and starts a user-level
+  macOS LaunchAgent. It runs once when loaded and then hourly, logs under
+  `~/Library/Logs/`, and needs no GitHub token for this public repository.
+
+Release-Tag: v1.5.3
+
+---
+
 ## 1.5.2 — Licensing, Distribution & One Language (2026-07-26)
 
 ### Licensing

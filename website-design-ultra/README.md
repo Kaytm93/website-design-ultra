@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.5.2 contains 16 skills and 5 Claude commands. It combines evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification.
+Version 1.5.3 contains 16 skills and 5 Claude commands. It combines evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification.
 
 ## Structure
 
@@ -25,6 +25,8 @@ website-design-ultra/
 │   ├── forward-trace.mjs           # provider read-trace audit + tree digest
 │   ├── run-forward-tests.mjs       # isolated live plugin evals
 │   ├── release.mjs                 # release provenance gate
+│   ├── install-codex-sync.sh       # install hourly macOS Git sync
+│   ├── sync-codex-marketplace.sh   # refresh and reinstall from GitHub
 │   └── verify-browser.mjs          # capability-gated browser adapter
 └── skills/
     ├── core-rules/
@@ -218,7 +220,24 @@ Reload plugins after adding commands or changing the manifest.
 
 ### Codex
 
-The folder includes `.codex-plugin/plugin.json`. Add it through the personal or repository marketplace appropriate to your environment, then validate the source before installing. The bundled `.claude-plugin/marketplace.json` covers the Claude path only; a Codex marketplace entry stays unbundled because its path and policy are environment-specific.
+The repository root carries `.agents/plugins/marketplace.json`, so Codex can use
+the GitHub repository as the `kay-design` marketplace:
+
+```bash
+codex plugin marketplace add Kaytm93/website-design-ultra --ref main
+codex plugin add website-design-ultra@kay-design
+```
+
+On macOS, install the optional user-level sync agent from a checkout:
+
+```bash
+./website-design-ultra/scripts/install-codex-sync.sh
+```
+
+It refreshes the Git marketplace, reinstalls the plugin once when loaded, and
+then checks hourly. Logs are written to
+`~/Library/Logs/website-design-ultra-sync.log` and
+`~/Library/Logs/website-design-ultra-sync.error.log`.
 
 ## Maintenance
 
@@ -292,6 +311,12 @@ unavailable is now a hard validation failure: a ruleset that requires evidence
 for every claim does not ship an unverifiable provenance claim of its own.
 
 ## Version
+
+**1.5.3** — native Codex Git distribution and automatic updates:
+
+- added `.agents/plugins/marketplace.json` for direct installation from GitHub,
+- added a reusable marketplace refresh/reinstall script,
+- added an opt-in macOS LaunchAgent installer that synchronizes hourly.
 
 **1.5.2** — licensing, distribution, and one language:
 

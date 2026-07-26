@@ -1,0 +1,20 @@
+{
+  "name": "kay-design",
+  "interface": {
+    "displayName": "Kay Design"
+  },
+  "plugins": [
+    {
+      "name": "website-design-ultra",
+      "source": {
+        "source": "local",
+        "path": "./website-design-ultra"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Design"
+    }
+  ]
+}
