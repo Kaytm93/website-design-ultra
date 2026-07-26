@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.6.1 contains 17 skills and 5 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
+Version 1.6.2 contains 17 skills and 5 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
@@ -372,6 +372,17 @@ unavailable is now a hard validation failure: a ruleset that requires evidence
 for every claim does not ship an unverifiable provenance claim of its own.
 
 ## Version
+
+**1.6.2** — forward contracts admit the routing gate:
+
+- all five pre-existing cases now allow and require `anti-slop` plus
+  `prose-tells.md`, because the 1.6.0 gate fires on any user-visible copy,
+- the editorial case additionally requires `locale-de.md`, since its brief ships
+  German copy; every other case forbids the annex to prove it stays unread,
+- reference and token budgets rose by exactly what the newly authorized files
+  cost, not by what a run happened to consume,
+- documented that the live suite was already red on v1.5.3 for reasons unrelated
+  to anti-slop, and that its routing varies between runs.
 
 **1.6.1** — the copy contract measured against a live run:
 

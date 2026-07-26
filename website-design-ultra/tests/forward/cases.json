@@ -6,7 +6,8 @@
     "requiredSkills": [
       "core-rules",
       "content-design",
-      "component-patterns"
+      "component-patterns",
+      "anti-slop"
     ],
     "minimums": {
       "content.claims": 2,
@@ -23,25 +24,30 @@
       "allowedSkills": [
         "core-rules",
         "content-design",
-        "component-patterns"
+        "component-patterns",
+        "anti-slop"
       ],
       "allowedReferences": [
         "skills/core-rules/references/responsive-recomposition.md",
         "skills/content-design/references/claims-and-proof.md",
         "skills/content-design/references/microcopy.md",
-        "skills/component-patterns/references/heroes-and-sections.md"
+        "skills/component-patterns/references/heroes-and-sections.md",
+        "skills/anti-slop/references/prose-tells.md",
+        "skills/anti-slop/references/design-tells.md"
       ],
       "requiredFiles": [
         "skills/core-rules/references/responsive-recomposition.md",
-        "skills/content-design/references/claims-and-proof.md"
+        "skills/content-design/references/claims-and-proof.md",
+        "skills/anti-slop/references/prose-tells.md"
       ],
       "forbiddenFiles": [
         "skills/color-palettes/references/neutral-product.md",
         "skills/color-palettes/references/editorial-natural.md",
-        "skills/color-palettes/references/expressive.md"
+        "skills/color-palettes/references/expressive.md",
+        "skills/anti-slop/references/locale-de.md"
       ],
-      "maxReferenceFiles": 4,
-      "maxEstimatedPluginTokens": 6500
+      "maxReferenceFiles": 6,
+      "maxEstimatedPluginTokens": 12403
     }
   },
   {
@@ -51,7 +57,8 @@
     "requiredSkills": [
       "core-rules",
       "content-design",
-      "typography"
+      "typography",
+      "anti-slop"
     ],
     "minimums": {
       "content.localization": 3,
@@ -66,27 +73,33 @@
       "allowedSkills": [
         "core-rules",
         "content-design",
-        "typography"
+        "typography",
+        "anti-slop"
       ],
       "allowedReferences": [
         "skills/core-rules/references/responsive-recomposition.md",
         "skills/content-design/references/localization.md",
         "skills/typography/references/pairings-and-roles.md",
         "skills/typography/references/hierarchy-and-loading.md",
-        "skills/typography/references/licensing-and-alternatives.md"
+        "skills/typography/references/licensing-and-alternatives.md",
+        "skills/anti-slop/references/prose-tells.md",
+        "skills/anti-slop/references/locale-de.md",
+        "skills/anti-slop/references/design-tells.md"
       ],
       "requiredFiles": [
         "skills/core-rules/references/responsive-recomposition.md",
         "skills/content-design/references/localization.md",
-        "skills/typography/references/licensing-and-alternatives.md"
+        "skills/typography/references/licensing-and-alternatives.md",
+        "skills/anti-slop/references/prose-tells.md",
+        "skills/anti-slop/references/locale-de.md"
       ],
       "forbiddenFiles": [
         "skills/color-palettes/references/neutral-product.md",
         "skills/color-palettes/references/editorial-natural.md",
         "skills/color-palettes/references/expressive.md"
       ],
-      "maxReferenceFiles": 5,
-      "maxEstimatedPluginTokens": 8500
+      "maxReferenceFiles": 8,
+      "maxEstimatedPluginTokens": 15838
     }
   },
   {
@@ -97,7 +110,8 @@
       "core-rules",
       "content-design",
       "color-palettes",
-      "ui-states"
+      "ui-states",
+      "anti-slop"
     ],
     "minimums": {
       "accessibility.contrastStates": 5,
@@ -115,7 +129,8 @@
         "core-rules",
         "content-design",
         "color-palettes",
-        "ui-states"
+        "ui-states",
+        "anti-slop"
       ],
       "allowedReferences": [
         "skills/core-rules/references/responsive-recomposition.md",
@@ -124,19 +139,23 @@
         "skills/color-palettes/references/neutral-product.md",
         "skills/ui-states/references/async-data.md",
         "skills/ui-states/references/forms-and-feedback.md",
-        "skills/ui-states/references/accessibility.md"
+        "skills/ui-states/references/accessibility.md",
+        "skills/anti-slop/references/prose-tells.md",
+        "skills/anti-slop/references/design-tells.md"
       ],
       "requiredFiles": [
         "skills/core-rules/references/responsive-recomposition.md",
         "skills/color-palettes/references/neutral-product.md",
-        "skills/ui-states/references/accessibility.md"
+        "skills/ui-states/references/accessibility.md",
+        "skills/anti-slop/references/prose-tells.md"
       ],
       "forbiddenFiles": [
         "skills/color-palettes/references/editorial-natural.md",
-        "skills/color-palettes/references/expressive.md"
+        "skills/color-palettes/references/expressive.md",
+        "skills/anti-slop/references/locale-de.md"
       ],
-      "maxReferenceFiles": 7,
-      "maxEstimatedPluginTokens": 9000
+      "maxReferenceFiles": 9,
+      "maxEstimatedPluginTokens": 14903
     }
   },
   {
@@ -148,7 +167,8 @@
       "content-design",
       "immersive-3d",
       "3d-art-direction",
-      "3d-runtime-quality"
+      "3d-runtime-quality",
+      "anti-slop"
     ],
     "minimums": {
       "immersive.qualityTiers": 4,
@@ -168,7 +188,8 @@
         "content-design",
         "immersive-3d",
         "3d-art-direction",
-        "3d-runtime-quality"
+        "3d-runtime-quality",
+        "anti-slop"
       ],
       "allowedReferences": [
         "skills/core-rules/references/responsive-recomposition.md",
@@ -177,22 +198,26 @@
         "skills/3d-art-direction/references/light-material-and-tone.md",
         "skills/3d-art-direction/references/spatial-typography.md",
         "skills/3d-runtime-quality/references/tier-matrix.md",
-        "skills/3d-runtime-quality/references/adaptive-runtime.md"
+        "skills/3d-runtime-quality/references/adaptive-runtime.md",
+        "skills/anti-slop/references/prose-tells.md",
+        "skills/anti-slop/references/design-tells.md"
       ],
       "requiredFiles": [
         "skills/core-rules/references/responsive-recomposition.md",
         "skills/content-design/references/claims-and-proof.md",
         "skills/3d-art-direction/references/camera-and-composition.md",
-        "skills/3d-runtime-quality/references/tier-matrix.md"
+        "skills/3d-runtime-quality/references/tier-matrix.md",
+        "skills/anti-slop/references/prose-tells.md"
       ],
       "forbiddenFiles": [
         "skills/r3f-interaction/references/touch-and-gestures.md",
         "skills/color-palettes/references/neutral-product.md",
         "skills/color-palettes/references/editorial-natural.md",
-        "skills/color-palettes/references/expressive.md"
+        "skills/color-palettes/references/expressive.md",
+        "skills/anti-slop/references/locale-de.md"
       ],
-      "maxReferenceFiles": 7,
-      "maxEstimatedPluginTokens": 14500
+      "maxReferenceFiles": 9,
+      "maxEstimatedPluginTokens": 20403
     }
   },
   {
@@ -205,7 +230,8 @@
       "immersive-3d",
       "3d-art-direction",
       "3d-runtime-quality",
-      "r3f-interaction"
+      "r3f-interaction",
+      "anti-slop"
     ],
     "minimums": {
       "immersive.touch": 5,
@@ -227,7 +253,8 @@
         "immersive-3d",
         "3d-art-direction",
         "3d-runtime-quality",
-        "r3f-interaction"
+        "r3f-interaction",
+        "anti-slop"
       ],
       "allowedReferences": [
         "skills/core-rules/references/responsive-recomposition.md",
@@ -240,21 +267,25 @@
         "skills/3d-runtime-quality/references/adaptive-runtime.md",
         "skills/r3f-interaction/references/hotspots-camera-text.md",
         "skills/r3f-interaction/references/configurator-animation.md",
-        "skills/r3f-interaction/references/touch-and-gestures.md"
+        "skills/r3f-interaction/references/touch-and-gestures.md",
+        "skills/anti-slop/references/prose-tells.md",
+        "skills/anti-slop/references/design-tells.md"
       ],
       "requiredFiles": [
         "skills/core-rules/references/responsive-recomposition.md",
         "skills/content-design/references/claims-and-proof.md",
         "skills/3d-runtime-quality/references/tier-matrix.md",
-        "skills/r3f-interaction/references/touch-and-gestures.md"
+        "skills/r3f-interaction/references/touch-and-gestures.md",
+        "skills/anti-slop/references/prose-tells.md"
       ],
       "forbiddenFiles": [
         "skills/color-palettes/references/neutral-product.md",
         "skills/color-palettes/references/editorial-natural.md",
-        "skills/color-palettes/references/expressive.md"
+        "skills/color-palettes/references/expressive.md",
+        "skills/anti-slop/references/locale-de.md"
       ],
-      "maxReferenceFiles": 11,
-      "maxEstimatedPluginTokens": 18500
+      "maxReferenceFiles": 13,
+      "maxEstimatedPluginTokens": 24403
     }
   },
   {

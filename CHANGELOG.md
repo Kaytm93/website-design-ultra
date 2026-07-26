@@ -1,5 +1,52 @@
 # website-design-ultra
 
+## 1.6.2 — Forward Contracts Admit the Routing Gate (2026-07-26)
+
+The 1.6.0 gate fires on any user-visible copy, so `anti-slop` and
+`prose-tells.md` now appear in every case that writes copy. The five contracts
+written before the gate existed reported that correct behavior as an unexpected
+skill and an unexpected reference. The contracts were stale, not the routing.
+
+### Contract updates
+
+- `anti-slop` is allowed and **required** in all six cases. Five live runs
+  confirmed the gate fires, so this is an evidenced assertion rather than an
+  aspiration.
+- `prose-tells.md` is allowed and required for the same reason.
+- The editorial case additionally requires `locale-de.md`, because its brief
+  ships German copy. Every other case forbids the annex, which turns the locale
+  rule into a proof instead of a hope.
+- `design-tells.md` is allowed in the build cases and forbidden only in the
+  copy-only `slop` case. An earlier pass forbade it everywhere, and the dashboard
+  run correctly read it for a visual layout — the contract was wrong, not the run.
+- Reference and token budgets rose by exactly what the newly authorized files
+  cost (`anti-slop` 2423 + `prose-tells` 2080, plus 1435 for the annex and 1400
+  for the design catalogue where authorized). They were not raised to whatever a
+  run consumed; a budget tuned until green measures nothing.
+
+### What this release deliberately does not fix
+
+The live suite was already failing on **v1.5.3**, before `anti-slop` existed.
+Recorded against that tag with the same model and effort:
+
+- `saas`: `component-patterns` is required but not routed.
+- `editorial`: `style-directions`, `editorial.md`, and `microcopy.md` load
+  unexpectedly, 7 references against a budget of 5, 8833 tokens against 8500, and
+  the OFL/licensing signal is missing.
+- `3d-hero`: `camera-and-composition.md`, `tier-matrix.md`, and
+  `responsive-recomposition.md` are required but unread, while `r3f-interaction`
+  and `configurator-animation.md` load unexpectedly.
+
+Repeated runs of the same case also route differently, so `allowedSkills` and
+`forbiddenFiles` fail intermittently on their own. Both problems predate this
+work and neither is addressed here. Raising a budget or deleting an assertion to
+hide them would convert a real finding into a green check, which is the failure
+mode this suite exists to prevent. They need their own release.
+
+Release-Tag: v1.6.2
+
+---
+
 ## 1.6.1 — The Copy Contract, Measured Against a Live Run (2026-07-26)
 
 The first live `--provider claude --case slop` run failed, and both failures were
