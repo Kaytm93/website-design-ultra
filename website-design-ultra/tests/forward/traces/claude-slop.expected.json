@@ -1,0 +1,28 @@
+{
+  "provider": "claude",
+  "case": "slop",
+  "recordedAt": "2026-07-26T13:58:54.455Z",
+  "note": "Filtered recording of a real `--provider claude --case slop` run: every tool_use block in order, plus the final usage. Text and thinking blocks were removed; nothing the parser reads was changed. This run reported plugin-relative paths, so it covers relative resolution where claude-dashboard covers the absolute {{PLUGIN_ROOT}} form. It is the read evidence behind the claim that anti-slop routes without pulling the design or locale reference into a copy-only task. Recorded against the 1.6.1 candidate tree (a27712c plus the rescoped copy contract, digest 845c1bd7b38d), which is why the manifest version reads 1.6.0 and the working tree was not clean.",
+  "cli": "2.1.220 (Claude Code)",
+  "model": "sonnet",
+  "effort": "medium",
+  "pluginVersion": "1.6.0",
+  "treeSha256": "845c1bd7b38d38eda573dc298d897ef70aca844db16a5de9ef86428d64e0ef19",
+  "toolUseBlocks": 9,
+  "accessedFileCount": 6,
+  "accessedFiles": [
+    "skills/anti-slop/SKILL.md",
+    "skills/anti-slop/references/prose-tells.md",
+    "skills/content-design/SKILL.md",
+    "skills/content-design/references/claims-and-proof.md",
+    "skills/content-design/references/microcopy.md",
+    "skills/core-rules/SKILL.md"
+  ],
+  "forbiddenFiles": [
+    "skills/anti-slop/references/design-tells.md",
+    "skills/anti-slop/references/locale-de.md",
+    "skills/color-palettes/references/neutral-product.md",
+    "skills/style-directions/references/product.md"
+  ],
+  "estimatedPluginTokens": 8606
+}

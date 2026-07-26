@@ -170,10 +170,26 @@ function validateFixtures(cases, schema) {
         die(`${testCase.id}: invalid requiredTerms regex "${term}"`)
       }
     }
+    if (testCase.lintCopy !== undefined) {
+      const { path: copyPath, profile, locales } = testCase.lintCopy
+      if (!copyPath || !profile || !Array.isArray(locales) || !locales.length) {
+        die(`${testCase.id}: lintCopy needs path, profile, and a non-empty locales list`)
+      }
+    }
     if (testCase.forbiddenTerms !== undefined) {
       const { paths, patterns } = testCase.forbiddenTerms
       if (!Array.isArray(paths) || !paths.length || !Array.isArray(patterns) || !patterns.length) {
         die(`${testCase.id}: forbiddenTerms needs a non-empty paths and patterns list`)
+      }
+      /**
+       * A response may legitimately name the pattern its copy avoided. Scoping a
+       * forbidden pattern at a subtree that also carries the model's own
+       * commentary turns that honesty into a failure, so require a leaf path.
+       */
+      for (const scope of paths) {
+        if (!scope.includes('.')) {
+          die(`${testCase.id}: forbiddenTerms path "${scope}" is a whole subtree; point it at the copy leaf`)
+        }
       }
       for (const pattern of patterns) {
         try {
@@ -388,8 +404,58 @@ function evaluate(testCase, result, trace) {
       }
     }
   }
+  failures.push(...lintGeneratedCopy(testCase, result))
   failures.push(...evaluateTrace(testCase, result, trace))
   return failures
+}
+
+/**
+ * The catalogue has one executable form. Asserting Tier-1 patterns as regexes in
+ * a fixture would duplicate scripts/lint-copy.mjs and drift from it, and a flat
+ * pattern cannot express a Tier-3 budget at all, so the eval runs the linter the
+ * project runs.
+ */
+function lintGeneratedCopy(testCase, result) {
+  if (!testCase.lintCopy) return []
+  const lines = valueAtPath(result, testCase.lintCopy.path)
+  if (!Array.isArray(lines) || !lines.length) {
+    return [`lintCopy path "${testCase.lintCopy.path}" holds no copy lines`]
+  }
+
+  const scratch = path.join(
+    os.tmpdir(),
+    `wdu-copy-${testCase.id}-${process.pid}-${Date.now()}.md`,
+  )
+  fs.writeFileSync(scratch, `${lines.join('\n\n')}\n`)
+  try {
+    const linter = spawnSync(
+      process.execPath,
+      [
+        path.join(pluginRoot, 'scripts', 'lint-copy.mjs'),
+        '--path',
+        scratch,
+        '--profile',
+        testCase.lintCopy.profile,
+        '--locale',
+        testCase.lintCopy.locales.join(','),
+        '--json',
+      ],
+      { encoding: 'utf8' },
+    )
+    let report = null
+    try {
+      report = JSON.parse(linter.stdout ?? '')
+    } catch {
+      report = null
+    }
+    if (!report) return ['lintCopy produced no linter report']
+    if (report.status === 'PASS') return []
+    return report.findings.map(
+      (finding) => `copy lint tier ${finding.tier} ${finding.rule}: ${finding.quote}`,
+    )
+  } finally {
+    fs.rmSync(scratch, { force: true })
+  }
 }
 
 function writeReport(options, payload) {

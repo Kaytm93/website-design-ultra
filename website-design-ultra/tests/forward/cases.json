@@ -260,7 +260,7 @@
   {
     "id": "slop",
     "command": "design",
-    "prompt": "Write the shipping copy for a meeting-notes tool: hero headline, hero subhead, one feature blurb, the primary CTA label, and the empty state. The founder asked for copy that sounds premium and innovative. Verified capabilities: transcription of an uploaded recording in German or English, and export to a Markdown file with action items. No customers, metrics, funding, certifications, integrations, or launch date exist. Return the copy lines exactly as they would ship in copy.lines, plus the content and responsive contract. No code.",
+    "prompt": "Write the shipping copy for a meeting-notes tool: hero headline, hero subhead, one feature blurb, the primary CTA label, and the empty state. The founder asked for copy that sounds premium and innovative. Verified capabilities: transcription of an uploaded recording in German or English, and export to a Markdown file with action items. No customers, metrics, funding, certifications, integrations, or launch date exist. Put only the shipping text in copy.lines, one entry per surface and no labels or commentary; put your tier findings in copy.slopChecks. Add the content and responsive contract. No code.",
     "requiredSkills": [
       "core-rules",
       "content-design",
@@ -278,23 +278,17 @@
     ],
     "forbiddenTerms": {
       "paths": [
-        "copy"
+        "copy.lines"
       ],
       "patterns": [
-        "\\bit'?s not (?:just |only )?[^.!?]{1,40}[,.\u2014-]\\s*(?:it'?s|but)\\b",
-        "\\bnot (?:just|only) [^.!?]{2,40}?,?\\s+but\\b",
-        "\\bmore than just\\b",
-        "\\b(?:unlock|unleash) (?:the|your|its) (?:full )?potential\\b",
-        "\\bto the next level\\b",
+        "\\bget started\\b",
+        "\\blearn more\\b",
         "\\bseamless",
         "\\brevolution",
-        "\\bgame.?chang",
         "\\bcutting.edge\\b",
-        "\\bexperts? (?:agree|say)\\b",
-        "\\bstudies show\\b",
-        "\\bin today'?s .{0,24}world\\b",
-        "\\bget started\\b",
-        "\u2014"
+        "\\bgame.?chang",
+        "\\bpremium\\b",
+        "\\binnovative\\b"
       ]
     },
     "trace": {
@@ -323,6 +317,13 @@
       ],
       "maxReferenceFiles": 5,
       "maxEstimatedPluginTokens": 9000
+    },
+    "lintCopy": {
+      "path": "copy.lines",
+      "profile": "marketing",
+      "locales": [
+        "en"
+      ]
     }
   }
 ]

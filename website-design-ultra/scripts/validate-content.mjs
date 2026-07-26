@@ -497,6 +497,13 @@ for (const testCase of forwardCases) {
       fail(`tests/forward/cases.json: ${testCase.id} invalid forbiddenTerms regex "${pattern}"`)
     }
   }
+  for (const scope of paths) {
+    if (!scope.includes('.')) {
+      fail(
+        `tests/forward/cases.json: ${testCase.id} forbiddenTerms path "${scope}" is a whole subtree and would match the model's own commentary`,
+      )
+    }
+  }
 }
 
 const slopCase = forwardCases.find((testCase) => testCase.id === 'slop')
@@ -506,8 +513,20 @@ if (!slopCase) {
   if (!slopCase.requiredSkills?.includes('anti-slop')) {
     fail('tests/forward/cases.json: slop case must require the anti-slop route')
   }
+  if (!slopCase.lintCopy?.path) {
+    fail('tests/forward/cases.json: slop case must lint the generated copy with the real linter')
+  }
   if (!slopCase.forbiddenTerms?.patterns?.length) {
-    fail('tests/forward/cases.json: slop case must forbid Tier-1 patterns in shipped copy')
+    fail('tests/forward/cases.json: slop case must forbid the extras the linter does not gate')
+  }
+  for (const pattern of slopCase.forbiddenTerms?.patterns ?? []) {
+    for (const [locale, rules] of Object.entries(TIER1)) {
+      if (rules.some(([, rule]) => rule.source === pattern)) {
+        fail(
+          `tests/forward/cases.json: slop case restates linter rule ${locale} pattern "${pattern}"; let lintCopy enforce the catalogue`,
+        )
+      }
+    }
   }
   if (
     !slopCase.trace?.requiredFiles?.includes('skills/anti-slop/references/prose-tells.md')

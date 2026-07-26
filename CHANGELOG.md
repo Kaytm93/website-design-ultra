@@ -1,5 +1,50 @@
 # website-design-ultra
 
+## 1.6.1 — The Copy Contract, Measured Against a Live Run (2026-07-26)
+
+The first live `--provider claude --case slop` run failed, and both failures were
+defects in the contract rather than in the output. The generated copy was clean and
+the routing was trace-correct: exactly `core-rules`, `content-design`, `anti-slop`
+plus `prose-tells.md`, with the design and locale references untouched, no broad
+reads, no off-root reads, 8606 plugin tokens against a 9000 budget.
+
+### Two contract defects, both now impossible
+
+- `forbiddenTerms` was scoped at the `copy` subtree, which also carries the
+  model's own tier report. The run failed on `/\bget started\b/` because the
+  response explained that its CTA was "Start a transcription", *not* "Get
+  started". Punishing that honesty is the opposite of the intent. Scopes must now
+  be leaf paths, enforced in both the runner and `validate-content.mjs`.
+- The pattern list contained a bare em dash, so any dash anywhere in the copy
+  failed the case. The skill itself permits one per 300 words of prose and forbids
+  it only in headings. The fixture therefore contradicted the rule it was testing.
+  A flat regex cannot express a Tier-3 budget, so it no longer tries.
+
+### One source of truth for the catalogue
+
+- Added `lintCopy` to the forward-case contract: the case runs
+  `scripts/lint-copy.mjs` over the model's `copy.lines` with a register profile and
+  locale. The eval now enforces the rules the project enforces, rather than a
+  second copy of them that drifts.
+- `forbiddenTerms` keeps a narrower job: the case-specific extras the linter
+  deliberately does not gate, such as a weak `Get started` CTA or the founder's
+  own `premium` and `innovative` reaching the page.
+- `validate-content.mjs` fails if the slop case restates a pattern that already
+  exists as a linter rule.
+
+### Evidence
+
+- Archived `tests/forward/traces/claude-slop.jsonl` and its expectation file. Both
+  recorded traces now replay on every `--dry-run`. The new fixture exercises
+  plugin-relative path resolution, where `claude-dashboard` exercises the absolute
+  `{{PLUGIN_ROOT}}` form.
+- The re-run passed with the same routing and token profile, which is the first
+  measured — rather than asserted — evidence that the 1.6.0 routing gate works.
+
+Release-Tag: v1.6.1
+
+---
+
 ## 1.6.0 — Anti-Slop for Generated Text and Visual Defaults (2026-07-26)
 
 ### The gap this closes

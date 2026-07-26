@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.6.0 contains 17 skills and 5 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
+Version 1.6.1 contains 17 skills and 5 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
@@ -126,8 +126,13 @@ also enforces a positive specificity floor: a headline must name an audience,
 mechanism, dated number, product object, or observable outcome, and an unknown
 fact stays an explicit placeholder instead of being resolved by invention.
 
-`scripts/lint-copy.mjs` is the executable form. `scripts/validate-content.mjs`
-binds it to the references — a Tier-1 rule id or Tier-2 term that is not
+`scripts/lint-copy.mjs` is the executable form, and it is the only one: the `slop`
+forward case runs that same linter over the model's generated `copy.lines` instead
+of restating Tier-1 patterns as fixture regexes, because a duplicated list drifts
+and a flat pattern cannot express a Tier-3 budget at all. `forbiddenTerms` covers
+only what the linter deliberately does not gate, and its scope must point at a
+copy leaf — a whole subtree would match the model's own report of the pattern it
+avoided. `scripts/validate-content.mjs` binds the linter to the references — a Tier-1 rule id or Tier-2 term that is not
 documented fails the build — and replays `tests/copy/` so a rule change must still
 catch every slop fixture while flagging nothing in the authentic-prose fixtures,
 in English and German. The plugin lints its own 57 documents on every run. The
@@ -367,6 +372,19 @@ unavailable is now a hard validation failure: a ruleset that requires evidence
 for every claim does not ship an unverifiable provenance claim of its own.
 
 ## Version
+
+**1.6.1** — the copy contract measured against a live run:
+
+- the `slop` forward case now runs `lint-copy.mjs` over the generated
+  `copy.lines` instead of duplicating Tier-1 regexes in the fixture,
+- `forbiddenTerms` scopes are required to be leaf paths; a subtree scope matched
+  the model's own note that it had avoided the pattern,
+- removed the bare em-dash assertion: the dash is a measured Tier-3 budget, not a
+  pattern gate, and the fixture contradicted the skill it was testing,
+- `validate-content.mjs` now rejects both mistakes, so neither can return,
+- archived `tests/forward/traces/claude-slop.*` as the read evidence for the
+  routing claim; it covers plugin-relative path resolution where the dashboard
+  fixture covers the absolute form.
 
 **1.6.0** — anti-slop for generated text and visual defaults:
 
