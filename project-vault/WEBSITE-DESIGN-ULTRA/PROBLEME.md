@@ -2,6 +2,39 @@
 
 ## Gelöst
 
+- ✅ Das Projekt lag in einem Download-Ordner ohne Versionskontrolle. Es ist
+  jetzt ein Git-Repository; der ausgelieferte Stand ist als `v1.5.0` getaggt,
+  die Härtung als `v1.5.1`. Es wurden keine Zwischenstände erfunden.
+- ✅ Changelog-Abschnitte behaupteten eine nicht verfügbare Commit-SHA. Sie
+  verankern jetzt auf einem `Release-Tag`, den `scripts/release.mjs` zum Commit
+  auflöst; die alte Formulierung ist ein harter Validierungsfehler. Ein
+  Changelog kann die SHA seines eigenen Commits nicht enthalten — deshalb der
+  Tag-Name als Anker und die Auflösung zur Prüfzeit.
+- ✅ `--provider claude` war ungetestet. Der Fall `dashboard` ist jetzt real
+  gegen eine angemeldete Claude-Code-CLI (2.1.220, Sonnet, medium) gelaufen:
+  zehn Plugin-Dateien, nur `neutral-product.md`, sechs Referenzen, keine Broad
+  Reads, ca. 7.5k beobachtete Plugin-Token gegen ein 9k-Budget — PASS.
+- ✅ Der Claude-Trace verwarf jedes `Skill`-Ereignis, weil Plugin-Skills
+  namespaced als `plugin:skill` erscheinen und der Matcher nur `[a-z0-9-]+`
+  akzeptierte. Der erste echte Lauf wäre fälschlich an fehlender Evidenz
+  gescheitert.
+- ✅ Der Claude-Trace band Pfade nicht an den geprüften Plugin-Root. Ein Read
+  der installierten Kopie unter `~/.claude/skills/...` zählte als Evidenz über
+  den getesteten Baum. Solche Pfade sind jetzt `offRootReads` und lassen den
+  Fall scheitern.
+- ✅ Der Claude-Lauf erbte Skills, CLAUDE.md und MCP-Server des Betreibers. Der
+  Runner isoliert jetzt mit `--setting-sources ""` und `--strict-mcp-config`.
+- ✅ Fehlender Provider-Login endete in einem harten Abbruch statt in einem
+  Status. Er meldet jetzt `UNAVAILABLE` mit Grund und hält das Launch-Gate
+  offen — derselbe Vertrag wie ADR-010.
+- ✅ Der Claude-Pfad war nur live prüfbar. Aufgezeichnete Provider-Ströme liegen
+  unter `tests/forward/traces/` und werden bei jedem `--dry-run` gegen den
+  Parser abgespielt.
+- ✅ Der erste echte Claude-Lauf deckte eine Inhaltslücke auf: die
+  Ausgabeanweisung in `color-palettes` nannte die Kontrastpaare nur im
+  Fließtext, das Modell ließ `border` weg. Sie verlangt jetzt eine benannte
+  Aussage pro Paar.
+
 - ✅ Forward-Tests prüften nur Antwort-Fixtures und selbst deklarierte
   Skill-Routen; Livefälle werten jetzt tatsächliche Claude-/Codex-Dateizugriffe,
   Broad Reads und Plugin-Tokenbudgets aus.
@@ -43,7 +76,16 @@
 
 ## Offen / Umgebung
 
-- 🔴 Der bereitgestellte Projektordner ist kein Git-Repository. Es gibt kein `.git`, keinen Branch und kein `origin`; Commit und Push sind daher technisch nicht möglich.
-- 🟡 Claude Code ist in dieser Umgebung nicht angemeldet; `--provider claude` endet vor Modellnutzung mit „Not logged in“. Der Codex-Liveprovider ist erfolgreich getestet.
-- 🟡 Es existierte vor der Session kein gleichnamiger Projekt-Vault. Wegen des case-insensitiven Dateisystems liegt die Quelle unter `project-vault/WEBSITE-DESIGN-ULTRA` und wird nach Documents synchronisiert.
-- ✅ Ein erster case-kollidierter Sync enthielt Plugin-Dateien; der erzeugte Zielordner wurde vollständig in den Papierkorb verschoben und sauber neu aufgebaut.
+- 🟡 Kein `origin`-Remote gesetzt; `git push` steht noch aus. Das Repository ist
+  vollständig lokal, Commits und Tags existieren.
+- 🟡 Nur der Fall `dashboard` ist live gegen Claude bewiesen. `saas`,
+  `editorial`, `3d-hero` und `configurator` sind für Claude weiterhin
+  unbewiesen; sie melden bis dahin keinen Pass, sondern nichts.
+- 🟡 Der Codex-Livelauf stammt aus dem Stand vor 1.5.1 und ist gegen den neuen
+  Baum-Digest nicht erneut geprüft.
+- 🟡 Es existierte vor der Session kein gleichnamiger Projekt-Vault. Wegen des
+  case-insensitiven Dateisystems liegt die Quelle unter
+  `project-vault/WEBSITE-DESIGN-ULTRA` und wird nach Documents synchronisiert.
+- ✅ Ein erster case-kollidierter Sync enthielt Plugin-Dateien; der erzeugte
+  Zielordner wurde vollständig in den Papierkorb verschoben und sauber neu
+  aufgebaut.

@@ -242,7 +242,28 @@ const hardeningContracts = [
   ],
   [
     'scripts/forward-trace.mjs',
-    ['auditCodexTrace', 'auditClaudeTrace', 'broadReads', 'estimatedPluginTokens'],
+    [
+      'auditCodexTrace',
+      'auditClaudeTrace',
+      'broadReads',
+      'estimatedPluginTokens',
+      'offRootReads',
+      'foreignSkills',
+      'replayRecordedTraces',
+      'pluginTreeDigest',
+    ],
+  ],
+  [
+    'scripts/run-forward-tests.mjs',
+    ['probeProvider', 'UNAVAILABLE', '--trace-dir', '--require-live', 'setting-sources'],
+  ],
+  [
+    'scripts/release.mjs',
+    ['Release-Tag', 'UNAVAILABLE', 'pluginTreeDigest', 'rev-list', 'bannedPhrases'],
+  ],
+  [
+    'tests/forward/traces/claude-dashboard.expected.json',
+    ['claude', 'accessedFiles', 'forbiddenFiles', 'treeSha256'],
   ],
   [
     'scripts/verify-browser.mjs',
@@ -321,10 +342,16 @@ const stalePatterns = [
   ["from 'framer-motion'", 'legacy framer-motion import'],
   ['from "framer-motion"', 'legacy framer-motion import'],
   ['React 18/19', 'ambiguous R3F compatibility claim'],
+  // A ruleset that requires evidence for every claim may not ship an
+  // unverifiable provenance claim of its own. Release sections anchor on a
+  // resolvable Release-Tag; scripts/release.mjs verifies it.
+  ['Commit-SHA: nicht verfügbar', 'unverifiable release provenance claim'],
+  ['Commit-SHA: not available', 'unverifiable release provenance claim'],
 ]
 
 for (const fullPath of walkFiles(pluginRoot)) {
   const file = relative(fullPath)
+  if (file.startsWith('tests/forward/traces/')) continue
   if (!/\.(md|json)$/.test(file)) continue
   const content = read(fullPath)
   for (const [pattern, label] of stalePatterns) {

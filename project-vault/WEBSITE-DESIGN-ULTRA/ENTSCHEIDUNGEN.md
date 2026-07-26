@@ -95,3 +95,34 @@ keine Launch-Bewertung.
 Begründung: Codex-Wrapperpfade und Slash-Commands existieren nicht auf jedem
 Host. Ein fester Pfad macht den Pflichtschritt unvollziehbar; ein stiller
 Fallback auf Build/Code-Review würde dagegen eine visuelle Prüfung vortäuschen.
+
+## ADR-011: Release-Tag statt Commit-SHA als Herkunftsanker
+
+Status: angenommen, 2026-07-26
+
+Entscheidung: Jeder Changelog-Abschnitt trägt einen `Release-Tag`. Die SHA wird
+zur Prüfzeit aus dem Tag aufgelöst, nicht in den Text geschrieben. Abschnitte
+ohne Repository-Historie sagen das ausdrücklich, statt eine nicht auflösbare
+SHA zu behaupten.
+
+Begründung: Ein Changelog kann die SHA des Commits, der ihn einführt, nicht
+enthalten. Eine getippte SHA ist außerdem eine Behauptung, keine Evidenz. Der
+Tag-Name steht vor dem Commit fest und ist maschinell auflösbar; damit gilt für
+die eigene Historie derselbe Maßstab, den das Regelwerk anderen auferlegt.
+
+## ADR-012: Evidenz gilt nur gebunden an den geprüften Baum
+
+Status: angenommen, 2026-07-26
+
+Entscheidung: Ein Provider-Ereignis zählt nur als Evidenz, wenn sein Pfad
+innerhalb des getesteten Plugin-Roots liegt. Pfade, die wie Plugin-Dateien
+aussehen, aber außerhalb liegen, sind `offRootReads` und lassen den Fall
+scheitern. Der Livelauf isoliert die Provider-Sitzung von den Einstellungen des
+Betreibers. Zusätzlich hält ein reproduzierbarer `pluginTreeDigest` fest, über
+welchen Baum die Aussage gilt.
+
+Begründung: Eine installierte Kopie desselben Plugins beantwortet denselben
+Prompt. Ohne Root-Bindung misst der Trace den falschen Baum und bestätigt eine
+Aussage über Code, der nicht geprüft wurde. Stilles Verwerfen wäre ebenso
+falsch: es erzeugt ein „keine Evidenz"-Ergebnis, dessen Ursache unsichtbar
+bleibt.

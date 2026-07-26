@@ -1,5 +1,61 @@
 # website-design-ultra
 
+## 1.5.1 — Provenance & Proven Claude Provider (2026-07-26)
+
+### Versionskontrolle
+
+- Das Projekt liegt jetzt in einem Git-Repository. Jeder Changelog-Abschnitt
+  verankert auf einem `Release-Tag`, der in diesem Repository auflösbar sein
+  muss; `scripts/release.mjs` löst ihn zum Commit auf und schlägt sonst fehl.
+- Ein Changelog kann die SHA des Commits, der ihn einführt, nicht enthalten.
+  Anker ist deshalb der Tag-Name, der vor dem Commit feststeht; die SHA wird zur
+  Prüfzeit aufgelöst.
+- Der alte Platzhalter, der die SHA für nicht verfügbar erklärte, ist jetzt ein
+  harter Validierungsfehler. Ein Regelwerk, das für jede Behauptung Evidenz
+  verlangt, führt keine unbelegbare Herkunftsangabe über sich selbst.
+- Abschnitte, die vor der Versionskontrolle entstanden sind, sagen das
+  ausdrücklich, statt eine nicht auflösbare SHA zu behaupten.
+- Neu: `pluginTreeDigest` — ein reproduzierbarer sha256 über den Plugin-Baum.
+  Eine Routing-Behauptung gilt für einen Baum, nicht für einen Ordnernamen.
+
+### Claude-Provider
+
+- Zwei Fehler im Claude-Trace-Pfad behoben, die den ersten echten Lauf
+  falsch bewertet hätten:
+  - Plugin-Skills werden als `plugin:skill` aufgerufen. Der alte Matcher
+    akzeptierte nur `[a-z0-9-]+` und verwarf damit **jedes** `Skill`-Ereignis;
+    ein korrekter Lauf wäre als „trace did not observe skill" durchgefallen.
+  - Pfade wurden nicht an den geprüften Plugin-Root gebunden. Ein Read der
+    installierten Kopie unter `~/.claude/skills/...` zählte als Evidenz über den
+    getesteten Baum. Solche Pfade sind jetzt `offRootReads` und lassen den Fall
+    scheitern, statt ihn zu bestätigen.
+- Der Claude-Runner isoliert die Sitzung mit `--setting-sources ""` und
+  `--strict-mcp-config`. Ohne Isolation erbt der Lauf die Skills, CLAUDE.md und
+  MCP-Server des Betreibers — inklusive einer installierten Kopie dieses Plugins.
+- Fehlender oder nicht angemeldeter Provider endet nicht mehr in einem harten
+  Abbruch, sondern in `UNAVAILABLE` mit Grund, offenem Launch-Gate und Exit 0;
+  `--require-live` erzwingt in CI einen Fehlschlag. Gleicher Vertrag wie
+  ADR-010 für die Browserverifikation.
+- `--trace-dir` archiviert den rohen Provider-Ereignisstrom pro Fall.
+  Aufgezeichnete Ströme liegen unter `tests/forward/traces/` und werden bei
+  jedem `--dry-run` gegen den Parser abgespielt — der Claude-Pfad bleibt damit
+  auch auf Maschinen ohne angemeldete CLI abgedeckt.
+- Reports enthalten jetzt Provider-Status, Modell, Git-Provenienz und
+  Baum-Digest.
+
+### Durch den Livelauf gefundener Inhaltsfehler
+
+- Der erste echte `--provider claude`-Lauf des Falls `dashboard` bestand alle
+  Trace-Bedingungen, verfehlte aber die Kontrastangabe für `border`. Die
+  Ausgabeanweisung in `color-palettes` nannte die Paare nur als Aufzählung im
+  Fließtext. Sie verlangt jetzt eine benannte Contrast-Aussage pro Paar; ein
+  ausgelassenes Paar ist eine Lücke, keine Kürze.
+- Nach dem Fix: `PASS` mit neun benannten Kontrastzuständen.
+
+Release-Tag: v1.5.1
+
+---
+
 ## 1.5.0 — Trace-Proven Routing & Portable Verify (2026-07-25)
 
 ### Progressive Disclosure mit echtem Nachweis
@@ -31,7 +87,7 @@
   `NOT_APPLICABLE (plan-only)`; beim ersten ausführbaren Build wird die Prüfung
   Pflicht.
 
-Commit-SHA: nicht verfügbar — der aktuelle Download-Ordner ist kein Git-Repository.
+Release-Tag: v1.5.0 — nachträglich am 2026-07-26 auf den Import-Commit des ausgelieferten Ordnerstands gesetzt. Der Tag belegt genau diesen Stand, keine Zwischenschritte seiner Entstehung.
 
 ---
 
@@ -56,7 +112,7 @@ Commit-SHA: nicht verfügbar — der aktuelle Download-Ordner ist kein Git-Repos
 - Live-Harness mit Schema-Ausgabe und fünf repräsentativen Fällen für SaaS, Editorial, Dashboard, 3D-Hero und Konfigurator ergänzt.
 - Manifeste und README auf Version 1.4.0 / 16 Skills aktualisiert.
 
-Commit-SHA: nicht verfügbar — der aktuelle Download-Ordner ist kein Git-Repository.
+Release-Tag: keine — diese Version ist vor Einführung der Versionskontrolle entstanden. Es existiert kein Commit, der sie belegt.
 
 ---
 
@@ -78,7 +134,7 @@ Commit-SHA: nicht verfügbar — der aktuelle Download-Ordner ist kein Git-Repos
 - Validator prüft 15 Skills, 5 Commands sowie die neuen Priority-1-Verträge.
 - Manifeste und README auf Version 1.3.0 aktualisiert.
 
-Commit-SHA: nicht verfügbar — der bereitgestellte Download-Ordner ist kein Git-Repository.
+Release-Tag: keine — diese Version ist vor Einführung der Versionskontrolle entstanden. Es existiert kein Commit, der sie belegt.
 
 ---
 
@@ -125,11 +181,13 @@ Skill-Descriptions wurden gekürzt und redundante `metadata.version`-Blöcke ent
 - README auf Dual-Host-Installation, korrekte Commands und neue Referenzstruktur aktualisiert.
 - Deterministischer Validator prüft Skill-Frontmatter, Referenzpfade, Manifest-Versionen, veraltete Patterns und alle 20 Palette-Kontraste.
 
-Commit-SHA: nicht verfügbar — der bereitgestellte Download-Ordner ist kein Git-Repository.
+Release-Tag: keine — diese Version ist vor Einführung der Versionskontrolle entstanden. Es existiert kein Commit, der sie belegt.
 
 ---
 
 ## 1.2.0 — Interactive 3D
+
+Release-Tag: keine — diese Version ist vor Einführung der Versionskontrolle entstanden. Es existiert kein Commit, der sie belegt.
 
 13 Skills + 4 Commands. Alle `SKILL.md` tragen `metadata.version: "1.2.0"`, passend zur Plugin-Version. YAML validiert.
 

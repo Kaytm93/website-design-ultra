@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.5.0 contains 16 skills and 5 Claude commands. It combines evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification.
+Version 1.5.1 contains 16 skills and 5 Claude commands. It combines evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification.
 
 ## Structure
 
@@ -18,10 +18,12 @@ website-design-ultra/
 │   └── verify.md
 ├── tests/
 │   └── forward/                    # SaaS, editorial, dashboard, 3D, configurator
+│       └── traces/                 # recorded provider streams, replayed offline
 ├── scripts/
 │   ├── validate-content.mjs        # structure + semantic contrast
-│   ├── forward-trace.mjs           # provider read-trace audit
+│   ├── forward-trace.mjs           # provider read-trace audit + tree digest
 │   ├── run-forward-tests.mjs       # isolated live plugin evals
+│   ├── release.mjs                 # release provenance gate
 │   └── verify-browser.mjs          # capability-gated browser adapter
 └── skills/
     ├── core-rules/
@@ -237,16 +239,64 @@ Run isolated live forward tests through an authenticated Codex CLI (default) or 
 
 ```bash
 node scripts/run-forward-tests.mjs \
-  --provider codex \
-  --max-budget-usd 0.35 \
-  --report /absolute/path/forward-report.json
+  --provider claude \
+  --case dashboard \
+  --model sonnet \
+  --max-budget-usd 0.75 \
+  --report /absolute/path/forward-report.json \
+  --trace-dir /absolute/path/traces
 ```
 
-Use `--provider claude` to test Claude plugin loading and `--case saas` (or another case ID) during iteration. Live tests load this plugin source read-only, request schema-constrained output, and fail on missing skill routes, missing read evidence, unexpected references, broad reads, or per-case Plugin-token budgets. Reports include accessed files, observed bytes, a deterministic `ceil(bytes / 4)` Plugin-token estimate, and provider-reported total usage. `--max-budget-usd` applies to Claude; Codex uses its configured account limits.
+Use `--provider claude` to test Claude plugin loading and `--case saas` (or another case ID) during iteration. Live tests load this plugin source read-only, request schema-constrained output, and fail on missing skill routes, missing read evidence, unexpected references, broad reads, off-root reads, or per-case Plugin-token budgets. Reports include accessed files, observed bytes, a deterministic `ceil(bytes / 4)` Plugin-token estimate, provider-reported total usage, the git provenance of the tree, and its content digest. `--max-budget-usd` applies to Claude; Codex uses its configured account limits.
 
-Live cases time out after five minutes by default; adjust with `--timeout-ms` for CI. Codex cases pin medium reasoning so the suite remains practical and independent of a developer’s local default.
+The Claude runner isolates the session with `--setting-sources ""` and
+`--strict-mcp-config`. Without that isolation the run inherits the operator's own
+skills and an installed copy of this same plugin, and the trace then measures the
+wrong tree. Paths outside the tested plugin root are reported as `offRootReads`
+and fail the case instead of counting as evidence.
+
+`--trace-dir` writes the raw provider event stream per case. Those files are the
+archivable evidence behind a routing claim. A recorded stream can be replayed
+against the parser without any CLI: fixtures in `tests/forward/traces/` run on
+every `--dry-run`, so the Claude path stays covered on machines where Claude Code
+is not authenticated.
+
+If the selected CLI is missing or unauthenticated, the run reports `UNAVAILABLE`
+with a reason, leaves the launch gate open, and exits 0 — the same contract as
+browser verification (ADR-010). It is never reported as a pass. Use
+`--require-live` in CI to turn `UNAVAILABLE` into a non-zero exit.
+
+Live cases time out after five minutes by default; adjust with `--timeout-ms` for CI. Both providers pin medium reasoning so the suite remains practical and independent of a developer’s local default.
+
+### Release provenance
+
+```bash
+node scripts/release.mjs --strict
+```
+
+Every changelog section anchors on a `Release-Tag` that must resolve to a real
+tag in this repository; the gate prints the resolved commit for each version. A
+changelog cannot contain the SHA of the commit that introduces it, so the tag
+name — known before the commit — is the anchor, and the SHA is resolved at
+verification time. The old `Commit-SHA` placeholder that declared the SHA
+unavailable is now a hard validation failure: a ruleset that requires evidence
+for every claim does not ship an unverifiable provenance claim of its own.
 
 ## Version
+
+**1.5.1** — provenance and a proven Claude provider:
+
+- release history moved under version control; every changelog section anchors
+  on a resolvable `Release-Tag`, enforced by `scripts/release.mjs`,
+- fixed two defects in the Claude trace path: namespaced `plugin:skill`
+  invocations were dropped as evidence, and plugin-shaped reads outside the
+  tested root were credited as if they came from it,
+- isolated the Claude runner from operator settings and MCP servers,
+- provider availability now follows the `UNAVAILABLE` contract instead of
+  aborting the run,
+- added recorded-trace fixtures, replayed offline on every `--dry-run`,
+- palette output now requires one named contrast statement per required pair,
+  after a live Claude run omitted the border pair.
 
 **1.5.0** — trace-proven routing and portable verification:
 

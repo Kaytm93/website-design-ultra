@@ -1,0 +1,195 @@
+{
+  "generatedAt": "2026-07-26T08:58:28.429Z",
+  "provider": "claude",
+  "providerStatus": {
+    "status": "AVAILABLE",
+    "cliVersion": "2.1.220 (Claude Code)",
+    "authMethod": "oauth_token"
+  },
+  "model": "sonnet",
+  "effort": "medium",
+  "plugin": {
+    "name": "website-design-ultra",
+    "version": "1.5.1"
+  },
+  "provenance": {
+    "repository": true,
+    "commit": "d8f7476219b4be24abf1657e611766526e7f7f3f",
+    "tag": "v1.5.0",
+    "branch": "main",
+    "clean": true,
+    "tree": {
+      "fileCount": 68,
+      "sha256": "9f381e25130ebc701feacff7296d8ba38e3e71d31242acf462ccdb9e21a93e21"
+    }
+  },
+  "selfTest": {
+    "replayed": 1
+  },
+  "results": [
+    {
+      "id": "dashboard",
+      "status": "passed",
+      "failures": [],
+      "result": {
+        "caseId": "dashboard",
+        "skills": [
+          "core-rules",
+          "color-palettes",
+          "content-design",
+          "ui-states"
+        ],
+        "direction": "Linear Mono dark-neutral SaaS/ops direction (color-palettes: neutral-product) — off-black surfaces with an emerald action/focus color, suited to a dense, always-on warehouse exception console.",
+        "content": {
+          "hierarchy": [
+            "Translucent summary panel: exception counts by severity (glanceable state, no CTA)",
+            "Exception queue ordered by severity then age",
+            "Per-row: severity badge, owner, last update, retry action",
+            "Validation/disabled affordances on retry and any filter controls",
+            "Secondary metadata (queue filters, pagination) demoted last"
+          ],
+          "claims": [
+            {
+              "text": "Severity counts shown in the summary panel (e.g. counts of critical/warning/info exceptions)",
+              "status": "illustrative",
+              "evidence": "No live warehouse data was provided; counts must be wired to a real feed before ship and labeled as placeholder in any prototype per core-rules anti-slop and content-design invariants."
+            },
+            {
+              "text": "Owner and last-update fields per queue row",
+              "status": "unknown",
+              "evidence": "No owner directory or timestamp source was supplied; render as \"[owner needed]\" / \"[timestamp needed]\" placeholders until connected to real data."
+            },
+            {
+              "text": "Retry is the primary recovery action for a failed exception",
+              "status": "qualified",
+              "evidence": "Reasonable default for an ops exception queue per ui-states async-data guidance (offer retry only when retry can help); confirm against actual failure-mode taxonomy before final copy."
+            },
+            {
+              "text": "Queue can enter a validation-error state on a filter/search input",
+              "status": "illustrative",
+              "evidence": "Included to satisfy the stated requirement for a validation error state; no real form spec was given, so field name/format rules are placeholders."
+            }
+          ],
+          "unknowns": [
+            "Real severity taxonomy and thresholds",
+            "Actual owner/assignee directory and format",
+            "Refresh/polling cadence and whether retry is synchronous or queued",
+            "Real summary counts and time range they represent",
+            "Whether supervisors act from phone primarily or wide-screen ops center primarily"
+          ],
+          "primaryAction": "Triage and retry the highest-severity failed exception",
+          "localization": [
+            "Relative timestamps (\"last update\") need locale-aware formatting, not hardcoded English strings",
+            "Owner names may be longer/shorter across locales; avoid truncation that hides identity",
+            "Severity labels and retry/disabled copy must be translated, not encoded only in badge color",
+            "Mirror layout and icon direction for RTL locales; queue reading order (severity → owner → time → action) must still hold"
+          ]
+        },
+        "responsive": {
+          "wide": "Two-region layout: main exception queue as a data table (severity, owner, last update, retry) in the dominant column; translucent summary panel as a fixed/sticky right rail surfacing severity counts at a glance.",
+          "portrait": "Summary panel moves above the queue as a compact horizontal stat band; queue table condenses columns (merge owner+last-update into one line) but keeps tabular structure.",
+          "narrow": "Summary counts promoted to the very top as a compact stat row (critical count most prominent); queue table replaced by stacked cards, one per exception, with severity badge and retry button always visible (not hover-revealed); owner/last-update demoted to secondary line inside the card.",
+          "recomposition": [
+            "Promote: summary/critical-count moves earlier as viewport narrows",
+            "Replace: table rows become stacked cards on narrow",
+            "Regroup: owner + last-update collapse into one secondary metadata line on narrow",
+            "Reduce: decorative table borders/dividers removed in favor of card grouping",
+            "Change interaction: retry becomes an always-visible tap target instead of a hover-revealed control"
+          ],
+          "sourceOrder": "DOM order matches visual priority at every width: summary panel, then severity, then retry action, then owner/last-update metadata — never rely on CSS reorder to fix a mismatched tab order."
+        },
+        "accessibility": {
+          "contrastStates": [
+            "text/bg: #fafafa on #0a0a0a — verify ≥4.5:1 (well above threshold on off-black)",
+            "on-action/action: #052e24 on #10b981 — verify ≥4.5:1 for retry button label",
+            "border/surface: #a1a1aa on #171717 — verify ≥3:1 for row/card boundaries",
+            "focus/every surface: #10b981 focus ring tested against #0a0a0a, #171717, and the translucent panel's composited color, each ≥3:1",
+            "danger/surface: #ff8a80 on #171717 for severity/error text — verify ≥4.5:1; on-danger/danger (#000000 on #ff8a80) for any filled danger chip ≥4.5:1",
+            "disabled/surface: #a1a1aa disabled retry label on #171717 — target ≥3:1 plus a non-color cue (reduced opacity + removed icon, not color alone)",
+            "translucent summary panel: composite panel background (e.g. rgba(23,23,23,0.6)) over #0a0a0a in sRGB before measuring text/icon contrast inside it"
+          ],
+          "inputParity": [
+            "Retry, filter, and any expand/collapse controls are reachable and operable by keyboard alone, in the same order as visual/reading order",
+            "Retry buttons are always rendered (not hover-only) so touch and keyboard users get equal access on the phone card layout",
+            "Touch targets ~44×44px minimum for retry and severity-filter chips on narrow layouts",
+            "Disabled retry uses native `disabled` (or `aria-disabled` if the control must stay focusable) plus visible non-color cue, not opacity alone"
+          ],
+          "reducedMotion": "Respect prefers-reduced-motion: no shimmer skeleton for queue loading (use a static tonal placeholder instead), no persistent pulse/glow on critical severity badges, retry pending state shown as static label change (\"Retrying…\") rather than a spinner animation, and any toast/notice timing/transition collapses to nearly-instant per core-rules and ui-states accessibility invariants."
+        },
+        "immersive": {
+          "justified": null,
+          "artDirection": null,
+          "qualityTiers": [],
+          "fallback": null,
+          "touch": []
+        }
+      },
+      "trace": {
+        "accessedFiles": [
+          "skills/color-palettes/SKILL.md",
+          "skills/color-palettes/references/neutral-product.md",
+          "skills/content-design/SKILL.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/SKILL.md",
+          "skills/core-rules/references/responsive-recomposition.md",
+          "skills/ui-states/SKILL.md",
+          "skills/ui-states/references/accessibility.md",
+          "skills/ui-states/references/async-data.md",
+          "skills/ui-states/references/forms-and-feedback.md"
+        ],
+        "skillFiles": [
+          "skills/color-palettes/SKILL.md",
+          "skills/content-design/SKILL.md",
+          "skills/core-rules/SKILL.md",
+          "skills/ui-states/SKILL.md"
+        ],
+        "referenceFiles": [
+          "skills/color-palettes/references/neutral-product.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/references/responsive-recomposition.md",
+          "skills/ui-states/references/accessibility.md",
+          "skills/ui-states/references/async-data.md",
+          "skills/ui-states/references/forms-and-feedback.md"
+        ],
+        "commandFiles": [],
+        "broadReads": [],
+        "offRootReads": [],
+        "missingFiles": [],
+        "foreignSkills": [],
+        "observedBytes": 29916,
+        "estimatedPluginTokens": 7479,
+        "providerUsage": {
+          "input_tokens": 28,
+          "cache_creation_input_tokens": 18202,
+          "cache_read_input_tokens": 385210,
+          "output_tokens": 7457,
+          "server_tool_use": {
+            "web_search_requests": 0,
+            "web_fetch_requests": 0
+          },
+          "service_tier": "standard",
+          "cache_creation": {
+            "ephemeral_1h_input_tokens": 18202,
+            "ephemeral_5m_input_tokens": 0
+          },
+          "inference_geo": "not_available",
+          "iterations": [
+            {
+              "input_tokens": 2,
+              "output_tokens": 2213,
+              "cache_read_input_tokens": 35463,
+              "cache_creation_input_tokens": 2326,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 2326
+              },
+              "type": "message"
+            }
+          ],
+          "speed": "standard"
+        }
+      },
+      "tracePath": "/tmp/wdu-evidence/v151/traces/claude-dashboard.jsonl"
+    }
+  ]
+}

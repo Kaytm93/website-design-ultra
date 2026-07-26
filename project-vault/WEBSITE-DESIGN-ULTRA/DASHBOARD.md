@@ -1,45 +1,59 @@
 # Website Design Ultra — Dashboard
 
-Stand: 2026-07-25
+Stand: 2026-07-26
 
 ## Status
 
-Priorität 1 und 2 sowie die Pre-Launch-Härtung sind im Quellpaket umgesetzt.
-Aktueller Release-Stand: **1.5.0** mit 16 Skills und 5 Commands.
+Priorität 1 und 2, die Pre-Launch-Härtung und das Prozess-Loch der eigenen
+Historie sind erledigt. Aktueller Release-Stand: **1.5.1** mit 16 Skills und
+5 Commands, unter Versionskontrolle.
 
-Neu in 1.5.0:
+Neu in 1.5.1:
 
-- Provider-Trace statt selbst deklarierter Routes als Progressive-Disclosure-Nachweis
-- Allowed-/Forbidden-Dateien, Referenzzahl und Plugin-Tokenbudget pro Livefall
-- behobenes Default-Overrouting zu `component-patterns` und `style-directions`
-- capability-geprüfter, hostneutraler Browser-Adapter
-- `PASS | FAIL | UNAVAILABLE` für ausführbare Targets plus
-  `NOT_APPLICABLE (plan-only)`
+- Projekt ist ein Git-Repository; `v1.5.0` markiert den importierten Stand,
+  `v1.5.1` die Härtung
+- Changelog-Abschnitte verankern auf auflösbaren `Release-Tag`-Angaben statt auf
+  einer behaupteten Commit-SHA
+- zwei Fehler im Claude-Trace behoben (verworfene `plugin:skill`-Ereignisse,
+  ungebundene Pfade)
+- Claude-Runner gegen Betreiber-Settings und MCP isoliert
+- Provider-Verfügbarkeit als `UNAVAILABLE` statt hartem Abbruch
+- aufgezeichnete Provider-Ströme, offline gegen den Parser abspielbar
+- reproduzierbarer `pluginTreeDigest` über den geprüften Baum
 
 ## Was gerade läuft
 
-Implementierung und Validierung sind abgeschlossen. Offen ist nur der nicht
-ausführbare Git-/Push-Schritt, weil der bereitgestellte Download kein
-Git-Repository besitzt.
+Nichts blockiert. Offen sind das Setzen eines `origin`-Remotes samt Push und die
+vier Livefälle, die für Claude noch nicht gelaufen sind.
 
 ## Validierung
 
 - Plugin-Content: 16 Skills, 5 Commands ✅
 - 20 Paletten / 242 State-Kontrastprüfungen ✅
 - RGBA-Compositing für Aurora Glass ✅
-- Claude Plugin `--strict` ✅
-- Skill-Creator `quick_validate` für `content-design` und `typography` ✅
+- Claude Plugin `--strict` ✅ (Stand 1.5.0)
 - Forward-Fixtures für SaaS, Editorial, Dashboard, 3D-Hero und Konfigurator ✅
-- echter Codex-Live-Harness-Fall `dashboard` mit Dateizugriffsspur: PASS ✅
-- nur `neutral-product.md`, keine Geschwisterpalette, keine Broad Reads ✅
-- beobachtetes Dashboard-Pluginbudget: ca. 8.6k Token ✅
-- portabler Verify-Adapter: Probe und Vier-Zustands-Capture auf lokalem Testserver ✅
-- unabhängiger Read-only-Forward-Test der finalen Routerregeln ✅
-- Claude-Liveprovider erkennt fehlenden Login sauber; keine Kosten/Tokens verbraucht ✅
+- Codex-Livefall `dashboard` mit Dateizugriffsspur: PASS ✅ (Stand vor 1.5.1)
+- **Claude-Livefall `dashboard`: PASS** ✅ — CLI 2.1.220, Sonnet, medium,
+  isolierte Sitzung, 14 Turns
+  - 10 Plugin-Dateien, 4 Skills, 6 Referenzen (Budget 7)
+  - nur `neutral-product.md`; keine Editorial- oder Expressive-Palette
+  - 29.916 beobachtete Bytes, ca. 7.479 Plugin-Token (Budget 9.000)
+  - 0 Broad Reads, 0 Off-Root-Reads, 0 fremde Skills
+  - gemeldete Skills stimmen exakt mit der Lesespur überein
+  - Baum-Digest `9f381e25…21a93e21`, 68 Dateien
+- Parser-Konformität gegen aufgezeichneten Claude-Strom, ohne CLI ✅
+- Release-Gate `scripts/release.mjs --strict` ✅
+- portabler Verify-Adapter: Probe und Vier-Zustands-Capture auf lokalem
+  Testserver ✅
 
 ## Nächste Schritte
 
-1. Projekt als echten Git-Checkout mit `origin/main` bereitstellen und Release 1.5.0 committen/pushen.
-2. Optional Claude Code anmelden und alle fünf Livefälle zusätzlich mit `--provider claude` ausführen.
-3. Vor echtem Launch mindestens einen realen Projektlauf mit Browserartefakten aus allen vier Zuständen durchführen.
-4. Priorität 3: Starter-Assets, Rapier, XR/Audio und Marketplace-Präsentation.
+1. `origin` setzen und `main` plus Tags `v1.5.0`/`v1.5.1` pushen.
+2. `saas`, `editorial`, `3d-hero` und `configurator` zusätzlich mit
+   `--provider claude` fahren; bis dahin gelten sie für Claude als unbewiesen.
+3. Codex-Livelauf gegen den neuen Baum-Digest wiederholen, damit beide Provider
+   dieselbe Version belegen.
+4. Vor echtem Launch mindestens einen realen Projektlauf mit Browserartefakten
+   aus allen vier Zuständen durchführen.
+5. Priorität 3: Starter-Assets, Rapier, XR/Audio und Marketplace-Präsentation.

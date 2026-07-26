@@ -64,8 +64,11 @@ Return the chosen palette as semantic CSS variables and mention:
 - palette/direction,
 - dominant action color,
 - any decorative-only colors,
-- verified text/action contrast,
-- verified focus, border, danger, disabled, and composited-glass contrast,
+- one separate verified-contrast statement per required pair, naming the pair:
+  `text/bg`, `on-action/action`, `border/surface`, `focus/every surface it
+  touches`, `danger/surface` with `on-danger/danger`, `disabled/surface`, and
+  one statement per composited translucent surface. Omitting a pair is a gap,
+  not brevity — say `not applicable` and why if a pair genuinely has no use,
 - light/dark or forced-colors behavior when relevant.
 
 ## Check

@@ -1,6 +1,8 @@
 # Download- und Sync-Reste des ursprünglichen Ordners
 _to_delete/
+_incoming-*/
 _wdu-sync-*.zip
+wdu-*.tgz
 ziqxczzS
 
 # Werkzeug-Ausgaben

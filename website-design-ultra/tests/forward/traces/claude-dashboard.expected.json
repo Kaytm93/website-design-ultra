@@ -1,0 +1,30 @@
+{
+  "provider": "claude",
+  "case": "dashboard",
+  "recordedAt": "2026-07-26T08:58:28.429Z",
+  "note": "Filtered recording of a real `--provider claude --case dashboard` run: every tool_use block in order, plus the final usage. Text and thinking blocks were removed; nothing the parser reads was changed. Absolute paths are stored as {{PLUGIN_ROOT}} so the fixture stays portable while still exercising root binding.",
+  "cli": "2.1.220 (Claude Code)",
+  "model": "sonnet",
+  "effort": "medium",
+  "pluginVersion": "1.5.1",
+  "treeSha256": "9f381e25130ebc701feacff7296d8ba38e3e71d31242acf462ccdb9e21a93e21",
+  "toolUseBlocks": 14,
+  "accessedFileCount": 10,
+  "accessedFiles": [
+    "skills/color-palettes/SKILL.md",
+    "skills/color-palettes/references/neutral-product.md",
+    "skills/content-design/SKILL.md",
+    "skills/content-design/references/microcopy.md",
+    "skills/core-rules/SKILL.md",
+    "skills/core-rules/references/responsive-recomposition.md",
+    "skills/ui-states/SKILL.md",
+    "skills/ui-states/references/accessibility.md",
+    "skills/ui-states/references/async-data.md",
+    "skills/ui-states/references/forms-and-feedback.md"
+  ],
+  "forbiddenFiles": [
+    "skills/color-palettes/references/editorial-natural.md",
+    "skills/color-palettes/references/expressive.md"
+  ],
+  "estimatedPluginTokens": 7479
+}
