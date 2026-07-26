@@ -17,6 +17,12 @@ Make the interface’s promise, proof, and next action understandable before pol
 
 Load multiple references only when the deliverable genuinely crosses those concerns.
 
+This skill owns whether a sentence is *true and useful*. Whether its form is the
+average machine choice is owned by `anti-slop`, which holds the tell catalogue,
+the density budgets, and the linter. Both gates apply to shipped copy: evidence
+without form yields a truthful page that reads as generated, form without
+evidence yields fluent invention.
+
 ## Core workflow
 
 1. Identify audience, job, user stage, verified facts, unknowns, primary action, and risk.
@@ -53,3 +59,5 @@ Return:
 - [ ] Labels predict outcomes; errors explain recovery.
 - [ ] Empty/loading/success copy reflects real state, not theatre.
 - [ ] Dates, numbers, names, and text expansion survive supported locales.
+- [ ] `anti-slop` ran over the final copy; a vague sentence was not repaired by
+      inventing a specific.

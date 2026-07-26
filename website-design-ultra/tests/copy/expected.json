@@ -1,0 +1,59 @@
+{
+  "note": "Regression gate for scripts/lint-copy.mjs. A rule change must still catch every slop fixture and must still flag nothing in the authentic-prose fixtures. Fixture pairs also prove that the register profile, not the rule list, decides Tier-3 verdicts.",
+  "cases": [
+    {
+      "fixture": "slop-en.md",
+      "profile": "marketing",
+      "locales": ["en"],
+      "status": "FAIL",
+      "minTier1": 8,
+      "minTier2": 1
+    },
+    {
+      "fixture": "clean-en.md",
+      "profile": "marketing",
+      "locales": ["en"],
+      "status": "PASS"
+    },
+    {
+      "fixture": "human-technical-en.md",
+      "profile": "marketing",
+      "locales": ["en"],
+      "status": "PASS"
+    },
+    {
+      "fixture": "slop-hero.tsx",
+      "profile": "marketing",
+      "locales": ["en"],
+      "status": "FAIL",
+      "minTier1": 3
+    },
+    {
+      "fixture": "slop-de.md",
+      "profile": "marketing",
+      "locales": ["de"],
+      "status": "FAIL",
+      "minTier1": 8,
+      "minTier2": 2
+    },
+    {
+      "fixture": "clean-de.md",
+      "profile": "marketing",
+      "locales": ["de"],
+      "status": "PASS"
+    },
+    {
+      "fixture": "docs-register.md",
+      "profile": "docs",
+      "locales": ["en"],
+      "status": "PASS"
+    },
+    {
+      "fixture": "docs-register.md",
+      "profile": "marketing",
+      "locales": ["en"],
+      "status": "FAIL",
+      "minTier3": 2
+    }
+  ]
+}

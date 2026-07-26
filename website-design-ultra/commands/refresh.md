@@ -15,6 +15,10 @@ You will refresh existing frontend into a new direction. Functionality stays, th
 2. **Load only the relevant skills/references**:
    - `style-directions` — the chosen direction family
    - `content-design` — when hierarchy, claims, CTA, state, or locale copy changes
+   - `anti-slop` — design tells for the new direction always; the prose reference
+     whenever a line of copy is rewritten. A refresh is where the old page's
+     copy usually survives untouched while the visuals change, so lint the copy
+     even when the brief only asked for a new look.
    - `color-palettes` — only when color tokens change
    - `typography` — only when typography changes
    - `motion-system` — only when the motion profile changes
@@ -50,6 +54,8 @@ You will refresh existing frontend into a new direction. Functionality stays, th
 
 - Switch direction mid-refresh
 - Mix multiple directions in the output
+- Swap the visuals into a new direction while leaving the old direction's slop in
+  the headlines
 - Change functionality without mentioning it
 - Lose fallbacks or keyboard parity when refreshing a 3D scene (`immersive-3d` §5, `r3f-interaction` §2)
 - Merely scale down the desktop camera instead of composing a new portrait shot (`3d-art-direction`)

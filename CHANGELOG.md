@@ -1,5 +1,105 @@
 # website-design-ultra
 
+## 1.6.0 — Anti-Slop for Generated Text and Visual Defaults (2026-07-26)
+
+### The gap this closes
+
+Until 1.5.3 the plugin's anti-slop surface was almost entirely visual. Text slop
+was covered by a single sentence in `content-design`
+(`references/claims-and-proof.md`) naming three words. A generated page could
+therefore pass every existing gate — verified claims, validated contrast,
+trace-proven routing, real responsive recomposition — and still read as machine
+output in every headline. Copy is part of the design, so it now has the same
+class of contract the color tokens have.
+
+### New skill
+
+- Added `anti-slop`, the 17th skill and the single source of truth for slop
+  detection. It separates **empty form** (a rhetorical shape carrying no
+  information) from **false content** (a claim without evidence, which stays with
+  `content-design`), and states that a page can pass one gate and fail the other.
+- `references/prose-tells.md` catalogues the Tier-1 structural forms with the
+  website surface each appears on, the Tier-2 vocabulary, the formatting tells in
+  rendered copy, and worked rewrites.
+- `references/design-tells.md` adds the visual tells no other skill owned: badge
+  above the H1, the colored card edge strip, icon-topped identical feature cards,
+  numbered step rows, stat banners, emoji icon sets, all-caps micro-labels,
+  untouched framework defaults, dark mode by reflex, plus measurable spacing,
+  radius, type-scale and uniformity budgets and the squint test. Long-standing
+  defaults stay in `core-rules` §5, fonts in `typography`, 3D in `immersive-3d`
+  §4; the file routes to them instead of restating them.
+- `references/locale-de.md` is a German annex, because a slop catalogue does not
+  translate: `nicht nur … sondern auch`, `Es ist wichtig zu beachten`,
+  `Tauche ein in`, nominal style, actorless passive, du/Sie register drift,
+  Denglisch action labels, en dash instead of em dash, and § 5 UWG exposure on
+  unsupported superlatives. Adding a further locale now has a stated minimum.
+
+### Tiers instead of a blacklist
+
+- Tier 1 structural forms are always rewritten. Tier 2 vocabulary is a finding
+  only as a cluster or inside a heading, because `robust` in a reliability claim
+  and `seamless` for a marquee loop are the correct words. Tier 3 budgets are
+  measured and reported as numbers.
+- Tier-3 sensitivity is register-dependent (`marketing`, `docs`, `editorial`). A
+  reference document legitimately uses dense headings, bold term lists, and dashes
+  as definition separators; a hero headline does not.
+- A `.anti-slop-protect.json` exempts brand terms and signature phrasing. Every
+  entry carries a reason, mirroring the claim ledger; an entry without one is
+  reported as a suppressed finding rather than applied.
+- Added a positive specificity floor, because prohibition alone produces bland
+  copy: a headline must name an audience, mechanism, dated number, product object,
+  or observable outcome, and an unknown fact stays a placeholder instead of being
+  resolved by invention.
+
+### Deterministic enforcement
+
+- Added `scripts/lint-copy.mjs`, a zero-dependency linter over Markdown prose and
+  JSX/HTML visible text, with tiers, register profiles, German inflection
+  handling, protect list, JSON output, and exit codes.
+- Rhythm budgets measure prose only. A dash inside a table cell, a dash directly
+  after a term at the head of a list item, and a heading that labels a data block
+  are notation, not rhythm — the first calibration pass produced 81 findings on
+  the plugin's own documents, and every one of them was a measurement artifact of
+  that kind rather than slop.
+- Added `tests/copy/` as the linter's own regression gate: slop and
+  authentic-prose fixture pairs in English and German, a JSX fixture, and one
+  document linted under two profiles to prove the register decides the verdict.
+- `scripts/validate-content.mjs` now binds the executable rules to their prose:
+  an undocumented Tier-1 rule id or Tier-2 term fails the build. It replays the
+  copy fixtures and fails when the plugin's own 57 documents do not lint clean.
+  This caught real drift on the first run (`game-changer` versus `game changer`,
+  a curly apostrophe, six undocumented German rule ids).
+- Added the `slop` forward case and a scoped `forbiddenTerms` contract. Scoping
+  matters: a contract may legitimately name the pattern it avoided, so the
+  assertion runs against the `copy` subtree of the response, never the whole
+  serialized answer.
+
+### Routing and commands
+
+- Added a routing gate in `core-rules` §3: any user-visible copy activates
+  `anti-slop`, independently of whether `content-design` was in scope. A hero
+  headline written during a layout task was previously ungated.
+- `content-design` and `anti-slop` now state their split explicitly — evidence
+  without form yields a truthful page that reads as generated; form without
+  evidence yields fluent invention.
+- `/design` gained a copy-form step and reports the lint result in its output.
+  `/audit` gained a deterministic copy-lint step, an off-scale-spacing search, and
+  two new "Never" rules: no single Tier-2 word as a finding, no lint `PASS`
+  reported as content approval. `/refresh` now lints copy that survives a visual
+  redirection.
+
+### Notes
+
+- The blind spots are documented rather than implied: fake-profound kickers,
+  synonym cycling, and a triplet whose third item is filler need a reader, JSX
+  extraction is best effort, and no lint result claims a line is true.
+- Tier-2 lists stay in base form so they bind one-to-one to the references;
+  inflection is handled in the linter.
+
+Release-Tag: v1.6.0
+
+---
+
 ## 1.5.3 — Codex Git Marketplace & Automatic Sync (2026-07-26)
 
 ### Codex distribution

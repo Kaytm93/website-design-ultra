@@ -170,6 +170,19 @@ function validateFixtures(cases, schema) {
         die(`${testCase.id}: invalid requiredTerms regex "${term}"`)
       }
     }
+    if (testCase.forbiddenTerms !== undefined) {
+      const { paths, patterns } = testCase.forbiddenTerms
+      if (!Array.isArray(paths) || !paths.length || !Array.isArray(patterns) || !patterns.length) {
+        die(`${testCase.id}: forbiddenTerms needs a non-empty paths and patterns list`)
+      }
+      for (const pattern of patterns) {
+        try {
+          new RegExp(pattern, 'i')
+        } catch {
+          die(`${testCase.id}: invalid forbiddenTerms regex "${pattern}"`)
+        }
+      }
+    }
   }
   return selfTestTraceAudit(pluginRoot)
 }
@@ -351,6 +364,28 @@ function evaluate(testCase, result, trace) {
   for (const term of testCase.requiredTerms ?? []) {
     if (!new RegExp(term, 'i').test(serialized)) {
       failures.push(`missing signal /${term}/i`)
+    }
+  }
+
+  /**
+   * Forbidden patterns are scoped to the subtrees that hold shipped copy. A
+   * contract may legitimately name the pattern it avoided; the copy may not
+   * contain it.
+   */
+  if (testCase.forbiddenTerms) {
+    for (const dottedPath of testCase.forbiddenTerms.paths) {
+      const subtree = valueAtPath(result, dottedPath)
+      if (subtree === undefined || subtree === null) {
+        failures.push(`forbiddenTerms path "${dottedPath}" is missing from the response`)
+        continue
+      }
+      const scoped = JSON.stringify(subtree)
+      for (const pattern of testCase.forbiddenTerms.patterns) {
+        const match = scoped.match(new RegExp(pattern, 'i'))
+        if (match) {
+          failures.push(`${dottedPath} contains slop pattern /${pattern}/i: "${match[0].slice(0, 60)}"`)
+        }
+      }
     }
   }
   failures.push(...evaluateTrace(testCase, result, trace))

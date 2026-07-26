@@ -14,6 +14,13 @@ If the briefing calls for 3D, WebGL, a scene, or an immersive experience → use
 
 2. **Content contract** — When hierarchy or copy is built or changed, load `content-design`. Fix promise, mechanism, evidence, objections, primary action, and unknown facts; do not invent claims.
 
+   **Copy form** — As soon as any user-visible line is written, load `anti-slop`
+   and its prose reference. This gate is independent of step 2: a headline, a
+   button label, or an empty state still needs it when the claim ledger was not
+   in scope. Add the locale annex for non-English output. Clear every Tier-1
+   tell, measure the Tier-3 budgets, and check the specificity floor before the
+   copy enters the layout.
+
 3. **Choose a direction** — Load `style-directions` only for explicitly
    requested style exploration, or when neither brand/system nor functional
    product cues provide a workable direction and that decision materially
@@ -47,6 +54,7 @@ If the briefing calls for 3D, WebGL, a scene, or an immersive experience → use
 9. **Output format**:
    - 1–2 sentences of direction rationale
    - Content/claim contract with unknowns marked
+   - Copy-lint result: tier counts and the command that produced them
    - Wide/portrait/narrow recomposition for pages and signature sections
    - `npm install ...` if libraries are needed
    - Working code

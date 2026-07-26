@@ -1,7 +1,7 @@
 {
   "name": "website-design-ultra",
-  "description": "Premium website design plugin: evidence-led content hierarchy, trace-proven minimal routing, responsive recomposition, license-aware typography, validated state contrast, and immersive 3D art direction with portable browser verification.",
-  "version": "1.5.3",
+  "description": "Premium website design plugin: tiered anti-slop enforcement for generated copy and visual defaults with a deterministic copy linter, evidence-led content hierarchy, trace-proven minimal routing, responsive recomposition, license-aware typography, validated state contrast, and immersive 3D art direction with portable browser verification.",
+  "version": "1.6.0",
   "author": {
     "name": "Kay"
   },
@@ -38,6 +38,10 @@
     "font-licensing",
     "contrast-validation",
     "trace-validated-routing",
-    "portable-browser-verification"
+    "portable-browser-verification",
+    "copy-linting",
+    "content-truth",
+    "prose-quality",
+    "localized-copy"
   ]
 }

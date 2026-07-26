@@ -256,5 +256,73 @@
       "maxReferenceFiles": 11,
       "maxEstimatedPluginTokens": 18500
     }
+  },
+  {
+    "id": "slop",
+    "command": "design",
+    "prompt": "Write the shipping copy for a meeting-notes tool: hero headline, hero subhead, one feature blurb, the primary CTA label, and the empty state. The founder asked for copy that sounds premium and innovative. Verified capabilities: transcription of an uploaded recording in German or English, and export to a Markdown file with action items. No customers, metrics, funding, certifications, integrations, or launch date exist. Return the copy lines exactly as they would ship in copy.lines, plus the content and responsive contract. No code.",
+    "requiredSkills": [
+      "core-rules",
+      "content-design",
+      "anti-slop"
+    ],
+    "minimums": {
+      "copy.lines": 5,
+      "content.claims": 2,
+      "content.unknowns": 3
+    },
+    "requiredTerms": [
+      "tier|specificity|protect|budget",
+      "mechanism|observable|placeholder",
+      "unknown|verified"
+    ],
+    "forbiddenTerms": {
+      "paths": [
+        "copy"
+      ],
+      "patterns": [
+        "\\bit'?s not (?:just |only )?[^.!?]{1,40}[,.\u2014-]\\s*(?:it'?s|but)\\b",
+        "\\bnot (?:just|only) [^.!?]{2,40}?,?\\s+but\\b",
+        "\\bmore than just\\b",
+        "\\b(?:unlock|unleash) (?:the|your|its) (?:full )?potential\\b",
+        "\\bto the next level\\b",
+        "\\bseamless",
+        "\\brevolution",
+        "\\bgame.?chang",
+        "\\bcutting.edge\\b",
+        "\\bexperts? (?:agree|say)\\b",
+        "\\bstudies show\\b",
+        "\\bin today'?s .{0,24}world\\b",
+        "\\bget started\\b",
+        "\u2014"
+      ]
+    },
+    "trace": {
+      "allowedSkills": [
+        "core-rules",
+        "content-design",
+        "anti-slop"
+      ],
+      "allowedReferences": [
+        "skills/anti-slop/references/prose-tells.md",
+        "skills/anti-slop/references/locale-de.md",
+        "skills/content-design/references/claims-and-proof.md",
+        "skills/content-design/references/microcopy.md",
+        "skills/core-rules/references/responsive-recomposition.md"
+      ],
+      "requiredFiles": [
+        "skills/anti-slop/references/prose-tells.md",
+        "skills/content-design/references/claims-and-proof.md"
+      ],
+      "forbiddenFiles": [
+        "skills/anti-slop/references/design-tells.md",
+        "skills/color-palettes/references/neutral-product.md",
+        "skills/color-palettes/references/editorial-natural.md",
+        "skills/color-palettes/references/expressive.md",
+        "skills/style-directions/references/product.md"
+      ],
+      "maxReferenceFiles": 5,
+      "maxEstimatedPluginTokens": 9000
+    }
   }
 ]

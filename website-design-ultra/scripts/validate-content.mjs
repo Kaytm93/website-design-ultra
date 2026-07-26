@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
+import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+import { PROFILES, TIER1, TIER2 } from './lint-copy.mjs'
 
 const pluginRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const skillsRoot = path.join(pluginRoot, 'skills')
@@ -113,8 +116,8 @@ const skillDirectories = fs
   .readdirSync(skillsRoot, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
 
-if (skillDirectories.length !== 16) {
-  fail(`expected 16 skills, found ${skillDirectories.length}`)
+if (skillDirectories.length !== 17) {
+  fail(`expected 17 skills, found ${skillDirectories.length}`)
 }
 
 for (const directory of skillDirectories) {
@@ -293,6 +296,179 @@ for (const [file, markers] of hardeningContracts) {
   }
 }
 
+const antiSlopContracts = [
+  [
+    'skills/anti-slop/SKILL.md',
+    [
+      'prose-tells.md',
+      'design-tells.md',
+      'locale-de.md',
+      'Tier 1',
+      'Tier 2',
+      'Tier 3',
+      'protect list',
+      'specificity floor',
+      'lint-copy.mjs',
+      'detect',
+      'rewrite',
+    ],
+  ],
+  [
+    'skills/anti-slop/references/prose-tells.md',
+    ['negative parallelism', 'vague attribution', 'swap test', 'Tier 1', 'Tier 2'],
+  ],
+  [
+    'skills/anti-slop/references/design-tells.md',
+    ['badge above the h1', 'edge strip', 'squint test', '8', 'uniformity'],
+  ],
+  [
+    'skills/anti-slop/references/locale-de.md',
+    ['nicht nur', 'nahtlos', 'du', 'sie', 'umlaut'],
+  ],
+  [
+    'skills/core-rules/SKILL.md',
+    ['anti-slop'],
+  ],
+  [
+    'skills/content-design/SKILL.md',
+    ['anti-slop'],
+  ],
+  [
+    'commands/audit.md',
+    ['lint-copy.mjs', 'anti-slop'],
+  ],
+  [
+    'commands/design.md',
+    ['anti-slop'],
+  ],
+  [
+    'scripts/lint-copy.mjs',
+    ['--profile', '--protect', '--locale', 'marketing', 'docs', 'editorial'],
+  ],
+]
+
+for (const [file, markers] of antiSlopContracts) {
+  const fullPath = path.join(pluginRoot, file)
+  if (!fs.existsSync(fullPath)) {
+    fail(`${file}: missing anti-slop artifact`)
+    continue
+  }
+  const content = read(fullPath).toLowerCase()
+  for (const marker of markers) {
+    if (!content.includes(marker.toLowerCase())) {
+      fail(`${file}: missing anti-slop marker "${marker}"`)
+    }
+  }
+}
+
+/**
+ * The linter is the executable form of the catalogue; the references are the
+ * human form. Bind them so a rule cannot enter the script undocumented.
+ */
+const proseTells = read(path.join(skillsRoot, 'anti-slop', 'references', 'prose-tells.md'))
+const localeDeTells = read(path.join(skillsRoot, 'anti-slop', 'references', 'locale-de.md'))
+
+function normalizeTerm(value) {
+  return value
+    .toLowerCase()
+    .replace(/[’‘']/g, "'")
+    .replace(/[-\u2013\u2014]/g, ' ')
+    .replace(/\s+/g, ' ')
+}
+
+function documented(reference, term) {
+  const haystack = normalizeTerm(reference)
+  const value = normalizeTerm(term)
+  if (haystack.includes(value)) return true
+  const stem = value.slice(0, Math.max(5, value.length - 3))
+  return stem.length >= 4 && haystack.includes(stem)
+}
+
+let boundTerms = 0
+for (const [locale, reference] of [
+  ['en', proseTells],
+  ['de', localeDeTells],
+]) {
+  for (const term of TIER2[locale]) {
+    boundTerms += 1
+    if (!documented(reference, term)) {
+      fail(`skills/anti-slop: Tier-2 term "${term}" (${locale}) is not documented in its reference`)
+    }
+  }
+  for (const [rule] of TIER1[locale]) {
+    const tokens = rule.split('-').filter((token) => token.length > 3)
+    if (!tokens.every((token) => documented(reference, token))) {
+      fail(`skills/anti-slop: Tier-1 rule "${rule}" (${locale}) is not documented in its reference`)
+    }
+  }
+}
+
+for (const profile of ['marketing', 'docs', 'editorial']) {
+  if (!PROFILES[profile]) fail(`scripts/lint-copy.mjs: missing "${profile}" register profile`)
+}
+
+const copyExpectations = JSON.parse(
+  read(path.join(pluginRoot, 'tests/copy/expected.json')),
+)
+let copyCases = 0
+
+function runLinter(args) {
+  const result = spawnSync(
+    process.execPath,
+    [path.join(pluginRoot, 'scripts', 'lint-copy.mjs'), ...args, '--json'],
+    { encoding: 'utf8' },
+  )
+  if (!result.stdout) return null
+  try {
+    return JSON.parse(result.stdout)
+  } catch {
+    return null
+  }
+}
+
+for (const testCase of copyExpectations.cases) {
+  copyCases += 1
+  const fixture = path.join(pluginRoot, 'tests/copy/fixtures', testCase.fixture)
+  if (!fs.existsSync(fixture)) {
+    fail(`tests/copy: missing fixture ${testCase.fixture}`)
+    continue
+  }
+  const report = runLinter([
+    '--path',
+    fixture,
+    '--profile',
+    testCase.profile,
+    '--locale',
+    testCase.locales.join(','),
+  ])
+  if (!report) {
+    fail(`tests/copy: linter produced no report for ${testCase.fixture}`)
+    continue
+  }
+  const label = `tests/copy ${testCase.fixture} (${testCase.profile}/${testCase.locales.join('+')})`
+  if (report.status !== testCase.status) {
+    fail(`${label}: expected ${testCase.status}, got ${report.status}`)
+  }
+  for (const [key, tier] of [
+    ['minTier1', 'tier1'],
+    ['minTier2', 'tier2'],
+    ['minTier3', 'tier3'],
+  ]) {
+    if (testCase[key] !== undefined && report[tier] < testCase[key]) {
+      fail(`${label}: ${tier} was ${report[tier]}, expected at least ${testCase[key]}`)
+    }
+  }
+}
+
+const selfLint = runLinter(['--self'])
+if (!selfLint) {
+  fail('scripts/lint-copy.mjs --self produced no report')
+} else if (selfLint.status !== 'PASS') {
+  fail(
+    `scripts/lint-copy.mjs --self reports ${selfLint.status} on the plugin's own prose (tier1 ${selfLint.tier1}, tier3 ${selfLint.tier3})`,
+  )
+}
+
 const forwardCases = JSON.parse(read(path.join(pluginRoot, 'tests/forward/cases.json')))
 for (const testCase of forwardCases) {
   if (
@@ -304,6 +480,44 @@ for (const testCase of forwardCases) {
     !Number.isInteger(testCase.trace.maxEstimatedPluginTokens)
   ) {
     fail(`tests/forward/cases.json: ${testCase.id} missing complete trace budget`)
+  }
+}
+
+for (const testCase of forwardCases) {
+  if (testCase.forbiddenTerms === undefined) continue
+  const { paths, patterns } = testCase.forbiddenTerms
+  if (!Array.isArray(paths) || !paths.length || !Array.isArray(patterns) || !patterns.length) {
+    fail(`tests/forward/cases.json: ${testCase.id} forbiddenTerms needs paths and patterns`)
+    continue
+  }
+  for (const pattern of patterns) {
+    try {
+      new RegExp(pattern, 'i')
+    } catch {
+      fail(`tests/forward/cases.json: ${testCase.id} invalid forbiddenTerms regex "${pattern}"`)
+    }
+  }
+}
+
+const slopCase = forwardCases.find((testCase) => testCase.id === 'slop')
+if (!slopCase) {
+  fail('tests/forward/cases.json: missing the anti-slop forward case')
+} else {
+  if (!slopCase.requiredSkills?.includes('anti-slop')) {
+    fail('tests/forward/cases.json: slop case must require the anti-slop route')
+  }
+  if (!slopCase.forbiddenTerms?.patterns?.length) {
+    fail('tests/forward/cases.json: slop case must forbid Tier-1 patterns in shipped copy')
+  }
+  if (
+    !slopCase.trace?.requiredFiles?.includes('skills/anti-slop/references/prose-tells.md')
+  ) {
+    fail('tests/forward/cases.json: slop case must require prose-tells.md read evidence')
+  }
+  if (
+    !slopCase.trace?.forbiddenFiles?.includes('skills/anti-slop/references/design-tells.md')
+  ) {
+    fail('tests/forward/cases.json: slop case must forbid design-tells.md for a copy-only task')
   }
 }
 
@@ -483,6 +697,8 @@ notes.push(`${skillDirectories.length} skills`)
 notes.push(`${commandDirectories.length} commands`)
 notes.push(`${paletteCount} palettes / ${contrastCheckCount} state contrast checks`)
 notes.push(`${compositedPaletteCount} composited glass palette`)
+notes.push(`${boundTerms} bound anti-slop terms`)
+notes.push(`${copyCases} copy-lint regression cases`)
 notes.push(`manifest version ${codexManifest.version}`)
 
 if (failures.length) {

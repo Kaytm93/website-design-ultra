@@ -41,6 +41,13 @@ Read only what the task needs:
   nor functional product cues provide a usable direction → `style-directions`.
   A clear product context or named palette alone does not require it.
 - Content hierarchy, claims, CTAs, state copy, or localization changes → `content-design`.
+- **Any user-visible copy is written, rewritten, or audited → `anti-slop`.** This
+  gate is independent of `content-design`: a hero headline, a section subhead, a
+  button label, an empty state, or demo data still needs the tell catalogue even
+  when the claim ledger was not otherwise in scope. Non-English output loads the
+  matching locale annex in addition.
+- Output looks machine-made, or an existing page is audited for it → `anti-slop`
+  design tells.
 - Colors must be selected or audited → `color-palettes`.
 - Font family, license/loading, language coverage, detailed type scale, or
   wrapping behavior must be selected, changed, or audited → `typography`.
@@ -103,6 +110,10 @@ not proof that Progressive Disclosure worked.
 
 ## 5. Anti-slop defaults
 
+The full tell catalogue, the Tier-1/2/3 model, the register profiles, the
+protect list, and the copy linter live in `anti-slop`. This section keeps only
+the standing design defaults; do not restate them there.
+
 These are defaults, not universal prohibitions:
 
 - Avoid generic centered marketing heroes, equal three-card rows, card containers around every block, and arbitrary glass panels.
@@ -129,6 +140,8 @@ Check only applicable items:
 - [ ] Existing stack and design system were inspected.
 - [ ] Primary direction and any scoped secondary influence are explicit.
 - [ ] Content hierarchy, claim evidence, and main action are clear.
+- [ ] Shipped copy has zero Tier-1 slop tells, clears the specificity floor, and
+      was linted rather than self-assessed.
 - [ ] Wide, portrait, and narrow compositions have an explicit priority/crop/interaction contract where applicable.
 - [ ] Async/interactive components cover their applicable states.
 - [ ] Focus, keyboard, contrast, touch, and reduced-motion behavior are present.

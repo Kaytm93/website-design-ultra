@@ -1,7 +1,7 @@
 {
   "name": "website-design-ultra",
-  "version": "1.5.3",
-  "description": "Token-efficient website design plugin with trace-validated minimal routing, evidence-led content, responsive recomposition, license-aware typography, validated state contrast, accessible UI patterns, cinematic 3D direction, adaptive runtime quality, and portable rendered verification.",
+  "version": "1.6.0",
+  "description": "Token-efficient website design plugin with tiered anti-slop enforcement for copy and visuals, a deterministic copy linter, trace-validated minimal routing, evidence-led content, responsive recomposition, license-aware typography, validated state contrast, accessible UI patterns, cinematic 3D direction, adaptive runtime quality, and portable rendered verification.",
   "author": {
     "name": "Kay"
   },
@@ -21,7 +21,12 @@
     "threejs",
     "react-three-fiber",
     "shaders",
-    "gltf"
+    "gltf",
+    "anti-slop",
+    "copy-linting",
+    "content-truth",
+    "prose-quality",
+    "localized-copy"
   ],
   "skills": "./skills/",
   "interface": {
@@ -32,6 +37,7 @@
     "category": "Design",
     "capabilities": [
       "Design Guidance",
+      "Anti-Slop Enforcement",
       "Content Design",
       "Frontend UI",
       "Accessibility",
@@ -39,8 +45,8 @@
       "Visual Verification"
     ],
     "defaultPrompt": [
-      "Design a distinctive, evidence-led, responsive landing page.",
-      "Audit this frontend for content, design, contrast, and accessibility gaps.",
+      "Design a distinctive, evidence-led, responsive landing page with no slop in the copy.",
+      "Audit this frontend for copy slop, visual slop, contrast, and accessibility gaps.",
       "Build and visually verify an accessible immersive 3D product hero."
     ],
     "brandColor": "#0F766E"

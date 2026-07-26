@@ -17,6 +17,20 @@ You will audit existing frontend code for quality.
      ```bash
      rg -n "\{.*(&&|\?).*<" --glob '*.{tsx,jsx}' .
      ```
+   - Copy slop, deterministic — run this before reading copy by hand:
+     ```bash
+     node "<plugin-root>/scripts/lint-copy.mjs" --path src --profile marketing
+     node "<plugin-root>/scripts/lint-copy.mjs" --path src --locale de   # localized pages
+     ```
+     Report the tier counts and the measured numbers. A `PASS` means no
+     catalogued pattern was found; it is not a content approval. If the project
+     ships a `.anti-slop-protect.json`, pass it with `--protect` and report any
+     entry that was ignored for missing a reason.
+   - Visual slop, measured:
+     ```bash
+     rg -n "\[[0-9]+px\]|p-\[|gap-\[|mt-\[" --glob '*.{tsx,jsx,css}' .   # off-scale spacing
+     rg -n "rounded-2xl shadow-lg|border-l-4|border-t-4" --glob '*.{tsx,jsx}' .
+     ```
    - Banned-pattern search:
      ```bash
      rg -n "h-screen|w-\[calc|transition:\s*all" --glob '*.{tsx,jsx,css}' .
@@ -35,6 +49,11 @@ You will audit existing frontend code for quality.
 3. **Audit by layer** — Load skills, check against:
    - `core-rules` → invariants, justified defaults/exceptions, performance, stack
    - `content-design` → claim sources, strength of evidence, CTA/state copy and localization risks, when copy is in scope
+   - `anti-slop` → tier findings from the linter plus the tells a regex cannot
+     see: fake-profound kickers, synonym cycling, category headlines that pass
+     the swap test by accident. Load the design reference only when the audit
+     covers visuals, and the locale annex only for non-English copy. Run the
+     squint test on the `/verify` screenshots before judging hierarchy.
    - `motion-system` → only when motion exists: timing owner, cleanup, runtime, reduced motion
    - `ui-states` → only with data/interaction: applicable states and accessibility
    - `color-palettes` → semantic tokens and calculated contrast
@@ -96,3 +115,6 @@ A missing keyboard equivalent for canvas interaction is always 🔴 Critical —
 - Change code without the user explicitly asking
 - More than 10 issues at once — prioritize, prefer a very concrete top 5
 - Report an Inter hit without checking whether it is body or display
+- Report a single Tier-2 word as a finding; vocabulary counts as a cluster or in
+  a heading, and `robust` in a reliability claim is the correct word
+- Report a lint `PASS` as proof that the copy is true or specific

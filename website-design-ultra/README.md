@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.5.3 contains 16 skills and 5 Claude commands. It combines evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification.
+Version 1.6.0 contains 17 skills and 5 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
@@ -18,10 +18,13 @@ website-design-ultra/
 │   ├── immersive.md
 │   └── verify.md
 ├── tests/
-│   └── forward/                    # SaaS, editorial, dashboard, 3D, configurator
-│       └── traces/                 # recorded provider streams, replayed offline
+│   ├── forward/                    # SaaS, editorial, dashboard, 3D, configurator, slop
+│   │   └── traces/                 # recorded provider streams, replayed offline
+│   └── copy/                       # linter regression gate
+│       └── fixtures/               # slop and authentic-prose pairs, en + de
 ├── scripts/
-│   ├── validate-content.mjs        # structure + semantic contrast
+│   ├── validate-content.mjs        # structure + contrast + linter regression
+│   ├── lint-copy.mjs               # deterministic copy linter (tiers, profiles)
 │   ├── forward-trace.mjs           # provider read-trace audit + tree digest
 │   ├── run-forward-tests.mjs       # isolated live plugin evals
 │   ├── release.mjs                 # release provenance gate
@@ -31,6 +34,8 @@ website-design-ultra/
 └── skills/
     ├── core-rules/
     │   └── references/              # responsive recomposition contract
+    ├── anti-slop/
+    │   └── references/              # prose tells, design tells, German annex
     ├── content-design/
     │   └── references/              # claims/proof, microcopy, localization
     ├── style-directions/
@@ -71,6 +76,10 @@ The plugin uses three levels:
 Examples:
 
 - SaaS palette request → `color-palettes/SKILL.md` plus `references/neutral-product.md`.
+- Any shipped copy line → `anti-slop/SKILL.md` plus `references/prose-tells.md`; the
+  design and locale references stay unread.
+- German landing page → the same two files plus `references/locale-de.md`.
+- Visual refresh with unchanged copy → `anti-slop/references/design-tells.md` only.
 - Claim/CTA rewrite → `content-design/SKILL.md` plus only claims or microcopy.
 - Localized editorial page → content localization plus typography licensing, not every type reference.
 - Full-page responsive work → `core-rules` plus `references/responsive-recomposition.md`.
@@ -93,6 +102,38 @@ enforces per-case allowed files and reference/token budgets, and fails when a
 self-reported skill lacks read evidence. The dashboard case additionally proves
 that `neutral-product.md` is read while the editorial and expressive palette
 families are not.
+
+## Anti-slop contract
+
+`anti-slop` is the single source of truth for slop detection. It separates two
+defects that usually travel together: **empty form** — a rhetorical shape that
+carries no information — and **false content**, which stays with
+`content-design`. A page can pass one and fail the other.
+
+Findings are tiered so the ruleset does not flatten real voice:
+
+- **Tier 1** structural forms are always rewritten, with no direction exception.
+- **Tier 2** vocabulary is a finding only as a cluster or inside a heading, because
+  `robust` in a reliability claim and `seamless` for a marquee loop are the correct
+  words.
+- **Tier 3** budgets are measured and reported as numbers, with a register profile
+  (`marketing`, `docs`, `editorial`) deciding sensitivity.
+
+A declared `.anti-slop-protect.json` exempts brand terms and signature phrasing;
+every entry carries a reason, and an entry without one is reported as a suppressed
+finding rather than applied. Prohibition alone produces bland copy, so the skill
+also enforces a positive specificity floor: a headline must name an audience,
+mechanism, dated number, product object, or observable outcome, and an unknown
+fact stays an explicit placeholder instead of being resolved by invention.
+
+`scripts/lint-copy.mjs` is the executable form. `scripts/validate-content.mjs`
+binds it to the references — a Tier-1 rule id or Tier-2 term that is not
+documented fails the build — and replays `tests/copy/` so a rule change must still
+catch every slop fixture while flagging nothing in the authentic-prose fixtures,
+in English and German. The plugin lints its own 57 documents on every run. The
+skill states its blind spots: fake-profound kickers, synonym cycling, and triplets
+with a filler third item need a reader, and no lint result claims a copy line is
+true.
 
 ## Priority-2 contracts
 
@@ -248,11 +289,26 @@ then checks hourly. Logs are written to
 - Verify framework/library APIs against installed versions.
 - Test all code examples and internal links before release.
 
-Run the deterministic content check:
+Run the deterministic content check. It validates structure and contrast, binds
+the linter's rules to their references, replays the copy fixtures, and lints the
+plugin's own prose:
 
 ```bash
 node scripts/validate-content.mjs
 ```
+
+Lint a project's copy, or this plugin's own documents:
+
+```bash
+node scripts/lint-copy.mjs --path src --profile marketing
+node scripts/lint-copy.mjs --path content --locale de --profile editorial
+node scripts/lint-copy.mjs --path src --protect .anti-slop-protect.json --strict
+node scripts/lint-copy.mjs --self
+```
+
+Exit code 1 marks a Tier-1 hit or an exceeded Tier-3 budget; `--strict` adds
+Tier-2 clusters. A `PASS` reports the absence of catalogued patterns and is never
+a content approval.
 
 Validate the five forward-test fixtures and trace parsers without model usage:
 
@@ -311,6 +367,24 @@ unavailable is now a hard validation failure: a ruleset that requires evidence
 for every claim does not ship an unverifiable provenance claim of its own.
 
 ## Version
+
+**1.6.0** — anti-slop for generated text and visual defaults:
+
+- added the `anti-slop` skill with tiered prose tells, the 2026 visual tells no
+  other skill owned, and a German locale annex,
+- added `scripts/lint-copy.mjs`: a zero-dependency copy linter with tiers,
+  register profiles, a reason-bearing protect list, and JSON output,
+- added `tests/copy/` as the linter's regression gate, with slop and
+  authentic-prose fixture pairs in English and German,
+- `validate-content.mjs` now binds every linter rule to its reference, replays the
+  fixtures, and fails when the plugin's own prose does not lint clean,
+- added a routing gate: any user-visible copy activates `anti-slop`, independently
+  of whether the claim ledger was in scope,
+- added the `slop` forward case and a scoped `forbiddenTerms` contract that
+  asserts Tier-1 patterns are absent from shipped copy, not merely named in the
+  contract,
+- `/audit` gained a deterministic copy-lint step and off-scale-spacing search;
+  `/refresh` now lints copy that survives a visual redirection.
 
 **1.5.3** — native Codex Git distribution and automatic updates:
 
