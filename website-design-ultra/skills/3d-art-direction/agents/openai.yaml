@@ -1,0 +1,4 @@
+interface:
+  display_name: "3D Art Direction"
+  short_description: "Compose cinematic, responsive 3D scenes."
+  default_prompt: "Use $3d-art-direction to define the camera, composition, light, materials, tone mapping, mobile framing, and spatial typography for this scene."

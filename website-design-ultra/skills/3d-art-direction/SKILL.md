@@ -1,0 +1,75 @@
+---
+name: 3d-art-direction
+description: Direct the visual language of a web 3D scene. Use for camera and FOV choices, cinematic composition, lighting dramaturgy, material hierarchy, color management, tone mapping, mobile reframing, spatial typography, or a deliberate poster frame before implementing Three.js, R3F, WebGL, or WebGPU.
+---
+
+# 3D Art Direction
+
+Define a reproducible image first, then the technique. Use `immersive-3d` for justification and budget, `3d-runtime-quality` for runtime tiers, and this skill as the visual single source of truth.
+
+## Art-direction contract
+
+Fix exactly these decisions before writing scene code:
+
+```yaml
+visual-thesis: "Which statement does the space carry?"
+hero-subject: "Primary object and recognizable silhouette"
+camera:
+  framing: "close | medium | wide"
+  fov: 38
+  position: [0, 0.2, 5.4]
+  target: [0, 0.1, 0]
+  near-far: [0.1, 40]
+composition:
+  subject-anchor: "right-center"
+  dom-safe-area: "left 42%"
+lighting: "soft top-left key, cool rim, restrained fill"
+material-order: "hero > functional secondary > accent > environment"
+color-output: "Linear-sRGB work, sRGB output"
+tone-mapping: "installed-renderer mapping + locked exposure"
+mobile-reframe: "portrait shot, closer camera, text above canvas"
+spatial-type: "DOM-first; one decorative world label"
+poster-frame: "same silhouette and message as live scene"
+```
+
+Justify deviations inside the contract instead of hiding them in scattered components.
+
+## Workflow
+
+1. State a visual thesis and determine what must be recognizable after two seconds.
+2. Fix camera, FOV, target point, silhouette, negative space, and DOM safe area. Read [references/camera-and-composition.md](references/camera-and-composition.md).
+3. Stage light, material roles, color space, tone mapping, and exposure together. Read [references/light-material-and-tone.md](references/light-material-and-tone.md).
+4. For every text layer, decide between semantic DOM, `<Html>`, `<Text>`, and the rare `<Text3D>`. Read [references/spatial-typography.md](references/spatial-typography.md).
+5. Design at least one dedicated portrait shot; do not merely scale the desktop scene.
+6. Choose the poster frame from the same composition. It may read as a deliberate key visual, never as a loading error.
+7. Hand measurable quality hooks to `3d-runtime-quality` without changing the visual ranking of the scene.
+
+## Invariants
+
+- Keep exactly one camera source per state. Scroll, controls, and focus rig must not write simultaneously.
+- On responsive changes, adjust FOV, distance, and object scale deliberately; do not use FOV as a substitute for composition.
+- Limit `near`/`far` to the space actually needed in order to preserve depth precision.
+- Use light as hierarchy: only the most important light may require dynamic shadows by default.
+- Avoid equally loud materials. Transmission, strong emission, clearcoat, and iridescence are accents.
+- Manage exposure and tone mapping in one place. Do not compensate for a wrong pipeline with arbitrary material colors.
+- Keep meaningful text in the DOM and retain it in the poster/fallback state.
+
+## Output
+
+Deliver:
+
+1. the visual thesis in one sentence,
+2. the completed art-direction contract,
+3. desktop, portrait, and poster composition,
+4. light and material roles,
+5. the smallest changeable hooks for camera, light, exposure, and spatial typography.
+
+## Check
+
+- [ ] FOV, camera distance, target point, and safe area are explicit.
+- [ ] Desktop and mobile have different, intentional shots.
+- [ ] Light guides the eye and has at most one primary shadow owner.
+- [ ] Materials form a clear visual ranking.
+- [ ] Color spaces, tone mapping, and exposure are fixed.
+- [ ] Spatial text stays readable and semantically present in the DOM.
+- [ ] Poster, reduced motion, and the live scene tell the same statement.

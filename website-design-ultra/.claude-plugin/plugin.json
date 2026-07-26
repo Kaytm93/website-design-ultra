@@ -1,0 +1,43 @@
+{
+  "name": "website-design-ultra",
+  "description": "Premium website design plugin: evidence-led content hierarchy, trace-proven minimal routing, responsive recomposition, license-aware typography, validated state contrast, and immersive 3D art direction with portable browser verification.",
+  "version": "1.5.0",
+  "author": {
+    "name": "Kay"
+  },
+  "license": "MIT",
+  "keywords": [
+    "design",
+    "frontend",
+    "ui",
+    "ux",
+    "react",
+    "tailwind",
+    "animation",
+    "awwwards",
+    "landing-page",
+    "bento",
+    "anti-slop",
+    "accessibility",
+    "3d",
+    "immersive",
+    "webgl",
+    "webgpu",
+    "threejs",
+    "react-three-fiber",
+    "shaders",
+    "tsl",
+    "3d-interaction",
+    "product-configurator",
+    "3d-art-direction",
+    "adaptive-quality",
+    "visual-verification",
+    "content-design",
+    "localization",
+    "responsive-art-direction",
+    "font-licensing",
+    "contrast-validation",
+    "trace-validated-routing",
+    "portable-browser-verification"
+  ]
+}

@@ -1,0 +1,199 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "caseId",
+    "skills",
+    "direction",
+    "content",
+    "responsive",
+    "accessibility",
+    "immersive"
+  ],
+  "properties": {
+    "caseId": {
+      "type": "string"
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "direction": {
+      "type": "string",
+      "minLength": 1
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hierarchy",
+        "claims",
+        "unknowns",
+        "primaryAction",
+        "localization"
+      ],
+      "properties": {
+        "hierarchy": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 3
+        },
+        "claims": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "text",
+              "status",
+              "evidence"
+            ],
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "verified",
+                  "qualified",
+                  "illustrative",
+                  "unknown"
+                ]
+              },
+              "evidence": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "primaryAction": {
+          "type": "string",
+          "minLength": 1
+        },
+        "localization": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "responsive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "wide",
+        "portrait",
+        "narrow",
+        "recomposition",
+        "sourceOrder"
+      ],
+      "properties": {
+        "wide": {
+          "type": "string",
+          "minLength": 1
+        },
+        "portrait": {
+          "type": "string",
+          "minLength": 1
+        },
+        "narrow": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recomposition": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "sourceOrder": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contrastStates",
+        "inputParity",
+        "reducedMotion"
+      ],
+      "properties": {
+        "contrastStates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "inputParity": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reducedMotion": {
+          "type": "string"
+        }
+      }
+    },
+    "immersive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "justified",
+        "artDirection",
+        "qualityTiers",
+        "fallback",
+        "touch"
+      ],
+      "properties": {
+        "justified": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "artDirection": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "qualityTiers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fallback": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "touch": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

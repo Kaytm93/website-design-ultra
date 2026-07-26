@@ -1,0 +1,4 @@
+interface:
+  display_name: "3D Runtime Quality"
+  short_description: "Ship adaptive 3D quality without oscillation."
+  default_prompt: "Use $3d-runtime-quality to define and implement Poster, Low, Medium, and High quality tiers with stable runtime adaptation."

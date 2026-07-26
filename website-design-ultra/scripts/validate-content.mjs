@@ -1,0 +1,467 @@
+#!/usr/bin/env node
+
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const pluginRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const skillsRoot = path.join(pluginRoot, 'skills')
+const failures = []
+const notes = []
+
+function fail(message) {
+  failures.push(message)
+}
+
+function read(file) {
+  return fs.readFileSync(file, 'utf8')
+}
+
+function relative(file) {
+  return path.relative(pluginRoot, file)
+}
+
+function walkFiles(root) {
+  const result = []
+  for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+    const target = path.join(root, entry.name)
+    if (entry.isDirectory()) result.push(...walkFiles(target))
+    if (entry.isFile()) result.push(target)
+  }
+  return result
+}
+
+function parseFrontmatter(markdown, file) {
+  const match = markdown.match(/^---\n([\s\S]*?)\n---\n/)
+  if (!match) {
+    fail(`${relative(file)}: missing YAML frontmatter`)
+    return {}
+  }
+
+  const result = {}
+  for (const line of match[1].split('\n')) {
+    const field = line.match(/^([a-zA-Z0-9_-]+):\s*(.+)$/)
+    if (!field) {
+      fail(`${relative(file)}: unsupported or nested frontmatter line "${line}"`)
+      continue
+    }
+    result[field[1]] = field[2]
+  }
+  return result
+}
+
+function parseColor(value) {
+  const hex = value.match(/^#([0-9a-fA-F]{6})$/)
+  if (hex) {
+    return [
+      Number.parseInt(hex[1].slice(0, 2), 16),
+      Number.parseInt(hex[1].slice(2, 4), 16),
+      Number.parseInt(hex[1].slice(4, 6), 16),
+      1,
+    ]
+  }
+
+  const rgba = value.match(
+    /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*(0|1|0?\.\d+))?\s*\)$/,
+  )
+  if (!rgba) return null
+
+  const color = [
+    Number.parseInt(rgba[1], 10),
+    Number.parseInt(rgba[2], 10),
+    Number.parseInt(rgba[3], 10),
+    rgba[4] === undefined ? 1 : Number.parseFloat(rgba[4]),
+  ]
+  if (color.slice(0, 3).some((channel) => channel > 255)) return null
+  return color
+}
+
+function composite(foreground, background) {
+  const alpha = foreground[3]
+  return [
+    foreground[0] * alpha + background[0] * (1 - alpha),
+    foreground[1] * alpha + background[1] * (1 - alpha),
+    foreground[2] * alpha + background[2] * (1 - alpha),
+    1,
+  ]
+}
+
+function luminance(color) {
+  const channels = color
+    .slice(0, 3)
+    .map((value) => value / 255)
+    .map((value) =>
+      value <= 0.04045
+        ? value / 12.92
+        : ((value + 0.055) / 1.055) ** 2.4,
+    )
+
+  return (
+    channels[0] * 0.2126 +
+    channels[1] * 0.7152 +
+    channels[2] * 0.0722
+  )
+}
+
+function contrast(first, second) {
+  const a = luminance(first)
+  const b = luminance(second)
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
+}
+
+const skillDirectories = fs
+  .readdirSync(skillsRoot, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+
+if (skillDirectories.length !== 16) {
+  fail(`expected 16 skills, found ${skillDirectories.length}`)
+}
+
+for (const directory of skillDirectories) {
+  const skillFile = path.join(skillsRoot, directory.name, 'SKILL.md')
+  if (!fs.existsSync(skillFile)) {
+    fail(`skills/${directory.name}: missing SKILL.md`)
+    continue
+  }
+
+  const markdown = read(skillFile)
+  const frontmatter = parseFrontmatter(markdown, skillFile)
+  const fields = Object.keys(frontmatter).sort()
+
+  if (fields.join(',') !== 'description,name') {
+    fail(`${relative(skillFile)}: frontmatter must contain only name and description`)
+  }
+  if (frontmatter.name !== directory.name) {
+    fail(`${relative(skillFile)}: name must match folder`)
+  }
+  if ((frontmatter.description ?? '').length > 500) {
+    fail(`${relative(skillFile)}: description exceeds 500 characters`)
+  }
+  if (markdown.split('\n').length > 500) {
+    fail(`${relative(skillFile)}: SKILL.md exceeds 500 lines`)
+  }
+
+  const referenceLinks = markdown.matchAll(/\]\((references\/[^)#]+\.md)\)/g)
+  for (const link of referenceLinks) {
+    const target = path.join(skillsRoot, directory.name, link[1])
+    if (!fs.existsSync(target)) {
+      fail(`${relative(skillFile)}: missing reference ${link[1]}`)
+    }
+  }
+}
+
+const commandDirectories = fs
+  .readdirSync(path.join(pluginRoot, 'commands'))
+  .filter((name) => name.endsWith('.md'))
+if (commandDirectories.length !== 5) {
+  fail(`expected 5 commands, found ${commandDirectories.length}`)
+}
+
+const priorityOneContracts = [
+  [
+    'skills/3d-art-direction/SKILL.md',
+    ['fov', 'lighting', 'material-order', 'tone-mapping', 'mobile-reframe', 'spatial-type'],
+  ],
+  [
+    'skills/3d-runtime-quality/SKILL.md',
+    ['poster', 'low', 'medium', 'high', 'cooldown-ms', 'offscreen'],
+  ],
+  [
+    'skills/r3f-interaction/references/touch-and-gestures.md',
+    ['setPointerCapture', 'pointercancel', 'lostpointercapture', 'touch-action', 'Pinch'],
+  ],
+  [
+    'skills/shaders-tsl/references/webgpu-feature-matrix.md',
+    ['WebGPU', 'WebGL2 fallback', 'TSL postprocessing', 'Compute dependency', 'Known limitations'],
+  ],
+  [
+    'commands/verify.md',
+    ['desktop-full.png', 'mobile-full.png', 'reduced-motion-a.png', 'fallback-full.png', 'visual'],
+  ],
+]
+
+for (const [file, markers] of priorityOneContracts) {
+  const fullPath = path.join(pluginRoot, file)
+  if (!fs.existsSync(fullPath)) {
+    fail(`${file}: missing Priority-1 artifact`)
+    continue
+  }
+  const content = read(fullPath).toLowerCase()
+  for (const marker of markers) {
+    if (!content.includes(marker.toLowerCase())) {
+      fail(`${file}: missing Priority-1 marker "${marker}"`)
+    }
+  }
+}
+
+const priorityTwoContracts = [
+  [
+    'skills/typography/SKILL.md',
+    [
+      'pairings-and-roles.md',
+      'hierarchy-and-loading.md',
+      'licensing-and-alternatives.md',
+    ],
+  ],
+  [
+    'skills/typography/references/licensing-and-alternatives.md',
+    ['OFL-1.1', 'Commercial', 'OS-bundled/restricted', 'Open-source alternative'],
+  ],
+  [
+    'skills/content-design/SKILL.md',
+    ['claims-and-proof.md', 'microcopy.md', 'localization.md', 'claim/proof ledger'],
+  ],
+  [
+    'skills/core-rules/references/responsive-recomposition.md',
+    ['Wide', 'Portrait', 'Narrow', 'Reframe', 'source order'],
+  ],
+  [
+    'tests/forward/cases.json',
+    ['saas', 'editorial', 'dashboard', '3d-hero', 'configurator'],
+  ],
+]
+
+for (const [file, markers] of priorityTwoContracts) {
+  const fullPath = path.join(pluginRoot, file)
+  if (!fs.existsSync(fullPath)) {
+    fail(`${file}: missing Priority-2 artifact`)
+    continue
+  }
+  const content = read(fullPath).toLowerCase()
+  for (const marker of markers) {
+    if (!content.includes(marker.toLowerCase())) {
+      fail(`${file}: missing Priority-2 marker "${marker}"`)
+    }
+  }
+}
+
+const hardeningContracts = [
+  [
+    'skills/core-rules/SKILL.md',
+    ['Routing protocol', 'not recursive', 'access traces', 'Generic content/layout hierarchy'],
+  ],
+  [
+    'scripts/forward-trace.mjs',
+    ['auditCodexTrace', 'auditClaudeTrace', 'broadReads', 'estimatedPluginTokens'],
+  ],
+  [
+    'scripts/verify-browser.mjs',
+    ['--probe', 'WDU_PLAYWRIGHT_CLI', 'run-code', 'UNAVAILABLE'],
+  ],
+  [
+    'commands/verify.md',
+    ['PASS | FAIL | UNAVAILABLE', 'scripts/verify-browser.mjs', 'host browser'],
+  ],
+  [
+    'skills/3d-runtime-quality/SKILL.md',
+    ['PASS', 'FAIL', 'UNAVAILABLE', 'NOT_APPLICABLE', 'launch gate', 'unverified'],
+  ],
+]
+
+for (const [file, markers] of hardeningContracts) {
+  const fullPath = path.join(pluginRoot, file)
+  if (!fs.existsSync(fullPath)) {
+    fail(`${file}: missing routing/verify hardening artifact`)
+    continue
+  }
+  const content = read(fullPath).toLowerCase()
+  for (const marker of markers) {
+    if (!content.includes(marker.toLowerCase())) {
+      fail(`${file}: missing routing/verify marker "${marker}"`)
+    }
+  }
+}
+
+const forwardCases = JSON.parse(read(path.join(pluginRoot, 'tests/forward/cases.json')))
+for (const testCase of forwardCases) {
+  if (
+    !testCase.trace?.allowedSkills?.length ||
+    !Array.isArray(testCase.trace.allowedReferences) ||
+    !Array.isArray(testCase.trace.requiredFiles) ||
+    !Array.isArray(testCase.trace.forbiddenFiles) ||
+    !Number.isInteger(testCase.trace.maxReferenceFiles) ||
+    !Number.isInteger(testCase.trace.maxEstimatedPluginTokens)
+  ) {
+    fail(`tests/forward/cases.json: ${testCase.id} missing complete trace budget`)
+  }
+}
+
+const dashboardCase = forwardCases.find((testCase) => testCase.id === 'dashboard')
+for (const file of [
+  'skills/color-palettes/references/editorial-natural.md',
+  'skills/color-palettes/references/expressive.md',
+]) {
+  if (!dashboardCase?.trace?.forbiddenFiles?.includes(file)) {
+    fail(`tests/forward/cases.json: dashboard must forbid ${file}`)
+  }
+}
+if (
+  !dashboardCase?.trace?.requiredFiles?.includes(
+    'skills/color-palettes/references/neutral-product.md',
+  )
+) {
+  fail('tests/forward/cases.json: dashboard must require neutral-product.md read evidence')
+}
+
+const claudeManifest = JSON.parse(
+  read(path.join(pluginRoot, '.claude-plugin', 'plugin.json')),
+)
+const codexManifest = JSON.parse(
+  read(path.join(pluginRoot, '.codex-plugin', 'plugin.json')),
+)
+
+if (claudeManifest.version !== codexManifest.version) {
+  fail('Claude and Codex manifest versions differ')
+}
+if ((codexManifest.interface?.defaultPrompt?.length ?? 0) > 3) {
+  fail('Codex defaultPrompt contains more than three entries')
+}
+
+const stalePatterns = [
+  ["from 'framer-motion'", 'legacy framer-motion import'],
+  ['from "framer-motion"', 'legacy framer-motion import'],
+  ['React 18/19', 'ambiguous R3F compatibility claim'],
+]
+
+for (const fullPath of walkFiles(pluginRoot)) {
+  const file = relative(fullPath)
+  if (!/\.(md|json)$/.test(file)) continue
+  const content = read(fullPath)
+  for (const [pattern, label] of stalePatterns) {
+    if (content.includes(pattern)) {
+      fail(`${file}: ${label}`)
+    }
+  }
+}
+
+const paletteDirectory = path.join(skillsRoot, 'color-palettes', 'references')
+let paletteCount = 0
+let contrastCheckCount = 0
+let compositedPaletteCount = 0
+
+function requireContrast(label, foreground, background, minimum) {
+  contrastCheckCount += 1
+  const ratio = contrast(foreground, background)
+  if (ratio < minimum) {
+    fail(`${label} contrast ${ratio.toFixed(2)} (minimum ${minimum.toFixed(1)})`)
+  }
+}
+
+for (const name of fs.readdirSync(paletteDirectory)) {
+  if (!name.endsWith('.md')) continue
+  const markdown = read(path.join(paletteDirectory, name))
+  const blocks = markdown.matchAll(/```yaml\n([\s\S]*?)```/g)
+
+  for (const block of blocks) {
+    paletteCount += 1
+    const values = {}
+    for (const line of block[1].split('\n')) {
+      const field = line.match(/^([a-z-]+):\s+"([^"]+)"/)
+      if (field) values[field[1]] = field[2]
+    }
+
+    const requiredColors = [
+      'bg',
+      'surface',
+      'border',
+      'text',
+      'muted',
+      'action',
+      'on-action',
+      'focus',
+      'danger',
+      'on-danger',
+      'disabled',
+    ]
+    for (const key of requiredColors) {
+      if (!values[key]) fail(`${name} palette ${paletteCount}: missing ${key}`)
+    }
+    if (requiredColors.some((key) => !values[key])) continue
+
+    const colors = {}
+    let invalidColor = false
+    for (const key of requiredColors) {
+      colors[key] = parseColor(values[key])
+      if (!colors[key]) {
+        fail(`${name} palette ${paletteCount}: invalid ${key} color "${values[key]}"`)
+        invalidColor = true
+      }
+    }
+    if (invalidColor) continue
+    if (colors.bg[3] !== 1) {
+      fail(`${name} palette ${paletteCount}: bg must be opaque`)
+      continue
+    }
+
+    const label = `${name} palette ${paletteCount}`
+    const background = colors.bg
+    const surface = composite(colors.surface, background)
+    if (colors.surface[3] < 1 || colors.border[3] < 1) {
+      compositedPaletteCount += 1
+    }
+
+    requireContrast(`${label}: text/bg`, colors.text, background, 4.5)
+    requireContrast(`${label}: muted/bg`, colors.muted, background, 4.5)
+    requireContrast(`${label}: on-action/action`, colors['on-action'], colors.action, 4.5)
+
+    for (const [surfaceName, backdrop] of [
+      ['bg', background],
+      ['surface', surface],
+    ]) {
+      requireContrast(
+        `${label}: focus/${surfaceName}`,
+        composite(colors.focus, backdrop),
+        backdrop,
+        3,
+      )
+      requireContrast(
+        `${label}: border/${surfaceName}`,
+        composite(colors.border, backdrop),
+        backdrop,
+        3,
+      )
+      requireContrast(
+        `${label}: danger/${surfaceName}`,
+        composite(colors.danger, backdrop),
+        backdrop,
+        4.5,
+      )
+      requireContrast(
+        `${label}: disabled/${surfaceName}`,
+        composite(colors.disabled, backdrop),
+        backdrop,
+        3,
+      )
+    }
+
+    requireContrast(
+      `${label}: on-danger/danger`,
+      colors['on-danger'],
+      colors.danger,
+      4.5,
+    )
+
+    if (colors.surface[3] < 1) {
+      requireContrast(`${label}: text/composited-surface`, colors.text, surface, 4.5)
+      requireContrast(`${label}: muted/composited-surface`, colors.muted, surface, 4.5)
+    }
+  }
+}
+
+if (paletteCount !== 20) {
+  fail(`expected 20 palettes, found ${paletteCount}`)
+}
+
+notes.push(`${skillDirectories.length} skills`)
+notes.push(`${commandDirectories.length} commands`)
+notes.push(`${paletteCount} palettes / ${contrastCheckCount} state contrast checks`)
+notes.push(`${compositedPaletteCount} composited glass palette`)
+notes.push(`manifest version ${codexManifest.version}`)
+
+if (failures.length) {
+  console.error(`Validation failed (${failures.length})`)
+  for (const failure of failures) console.error(`- ${failure}`)
+  process.exit(1)
+}
+
+console.log(`Validation passed: ${notes.join(', ')}`)

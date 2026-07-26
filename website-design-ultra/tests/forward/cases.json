@@ -1,0 +1,260 @@
+[
+  {
+    "id": "saas",
+    "command": "design",
+    "prompt": "Plan a landing page for a B2B invoice-reconciliation SaaS. The only verified capabilities are CSV import and an export of unmatched rows. No customer names, metrics, certifications, integrations, pricing, or launch date have been supplied. Produce the content and responsive implementation contract, not final code.",
+    "requiredSkills": [
+      "core-rules",
+      "content-design",
+      "component-patterns"
+    ],
+    "minimums": {
+      "content.claims": 2,
+      "content.unknowns": 3,
+      "responsive.recomposition": 2
+    },
+    "requiredTerms": [
+      "verified|unknown|placeholder",
+      "wide",
+      "portrait",
+      "narrow"
+    ],
+    "trace": {
+      "allowedSkills": [
+        "core-rules",
+        "content-design",
+        "component-patterns"
+      ],
+      "allowedReferences": [
+        "skills/core-rules/references/responsive-recomposition.md",
+        "skills/content-design/references/claims-and-proof.md",
+        "skills/content-design/references/microcopy.md",
+        "skills/component-patterns/references/heroes-and-sections.md"
+      ],
+      "requiredFiles": [
+        "skills/core-rules/references/responsive-recomposition.md",
+        "skills/content-design/references/claims-and-proof.md"
+      ],
+      "forbiddenFiles": [
+        "skills/color-palettes/references/neutral-product.md",
+        "skills/color-palettes/references/editorial-natural.md",
+        "skills/color-palettes/references/expressive.md"
+      ],
+      "maxReferenceFiles": 4,
+      "maxEstimatedPluginTokens": 6500
+    }
+  },
+  {
+    "id": "editorial",
+    "command": "design",
+    "prompt": "Plan an English/German launch feature for an independent architecture magazine. Use an editorial direction, long real article titles, image captions, author/date metadata, and one subscription action. No paid font license is available. Explain the typographic and mobile composition choices without writing code.",
+    "requiredSkills": [
+      "core-rules",
+      "content-design",
+      "typography"
+    ],
+    "minimums": {
+      "content.localization": 3,
+      "responsive.recomposition": 2
+    },
+    "requiredTerms": [
+      "OFL|open.source|license",
+      "German|Deutsch|expansion|long",
+      "caption|metadata"
+    ],
+    "trace": {
+      "allowedSkills": [
+        "core-rules",
+        "content-design",
+        "typography"
+      ],
+      "allowedReferences": [
+        "skills/core-rules/references/responsive-recomposition.md",
+        "skills/content-design/references/localization.md",
+        "skills/typography/references/pairings-and-roles.md",
+        "skills/typography/references/hierarchy-and-loading.md",
+        "skills/typography/references/licensing-and-alternatives.md"
+      ],
+      "requiredFiles": [
+        "skills/core-rules/references/responsive-recomposition.md",
+        "skills/content-design/references/localization.md",
+        "skills/typography/references/licensing-and-alternatives.md"
+      ],
+      "forbiddenFiles": [
+        "skills/color-palettes/references/neutral-product.md",
+        "skills/color-palettes/references/editorial-natural.md",
+        "skills/color-palettes/references/expressive.md"
+      ],
+      "maxReferenceFiles": 5,
+      "maxEstimatedPluginTokens": 8500
+    }
+  },
+  {
+    "id": "dashboard",
+    "command": "design",
+    "prompt": "Plan a responsive operations dashboard for warehouse exceptions and select semantic tokens for a dark neutral palette. It needs a queue, severity, owner, last update, retry action, validation error, disabled action, keyboard focus, and a translucent summary panel. Prioritize what a supervisor sees on a phone versus a wide screen. Use no invented live data.",
+    "requiredSkills": [
+      "core-rules",
+      "content-design",
+      "color-palettes",
+      "ui-states"
+    ],
+    "minimums": {
+      "accessibility.contrastStates": 5,
+      "responsive.recomposition": 3
+    },
+    "requiredTerms": [
+      "focus",
+      "border",
+      "error|danger",
+      "disabled",
+      "composit|glass|translucent"
+    ],
+    "trace": {
+      "allowedSkills": [
+        "core-rules",
+        "content-design",
+        "color-palettes",
+        "ui-states"
+      ],
+      "allowedReferences": [
+        "skills/core-rules/references/responsive-recomposition.md",
+        "skills/content-design/references/claims-and-proof.md",
+        "skills/content-design/references/microcopy.md",
+        "skills/color-palettes/references/neutral-product.md",
+        "skills/ui-states/references/async-data.md",
+        "skills/ui-states/references/forms-and-feedback.md",
+        "skills/ui-states/references/accessibility.md"
+      ],
+      "requiredFiles": [
+        "skills/core-rules/references/responsive-recomposition.md",
+        "skills/color-palettes/references/neutral-product.md",
+        "skills/ui-states/references/accessibility.md"
+      ],
+      "forbiddenFiles": [
+        "skills/color-palettes/references/editorial-natural.md",
+        "skills/color-palettes/references/expressive.md"
+      ],
+      "maxReferenceFiles": 7,
+      "maxEstimatedPluginTokens": 9000
+    }
+  },
+  {
+    "id": "3d-hero",
+    "command": "immersive",
+    "prompt": "Plan a 3D product hero for a modular desk lamp whose hinge and light direction are easier to understand in motion. The verified facts are three hinge positions and a replaceable shade; no energy savings or awards are known. Define desktop, portrait, reduced-motion, and GPU-fallback behavior without writing code.",
+    "requiredSkills": [
+      "core-rules",
+      "content-design",
+      "immersive-3d",
+      "3d-art-direction",
+      "3d-runtime-quality"
+    ],
+    "minimums": {
+      "immersive.qualityTiers": 4,
+      "responsive.recomposition": 2
+    },
+    "requiredTerms": [
+      "Poster",
+      "Low",
+      "Medium",
+      "High",
+      "fallback",
+      "portrait"
+    ],
+    "trace": {
+      "allowedSkills": [
+        "core-rules",
+        "content-design",
+        "immersive-3d",
+        "3d-art-direction",
+        "3d-runtime-quality"
+      ],
+      "allowedReferences": [
+        "skills/core-rules/references/responsive-recomposition.md",
+        "skills/content-design/references/claims-and-proof.md",
+        "skills/3d-art-direction/references/camera-and-composition.md",
+        "skills/3d-art-direction/references/light-material-and-tone.md",
+        "skills/3d-art-direction/references/spatial-typography.md",
+        "skills/3d-runtime-quality/references/tier-matrix.md",
+        "skills/3d-runtime-quality/references/adaptive-runtime.md"
+      ],
+      "requiredFiles": [
+        "skills/core-rules/references/responsive-recomposition.md",
+        "skills/content-design/references/claims-and-proof.md",
+        "skills/3d-art-direction/references/camera-and-composition.md",
+        "skills/3d-runtime-quality/references/tier-matrix.md"
+      ],
+      "forbiddenFiles": [
+        "skills/r3f-interaction/references/touch-and-gestures.md",
+        "skills/color-palettes/references/neutral-product.md",
+        "skills/color-palettes/references/editorial-natural.md",
+        "skills/color-palettes/references/expressive.md"
+      ],
+      "maxReferenceFiles": 7,
+      "maxEstimatedPluginTokens": 14500
+    }
+  },
+  {
+    "id": "configurator",
+    "command": "immersive",
+    "prompt": "Plan an accessible 3D backpack configurator with three verified fabric colors, front/back inspection, a material information hotspot, and an Add to shortlist action. It must work with mouse, touch, keyboard, reduced motion, and without WebGL. Define mobile recomposition and interaction cancellation; do not invent stock, price, or sustainability claims.",
+    "requiredSkills": [
+      "core-rules",
+      "content-design",
+      "immersive-3d",
+      "3d-art-direction",
+      "3d-runtime-quality",
+      "r3f-interaction"
+    ],
+    "minimums": {
+      "immersive.touch": 5,
+      "accessibility.inputParity": 3,
+      "content.unknowns": 3
+    },
+    "requiredTerms": [
+      "pointer capture|setPointerCapture",
+      "pointercancel|cancell",
+      "pinch",
+      "touch.action|touch action",
+      "DOM|keyboard",
+      "fallback|poster"
+    ],
+    "trace": {
+      "allowedSkills": [
+        "core-rules",
+        "content-design",
+        "immersive-3d",
+        "3d-art-direction",
+        "3d-runtime-quality",
+        "r3f-interaction"
+      ],
+      "allowedReferences": [
+        "skills/core-rules/references/responsive-recomposition.md",
+        "skills/content-design/references/claims-and-proof.md",
+        "skills/content-design/references/microcopy.md",
+        "skills/3d-art-direction/references/camera-and-composition.md",
+        "skills/3d-art-direction/references/light-material-and-tone.md",
+        "skills/3d-art-direction/references/spatial-typography.md",
+        "skills/3d-runtime-quality/references/tier-matrix.md",
+        "skills/3d-runtime-quality/references/adaptive-runtime.md",
+        "skills/r3f-interaction/references/hotspots-camera-text.md",
+        "skills/r3f-interaction/references/configurator-animation.md",
+        "skills/r3f-interaction/references/touch-and-gestures.md"
+      ],
+      "requiredFiles": [
+        "skills/core-rules/references/responsive-recomposition.md",
+        "skills/content-design/references/claims-and-proof.md",
+        "skills/3d-runtime-quality/references/tier-matrix.md",
+        "skills/r3f-interaction/references/touch-and-gestures.md"
+      ],
+      "forbiddenFiles": [
+        "skills/color-palettes/references/neutral-product.md",
+        "skills/color-palettes/references/editorial-natural.md",
+        "skills/color-palettes/references/expressive.md"
+      ],
+      "maxReferenceFiles": 11,
+      "maxEstimatedPluginTokens": 18500
+    }
+  }
+]
