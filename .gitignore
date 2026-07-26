@@ -1,11 +1,14 @@
-# Download- und Sync-Reste des ursprünglichen Ordners
+# Download and sync leftovers from the original folder
 _to_delete/
 _incoming-*/
 _wdu-sync-*.zip
 wdu-*.tgz
 ziqxczzS
 
-# Werkzeug-Ausgaben
+# Private working notes; not part of the distributed plugin
+project-vault/
+
+# Tool output
 website-design-ultra/.playwright-cli/
 node_modules/
 *.log

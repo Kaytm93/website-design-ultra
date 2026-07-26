@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.5.1 contains 16 skills and 5 Claude commands. It combines evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification.
+Version 1.5.2 contains 16 skills and 5 Claude commands. It combines evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification.
 
 ## Structure
 
@@ -10,6 +10,7 @@ Version 1.5.1 contains 16 skills and 5 Claude commands. It combines evidence-led
 website-design-ultra/
 ├── .claude-plugin/plugin.json
 ├── .codex-plugin/plugin.json
+├── LICENSE
 ├── commands/
 │   ├── design.md
 │   ├── audit.md
@@ -199,7 +200,15 @@ Choose ETC1S or UASTC from texture content and quality needs. Do not blindly sta
 
 ### Claude Code
 
-Use the folder as a Claude plugin and validate:
+The repository root carries `.claude-plugin/marketplace.json`, so the plugin
+installs from the marketplace:
+
+```bash
+/plugin marketplace add <owner>/<repo>
+/plugin install website-design-ultra@kay-design
+```
+
+To work on a local checkout instead, use the folder directly and validate it:
 
 ```bash
 claude plugin validate /absolute/path/to/website-design-ultra --strict
@@ -209,7 +218,7 @@ Reload plugins after adding commands or changing the manifest.
 
 ### Codex
 
-The folder includes `.codex-plugin/plugin.json`. Add it through the personal or repository marketplace appropriate to your environment, then validate the source before installing. Marketplace entries are intentionally not bundled because their path and policy are environment-specific.
+The folder includes `.codex-plugin/plugin.json`. Add it through the personal or repository marketplace appropriate to your environment, then validate the source before installing. The bundled `.claude-plugin/marketplace.json` covers the Claude path only; a Codex marketplace entry stays unbundled because its path and policy are environment-specific.
 
 ## Maintenance
 
@@ -283,6 +292,18 @@ unavailable is now a hard validation failure: a ruleset that requires evidence
 for every claim does not ship an unverifiable provenance claim of its own.
 
 ## Version
+
+**1.5.2** — licensing, distribution, and one language:
+
+- added the MIT `LICENSE` that both manifests had already declared,
+- added `.claude-plugin/marketplace.json` so the plugin installs from a
+  marketplace instead of a manual folder copy,
+- removed the private `project-vault/` from version control,
+- removed the vanilla Three.js sample scene from `immersive-3d` §6: it omitted
+  the DOM alternative, the WebGL fallback, and the offscreen pause that the same
+  file declares mandatory. §6 is a written contract now,
+- the delivered surface is English throughout; the pre-version-control anchor is
+  `Release-Tag: none`.
 
 **1.5.1** — provenance and a proven Claude provider:
 

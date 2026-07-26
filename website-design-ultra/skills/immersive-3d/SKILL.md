@@ -28,7 +28,7 @@ Then select exactly one base stack layer:
 | Situation | Choice | Load skill |
 |---|---|---|
 | React/Next project, production, complex scene | **React Three Fiber + drei** | `r3f-patterns` |
-| Quick demo / single-file HTML / embed / Cowork preview | **Vanilla Three.js** | (pattern below) |
+| Quick demo / single-file HTML / embed / Cowork preview | **Vanilla Three.js** | contract in §6; no sample scene ships here |
 | Custom look, gradients, organic deformation, WebGPU | **+ TSL/GLSL shader** | `shaders-tsl` |
 | The experience is told through scrolling | **+ Lenis/ScrollTrigger/ScrollControls** | `scroll-immersion` |
 | The scene should be touchable: click/hover, hotspots, configurator, camera on click | **R3F events + camera rig** | `r3f-interaction` |
@@ -77,56 +77,27 @@ const reduce = useReducedMotion();
 - Loading: Suspense fallback + preload (see `r3f-patterns`), never a white flash.
 - Alternative content: statement, heading, CTA, and interactive states stay available in the DOM.
 
-## 6. Quick start — Vanilla Three.js single file (for fast demos)
+## 6. Vanilla Three.js baseline (demo, single file, embed)
 
-Runs as one `.html` file, ideal for preview or embedding. Non-rigid idle motion and damping are built in.
+A single-file demo is exempt from build tooling, not from §3 and §5. Hold it to
+the same contract:
 
-```html
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>html,body{margin:0;height:100%;background:#0a0a0a;overflow:hidden}</style></head>
-<body>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"}}</script>
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+- Pin an exact Three version in the import map and verify every API against it.
+- Drive the loop with `renderer.setAnimationLoop`, cap DPR at 2 (mobile 1–1.5),
+  and enable damping on any controls.
+- Set `outputColorSpace` and take the tone-mapping choice from `3d-art-direction`.
+- Read `prefers-reduced-motion` and react to changes: no idle motion, auto
+  rotation, or scroll scrub while it is set.
+- Keep statement, heading, and primary action in the DOM outside the canvas, and
+  reveal that content when WebGL is unavailable or the context is lost.
+- Stop the loop on `document.hidden` and when the canvas leaves the viewport;
+  restart deliberately instead of remounting.
+- Dispose geometries, materials, textures, and the renderer when the demo is
+  removed.
 
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);
-camera.position.set(0, 0, 6);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-document.body.appendChild(renderer.domElement);
-
-scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(3, 4, 5); scene.add(key);
-
-const geo = new THREE.IcosahedronGeometry(1.6, 8);
-const mat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.25, metalness: 0.1 });
-const mesh = new THREE.Mesh(geo, mat); scene.add(mesh);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; controls.dampingFactor = 0.08; controls.enablePan = false;
-
-addEventListener('resize', () => {
-  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-});
-
-const clock = new THREE.Clock();
-renderer.setAnimationLoop(() => {
-  const t = clock.getElapsedTime();
-  if (!reduce) { mesh.rotation.y = t * 0.25; mesh.position.y = Math.sin(t) * 0.08; } // gentle drift
-  controls.update();
-  renderer.render(scene, camera);
-});
-</script>
-</body></html>
-```
+No sample scene ships in this skill on purpose. A copied demo that omits the
+fallback, the pause, or the DOM alternative is exactly the failure §5 exists to
+prevent, and a hero example is the code most likely to be copied unchanged.
 
 For production or complex scenes → `r3f-patterns`.
 

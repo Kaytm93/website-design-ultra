@@ -26,7 +26,7 @@ const pluginRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '.
 
 // The tag is the first token after the marker; anything after it is prose.
 const releaseTagPattern = /^Release-Tag:\s*(\S+)(?:[\s—-].*)?$/m
-const preVcsPattern = /^Release-Tag:\s*keine\b/m
+const preVcsPattern = /^Release-Tag:\s*none\b/m
 const bannedPhrases = [
   'Commit-SHA: nicht verfügbar',
   'Commit-SHA: not available',
@@ -211,7 +211,7 @@ if (options.json) {
   console.log(JSON.stringify(payload, null, 2))
 } else {
   for (const entry of resolved) {
-    if (entry.preVcs) console.log(`  ${entry.version.padEnd(8)} vor Versionskontrolle entstanden`)
+    if (entry.preVcs) console.log(`  ${entry.version.padEnd(8)} predates version control`)
     else console.log(`  ${entry.version.padEnd(8)} ${entry.tag.padEnd(10)} ${entry.commit}`)
   }
   if (failures.length) {

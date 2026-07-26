@@ -1,56 +1,96 @@
 # website-design-ultra
 
+## 1.5.2 — Licensing, Distribution & One Language (2026-07-26)
+
+### Licensing
+
+- Added the MIT `LICENSE` file. Both manifests had declared `"license": "MIT"`
+  without shipping the text, so the plugin was formally unlicensed. A ruleset
+  that demands a verified license for every font file does not ship without one
+  of its own.
+- The license is present both at the repository root and inside
+  `website-design-ultra/`, because the plugin folder is the distributed
+  artifact and may travel on its own.
+
+### Distribution
+
+- Added `.claude-plugin/marketplace.json` at the repository root. The plugin can
+  now be installed with `/plugin marketplace add <owner>/<repo>` instead of a
+  manual folder copy.
+- `project-vault/` was removed from version control and ignored. Private working
+  notes are not part of the distributed product; the files stay on disk.
+
+### Content correction
+
+- Removed the vanilla Three.js sample scene from `immersive-3d` §6. It omitted
+  the DOM alternative content, the WebGL-unavailable fallback, and the
+  offscreen/`document.hidden` pause — all three declared mandatory two sections
+  above it in the same file.
+- §6 is now a written contract instead of a sample. A hero example is the code
+  most likely to be copied unchanged, so a non-conforming one does more damage
+  than no example at all. The reason is stated in the skill.
+
+### Language
+
+- The whole delivered surface is English now: `CHANGELOG.md`, the `.gitignore`
+  comments, and the two German strings in `scripts/release.mjs`. The pre-version-
+  control anchor is `Release-Tag: none`; the gate prints `predates version
+  control`.
+
+Release-Tag: v1.5.2
+
+---
+
 ## 1.5.1 — Provenance & Proven Claude Provider (2026-07-26)
 
-### Versionskontrolle
+### Version control
 
-- Das Projekt liegt jetzt in einem Git-Repository. Jeder Changelog-Abschnitt
-  verankert auf einem `Release-Tag`, der in diesem Repository auflösbar sein
-  muss; `scripts/release.mjs` löst ihn zum Commit auf und schlägt sonst fehl.
-- Ein Changelog kann die SHA des Commits, der ihn einführt, nicht enthalten.
-  Anker ist deshalb der Tag-Name, der vor dem Commit feststeht; die SHA wird zur
-  Prüfzeit aufgelöst.
-- Der alte Platzhalter, der die SHA für nicht verfügbar erklärte, ist jetzt ein
-  harter Validierungsfehler. Ein Regelwerk, das für jede Behauptung Evidenz
-  verlangt, führt keine unbelegbare Herkunftsangabe über sich selbst.
-- Abschnitte, die vor der Versionskontrolle entstanden sind, sagen das
-  ausdrücklich, statt eine nicht auflösbare SHA zu behaupten.
-- Neu: `pluginTreeDigest` — ein reproduzierbarer sha256 über den Plugin-Baum.
-  Eine Routing-Behauptung gilt für einen Baum, nicht für einen Ordnernamen.
+- The project now lives in a git repository. Every changelog section anchors on
+  a `Release-Tag` that must resolve in this repository; `scripts/release.mjs`
+  resolves it to a commit and fails otherwise.
+- A changelog cannot contain the SHA of the commit that introduces it. The
+  anchor is therefore the tag name, which is known before the commit, and the
+  SHA is resolved at verification time.
+- The old placeholder that declared the SHA unavailable is now a hard validation
+  failure. A ruleset that requires evidence for every claim does not carry an
+  unverifiable provenance claim about itself.
+- Sections that predate version control say so explicitly instead of claiming an
+  unresolvable SHA.
+- New: `pluginTreeDigest` — a reproducible sha256 over the plugin tree. A routing
+  claim applies to a tree, not to a folder name.
 
-### Claude-Provider
+### Claude provider
 
-- Zwei Fehler im Claude-Trace-Pfad behoben, die den ersten echten Lauf
-  falsch bewertet hätten:
-  - Plugin-Skills werden als `plugin:skill` aufgerufen. Der alte Matcher
-    akzeptierte nur `[a-z0-9-]+` und verwarf damit **jedes** `Skill`-Ereignis;
-    ein korrekter Lauf wäre als „trace did not observe skill" durchgefallen.
-  - Pfade wurden nicht an den geprüften Plugin-Root gebunden. Ein Read der
-    installierten Kopie unter `~/.claude/skills/...` zählte als Evidenz über den
-    getesteten Baum. Solche Pfade sind jetzt `offRootReads` und lassen den Fall
-    scheitern, statt ihn zu bestätigen.
-- Der Claude-Runner isoliert die Sitzung mit `--setting-sources ""` und
-  `--strict-mcp-config`. Ohne Isolation erbt der Lauf die Skills, CLAUDE.md und
-  MCP-Server des Betreibers — inklusive einer installierten Kopie dieses Plugins.
-- Fehlender oder nicht angemeldeter Provider endet nicht mehr in einem harten
-  Abbruch, sondern in `UNAVAILABLE` mit Grund, offenem Launch-Gate und Exit 0;
-  `--require-live` erzwingt in CI einen Fehlschlag. Gleicher Vertrag wie
-  ADR-010 für die Browserverifikation.
-- `--trace-dir` archiviert den rohen Provider-Ereignisstrom pro Fall.
-  Aufgezeichnete Ströme liegen unter `tests/forward/traces/` und werden bei
-  jedem `--dry-run` gegen den Parser abgespielt — der Claude-Pfad bleibt damit
-  auch auf Maschinen ohne angemeldete CLI abgedeckt.
-- Reports enthalten jetzt Provider-Status, Modell, Git-Provenienz und
-  Baum-Digest.
+- Fixed two defects in the Claude trace path that would have scored the first
+  real run incorrectly:
+  - Plugin skills are invoked as `plugin:skill`. The old matcher accepted only
+    `[a-z0-9-]+` and therefore dropped **every** `Skill` event; a correct run
+    would have failed as "trace did not observe skill".
+  - Paths were not bound to the plugin root under test. A read of the installed
+    copy under `~/.claude/skills/...` counted as evidence about the tested tree.
+    Such paths are now `offRootReads` and fail the case instead of confirming it.
+- The Claude runner isolates the session with `--setting-sources ""` and
+  `--strict-mcp-config`. Without isolation the run inherits the operator's own
+  skills, CLAUDE.md, and MCP servers — including an installed copy of this
+  same plugin.
+- A missing or unauthenticated provider no longer aborts hard; it reports
+  `UNAVAILABLE` with a reason, keeps the launch gate open, and exits 0.
+  `--require-live` turns that into a failure in CI. Same contract as ADR-010
+  for browser verification.
+- `--trace-dir` archives the raw provider event stream per case. Recorded
+  streams live under `tests/forward/traces/` and are replayed against the parser
+  on every `--dry-run`, so the Claude path stays covered on machines without an
+  authenticated CLI.
+- Reports now include provider status, model, git provenance, and tree digest.
 
-### Durch den Livelauf gefundener Inhaltsfehler
+### Content defect found by the live run
 
-- Der erste echte `--provider claude`-Lauf des Falls `dashboard` bestand alle
-  Trace-Bedingungen, verfehlte aber die Kontrastangabe für `border`. Die
-  Ausgabeanweisung in `color-palettes` nannte die Paare nur als Aufzählung im
-  Fließtext. Sie verlangt jetzt eine benannte Contrast-Aussage pro Paar; ein
-  ausgelassenes Paar ist eine Lücke, keine Kürze.
-- Nach dem Fix: `PASS` mit neun benannten Kontrastzuständen.
+- The first real `--provider claude` run of the `dashboard` case passed every
+  trace condition but missed the contrast statement for `border`. The output
+  instruction in `color-palettes` listed the pairs only as running prose. It now
+  requires one named contrast statement per pair; an omitted pair is a gap, not
+  brevity.
+- After the fix: `PASS` with nine named contrast states.
 
 Release-Tag: v1.5.1
 
@@ -58,138 +98,136 @@ Release-Tag: v1.5.1
 
 ## 1.5.0 — Trace-Proven Routing & Portable Verify (2026-07-25)
 
-### Progressive Disclosure mit echtem Nachweis
+### Progressive disclosure with real evidence
 
-- Forward-Harness auf providerseitige Ereignisspuren umgestellt: Claude
-  `Read`/`Skill` und Codex-Command-Reads werden als tatsächliche Dateizugriffe
-  ausgewertet.
-- Pro Fall gelten erlaubte/verbotene Dateien, maximale Referenzzahl und ein
-  deterministisches Plugin-Tokenbudget (`ceil(Bytes / 4)`).
-- Broad Content Reads schlagen fehl; selbst deklarierte Skill-Routen ohne
-  Read-Evidenz ebenfalls.
-- Der Dashboard-Livefall beweist: nur `neutral-product.md`, keine Editorial- oder
-  Expressive-Palette, keine Broad Reads, ca. 8.6k beobachtete Plugin-Token.
-- Zwei durch den neuen Trace sichtbar gewordene Über-Routes behoben:
-  `component-patterns` und `style-directions` laden nicht mehr pauschal für ein
-  funktional bereits klares Dashboard.
+- Moved the forward harness onto provider-side event traces: Claude `Read`/`Skill`
+  events and Codex command reads are evaluated as actual file accesses.
+- Every case declares allowed/forbidden files, a maximum reference count, and a
+  deterministic plugin token budget (`ceil(bytes / 4)`).
+- Broad content reads fail; so do self-reported skill routes without read
+  evidence.
+- The dashboard live case proves it: only `neutral-product.md`, no editorial or
+  expressive palette, no broad reads, roughly 8.6k observed plugin tokens.
+- Fixed two over-routes that the new trace made visible: `component-patterns`
+  and `style-directions` no longer load by default for a dashboard whose
+  function is already clear.
 
-### Hostneutrale Browser-Verifikation
+### Host-neutral browser verification
 
-- Neuer `scripts/verify-browser.mjs`-Adapter mit Capability-Probe für Session,
-  `run-code` und Screenshots; kein fester `$CODEX_HOME`-Pfad mehr.
-- Kompatibler Codex-Wrapper, PATH-CLI oder npm-CLI werden nur nach erfolgreichem
-  Probe akzeptiert; Claude Cowork kann seine Host-Browser-Fähigkeit verwenden.
-- `/verify`, `/immersive`, `immersive-3d`, `3d-runtime-quality` und die
-  WebGPU-Matrix verwenden `PASS | FAIL | UNAVAILABLE`.
-- `UNAVAILABLE` liefert statische Evidenz und eine offene Capture-Matrix, bleibt
-  aber ausdrücklich **unverified** und blockiert Launch-Readiness.
-- Reine Plan-/Contract-Aufträge verwenden stattdessen
-  `NOT_APPLICABLE (plan-only)`; beim ersten ausführbaren Build wird die Prüfung
-  Pflicht.
+- New `scripts/verify-browser.mjs` adapter with a capability probe for session,
+  `run-code`, and screenshots; no fixed `$CODEX_HOME` path anymore.
+- A compatible Codex wrapper, a PATH CLI, or the npm CLI are accepted only after
+  a successful probe; Claude Cowork can use its host browser capability.
+- `/verify`, `/immersive`, `immersive-3d`, `3d-runtime-quality`, and the WebGPU
+  matrix use `PASS | FAIL | UNAVAILABLE`.
+- `UNAVAILABLE` delivers static evidence and an open capture matrix, but stays
+  explicitly **unverified** and blocks launch readiness.
+- Plan- or contract-only work uses `NOT_APPLICABLE (plan-only)` instead; the
+  check becomes mandatory at the first executable build.
 
-Release-Tag: v1.5.0 — nachträglich am 2026-07-26 auf den Import-Commit des ausgelieferten Ordnerstands gesetzt. Der Tag belegt genau diesen Stand, keine Zwischenschritte seiner Entstehung.
+Release-Tag: v1.5.0 — applied retroactively on 2026-07-26 to the import commit of the delivered folder state. The tag documents exactly that state, not the intermediate steps that produced it.
 
 ---
 
 ## 1.4.0 — Content Truth, Responsive Recomposition & Forward Tests (2026-07-25)
 
-### Content und Responsive
+### Content and responsive
 
-- Neuer `content-design`-Skill mit separaten Referenzen für Claim-/Proof-Ledger, Interface-Microcopy sowie Lokalisierung/Transcreation.
-- `core-rules` um einen Wide-/Portrait-/Narrow-Contract für echte Re-Komposition, Reframing, Reordering, Replacement und Interaction-Wechsel ergänzt.
-- Routing in `/design`, `/immersive`, `/audit`, `/refresh`, Component Patterns und Style Directions aktualisiert.
+- New `content-design` skill with separate references for the claim/proof ledger, interface microcopy, and localization/transcreation.
+- Extended `core-rules` with a wide/portrait/narrow contract for real recomposition, reframing, reordering, replacement, and interaction changes.
+- Updated routing in `/design`, `/immersive`, `/audit`, `/refresh`, component patterns, and style directions.
 
-### Typografie
+### Typography
 
-- `typography` in einen Progressive-Disclosure-Router umgebaut.
-- Pairings/Rollen, Hierarchie/Loading und Lizenzmatrix laden unabhängig.
-- Vollständige Matrix aller empfohlenen Font-Familien mit Commercial-/Free-Proprietary-/OS-Restricted-/OFL-Status und Open-Source-Alternativen ergänzt.
+- Rebuilt `typography` as a progressive-disclosure router.
+- Pairings/roles, hierarchy/loading, and the license matrix load independently.
+- Added a complete matrix of every recommended font family with commercial / free-proprietary / OS-restricted / OFL status and open-source alternatives.
 
-### Validierung und Forward Tests
+### Validation and forward tests
 
-- Palette-Verträge um `focus`, meaningful `border`, `danger`, `on-danger` und `disabled` erweitert.
-- Validator berechnet RGBA-Glass-Surfaces/-Borders nach sRGB-Compositing und prüft alle State-Kontraste deterministisch.
-- Live-Harness mit Schema-Ausgabe und fünf repräsentativen Fällen für SaaS, Editorial, Dashboard, 3D-Hero und Konfigurator ergänzt.
-- Manifeste und README auf Version 1.4.0 / 16 Skills aktualisiert.
+- Extended palette contracts with `focus`, meaningful `border`, `danger`, `on-danger`, and `disabled`.
+- The validator composites RGBA glass surfaces and borders in sRGB and checks every state contrast deterministically.
+- Added a live harness with schema output and five representative cases for SaaS, editorial, dashboard, 3D hero, and configurator.
+- Updated manifests and README to version 1.4.0 / 16 skills.
 
-Release-Tag: keine — diese Version ist vor Einführung der Versionskontrolle entstanden. Es existiert kein Commit, der sie belegt.
+Release-Tag: none — this version predates version control. No commit documents it.
 
 ---
 
 ## 1.3.0 — 3D Direction, Runtime Quality & Visual Verify (2026-07-25)
 
-### Neue Pflichtschichten
+### New mandatory layers
 
-- `3d-art-direction`: Kamera/FOV, Komposition, Lichtdramaturgie, Materialhierarchie, Color Pipeline, Tone Mapping, Mobile-Reframing und räumliche Typografie.
-- `3d-runtime-quality`: Poster-/Low-/Medium-/High-Tiers, adaptive Shadows, LOD, PostFX, Partikel, DPR, Offscreen-/Visibility-Pause und Quality-Hysterese.
+- `3d-art-direction`: camera/FOV, composition, lighting dramaturgy, material hierarchy, color pipeline, tone mapping, mobile reframing, and spatial typography.
+- `3d-runtime-quality`: Poster/Low/Medium/High tiers, adaptive shadows, LOD, PostFX, particles, DPR, offscreen/visibility pause, and quality hysteresis.
 
-### Interaktion und Renderer
+### Interaction and renderer
 
-- `r3f-interaction` um einen cancellable Touch-/Gesture-State-Machine-Flow ergänzt: Drag-Schwellen, Pinch/Zoom, Pointer Capture, `touch-action`, Hover-Fallback, `pointercancel` und `lostpointercapture`.
-- `shaders-tsl` um eine gepflegte Feature-Matrix mit WebGPU, `WebGPURenderer`-WebGL2-Fallback, TSL-Postprocessing, Compute-Abhängigkeit und bekannten Einschränkungen ergänzt.
+- Extended `r3f-interaction` with a cancellable touch/gesture state machine: drag thresholds, pinch/zoom, pointer capture, `touch-action`, hover fallback, `pointercancel`, and `lostpointercapture`.
+- Extended `shaders-tsl` with a maintained feature matrix covering WebGPU, the `WebGPURenderer` WebGL2 fallback, TSL postprocessing, compute dependency, and known limitations.
 
-### Verifikation
+### Verification
 
-- Neuer `/verify`-Command rendert eine reale URL, fotografiert Desktop, Mobile, Reduced Motion und deaktivierten WebGPU/WebGL-Fallback und verlangt tatsächliche visuelle Inspektion.
-- Validator prüft 15 Skills, 5 Commands sowie die neuen Priority-1-Verträge.
-- Manifeste und README auf Version 1.3.0 aktualisiert.
+- New `/verify` command renders a real URL, photographs desktop, mobile, reduced motion, and the disabled WebGPU/WebGL fallback, and requires actual visual inspection.
+- The validator checks 15 skills, 5 commands, and the new Priority-1 contracts.
+- Updated manifests and README to version 1.3.0.
 
-Release-Tag: keine — diese Version ist vor Einführung der Versionskontrolle entstanden. Es existiert kein Commit, der sie belegt.
+Release-Tag: none — this version predates version control. No commit documents it.
 
 ---
 
 ## 1.2.1 — Correctness & Progressive Disclosure (2026-07-25)
 
-### Fehler korrigiert
+### Defects corrected
 
-- Next.js App Router: `ssr: false` liegt jetzt in einer kleinen Client-Wrapper-Komponente statt in `app/page.tsx`.
-- R3F-Kompatibilität nicht mehr als pauschales „v9 + React 18/19“ beschrieben; installierte Versionen müssen geprüft werden.
-- glTF Transform: den gültigen, aber unspezifischen KTX2-Shortcut durch einen expliziten ETC1S-/UASTC-Entscheidungsweg ergänzt; `inspect` und `validate` sind Pflicht.
-- WebGL-`@react-three/postprocessing` und WebGPU-/TSL-Postprocessing klar getrennt.
-- Scroll-Kamera nutzt delta-basiertes Damping statt Fixwert-`lerp`.
-- Lenis/GSAP nutzt einen Ticker mit Cleanup; `scrollerProxy` ist nur noch für echte Proxy-Scroller vorgesehen.
-- Motion for React auf `motion` / `motion/react` aktualisiert.
-- GLTF-Klonen sowie Material-/Geometrie-/RenderTarget-Lifecycle ergänzt.
-- Canvas-A11y korrigiert: keine interaktiven Controls unter `role="img"`; duplizierte Canvas-Ansicht kann `aria-hidden` sein.
+- Next.js App Router: `ssr: false` now lives in a small client wrapper component instead of `app/page.tsx`.
+- R3F compatibility is no longer described as a blanket "v9 + React 18/19"; installed versions must be verified.
+- glTF Transform: replaced the valid but unspecific KTX2 shortcut with an explicit ETC1S/UASTC decision path; `inspect` and `validate` are mandatory.
+- Separated WebGL `@react-three/postprocessing` from WebGPU/TSL postprocessing.
+- The scroll camera uses delta-based damping instead of a fixed-factor `lerp`.
+- Lenis/GSAP uses one ticker with cleanup; `scrollerProxy` is reserved for real proxy scrollers.
+- Updated Motion for React to `motion` / `motion/react`.
+- Added GLTF cloning and material/geometry/render-target lifecycle.
+- Corrected canvas accessibility: no interactive controls under `role="img"`; a duplicated canvas view may be `aria-hidden`.
 
-### Regelwerk konsolidiert
+### Ruleset consolidated
 
-- Neue Hierarchie: Invarianten → Defaults → begründete Direction-Ausnahmen.
-- Pure Black, mehrere unterstützende Farben, zentrierte Apple-Heroes und Font-Pairings widersprechen nicht länger pauschalen Hard Bans.
-- Eine dominante Action-Farbe bleibt Pflicht; zusätzliche Farben sind dekorativ oder semantisch.
-- `transition: all` entfernt.
-- UI-States werden nach Verhalten ausgewählt, nicht mehr für jede statische Komponente erzwungen.
+- New hierarchy: invariants → defaults → justified direction exceptions.
+- Pure black, several supporting colors, centered Apple heroes, and font pairings no longer contradict blanket hard bans.
+- One dominant action color remains mandatory; additional colors are decorative or semantic.
+- Removed `transition: all`.
+- UI states are selected by behavior instead of being forced onto every static component.
 
-### Token-Effizienz
+### Token efficiency
 
-Große Skills sind jetzt Router mit bedarfsgeladenen `references/`:
+Large skills are now routers with on-demand `references/`:
 
-- `style-directions`: Product / Editorial / Expressive.
-- `color-palettes`: Neutral-Product / Editorial-Natural / Expressive.
-- `motion-system`: Profile / Motion React / GSAP-Scroll.
-- `component-patterns`: Heroes / Bento-Cards / Navigation-Forms-Overlays.
-- `ui-states`: Async / Forms-Feedback / Accessibility.
-- `r3f-patterns`: Next.js / Performance-Assets.
-- `r3f-interaction`: Hotspots-Camera-Text / Configurator-Animation.
+- `style-directions`: product / editorial / expressive.
+- `color-palettes`: neutral-product / editorial-natural / expressive.
+- `motion-system`: profiles / Motion React / GSAP scroll.
+- `component-patterns`: heroes / bento-cards / navigation-forms-overlays.
+- `ui-states`: async / forms-feedback / accessibility.
+- `r3f-patterns`: Next.js / performance-assets.
+- `r3f-interaction`: hotspots-camera-text / configurator-animation.
 
-Skill-Descriptions wurden gekürzt und redundante `metadata.version`-Blöcke entfernt. Die Plugin-Version lebt nur in den Manifesten.
+Skill descriptions were shortened and redundant `metadata.version` blocks removed. The plugin version lives only in the manifests.
 
 ### Packaging
 
-- Claude-Manifest auf `1.2.1`.
-- Codex-Manifest mit drei Starter-Prompts ergänzt.
-- README auf Dual-Host-Installation, korrekte Commands und neue Referenzstruktur aktualisiert.
-- Deterministischer Validator prüft Skill-Frontmatter, Referenzpfade, Manifest-Versionen, veraltete Patterns und alle 20 Palette-Kontraste.
+- Claude manifest at `1.2.1`.
+- Codex manifest extended with three starter prompts.
+- README updated to dual-host installation, correct commands, and the new reference structure.
+- A deterministic validator checks skill frontmatter, reference paths, manifest versions, outdated patterns, and all 20 palette contrasts.
 
-Release-Tag: keine — diese Version ist vor Einführung der Versionskontrolle entstanden. Es existiert kein Commit, der sie belegt.
+Release-Tag: none — this version predates version control. No commit documents it.
 
 ---
 
 ## 1.2.0 — Interactive 3D
 
-Release-Tag: keine — diese Version ist vor Einführung der Versionskontrolle entstanden. Es existiert kein Commit, der sie belegt.
+Release-Tag: none — this version predates version control. No commit documents it.
 
-13 Skills + 4 Commands. Alle `SKILL.md` tragen `metadata.version: "1.2.0"`, passend zur Plugin-Version. YAML validiert.
+13 skills + 4 commands. Every `SKILL.md` carries `metadata.version: "1.2.0"`, matching the plugin version. YAML validated.
 
 ## Installation
 
@@ -197,73 +235,73 @@ Release-Tag: keine — diese Version ist vor Einführung der Versionskontrolle e
 # Backup
 cp -R ~/.claude/skills/website-design-ultra ~/Desktop/wdu-backup-$(date +%F)
 
-# Skills und Commands ersetzen (Pfad zum Download anpassen)
+# Replace skills and commands (adjust the download path)
 cp -R ~/Downloads/website-design-ultra/skills/.   ~/.claude/skills/website-design-ultra/skills/
 cp -R ~/Downloads/website-design-ultra/commands/. ~/.claude/skills/website-design-ultra/commands/
 
-# Version im Manifest hochziehen: "version": "1.2.0"
+# Raise the version in the manifest: "version": "1.2.0"
 open -e ~/.claude/skills/website-design-ultra/.claude-plugin/plugin.json
 
 claude plugin validate ~/.claude/skills/website-design-ultra --strict
 ```
 
-Dann in einer Sitzung `/reload-plugins`, danach `claude plugin details website-design-ultra` — erwartet: **17 Komponenten** (13 Skills + 4 Commands).
+Then run `/reload-plugins` in a session, followed by `claude plugin details website-design-ultra` — expected: **17 components** (13 skills + 4 commands).
 
 ---
 
-## Neu: Skill `r3f-interaction`
+## New: skill `r3f-interaction`
 
-Macht 3D anfassbar. Events & Raycasting (`stopPropagation`, `<Bvh>`, `raycast={null}`, `onPointerMissed`) · **Tastatur-Parität als Pflicht** · Hotspots via `<Html>` · Kamera-Zustände mit `easing.damp3` · Konfigurator-Varianten · GLTF-Clips mit Cross-Fade · Text im 3D-Raum.
+Makes 3D touchable. Events and raycasting (`stopPropagation`, `<Bvh>`, `raycast={null}`, `onPointerMissed`) · **keyboard parity is mandatory** · hotspots via `<Html>` · camera states with `easing.damp3` · configurator variants · GLTF clips with cross-fade · text in 3D space.
 
-Verdrahtet in `immersive-3d` (§2 Stack-Tabelle, §7 Routing), `core-rules` (§3), `motion-system`, `r3f-patterns` und im Command `/immersive`.
+Wired into `immersive-3d` (§2 stack table, §7 routing), `core-rules` (§3), `motion-system`, `r3f-patterns`, and the `/immersive` command.
 
-## Erweitert: `r3f-patterns`
+## Extended: `r3f-patterns`
 
-Next.js-Integration (`dynamic` mit `ssr: false`, `'use client'` in der Scene statt in der Page, ein globaler Canvas + `<View track>` statt mehrerer Canvases) und Robustheit (`webglcontextlost`, Canvas-a11y als SoT, `leva` nur im Dev).
+Next.js integration (`dynamic` with `ssr: false`, `'use client'` in the scene instead of the page, one global canvas plus `<View track>` instead of several canvases) and robustness (`webglcontextlost`, canvas accessibility as the single source of truth, `leva` in development only).
 
-## Dedupe: Single Sources of Truth
+## Dedupe: single sources of truth
 
-| Regel | Einzige Quelle |
+| Rule | Single source |
 |---|---|
-| `prefers-reduced-motion`, Focus-Ringe, Kontrast | `ui-states` §6 |
-| Reduced-Motion & 2D-Fallback für 3D | `immersive-3d` §5 |
-| 3D-Perf-Budget | `immersive-3d` §3 |
-| Anti-Slop-3D | `immersive-3d` §4 |
-| 3D-Stack-Wahl | `immersive-3d` §2 |
-| Farb-Verbote | `core-rules` §4 |
-| Font-Verbote | `typography` |
-| Eine Animations-Bibliothek pro Tree | `core-rules` §6 |
-| Canvas-a11y (`role="img"`) | `r3f-patterns` |
+| `prefers-reduced-motion`, focus rings, contrast | `ui-states` §6 |
+| Reduced motion and 2D fallback for 3D | `immersive-3d` §5 |
+| 3D performance budget | `immersive-3d` §3 |
+| Anti-slop 3D | `immersive-3d` §4 |
+| 3D stack selection | `immersive-3d` §2 |
+| Color prohibitions | `core-rules` §4 |
+| Font prohibitions | `typography` |
+| One animation library per tree | `core-rules` §6 |
+| Canvas accessibility (`role="img"`) | `r3f-patterns` |
 
-Alle anderen Stellen verweisen nur noch. Das TSL-Cheatsheet ist jetzt reine Syntax-Referenz.
+Every other location only points at these. The TSL cheatsheet is now a pure syntax reference.
 
-## Zwei Widersprüche aufgelöst
+## Two contradictions resolved
 
-1. **Inter** — als **Body** in Brutalist/Editorial/Swiss/Magazine-Tech erlaubt, als **Display/Hero** im Premium-Kontext verboten. Ausnahme steht in `typography`.
-2. **Purple** — Direktion D (Glassmorphism): Slate-950 → Teal-900 → Cyan-950 statt Indigo→Purple.
+1. **Inter** — allowed as **body** text in brutalist/editorial/Swiss/magazine-tech, prohibited as **display/hero** in a premium context. The exception lives in `typography`.
+2. **Purple** — direction D (glassmorphism): slate-950 → teal-900 → cyan-950 instead of indigo → purple.
 
-## Commands nachgezogen
+## Commands brought in line
 
-Die Commands trugen die Duplikate weiter, die aus den Skills entfernt wurden.
+The commands still carried the duplicates that were removed from the skills.
 
-**`/immersive`** — routet jetzt auf `r3f-interaction`; neuer Schritt 7 „Interaktion & Tastatur-Parität"; die drei Regeln im „Niemals"-Block (Fallbacks, Bibliotheks-Mix, unkomprimierte Modelle) sind Verweise auf `immersive-3d` §4/§5 und `core-rules` §6 statt eigener Formulierungen; Farb-Regel zeigt auf `core-rules` §4.
+**`/immersive`** — now routes to `r3f-interaction`; new step 7 "interaction and keyboard parity"; the three rules in the "never" block (fallbacks, library mixing, uncompressed models) are references to `immersive-3d` §4/§5 and `core-rules` §6 instead of separate wording; the color rule points at `core-rules` §4.
 
-**`/audit`** — neuer 3D-Layer (`immersive-3d`, `r3f-patterns`, `r3f-interaction`), der nur bei vorhandenem 3D greift; Greps für `useFrame`/`<Canvas>` und Pointer-Handler; fehlende Tastatur-Parität ist immer 🔴 Critical; Lila-Ban zeigt jetzt auf `core-rules` §4 statt auf `color-palettes`; der pauschale `font-inter`-Grep meldet nicht mehr blind, sondern prüft Body vs. Display.
+**`/audit`** — new 3D layer (`immersive-3d`, `r3f-patterns`, `r3f-interaction`) that applies only when 3D is present; greps for `useFrame`/`<Canvas>` and pointer handlers; missing keyboard parity is always 🔴 critical; the purple ban now points at `core-rules` §4 instead of `color-palettes`; the blanket `font-inter` grep no longer reports blindly but distinguishes body from display.
 
-**`/refresh`** — „Inter raus, Lila raus" ersetzt durch Verweise auf `typography` und `core-rules` §4 samt Body-Inter-Ausnahme; 3D-Refresh darf Fallbacks und Tastatur-Parität nicht verlieren.
+**`/refresh`** — "drop Inter, drop purple" replaced by references to `typography` and `core-rules` §4 including the body-Inter exception; a 3D refresh must not lose fallbacks or keyboard parity.
 
-**`/design`** — Weiche nach `/immersive`, wenn das Briefing 3D verlangt.
+**`/design`** — routes to `/immersive` when the briefing calls for 3D.
 
-## Token-Kosten
+## Token cost
 
-Vorher ~1.351 tok always-on bei 16 Komponenten. `r3f-interaction` kommt mit grob ~110 tok dazu → ~1.460 tok.
+Previously roughly 1,351 always-on tokens across 16 components. `r3f-interaction` adds roughly 110 tokens → about 1,460.
 
-Der Hebel liegt weiter beim On-Invoke-Teil: eine normale Design-Anfrage feuert `core-rules` + `style-directions` + `component-patterns` + `motion-system` + `ui-states` ≈ **11k Token**. Progressive Disclosure für `component-patterns` (~3k) und `color-palettes` (~1,5k) — Index-Tabelle im SKILL.md, Details nach `references/` — würde davon grob die Hälfte sparen.
+The lever remains the on-invoke part: an ordinary design request fires `core-rules` + `style-directions` + `component-patterns` + `motion-system` + `ui-states` ≈ **11k tokens**. Progressive disclosure for `component-patterns` (~3k) and `color-palettes` (~1.5k) — index table in `SKILL.md`, details moved to `references/` — would save roughly half of that.
 
-## Noch offen
+## Still open
 
-- Progressive Disclosure für `component-patterns` und `color-palettes`
-- Font-Lizenzhinweise (PP Mori, PP Editorial, Berkeley Mono, Helvetica Now sind kostenpflichtig)
-- Verifikations-Loop nach Output (Anschluss an `plan-design-review`)
-- `README.md` im Plugin-Root: nennt vermutlich noch 12 Skills und 4 Commands — nicht einsehbar, bitte selbst nachziehen
+- Progressive disclosure for `component-patterns` and `color-palettes`
+- Font licensing notes (PP Mori, PP Editorial, Berkeley Mono, Helvetica Now are commercial)
+- Verification loop after output (connection to `plan-design-review`)
+- `README.md` in the plugin root: probably still says 12 skills and 4 commands — not inspectable, please update it yourself
 - Optional: `r3f-physics` (`@react-three/rapier`)
