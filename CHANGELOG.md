@@ -1,5 +1,56 @@
 # website-design-ultra
 
+## 1.6.3 — Release Validation & Claude Distribution Repair (2026-07-27)
+
+Version 1.6.2 reached `main` with two release-blocking defects: Claude could not
+parse the new `anti-slop` frontmatter, and the deterministic self-lint lost part
+of its JSON report during process termination. The repository also documented a
+Claude marketplace install without the third-party auto-update step required to
+keep that install current.
+
+### Runtime and validation fixes
+
+- Quoted the `anti-slop` description containing `machine-made: ...`, so Claude's
+  YAML parser keeps the skill metadata instead of dropping it.
+- Replaced the linter's immediate `process.exit(...)` with `process.exitCode`.
+  The process now drains the full plugin-wide JSON report before terminating,
+  and `validate-content.mjs` can parse the self-lint again.
+- Extended the flat-frontmatter validator to reject unquoted values containing
+  YAML-significant colon or comment syntax. The exact metadata defect that
+  escaped 1.6.2 is now a deterministic failure.
+- Stopped treating a shell command that merely prints a plugin path as Codex
+  read evidence, and added a negative parser regression for that case.
+- Passed `--model` through to Codex live runs instead of recording a requested
+  model that the provider never received.
+- Required recorded trace fixtures to carry a semantic plugin version and a
+  valid tree digest. The fixtures remain historical parser evidence; a dry run
+  still makes no claim about current model behavior.
+
+### Repository and distribution hardening
+
+- Added a GitHub Actions workflow for JavaScript syntax, content validation,
+  Claude's strict plugin parser, recorded forward-trace replay, and strict
+  provenance checks on version tags.
+- Documented that Claude Code disables auto-update for third-party marketplaces
+  by default and that `kay-design` must have auto-update enabled after install.
+  The repository is public, so this path needs no GitHub token.
+- Removed the duplicate version from the marketplace entry; the Claude plugin
+  manifest is now the single update-version source, while the Codex manifest is
+  checked against it.
+- Replaced the source file's literal NUL digest separator with the equivalent
+  JavaScript escape, pinned the npm Playwright fallback, and ignored generated
+  browser-verification output.
+
+### Scope
+
+This patch does not claim that the live forward suite is green. The documented
+SaaS, editorial, and 3D routing failures and run-to-run variability remain open;
+offline replay proves parser compatibility only.
+
+Release-Tag: v1.6.3
+
+---
+
 ## 1.6.2 — Forward Contracts Admit the Routing Gate (2026-07-26)
 
 The 1.6.0 gate fires on any user-visible copy, so `anti-slop` and

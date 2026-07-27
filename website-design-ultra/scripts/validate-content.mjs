@@ -48,7 +48,17 @@ function parseFrontmatter(markdown, file) {
       fail(`${relative(file)}: unsupported or nested frontmatter line "${line}"`)
       continue
     }
-    result[field[1]] = field[2]
+    const value = field[2]
+    const quoted =
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    if (!quoted && (/:\s/.test(value) || /\s#/.test(value))) {
+      fail(
+        `${relative(file)}: frontmatter value for "${field[1]}" must be quoted because it contains YAML syntax`,
+      )
+      continue
+    }
+    result[field[1]] = value
   }
   return result
 }
@@ -566,6 +576,20 @@ const codexManifest = JSON.parse(
 
 if (claudeManifest.version !== codexManifest.version) {
   fail('Claude and Codex manifest versions differ')
+}
+const marketplacePath = path.resolve(pluginRoot, '..', '.claude-plugin', 'marketplace.json')
+if (fs.existsSync(marketplacePath)) {
+  const marketplace = JSON.parse(read(marketplacePath))
+  const marketplaceEntry = marketplace.plugins?.find(
+    (plugin) => plugin.name === claudeManifest.name,
+  )
+  if (!marketplaceEntry) {
+    fail(`../.claude-plugin/marketplace.json: missing ${claudeManifest.name} entry`)
+  } else if (marketplaceEntry.version !== undefined) {
+    fail(
+      '../.claude-plugin/marketplace.json: omit the duplicate plugin version; plugin.json is the update source of truth',
+    )
+  }
 }
 if ((codexManifest.interface?.defaultPrompt?.length ?? 0) > 3) {
   fail('Codex defaultPrompt contains more than three entries')

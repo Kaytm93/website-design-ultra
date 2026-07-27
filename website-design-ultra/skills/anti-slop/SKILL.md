@@ -1,6 +1,6 @@
 ---
 name: anti-slop
-description: Detect and remove AI-slop in shipped websites — both the generated copy and the visual defaults. Use when writing or auditing headlines, subheads, feature blurbs, CTAs, state and demo copy, or when output looks machine-made: purple gradients, badge-above-H1, colored card strips, identical feature cards, uniform spacing. Owns the tell catalogue, the density budgets, the protect list, and the copy linter.
+description: "Detect and remove AI-slop in shipped websites — both the generated copy and the visual defaults. Use when writing or auditing headlines, subheads, feature blurbs, CTAs, state and demo copy, or when output looks machine-made: purple gradients, badge-above-H1, colored card strips, identical feature cards, uniform spacing. Owns the tell catalogue, the density budgets, the protect list, and the copy linter."
 ---
 
 # Anti-Slop — Detection and Repair

@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.6.2 contains 17 skills and 5 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
+Version 1.6.3 contains 17 skills and 5 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
@@ -252,9 +252,16 @@ The repository root carries `.claude-plugin/marketplace.json`, so the plugin
 installs from the marketplace:
 
 ```bash
-/plugin marketplace add <owner>/<repo>
+/plugin marketplace add Kaytm93/website-design-ultra
 /plugin install website-design-ultra@kay-design
 ```
+
+Claude Code leaves automatic updates disabled by default for third-party
+marketplaces. In `/plugin`, open **Marketplaces**, select `kay-design`, and
+choose **Enable auto-update**. Claude Code will then refresh the marketplace and
+installed plugin in the background after startup; run `/reload-plugins` when it
+announces an update, or use the new version on the next launch. The public
+repository does not require a GitHub token.
 
 To work on a local checkout instead, use the folder directly and validate it:
 
@@ -372,6 +379,23 @@ unavailable is now a hard validation failure: a ruleset that requires evidence
 for every claim does not ship an unverifiable provenance claim of its own.
 
 ## Version
+
+**1.6.3** — release validation and Claude distribution repair:
+
+- fixed the `anti-slop` frontmatter so Claude receives its name and trigger
+  description instead of silently loading empty metadata,
+- let the copy linter drain its JSON output before exiting, restoring the
+  plugin-wide self-lint inside `validate-content.mjs`,
+- made the deterministic validator reject unquoted flat-frontmatter values that
+  contain YAML syntax,
+- added GitHub validation for JavaScript syntax, content contracts, offline
+  forward traces, Claude's strict parser, and tagged-release provenance,
+- rejected path-only shell output as read evidence and passed requested models
+  through to Codex live runs,
+- made `plugin.json` the single Claude update-version source and pinned the npm
+  Playwright fallback,
+- documented the required third-party marketplace auto-update toggle for Claude
+  Code.
 
 **1.6.2** — forward contracts admit the routing gate:
 

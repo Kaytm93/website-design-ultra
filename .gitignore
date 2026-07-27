@@ -10,6 +10,7 @@ project-vault/
 
 # Tool output
 website-design-ultra/.playwright-cli/
+website-design-ultra/output/
 node_modules/
 *.log
 

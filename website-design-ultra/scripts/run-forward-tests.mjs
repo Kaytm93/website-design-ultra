@@ -308,27 +308,29 @@ function runCodex(testCase, prompt, options) {
 Treat ${pluginRoot} as the plugin source. Start with commands/${testCase.command}.md
 and apply its routing gates before opening skill bodies. Read only the selected
 SKILL.md files and the references they select.`
+  const args = ['exec']
+  if (options.model) args.push('--model', options.model)
+  args.push(
+    '--skip-git-repo-check',
+    '--ephemeral',
+    '--ignore-user-config',
+    '--ignore-rules',
+    '--sandbox',
+    'read-only',
+    '--json',
+    '--config',
+    `model_reasoning_effort="${options.effort}"`,
+    '--output-schema',
+    schemaPath,
+    '--output-last-message',
+    outputPath,
+    '--cd',
+    pluginRoot,
+    codexPrompt,
+  )
   const run = spawnSync(
     'codex',
-    [
-      'exec',
-      '--skip-git-repo-check',
-      '--ephemeral',
-      '--ignore-user-config',
-      '--ignore-rules',
-      '--sandbox',
-      'read-only',
-      '--json',
-      '--config',
-      `model_reasoning_effort="${options.effort}"`,
-      '--output-schema',
-      schemaPath,
-      '--output-last-message',
-      outputPath,
-      '--cd',
-      pluginRoot,
-      codexPrompt,
-    ],
+    args,
     {
       cwd: pluginRoot,
       encoding: 'utf8',

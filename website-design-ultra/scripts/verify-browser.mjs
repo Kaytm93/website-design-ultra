@@ -87,7 +87,7 @@ function candidates() {
     result.push({
       name: 'npm-cli',
       command: npx,
-      prefix: ['--yes', '--package', '@playwright/cli', 'playwright-cli'],
+      prefix: ['--yes', '--package', '@playwright/cli@0.1.17', 'playwright-cli'],
     })
   }
   return result

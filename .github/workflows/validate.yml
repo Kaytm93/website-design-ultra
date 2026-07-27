@@ -1,0 +1,59 @@
+name: Validate plugin
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        working-directory: website-design-ultra
+        run: |
+          for script in scripts/*.mjs; do
+            node --check "$script"
+          done
+
+      - name: Validate plugin content
+        working-directory: website-design-ultra
+        run: node scripts/validate-content.mjs
+
+      - name: Validate with Claude Code
+        run: |
+          npx --yes @anthropic-ai/claude-code@2.1.220 plugin validate . --strict
+          npx --yes @anthropic-ai/claude-code@2.1.220 plugin validate website-design-ultra --strict
+
+      - name: Replay offline forward fixtures
+        working-directory: website-design-ultra
+        run: node scripts/run-forward-tests.mjs --dry-run
+
+  release-provenance:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify release tag and changelog provenance
+        working-directory: website-design-ultra
+        run: node scripts/release.mjs --strict

@@ -30,7 +30,7 @@ named sessions, `run-code`, and screenshots. It tries in this order:
 1. the explicit executable from `WDU_PLAYWRIGHT_CLI`,
 2. an existing, compatible Codex wrapper,
 3. `playwright-cli` from `PATH`,
-4. `npx --yes --package @playwright/cli playwright-cli`.
+4. `npx --yes --package @playwright/cli@0.1.17 playwright-cli`.
 
 A merely existing path or package name is not enough. When the adapter reports
 `UNAVAILABLE` but the host provides real browser automation, run the same state
