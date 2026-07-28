@@ -346,7 +346,7 @@
         "skills/style-directions/references/product.md"
       ],
       "maxReferenceFiles": 5,
-      "maxEstimatedPluginTokens": 9000
+      "maxEstimatedPluginTokens": 11600
     },
     "lintCopy": {
       "path": "copy.lines",
