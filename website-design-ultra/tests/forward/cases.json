@@ -6,7 +6,6 @@
     "requiredSkills": [
       "core-rules",
       "content-design",
-      "component-patterns",
       "anti-slop"
     ],
     "minimums": {

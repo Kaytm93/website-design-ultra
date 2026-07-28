@@ -24,9 +24,11 @@ If the briefing calls for 3D, WebGL, a scene, or an immersive experience → use
 3. **Choose a direction** — Load `style-directions` only for explicitly
    requested style exploration, or when neither brand/system nor functional
    product cues provide a workable direction and that decision materially
-   changes the output. A functionally well-described product, a dashboard, or a
-   named palette does not activate the skill automatically. Choose from the
-   briefing and the existing system, not from forced variation.
+   changes the output. A direction the briefing already names is an input, not a
+   request to explore: apply it from the briefing. A functionally well-described
+   product, a dashboard, or a named palette does not activate the skill
+   automatically either. Choose from the briefing and the existing system, not
+   from forced variation.
 
 4. **Palette and type** — Load `color-palettes` only when colors are chosen or
    changed. Load `typography` only when font family, license/loading, language
