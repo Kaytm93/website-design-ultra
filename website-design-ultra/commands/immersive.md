@@ -37,17 +37,24 @@ You will build an immersive 3D experience (hero, scene, viewer, or scroll-driven
    - Clickable/hoverable, hotspots, configurator, camera on click, animation clips, 3D text → `r3f-interaction`
    - Custom models/textures that must be prepared first → `3d-asset-pipeline`
 
-6. **Direction, colors, and responsive page contract** — Load `style-directions` only when the direction is unclear, and `color-palettes` only when colors are chosen. For the page, define wide/portrait/narrow priority, DOM order, canvas crop, and interaction changes with the responsive recomposition reference from `core-rules`.
+6. **Direction and colors** — Load `style-directions` only when the direction is unclear, and `color-palettes` only when colors are chosen.
 
-7. **Set perf budget and runtime tiers** — `immersive-3d` §3 plus `3d-runtime-quality`: Poster/Low/Medium/High, adaptive shadows/LOD/PostFX/particles/DPR, hysteresis, and offscreen pause.
+7. **Responsive contract (REQUIRED)** — Read the responsive recomposition
+   reference from `core-rules` before defining the composition. A 3D hero or
+   scene that appears on a page crosses viewports by definition, so this is not
+   one of the conditional loads in step 6. Define wide, portrait, and narrow
+   each with priority, DOM order, canvas crop, CTA, and interaction model. The
+   canvas is not exempt: name what the portrait shot drops or reframes.
 
-8. **Fallbacks (MANDATORY)** — Work through `immersive-3d` §5: reduced motion, art-directed poster when WebGL/WebGPU is missing, lazy load, Suspense + preload.
+8. **Set perf budget and runtime tiers** — `immersive-3d` §3 plus `3d-runtime-quality`: Poster/Low/Medium/High, adaptive shadows/LOD/PostFX/particles/DPR, hysteresis, and offscreen pause.
 
-9. **Interaction and input parity** — As soon as the scene is clickable or draggable: load `r3f-interaction`. Every canvas action needs a DOM equivalent. For touch, additionally define drag threshold, pinch/zoom, pointer capture, `touch-action`, hover fallback, and cancellation.
+9. **Fallbacks (MANDATORY)** — Work through `immersive-3d` §5: reduced motion, art-directed poster when WebGL/WebGPU is missing, lazy load, Suspense + preload.
 
-10. **Pre-flight** — Load `core-rules` and check the applicable items including evidenced claims, responsive contract, art-direction contract, 3D budget, renderer compatibility, DOM alternative, and stable quality tiers.
+10. **Interaction and input parity** — As soon as the scene is clickable or draggable: load `r3f-interaction`. Every canvas action needs a DOM equivalent. For touch, additionally define drag threshold, pinch/zoom, pointer capture, `touch-action`, hover fallback, and cancellation.
 
-11. **Render verification** — When the app runs locally, execute the
+11. **Pre-flight** — Load `core-rules` and check the applicable items including evidenced claims, responsive contract, art-direction contract, 3D budget, renderer compatibility, DOM alternative, and stable quality tiers.
+
+12. **Render verification** — When the app runs locally, execute the
     capability-checked adapter `scripts/verify-browser.mjs` or a real host
     browser automation with the state matrix from `/verify`. Actually inspect
     desktop, mobile, reduced motion, and fallback. With a runnable target the
