@@ -23,18 +23,34 @@ Load for every shipped 3D experience:
 - `3d-art-direction` for camera/FOV, composition, light, material hierarchy, tone mapping, mobile reframing, and spatial typography.
 - `3d-runtime-quality` for Poster/Low/Medium/High tiers, adaptive quality, hysteresis, and offscreen pause.
 
-Then select exactly one base stack layer:
+### Base stack layer — implementation only
+
+Select exactly one, and only when code is actually being written. A plan, a
+contract, or an art-direction answer names the stack in prose and loads no
+implementation skill. "Plan a 3D hero" is not an instruction to load
+`r3f-patterns`.
 
 | Situation | Choice | Load skill |
 |---|---|---|
 | React/Next project, production, complex scene | **React Three Fiber + drei** | `r3f-patterns` |
 | Quick demo / single-file HTML / embed / Cowork preview | **Vanilla Three.js** | contract in §6; no sample scene ships here |
-| Custom look, gradients, organic deformation, WebGPU | **+ TSL/GLSL shader** | `shaders-tsl` |
-| The experience is told through scrolling | **+ Lenis/ScrollTrigger/ScrollControls** | `scroll-immersion` |
-| The scene should be touchable: click/hover, hotspots, configurator, camera on click | **R3F events + camera rig** | `r3f-interaction` |
-| Custom models/textures needed | **Blender/Spline → glTF** | `3d-asset-pipeline` |
 
 **Default when unclear:** React project → R3F. Plain HTML demo → Vanilla Three.js.
+
+### Add-on layers — one decision each
+
+Add-ons are neither alternatives to the base layer nor a checklist to work
+through. Load one only when the brief already requires the capability it names,
+and state that requirement before loading it. A scene that could plausibly use
+an add-on does not activate it, and needing one add-on says nothing about the
+others.
+
+| The brief requires | Add | Load skill |
+|---|---|---|
+| A custom look: gradients, organic deformation, WebGPU node materials | TSL/GLSL shader | `shaders-tsl` |
+| The experience is told through scrolling | Lenis/ScrollTrigger/ScrollControls | `scroll-immersion` |
+| Meshes the user clicks, hovers, inspects, or configures | R3F events + camera rig | `r3f-interaction` |
+| Custom models or textures that must be prepared first | Blender/Spline → glTF | `3d-asset-pipeline` |
 
 **Renderer:** WebGLRenderer is the mature default. Select WebGPURenderer only when TSL/WebGPU/node features justify the additional effort; compatible features can fall back to WebGL2. Renderer-specific limits and postprocessing live in `shaders-tsl`.
 

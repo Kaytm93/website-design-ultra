@@ -9,7 +9,12 @@ Preserve the visual statement from `3d-art-direction` within the budget from `im
 
 ## Runtime contract
 
-Define before implementation:
+Define before implementation. The block below is the schema, not the values.
+`initial-tier` and the window lengths are one filled example; the concrete
+Poster, Low, Medium, and High profiles live in
+[references/tier-matrix.md](references/tier-matrix.md), and `immersive-3d` §3
+points here for exactly those numbers. A contract filled from this block alone
+carries no tier definitions at all.
 
 ```yaml
 initial-tier: "medium"
@@ -26,6 +31,9 @@ quality-owner: "QualityController"
 Derive the initial tier from conservative signals, but correct it only from measured runtime. Never use user agent, `deviceMemory`, `hardwareConcurrency`, or DPR alone as a source of truth.
 
 ## Workflow
+
+A step that names a reference requires it before that step can be answered.
+Answering the step from this file alone leaves it unfilled.
 
 1. Set the overall budget in `immersive-3d`.
 2. Define concrete Poster/Low/Medium/High profiles. Read [references/tier-matrix.md](references/tier-matrix.md).
