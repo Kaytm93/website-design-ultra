@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.6.3 contains 17 skills and 5 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
+Version 1.6.4 contains 17 skills and 5 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting, evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
@@ -139,6 +139,14 @@ in English and German. The plugin lints its own 57 documents on every run. The
 skill states its blind spots: fake-profound kickers, synonym cycling, and triplets
 with a filler third item need a reader, and no lint result claims a copy line is
 true.
+
+When `--locale` is omitted, the linter resolves English or German separately for
+each file from language metadata, locale-bearing path segments, or
+high-frequency function words in the extracted visible copy. Mixed files run
+both rule sets. If detection is inconclusive, both rule sets run and the text
+report prints `AUTO-LOCALE WARNING`; JSON includes the per-file detection
+source, scores, and warnings. `--locale en` and `--locale de` remain explicit
+overrides.
 
 ## Priority-2 contracts
 
@@ -313,7 +321,8 @@ Lint a project's copy, or this plugin's own documents:
 
 ```bash
 node scripts/lint-copy.mjs --path src --profile marketing
-node scripts/lint-copy.mjs --path content --locale de --profile editorial
+node scripts/lint-copy.mjs --path content --profile editorial
+node scripts/lint-copy.mjs --path content --locale de --profile editorial # explicit override
 node scripts/lint-copy.mjs --path src --protect .anti-slop-protect.json --strict
 node scripts/lint-copy.mjs --self
 ```
@@ -379,6 +388,16 @@ unavailable is now a hard validation failure: a ruleset that requires evidence
 for every claim does not ship an unverifiable provenance claim of its own.
 
 ## Version
+
+**1.6.4** — locale-safe copy linting:
+
+- replaced the implicit English default with per-file English/German detection
+  from metadata, paths, and visible-text language signals,
+- run both rule sets for mixed or inconclusive copy and emit an explicit warning
+  for inconclusive detection,
+- expose locale mode, per-file resolution, scores, and warnings in JSON output,
+- added an unlabelled German regression fixture that reproduces the former false
+  pass without relying on a `-de` filename.
 
 **1.6.3** — release validation and Claude distribution repair:
 

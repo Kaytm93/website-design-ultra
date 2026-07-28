@@ -443,21 +443,40 @@ for (const testCase of copyExpectations.cases) {
     fail(`tests/copy: missing fixture ${testCase.fixture}`)
     continue
   }
+  const localeArguments = testCase.locales
+    ? ['--locale', testCase.locales.join(',')]
+    : []
   const report = runLinter([
     '--path',
     fixture,
     '--profile',
     testCase.profile,
-    '--locale',
-    testCase.locales.join(','),
+    ...localeArguments,
   ])
   if (!report) {
     fail(`tests/copy: linter produced no report for ${testCase.fixture}`)
     continue
   }
-  const label = `tests/copy ${testCase.fixture} (${testCase.profile}/${testCase.locales.join('+')})`
+  const localeLabel = testCase.locales?.join('+') ?? 'auto'
+  const label = `tests/copy ${testCase.fixture} (${testCase.profile}/${localeLabel})`
   if (report.status !== testCase.status) {
     fail(`${label}: expected ${testCase.status}, got ${report.status}`)
+  }
+  if (testCase.localeMode && report.localeMode !== testCase.localeMode) {
+    fail(`${label}: expected localeMode ${testCase.localeMode}, got ${report.localeMode}`)
+  }
+  if (testCase.detectedLocales) {
+    const detected = [
+      ...new Set(
+        Object.values(report.localeDetection ?? {}).flatMap(
+          (detection) => detection.locales ?? [],
+        ),
+      ),
+    ].sort()
+    const expected = [...testCase.detectedLocales].sort()
+    if (JSON.stringify(detected) !== JSON.stringify(expected)) {
+      fail(`${label}: detected locales ${detected.join('+')}, expected ${expected.join('+')}`)
+    }
   }
   for (const [key, tier] of [
     ['minTier1', 'tier1'],

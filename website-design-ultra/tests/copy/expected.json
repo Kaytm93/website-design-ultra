@@ -37,6 +37,15 @@
       "minTier2": 2
     },
     {
+      "fixture": "slop-auto.md",
+      "profile": "marketing",
+      "status": "FAIL",
+      "localeMode": "auto",
+      "detectedLocales": ["de"],
+      "minTier1": 8,
+      "minTier2": 2
+    },
+    {
       "fixture": "clean-de.md",
       "profile": "marketing",
       "locales": ["de"],

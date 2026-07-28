@@ -31,6 +31,31 @@ const TEXT_EXTENSIONS = new Set([
   '.txt',
 ])
 
+const SUPPORTED_LOCALES = ['en', 'de']
+
+/**
+ * Zero-dependency locale detection deliberately uses high-frequency function
+ * words rather than the slop vocabulary it is meant to judge. Metadata and
+ * path hints win; content signals cover unlabelled files and stdin.
+ */
+const LOCALE_SIGNALS = {
+  en: new Set([
+    'a', 'an', 'and', 'are', 'as', 'at', 'be', 'been', 'but', 'by', 'can',
+    'do', 'does', 'each', 'every', 'for', 'from', 'has', 'have', 'if', 'into',
+    'is', 'it', 'its', 'not', 'of', 'on', 'only', 'or', 'our', 'that', 'the',
+    'their', 'then', 'there', 'they', 'this', 'to', 'was', 'we', 'when',
+    'where', 'which', 'with', 'you', 'your',
+  ]),
+  de: new Set([
+    'aber', 'als', 'auch', 'auf', 'aus', 'bei', 'bis', 'da', 'damit', 'dass',
+    'dem', 'den', 'der', 'des', 'die', 'diese', 'dieser', 'durch', 'ein',
+    'eine', 'einem', 'einen', 'einer', 'es', 'für', 'hat', 'haben', 'ihr',
+    'ihre', 'im', 'ist', 'jetzt', 'kann', 'mit', 'nicht', 'noch', 'nur',
+    'oder', 'sich', 'sie', 'sind', 'so', 'über', 'und', 'uns', 'unsere',
+    'von', 'vor', 'wenn', 'werden', 'wie', 'wird', 'wir', 'zu', 'zum', 'zur',
+  ]),
+}
+
 /** Tier 1 — structural forms that carry no information. */
 export const TIER1 = {
   en: [
@@ -175,7 +200,8 @@ function usage() {
   node scripts/lint-copy.mjs --self
 
 Options:
-  --locale <en|de>     rule set; repeat or comma-separate for both (default en)
+  --locale <en|de>     explicit rule-set override; repeat or comma-separate
+                       for both (default: auto-detect each file)
   --profile <name>     marketing (default), docs, or editorial Tier-3 sensitivity
   --protect <file>     protect list JSON; entries need a reason to apply
   --json               machine-readable report
@@ -203,11 +229,15 @@ function parseArguments(argv) {
     stdin: false,
     self: false,
     profile: 'marketing',
+    localeMode: 'auto',
   }
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index]
     if (argument === '--path') options.paths.push(argv[++index])
-    else if (argument === '--locale') options.locales.push(...String(argv[++index]).split(','))
+    else if (argument === '--locale') {
+      options.localeMode = 'explicit'
+      options.locales.push(...String(argv[++index]).split(','))
+    }
     else if (argument === '--protect') options.protect = argv[++index]
     else if (argument === '--json') options.json = true
     else if (argument === '--strict') options.strict = true
@@ -220,7 +250,7 @@ function parseArguments(argv) {
     } else die(`unknown argument "${argument}"`)
   }
   if (options.paths.some((value) => !value)) die('--path needs a value')
-  if (!options.locales.length) options.locales = ['en']
+  if (options.localeMode === 'explicit' && !options.locales.length) die('--locale needs a value')
   for (const locale of options.locales) {
     if (!TIER1[locale]) die(`unsupported locale "${locale}"`)
   }
@@ -278,6 +308,82 @@ function collectFiles(targets) {
     }
   }
   return [...new Set(files)]
+}
+
+function localeHints(file, content) {
+  const hints = new Set()
+  const normalizedFile = String(file).replaceAll('\\', '/')
+  for (const match of normalizedFile.matchAll(/(?:^|[./_-])(en|de)(?=$|[./_-])/gi)) {
+    hints.add(match[1].toLowerCase())
+  }
+  for (const pattern of [
+    /^---[\s\S]*?^(?:lang|language|locale):\s*["']?(en|de)(?:[-_][a-z]{2})?["']?\s*$/gim,
+    /<html\b[^>]*\blang\s*=\s*["'](en|de)(?:[-_][a-z]{2})?["']/gi,
+    /\blang\s*=\s*["'](en|de)(?:[-_][a-z]{2})?["']/gi,
+  ]) {
+    for (const match of content.matchAll(pattern)) hints.add(match[1].toLowerCase())
+  }
+  return [...hints]
+}
+
+function localeScores(text) {
+  const tokens = text.toLowerCase().match(/\p{L}+/gu) ?? []
+  const scores = Object.fromEntries(
+    SUPPORTED_LOCALES.map((locale) => [
+      locale,
+      tokens.reduce(
+        (score, token) => score + (LOCALE_SIGNALS[locale].has(token) ? 1 : 0),
+        0,
+      ),
+    ]),
+  )
+  if (/[äöüß]/iu.test(text)) scores.de += 2
+  return scores
+}
+
+function detectLocales({ file, content, extension }) {
+  const hints = localeHints(file, content)
+  const scores = localeScores(extract(content, extension).body)
+  if (hints.length) {
+    return {
+      locales: SUPPORTED_LOCALES.filter((locale) => hints.includes(locale)),
+      source: 'hint',
+      scores,
+      warning: null,
+    }
+  }
+
+  const ranked = SUPPORTED_LOCALES
+    .map((locale) => [locale, scores[locale]])
+    .sort((left, right) => right[1] - left[1])
+  const [[firstLocale, firstScore], [secondLocale, secondScore]] = ranked
+  const bothStrong = firstScore >= 4 && secondScore >= 4 && secondScore / firstScore >= 0.4
+  if (bothStrong) {
+    return {
+      locales: SUPPORTED_LOCALES,
+      source: 'content-mixed',
+      scores,
+      warning: null,
+    }
+  }
+  if (firstScore >= 3 && (secondScore === 0 || firstScore / secondScore >= 1.5)) {
+    return {
+      locales: [firstLocale],
+      source: 'content',
+      scores,
+      warning: null,
+    }
+  }
+
+  return {
+    locales: SUPPORTED_LOCALES,
+    source: 'fallback',
+    scores,
+    warning:
+      `${file}: locale auto-detection was inconclusive ` +
+      `(en ${scores.en}, de ${scores.de}); applied both rule sets. ` +
+      'Use --locale en or --locale de to override.',
+  }
 }
 
 /**
@@ -630,10 +736,23 @@ for (const file of collectFiles(options.paths)) {
   })
 }
 
+const localeDetection = Object.fromEntries(
+  inputs.map((input) => [
+    input.file,
+    options.localeMode === 'explicit'
+      ? {
+          locales: options.locales,
+          source: 'explicit',
+          scores: null,
+          warning: null,
+        }
+      : detectLocales(input),
+  ]),
+)
 const results = inputs.map((input) =>
   lintText({
     ...input,
-    locales: options.locales,
+    locales: localeDetection[input.file].locales,
     protectList: protect.applied,
     profile: options.profile,
   }),
@@ -643,9 +762,18 @@ const byTier = { 1: 0, 2: 0, 3: 0 }
 for (const finding of findings) byTier[finding.tier] += 1
 
 const failed = byTier[1] > 0 || byTier[3] > 0 || (options.strict && byTier[2] > 0)
+const resolvedLocales = SUPPORTED_LOCALES.filter((locale) =>
+  Object.values(localeDetection).some((detection) => detection.locales.includes(locale)),
+)
+const localeWarnings = Object.values(localeDetection)
+  .map((detection) => detection.warning)
+  .filter(Boolean)
 const payload = {
   status: failed ? 'FAIL' : 'PASS',
-  locales: options.locales,
+  localeMode: options.localeMode,
+  locales: options.localeMode === 'explicit' ? options.locales : resolvedLocales,
+  localeDetection,
+  localeWarnings,
   profile: options.profile,
   files: inputs.length,
   tier1: byTier[1],
@@ -676,8 +804,13 @@ if (options.json) {
   if (protect.rejected.length) {
     console.log(`\nProtect entries ignored for missing a reason: ${protect.rejected.join(', ')}`)
   }
+  for (const warning of localeWarnings) console.log(`\nAUTO-LOCALE WARNING: ${warning}`)
+  const localeSummary =
+    options.localeMode === 'explicit'
+      ? options.locales.join('+')
+      : `auto → ${resolvedLocales.join('+') || 'none'}`
   console.log(
-    `\nLINT: ${payload.status} — ${inputs.length} file(s), locale ${options.locales.join('+')}, profile ${options.profile}, tier1 ${byTier[1]}, tier2 ${byTier[2]}, tier3 ${byTier[3]}`,
+    `\nLINT: ${payload.status} — ${inputs.length} file(s), locale ${localeSummary}, profile ${options.profile}, tier1 ${byTier[1]}, tier2 ${byTier[2]}, tier3 ${byTier[3]}`,
   )
   console.log(payload.note)
 }

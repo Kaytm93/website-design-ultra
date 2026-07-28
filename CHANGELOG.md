@@ -1,5 +1,36 @@
 # website-design-ultra
 
+## 1.6.4 — Locale-Safe Copy Linting (2026-07-28)
+
+The copy linter previously treated an omitted `--locale` as English. A German
+file could therefore contain catalogued German Tier-1 forms and still print
+`LINT: PASS`, even though no German rule had run.
+
+### Locale contract
+
+- Replaced the implicit English default with per-file locale detection.
+  Frontmatter, HTML language metadata, and locale-bearing path segments take
+  precedence; otherwise the linter scores high-frequency English and German
+  function words in the extracted visible copy.
+- Mixed-language files run both rule sets. Inconclusive files also run both
+  rule sets and emit an `AUTO-LOCALE WARNING` instead of silently implying
+  language coverage.
+- Kept `--locale en`, `--locale de`, and repeated/comma-separated values as
+  explicit overrides for deliberately scoped runs.
+- Added the resolved locale, detection source, scores, and warnings to JSON
+  output so automation can audit which language contract actually ran.
+
+### Regression evidence
+
+- Added an unlabelled German slop fixture so content detection, rather than a
+  `-de` filename, must select the German rules.
+- The exact omitted-flag reproduction now returns 8 German Tier-1 findings and
+  3 Tier-2 findings instead of a false pass.
+
+Release-Tag: v1.6.4
+
+---
+
 ## 1.6.3 — Release Validation & Claude Distribution Repair (2026-07-27)
 
 Version 1.6.2 reached `main` with two release-blocking defects: Claude could not

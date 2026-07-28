@@ -135,7 +135,8 @@ skill route is not evidence of Progressive Disclosure. Run the linter:
 
 ```bash
 node scripts/lint-copy.mjs --path src --profile marketing --protect .anti-slop-protect.json
-node scripts/lint-copy.mjs --path content --locale de --profile editorial
+node scripts/lint-copy.mjs --path content --profile editorial
+node scripts/lint-copy.mjs --path content --locale de --profile editorial # explicit override
 node scripts/lint-copy.mjs --stdin --json
 ```
 
@@ -145,6 +146,13 @@ with counts, locations, and the measured numbers. Exit code 1 on any Tier-1 hit
 or exceeded Tier-3 budget; `--strict` also fails on Tier-2 clusters. Its own
 regression gate lives in `tests/copy/`: a rule change must still catch every slop
 fixture and still flag nothing in the authentic-prose fixtures.
+
+With no `--locale`, the linter detects English or German per file. Declared
+frontmatter/HTML language and locale-bearing path segments win; otherwise it
+scores high-frequency function words in the visible copy, not the vocabulary it
+is judging. Mixed files run both rule sets. An inconclusive file also runs both
+and emits `AUTO-LOCALE WARNING`, so an omitted flag can never silently mean
+English. Use `--locale en` or `--locale de` only as a deliberate override.
 
 `--self` lints the plugin's own documents in the `docs` register and skips this
 skill's reference files, which necessarily quote the patterns they forbid. That is

@@ -20,9 +20,11 @@ You will audit existing frontend code for quality.
    - Copy slop, deterministic — run this before reading copy by hand:
      ```bash
      node "<plugin-root>/scripts/lint-copy.mjs" --path src --profile marketing
-     node "<plugin-root>/scripts/lint-copy.mjs" --path src --locale de   # localized pages
+     node "<plugin-root>/scripts/lint-copy.mjs" --path src --locale de   # explicit override
      ```
-     Report the tier counts and the measured numbers. A `PASS` means no
+     Locale is detected per file when the flag is omitted. Report the resolved
+     locale and every auto-detection warning together with the tier counts and
+     measured numbers. A `PASS` means no
      catalogued pattern was found; it is not a content approval. If the project
      ships a `.anti-slop-protect.json`, pass it with `--protect` and report any
      entry that was ignored for missing a reason.
