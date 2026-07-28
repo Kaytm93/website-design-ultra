@@ -17,13 +17,25 @@ You will build an immersive 3D experience (hero, scene, viewer, or scroll-driven
 
 4. **Content contract** — When headline, claim, proof, CTA, hotspot, or configurator copy is created, load `content-design`. The DOM statement and the canvas staging must carry the same evidenced claim.
 
-5. **Choose and commit to a stack layer** (from `immersive-3d` §2):
+   **Copy form** — As soon as any user-visible line is written, load `anti-slop`
+   and its prose reference. A 3D brief does not suspend this gate: a hero
+   headline, a hotspot label, a fallback message, or a configurator option name
+   is user-visible copy. Add the locale annex for non-English output. `§4` of
+   `immersive-3d` covers the scene, not the words in it.
+
+5. **Choose and commit to a stack layer** (from `immersive-3d` §2). Base layer:
+   exactly one, and only when code is actually written.
    - React project/production → React Three Fiber → load `r3f-patterns`
-   - Single-file HTML/demo → Vanilla Three.js (pattern from `immersive-3d`)
-   - Custom look/gradients/WebGPU → additionally `shaders-tsl`
-   - Scroll-driven → additionally `scroll-immersion`
-   - Clickable/hoverable, hotspots, configurator, camera on click, animation clips, 3D text → additionally `r3f-interaction`
-   - Custom models/textures → `3d-asset-pipeline`
+   - Single-file HTML/demo → Vanilla Three.js (pattern from `immersive-3d`, no extra skill)
+   - A plan, contract, or art-direction answer names the base layer in prose and
+     loads no implementation skill.
+
+   Add-ons are separate decisions, each loaded only when the brief already
+   requires that capability and the requirement is stated:
+   - Custom look/gradients/WebGPU → `shaders-tsl`
+   - Scroll-driven → `scroll-immersion`
+   - Clickable/hoverable, hotspots, configurator, camera on click, animation clips, 3D text → `r3f-interaction`
+   - Custom models/textures that must be prepared first → `3d-asset-pipeline`
 
 6. **Direction, colors, and responsive page contract** — Load `style-directions` only when the direction is unclear, and `color-palettes` only when colors are chosen. For the page, define wide/portrait/narrow priority, DOM order, canvas crop, and interaction changes with the responsive recomposition reference from `core-rules`.
 
