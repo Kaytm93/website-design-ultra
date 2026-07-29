@@ -21,7 +21,10 @@ Do not force every state onto every component. First identify what the component
 
 - Async content, skeletons, empty and network failure → [references/async-data.md](references/async-data.md).
 - Forms, pending actions, success, errors, toasts → [references/forms-and-feedback.md](references/forms-and-feedback.md).
-- Focus, keyboard, contrast, touch, reduced motion, announcements → [references/accessibility.md](references/accessibility.md).
+- Announcing a state change, focus across a transition, pending/busy, error
+  association → [references/accessibility.md](references/accessibility.md).
+  Keyboard, contrast, touch targets, and reduced motion are page invariants and
+  live in `skills/core-rules/references/accessibility.md`.
 
 Accessibility invariants apply whenever relevant, but do not load unrelated state examples.
 

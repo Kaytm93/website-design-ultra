@@ -95,6 +95,12 @@ not proof that Progressive Disclosure worked.
 
 ### Accessibility
 
+Summarised here, specified in
+[references/accessibility.md](references/accessibility.md). Read that file when
+the deliverable has to state focus, keyboard, contrast, touch-target, or
+reduced-motion behavior rather than merely inherit it. It belongs to this skill
+because these are invariants of every page.
+
 - Preserve semantic HTML, keyboard access, visible focus, readable contrast, and meaningful alternative content.
 - Respect `prefers-reduced-motion`; moving content that persists must also be pausable when required.
 - Never make essential information or functionality canvas-only.

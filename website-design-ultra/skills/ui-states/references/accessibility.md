@@ -1,79 +1,45 @@
-# Accessibility Invariants
+# Accessibility of State Changes
 
-## Keyboard and focus
-
-- All non-path-dependent functionality must work with a keyboard.
-- DOM/tab order follows the visual and reading order.
-- Focus remains visible and unobscured by sticky/fixed UI.
-- Dialogs, menus, tabs, and disclosures follow their established interaction pattern.
-
-```css
-:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 3px;
-}
-```
-
-Validate the focus indicator against every touched background.
-
-## Contrast and color
-
-- Normal text: at least 4.5:1.
-- Large text: at least 3:1.
-- Meaningful UI graphics, boundaries, and states: at least 3:1 where required.
-- Focus indicators: at least 3:1 against adjacent colors in focused and unfocused states; test every surface crossed by the ring.
-- Error text follows normal text contrast; error icons/boundaries need 3:1 when they communicate the state.
-- Disabled controls are exempt from WCAG contrast minimums, but target 3:1 for text/icons and add a non-color affordance when product constraints permit.
-- Composite translucent foreground/surface colors over the actual backdrop in sRGB before calculating glass contrast.
-- Do not use color as the only state/error cue.
-- Test forced-colors/high-contrast modes when the audience or product requires them.
-
-## Touch and pointer
-
-- Target approximately 44×44 CSS px where possible.
-- Provide a single-pointer alternative for multipoint/path gestures.
-- Support pointer cancellation; commit destructive actions on click/up, not pointer-down.
-- Hover behavior is optional enhancement.
-
-## Reduced and persistent motion
-
-Use a global policy plus component logic:
-
-```css
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-```
-
-For Motion:
-
-```tsx
-import { MotionConfig } from 'motion/react'
-
-<MotionConfig reducedMotion="user">{children}</MotionConfig>
-```
-
-Also:
-
-- pause/stop nonessential automatic movement that persists,
-- remove parallax and camera travel for reduced motion,
-- keep functional progress indicators understandable,
-- avoid unsafe flashing.
-
-## Images and canvas
-
-- Meaningful images need contextual alt text; decorative images use empty alt.
-- Canvas content needs an equivalent description.
-- Canvas interaction needs equivalent DOM controls and shared state.
-- Do not nest interactive controls under `role="img"`.
+The page-level invariants (keyboard, focus visibility, contrast, touch targets,
+reduced motion, alt text) are in
+`skills/core-rules/references/accessibility.md` and apply whether or not a
+component owns state. Do not restate them here. This file covers only what
+changes when a component moves between states.
 
 ## Announcements
 
-- Prefer native semantics.
-- `role="status"` is polite; `role="alert"` is assertive.
+- Prefer native semantics. A `<button disabled>` needs no announcement wrapper.
+- `role="status"` is polite; `role="alert"` is assertive. Use assertive only for
+  state the user must act on now.
+- The live region must exist in the DOM before the state changes. A region
+  inserted together with its message is frequently not announced.
 - Avoid duplicate live regions and repeatedly reannouncing entire containers.
+  Announce the delta, not the surrounding layout.
+
+## Focus across a transition
+
+- Never let focus land on `document.body`. When the focused element is removed —
+  a row deleted, a dialog closed, a step replaced — move focus deliberately to
+  the nearest stable ancestor or the control that triggered the change.
+- Async replacement of content must preserve focus position. Swapping a skeleton
+  for real content should not reset the user to the top of the list.
+- On a validation failure, move focus to the first invalid control, or to a
+  summary that links to it.
+
+## Pending and busy
+
+- Mark the region, not the whole page, with `aria-busy="true"` while it loads.
+- A pending submit keeps its accessible name stable. Changing the label from
+  "Save" to "Saving…" while also disabling the control removes both the name and
+  the focus target.
+- Prefer `aria-disabled="true"` over `disabled` for a control that must stay
+  reachable so its explanation can be read.
+
+## Errors and validation
+
+- Associate the message with the input via `aria-describedby`, and mark the
+  control `aria-invalid="true"`.
+- The message text must survive re-render; do not rely on the visual position
+  alone to convey which field failed.
+- Disabled and read-only differ: read-only stays focusable and is announced,
+  disabled is skipped. Choose by whether the user may still read the value.
