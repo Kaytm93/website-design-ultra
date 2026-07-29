@@ -6,6 +6,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { PROFILES, TIER1, TIER2 } from './lint-copy.mjs'
+import { strictObjectSchemaFailures } from './forward-schema.mjs'
 
 const pluginRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const skillsRoot = path.join(pluginRoot, 'skills')
@@ -268,7 +269,19 @@ const hardeningContracts = [
   ],
   [
     'scripts/run-forward-tests.mjs',
-    ['probeProvider', 'UNAVAILABLE', '--trace-dir', '--require-live', 'setting-sources'],
+    [
+      'probeProvider',
+      'providerErrorMessage',
+      'UNAVAILABLE',
+      '--provider-cli',
+      '--trace-dir',
+      '--require-live',
+      'setting-sources',
+    ],
+  ],
+  [
+    'scripts/forward-schema.mjs',
+    ['strictObjectSchemaFailures', 'additionalProperties', 'required'],
   ],
   [
     'scripts/release.mjs',
@@ -499,6 +512,12 @@ if (!selfLint) {
 }
 
 const forwardCases = JSON.parse(read(path.join(pluginRoot, 'tests/forward/cases.json')))
+const responseSchema = JSON.parse(
+  read(path.join(pluginRoot, 'tests/forward/response.schema.json')),
+)
+for (const failure of strictObjectSchemaFailures(responseSchema)) {
+  fail(`tests/forward/response.schema.json: ${failure}`)
+}
 for (const testCase of forwardCases) {
   if (
     !testCase.trace?.allowedSkills?.length ||
@@ -597,9 +616,10 @@ if (claudeManifest.version !== codexManifest.version) {
   fail('Claude and Codex manifest versions differ')
 }
 const marketplacePath = path.resolve(pluginRoot, '..', '.claude-plugin', 'marketplace.json')
+let marketplaceEntry = null
 if (fs.existsSync(marketplacePath)) {
   const marketplace = JSON.parse(read(marketplacePath))
-  const marketplaceEntry = marketplace.plugins?.find(
+  marketplaceEntry = marketplace.plugins?.find(
     (plugin) => plugin.name === claudeManifest.name,
   )
   if (!marketplaceEntry) {
@@ -612,6 +632,55 @@ if (fs.existsSync(marketplacePath)) {
 }
 if ((codexManifest.interface?.defaultPrompt?.length ?? 0) > 3) {
   fail('Codex defaultPrompt contains more than three entries')
+}
+
+const readmePath = path.join(pluginRoot, 'README.md')
+const readme = read(readmePath)
+const readmeVersion = readme.match(/^Version\s+(\d+\.\d+\.\d+)\b/m)?.[1] ?? null
+if (readmeVersion !== claudeManifest.version) {
+  fail(
+    `README.md: lead version ${readmeVersion ?? 'missing'} differs from manifest ${claudeManifest.version}`,
+  )
+}
+
+const readmeIntroduction = readme.split('\n## Structure')[0]
+const readmeCurrentDocumentation = readme.split('\n## Version')[0]
+const progressiveSection =
+  readme.match(/## Progressive disclosure\n([\s\S]*?)(?=\n## )/)?.[1] ?? ''
+const currentRoutingClaimSurfaces = [
+  ['../.claude-plugin/marketplace.json description', marketplaceEntry?.description],
+  ['.claude-plugin/plugin.json description', claudeManifest.description],
+  ['.claude-plugin/plugin.json keywords', claudeManifest.keywords?.join(' ')],
+  ['.codex-plugin/plugin.json description', codexManifest.description],
+  ['.codex-plugin/plugin.json keywords', codexManifest.keywords?.join(' ')],
+  ['.codex-plugin/plugin.json interface', JSON.stringify(codexManifest.interface ?? {})],
+  ['README.md introduction', readmeIntroduction],
+  ['README.md current documentation', readmeCurrentDocumentation],
+]
+for (const [label, content] of currentRoutingClaimSurfaces) {
+  if (/\btrace[- ](?:proven|validated)\b/i.test(content ?? '')) {
+    fail(`${label}: outcome claim exceeds committed routing evidence; describe the trace-audit capability`)
+  }
+}
+if (/\b(?:suite|dashboard case)[^.]*\bproves?\b/i.test(progressiveSection)) {
+  fail('README.md progressive-disclosure section: a current routing sample is described as proof')
+}
+if (!progressiveSection.includes('Intended routing contracts')) {
+  fail('README.md progressive-disclosure section: routing examples are not labeled as contracts')
+}
+
+const evidenceSection =
+  readme.match(/### Committed evidence scope\n([\s\S]*?)(?=\n### |\n## )/)?.[1] ?? ''
+for (const marker of [
+  'two historical Claude traces',
+  '`dashboard`',
+  '`slop`',
+  'other four cases',
+  'Codex behavior',
+]) {
+  if (!evidenceSection.includes(marker)) {
+    fail(`README.md committed-evidence scope is missing "${marker}"`)
+  }
 }
 
 const stalePatterns = [

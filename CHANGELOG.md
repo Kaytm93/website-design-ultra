@@ -1,5 +1,54 @@
 # website-design-ultra
 
+## 1.6.6 — Evidence-Scoped Routing Claims (2026-07-29)
+
+The public manifests described minimal routing as trace-proven or
+trace-validated. The repository, however, commits only two historical Claude
+event streams: `dashboard` from 1.5.1 and `slop` from a dirty 1.6.1 candidate
+whose manifest still read 1.6.0. Neither trace covers the current tree, the other
+four cases, Codex, or routing stability. Version 1.6.5 also records that repeated
+live attempts still vary.
+
+### Public claim and evidence boundary
+
+- Replaced the unqualified routing-outcome claim in both plugin manifests, the
+  Claude marketplace entry, and the README introduction with the verifiable
+  capability: a provider-trace harness for selective-loading audits.
+- Renamed the Claude manifest keyword from `trace-validated-routing` to
+  `provider-trace-auditing`.
+- Documented the two committed fixtures with their historical scope. Dry runs
+  now print provider, case, plugin version, tree digest, and file count for each
+  replay before listing the current six case contracts.
+- Added a deterministic content gate that rejects `trace-proven` and
+  `trace-validated` outcome wording on current public surfaces, keeps the README
+  lead version aligned with both manifests, and requires the evidence-scope
+  disclosure.
+
+### Live-harness repair
+
+- Corrected the strict response schema: the root now requires `copy`, and
+  `copy` requires both `lines` and `slopChecks`. Codex Structured Outputs had
+  rejected the previous schema before inference while both offline gates passed.
+- Added a recursive strict-schema validator to the dry run and content
+  validation. Every object must forbid additional properties and require every
+  declared property.
+- Fixed Codex trace parsing for a single reader wrapped as
+  `/bin/zsh -lc "sed …"`. The opening quote was not recognized as a command
+  boundary, so a real file read disappeared unless a second reader followed it.
+- Provider failures now prefer terminal JSONL `error` or `turn.failed` events,
+  unwrap nested API messages, and append stderr as secondary diagnostics. A
+  harmless warning can no longer hide the actual schema or API failure.
+- Added `--provider-cli` so installations outside `PATH` can select one
+  executable consistently for version, authentication, and the live run.
+  Unknown authentication-probe failures now fail closed as `UNAVAILABLE`.
+
+This release makes the routing differentiator inspectable without presenting an
+auditing mechanism or a historical replay as proof of current stable behavior.
+
+Release-Tag: v1.6.6
+
+---
+
 ## 1.6.5 — Required References and Honest Test Scoring (2026-07-29)
 
 Version 1.6.3 passed one of six forward cases. The roughly twenty findings were

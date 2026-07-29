@@ -48,7 +48,7 @@ const pluginFileTail = /(?:^|\/)(?:commands|skills)\/[^\s"';&|]*\.md$/
 
 function isContentReadCommand(command) {
   const shellReader =
-    /(?:^|[;&|]\s*|\s)(?:cat|sed|awk|head|tail|less|more|perl|python\d*|ruby|rg)(?:\s|$)/i
+    /(?:^|[;&|]\s*|[\s"'])(?:cat|sed|awk|head|tail|less|more|perl|python\d*|ruby|rg)(?:\s|$)/i
   const nodeReader = /\bnode\b[^;&|]*(?:readFile|readFileSync|createReadStream)\b/
   return shellReader.test(command) || nodeReader.test(command)
 }
@@ -372,9 +372,10 @@ function assert(condition, message) {
  */
 export function replayRecordedTraces(pluginRoot) {
   const directory = path.join(pluginRoot, 'tests', 'forward', 'traces')
-  if (!fs.existsSync(directory)) return { replayed: 0 }
+  if (!fs.existsSync(directory)) return { replayed: 0, fixtures: [] }
 
   let replayed = 0
+  const fixtures = []
   for (const name of fs.readdirSync(directory).sort()) {
     if (!name.endsWith('.jsonl')) continue
     const expectationPath = path.join(directory, name.replace(/\.jsonl$/, '.expected.json'))
@@ -414,9 +415,17 @@ export function replayRecordedTraces(pluginRoot) {
     }
     assert(trace.broadReads.length === 0, `${name}: replay reported a broad read`)
     assert(trace.offRootReads.length === 0, `${name}: replay reported an off-root read`)
+    fixtures.push({
+      file: name,
+      provider: expected.provider,
+      case: expected.case,
+      pluginVersion: expected.pluginVersion,
+      treeSha256: expected.treeSha256,
+      accessedFileCount: trace.accessedFiles.length,
+    })
     replayed += 1
   }
-  return { replayed }
+  return { replayed, fixtures }
 }
 
 export function selfTestTraceAudit(pluginRoot) {
@@ -443,6 +452,26 @@ export function selfTestTraceAudit(pluginRoot) {
   )
   assert(codex.broadReads.length === 0, 'codex selective read was flagged as broad')
   assert(codex.providerUsage.input_tokens === 123, 'codex usage was not captured')
+
+  // Codex normally wraps a single reader in `/bin/zsh -lc "..."`. The opening
+  // quote is the command boundary; requiring whitespace immediately before
+  // `sed` dropped real reads unless a second `&& sed` happened to be present.
+  const wrappedCodex = auditCodexTrace(
+    [
+      {
+        type: 'item.completed',
+        item: {
+          type: 'command_execution',
+          command: '/bin/zsh -lc "sed -n \'1,80p\' skills/core-rules/SKILL.md"',
+        },
+      },
+    ],
+    pluginRoot,
+  )
+  assert(
+    wrappedCodex.accessedFiles.includes('skills/core-rules/SKILL.md'),
+    'single shell-wrapped Codex read was not resolved',
+  )
 
   const claude = auditClaudeTrace(
     [
