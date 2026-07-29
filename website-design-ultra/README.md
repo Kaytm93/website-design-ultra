@@ -354,6 +354,39 @@ node scripts/run-forward-tests.mjs \
 
 Use `--provider claude` to test Claude plugin loading and `--case saas` (or another case ID) during iteration. Live tests load this plugin source read-only, request schema-constrained output, and fail on missing skill routes, missing read evidence, unexpected references, broad reads, off-root reads, or per-case Plugin-token budgets. Reports include accessed files, observed bytes, a deterministic `ceil(bytes / 4)` Plugin-token estimate, provider-reported total usage, the git provenance of the tree, and its content digest. `--max-budget-usd` applies to Claude; Codex uses its configured account limits.
 
+### One attempt is one sample, not a verdict
+
+Skill routing is not deterministic. The same tree and the same case produce
+different reference sets across attempts, so a single green run is not evidence
+that a case is stable, and a single red run is not evidence of a regression.
+Measured over three full runs of this suite, the set of passing cases changed
+every time while the count stayed roughly flat.
+
+Score by pass rate instead:
+
+```bash
+node scripts/run-forward-tests.mjs \
+  --provider claude \
+  --repeat 5 \
+  --min-pass-rate 0.8 \
+  --max-budget-usd 0.60 \
+  --report /absolute/path/forward-report.json
+```
+
+Each case runs `--repeat` times and is scored against `--min-pass-rate`. The
+summary marks any case under threshold and lists the failures that occurred in
+more than one attempt — those are the reproducible ones and the only ones worth
+acting on. Failures appearing in a single attempt are usually noise, and editing
+rule prose to chase them tends to displace a different requirement rather than
+fix anything.
+
+Cost is cases × repeats × `--max-budget-usd`. Six cases at `--repeat 5` and
+`0.60` is up to 18 USD, so iterate with `--case` and raise `--repeat` only when
+a change is ready to be judged.
+
+The defaults (`--repeat 1 --min-pass-rate 1`) reproduce the older
+all-or-nothing behaviour. Treat that mode as a smoke test.
+
 The Claude runner isolates the session with `--setting-sources ""` and
 `--strict-mcp-config`. Without that isolation the run inherits the operator's own
 skills and an installed copy of this same plugin, and the trace then measures the

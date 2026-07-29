@@ -37,15 +37,21 @@ Treat them as decisions for the current task, not values to write into this skil
 
 Read only what the task needs:
 
-- Style exploration/direction is explicitly requested, or neither brand/system
-  nor functional product cues provide a usable direction → `style-directions`.
-  A clear product context or named palette alone does not require it.
+- Style exploration is explicitly requested, or neither brand/system nor
+  functional product cues provide a usable direction → `style-directions`.
+  A direction the briefing already names is an input, not a request to explore:
+  apply it from the briefing. A clear product context or named palette alone
+  does not require the skill either.
 - Content hierarchy, claims, CTAs, state copy, or localization changes → `content-design`.
 - **Any user-visible copy is written, rewritten, or audited → `anti-slop`.** This
   gate is independent of `content-design`: a hero headline, a section subhead, a
   button label, an empty state, or demo data still needs the tell catalogue even
   when the claim ledger was not otherwise in scope. Non-English output loads the
   matching locale annex in addition.
+  A plan-only or contract-only deliverable does not suspend this gate. Deciding
+  what a headline, subhead, CTA, label, or state message will say is writing
+  copy, whether the answer ships as a rendered line or as a row in a content
+  contract. "No code" limits the format of the output, not the tells in it.
 - Output looks machine-made, or an existing page is audited for it → `anti-slop`
   design tells.
 - Colors must be selected or audited → `color-palettes`.

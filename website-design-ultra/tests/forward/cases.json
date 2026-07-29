@@ -6,7 +6,6 @@
     "requiredSkills": [
       "core-rules",
       "content-design",
-      "component-patterns",
       "anti-slop"
     ],
     "minimums": {
@@ -47,7 +46,7 @@
         "skills/anti-slop/references/locale-de.md"
       ],
       "maxReferenceFiles": 6,
-      "maxEstimatedPluginTokens": 12403
+      "maxEstimatedPluginTokens": 12922
     }
   },
   {
@@ -79,6 +78,7 @@
       "allowedReferences": [
         "skills/core-rules/references/responsive-recomposition.md",
         "skills/content-design/references/localization.md",
+        "skills/content-design/references/microcopy.md",
         "skills/typography/references/pairings-and-roles.md",
         "skills/typography/references/hierarchy-and-loading.md",
         "skills/typography/references/licensing-and-alternatives.md",
@@ -98,8 +98,8 @@
         "skills/color-palettes/references/editorial-natural.md",
         "skills/color-palettes/references/expressive.md"
       ],
-      "maxReferenceFiles": 8,
-      "maxEstimatedPluginTokens": 15838
+      "maxReferenceFiles": 9,
+      "maxEstimatedPluginTokens": 16726
     }
   },
   {
@@ -155,7 +155,7 @@
         "skills/anti-slop/references/locale-de.md"
       ],
       "maxReferenceFiles": 9,
-      "maxEstimatedPluginTokens": 14903
+      "maxEstimatedPluginTokens": 15411
     }
   },
   {
@@ -217,7 +217,7 @@
         "skills/anti-slop/references/locale-de.md"
       ],
       "maxReferenceFiles": 9,
-      "maxEstimatedPluginTokens": 20403
+      "maxEstimatedPluginTokens": 20166
     }
   },
   {
@@ -285,7 +285,7 @@
         "skills/anti-slop/references/locale-de.md"
       ],
       "maxReferenceFiles": 13,
-      "maxEstimatedPluginTokens": 24403
+      "maxEstimatedPluginTokens": 23520
     }
   },
   {
@@ -347,7 +347,7 @@
         "skills/style-directions/references/product.md"
       ],
       "maxReferenceFiles": 5,
-      "maxEstimatedPluginTokens": 9000
+      "maxEstimatedPluginTokens": 11721
     },
     "lintCopy": {
       "path": "copy.lines",

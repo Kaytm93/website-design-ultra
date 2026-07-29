@@ -1,6 +1,6 @@
 ---
 name: color-palettes
-description: Select, adapt, or audit accessible website color systems. Use for brand colors, themes, dashboards, landing pages, light/dark modes, semantic tokens, contrast, or one of the plugin’s 20 curated palettes. Load only the palette family relevant to the chosen direction.
+description: "Select, adapt, or audit accessible website color systems. Use only when color itself is chosen, changed, or audited: brand and accent colors, palette or theme selection, light/dark modes, semantic color tokens, contrast validation, or one of the plugin’s 20 curated palettes. A page type alone — landing page, dashboard, portfolio — is not a color decision and does not activate this skill. Load only the palette family relevant to the chosen direction."
 ---
 
 # Color Palettes

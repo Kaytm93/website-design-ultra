@@ -1,5 +1,95 @@
 # website-design-ultra
 
+## 1.6.5 — Required References and Honest Test Scoring (2026-07-29)
+
+Version 1.6.3 passed one of six forward cases. The roughly twenty findings were
+almost all missed *references* rather than missed skills — `prose-tells.md`
+three times, `responsive-recomposition.md` twice — so skills were being routed
+correctly while their mandatory references were treated as a menu.
+
+### The reference gate
+
+- Rewrote `anti-slop` §1 so the prose reference is stated as required at the
+  point where the file is opened, not only in `core-rules` §3.
+- Separated the base layer from the add-ons in `immersive-3d` §2, and added the
+  `anti-slop` copy gate to `/immersive`, which had none.
+- Marked the contract blocks in `3d-art-direction` and `3d-runtime-quality` as
+  schemas whose values live in the references, so the block could no longer be
+  mistaken for the answer.
+- Promoted the responsive contract to its own required step in `/immersive`.
+- Scoped the `color-palettes` description to actual color decisions. "dashboards,
+  landing pages" had pulled the skill into every landing-page task.
+
+### Plan-only deliverables still write copy
+
+The `anti-slop` gate fires when user-visible copy is "written, rewritten, or
+audited". Three cases ask for a plan and say "not final code", so under a literal
+reading no copy is written and the gate did not fire — while the contracts
+required it anyway. Emphasis was not the problem: the section already said
+"required, not a menu entry" and was still skipped.
+
+All four copies of the gate now state that deciding what a line will say is
+writing it, and that "no code" limits the format of the deliverable rather than
+the tells inside it.
+
+This is the one change in this release with repeated before-and-after evidence.
+`saas` and `3d-hero` both went from not reading `prose-tells.md` to reading it,
+and held across the two runs after the change.
+
+### Test contracts corrected
+
+Four cases demanded behaviour their own rules forbid, or forbade behaviour the
+rules license:
+
+- `saas` required `component-patterns`, which both `core-rules` §3 and
+  `/design` step 7 exclude for landing-page planning by name.
+- `editorial` forbade `microcopy.md` while naming a subscription action, which
+  `content-design`'s own table routes to that file.
+- `slop` capped the run at 9000 estimated tokens while the references the same
+  contract marked allowed cost 11040. The case could satisfy every routing rule
+  and still fail.
+- All six token budgets were calibrated against a smaller tree; headroom had
+  drifted to between +0.8% and +8.9%. They are now the allowed-set ceiling plus
+  five percent, so the budget measures routing rather than file growth.
+
+`core-rules` §3 also read "Style exploration/direction is explicitly requested",
+which pulled `style-directions` into any brief naming a direction, while
+`/design` said only "explicitly requested style exploration". Both now agree
+that a named direction is an input.
+
+### Pass rate replaces the single attempt
+
+Three full runs of the suite returned 0/6, 3/6 and 3/6, and the set of passing
+cases changed every time: `saas` passed the second run and failed the third,
+`3d-hero` did the reverse. At those rates a six-case all-or-nothing gate goes
+green a few percent of the time regardless of routing quality, so it cannot
+separate a regression from a reroll.
+
+`run-forward-tests.mjs` gained `--repeat N` and `--min-pass-rate`. Cases are
+scored by pass rate, and the summary distinguishes failures reproduced across
+attempts from single-attempt noise. The defaults reproduce the previous
+behaviour, now documented as a smoke test rather than as proof.
+
+### What is not fixed
+
+Three cases still fail intermittently, and this release does not claim
+otherwise:
+
+- `3d-hero` drops `responsive-recomposition.md` in roughly one run in three.
+  Making it a required step did not stabilize it.
+- `configurator` reports five touch decisions but does not name where
+  `setPointerCapture` is taken; it covers capture loss only.
+- `ui-states` and `color-palettes` intermittently activate in cases that do not
+  request them. Whether those are routing errors or contracts that are stricter
+  than the documented rules is unresolved.
+
+No case has passed three consecutive runs. The pass-rate mode exists to measure
+that honestly rather than to hide it.
+
+Release-Tag: v1.6.5
+
+---
+
 ## 1.6.4 — Locale-Safe Copy Linting (2026-07-28)
 
 The copy linter previously treated an omitted `--locale` as English. A German

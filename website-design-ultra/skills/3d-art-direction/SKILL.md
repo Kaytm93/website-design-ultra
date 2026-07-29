@@ -9,7 +9,11 @@ Define a reproducible image first, then the technique. Use `immersive-3d` for ju
 
 ## Art-direction contract
 
-Fix exactly these decisions before writing scene code:
+Fix exactly these decisions before writing scene code. The block below is the
+schema, not the values. `fov: 38` is one filled example, not a default to
+reuse; the ranges each key must be chosen from live in the references. A
+contract filled from this block alone is unfilled rather than shortened, and a
+plan or contract-only answer is exactly where that shortcut is tempting.
 
 ```yaml
 visual-thesis: "Which statement does the space carry?"
@@ -35,6 +39,9 @@ poster-frame: "same silhouette and message as live scene"
 Justify deviations inside the contract instead of hiding them in scattered components.
 
 ## Workflow
+
+A step that names a reference requires it before that step can be answered.
+Answering the step from this file alone leaves it unfilled.
 
 1. State a visual thesis and determine what must be recognizable after two seconds.
 2. Fix camera, FOV, target point, silhouette, negative space, and DOM safe area. Read [references/camera-and-composition.md](references/camera-and-composition.md).

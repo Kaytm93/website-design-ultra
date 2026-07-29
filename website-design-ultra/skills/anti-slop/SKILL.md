@@ -19,17 +19,27 @@ Two independent defects hide under "slop":
 
 A page can pass this skill and still lie. Run both.
 
-## 1. Read only what the task needs
+## 1. Required and conditional reading
 
-| Need | Read |
+[references/prose-tells.md](references/prose-tells.md) is required, not a menu
+entry. Read it before producing output whenever this skill was loaded because
+copy is written, rewritten, or audited — a headline, a subhead, a blurb, a CTA,
+a label, a state message, or a demo string. A plan, a contract, or a "no code"
+deliverable counts: deciding what a line will say is writing it, and the tells
+live in the decision, not in the file format that carries it. `core-rules` §3
+states the same gate in the same terms; this section exists so that the two
+agree at the point where the file is actually opened. Judging that the task does
+not need the tell catalogue is not one of the available decisions.
+
+The other two references are conditional:
+
+| Condition | Read |
 |---|---|
-| Headlines, subheads, blurbs, CTAs, state/demo copy, prose audit | [references/prose-tells.md](references/prose-tells.md) |
-| Layout, card, badge, spacing, dark-mode, effect defaults | [references/design-tells.md](references/design-tells.md) |
-| German output or a German audit | [references/locale-de.md](references/locale-de.md) |
+| Layout, card, badge, spacing, dark-mode, or effect defaults are written or audited | [references/design-tells.md](references/design-tells.md) |
+| The output or the audited material is German | [references/locale-de.md](references/locale-de.md), in addition to prose tells and never instead of them |
 
-Copy work loads prose tells only. A visual refresh with unchanged copy loads
-design tells only. Load the locale annex in addition to prose tells, never
-instead of them.
+A visual refresh that changes no copy is the one case that loads design tells
+alone.
 
 ## 2. Mode
 
