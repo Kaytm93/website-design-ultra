@@ -78,6 +78,7 @@
       "allowedReferences": [
         "skills/core-rules/references/responsive-recomposition.md",
         "skills/content-design/references/localization.md",
+        "skills/content-design/references/microcopy.md",
         "skills/typography/references/pairings-and-roles.md",
         "skills/typography/references/hierarchy-and-loading.md",
         "skills/typography/references/licensing-and-alternatives.md",
@@ -97,8 +98,8 @@
         "skills/color-palettes/references/editorial-natural.md",
         "skills/color-palettes/references/expressive.md"
       ],
-      "maxReferenceFiles": 8,
-      "maxEstimatedPluginTokens": 16211
+      "maxReferenceFiles": 9,
+      "maxEstimatedPluginTokens": 16726
     }
   },
   {

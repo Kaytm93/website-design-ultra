@@ -53,7 +53,21 @@ You will build an immersive 3D experience (hero, scene, viewer, or scroll-driven
 
 9. **Fallbacks (MANDATORY)** — Work through `immersive-3d` §5: reduced motion, art-directed poster when WebGL/WebGPU is missing, lazy load, Suspense + preload.
 
-10. **Interaction and input parity** — As soon as the scene is clickable or draggable: load `r3f-interaction`. Every canvas action needs a DOM equivalent. For touch, additionally define drag threshold, pinch/zoom, pointer capture, `touch-action`, hover fallback, and cancellation.
+10. **Interaction and input parity** — As soon as the scene is clickable or
+    draggable: load `r3f-interaction`. Every canvas action needs a DOM
+    equivalent.
+
+    **Touch (REQUIRED for any pointer-driven scene)** — Answer all six
+    separately and report them as six entries, not as one sentence about
+    "touch support". A scene that omits one of these ships a gesture the
+    browser or another handler will steal:
+
+    1. Drag threshold — the distance that separates a tap from a drag.
+    2. Pinch/zoom — the gesture owner and the clamped zoom range.
+    3. Pointer capture — where `setPointerCapture` is taken and released.
+    4. `touch-action` — the exact value on the canvas and why.
+    5. Hover fallback — what replaces hover-only information on touch.
+    6. Cancellation — the `pointercancel` and capture-loss recovery path.
 
 11. **Pre-flight** — Load `core-rules` and check the applicable items including evidenced claims, responsive contract, art-direction contract, 3D budget, renderer compatibility, DOM alternative, and stable quality tiers.
 
@@ -73,7 +87,9 @@ You will build an immersive 3D experience (hero, scene, viewer, or scroll-driven
 4. `npm install …` (R3F) or importmap (vanilla)
 5. Working code with reduced-motion, DOM, and 2D fallback
 6. Perf budget plus Poster/Low/Medium/High table
-7. For interactive scenes: keyboard, touch, and cancellation solution
+7. For interactive scenes: the keyboard solution, plus all six touch answers
+   from step 10 as separate entries — drag threshold, pinch/zoom, pointer
+   capture, `touch-action`, hover fallback, cancellation
 8. Verification status (`PASS | FAIL | UNAVAILABLE | NOT_APPLICABLE`), backend, and
    artifact folder; on `UNAVAILABLE` the open manual capture matrix
 9. Customization hooks (colors, light, exposure, motion intensity, camera distance)
