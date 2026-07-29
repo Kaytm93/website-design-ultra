@@ -305,8 +305,11 @@ function runClaude(testCase, prompt, schema, options) {
     '--verbose',
     '--json-schema',
     JSON.stringify(schema),
+    // Cases differ threefold in size. A single cap sized for the small ones
+    // terminates the large ones mid-run, and a truncated attempt is then scored
+    // as a routing miss. configurator peaked at 0.64 against a 0.60 cap.
     '--max-budget-usd',
-    options.maxBudgetUsd,
+    String(testCase.maxBudgetUsd ?? options.maxBudgetUsd),
   ]
   if (options.model) args.push('--model', options.model)
   if (options.effort) args.push('--effort', options.effort)
@@ -567,14 +570,23 @@ reported skill list, is the source of truth. Do not modify files.`
   const { run, tracePath } = providerResult
 
   if (run.error || run.status !== 0) {
-    const providerError = (
-      run.stderr ||
-      run.stdout ||
-      run.error?.message ||
-      `provider exited with status ${run.status ?? 'null'}${run.signal ? ` / ${run.signal}` : ''}`
-    )
-      .trim()
-      .slice(0, 2000)
+    // The CLI reports why it stopped in a trailing result event. Without this
+    // the failure line is 2000 characters of raw event stream and a budget
+    // termination is indistinguishable from a crash.
+    const terminal = parseJsonLines(run.stdout ?? '')
+      .reverse()
+      .find((event) => event.type === 'result')
+    const providerError = terminal?.subtype
+      ? `provider stopped: ${terminal.subtype}` +
+        (terminal.total_cost_usd ? ` after $${terminal.total_cost_usd.toFixed(4)}` : '') +
+        (terminal.num_turns ? ` / ${terminal.num_turns} turns` : '')
+      : (
+          run.stderr ||
+          run.error?.message ||
+          `provider exited with status ${run.status ?? 'null'}${run.signal ? ` / ${run.signal}` : ''}`
+        )
+          .trim()
+          .slice(0, 2000)
     console.error(`FAIL ${label}: ${providerError}`)
     const record = {
       id: testCase.id,

@@ -291,7 +291,8 @@
       ],
       "maxReferenceFiles": 14,
       "maxEstimatedPluginTokens": 24379
-    }
+    },
+    "maxBudgetUsd": 1.2
   },
   {
     "id": "slop",
