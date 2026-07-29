@@ -149,7 +149,7 @@
       "requiredFiles": [
         "skills/core-rules/references/responsive-recomposition.md",
         "skills/color-palettes/references/neutral-product.md",
-        "skills/ui-states/references/accessibility.md",
+        "skills/core-rules/references/accessibility.md",
         "skills/anti-slop/references/prose-tells.md"
       ],
       "forbiddenFiles": [
