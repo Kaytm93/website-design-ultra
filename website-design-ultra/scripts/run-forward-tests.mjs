@@ -616,19 +616,28 @@ reported skill list, is the source of truth. Do not modify files.`
 const summary = selectedCases.map((testCase) => {
   const attempts = attemptsByCase.get(testCase.id)
   const passed = attempts.filter((a) => a.status === 'passed').length
-  const passRate = attempts.length ? passed / attempts.length : 0
+  // A crashed or timed-out CLI says nothing about routing. Counting it as a
+  // routing failure understates the rate and hides the infrastructure problem.
+  const errored = attempts.filter((a) => a.status === 'provider-error').length
+  const scored = attempts.length - errored
+  const passRate = scored ? passed / scored : 0
   // Count each distinct failure once per attempt so a reproducible failure is
   // visibly different from one that appeared in a single attempt.
   const failureCounts = {}
   for (const a of attempts) {
+    if (a.status === 'provider-error') continue
     for (const f of new Set(a.failures ?? [])) failureCounts[f] = (failureCounts[f] ?? 0) + 1
   }
   return {
     id: testCase.id,
     attempts: attempts.length,
+    scored,
+    errored,
     passed,
     passRate,
-    meetsThreshold: passRate >= options.minPassRate,
+    // With every attempt errored there is no evidence either way, so the case
+    // cannot be called green. It is reported as unscored, not as a pass.
+    meetsThreshold: scored > 0 && passRate >= options.minPassRate,
     failureCounts,
   }
 })
@@ -651,9 +660,12 @@ writeReport(options, {
 if (options.repeat > 1) {
   console.log(`\nPass rate over ${options.repeat} attempts (threshold ${options.minPassRate}):`)
   for (const entry of summary) {
-    const rate = `${entry.passed}/${entry.attempts}`
-    const mark = entry.meetsThreshold ? 'ok  ' : 'UNDER'
-    console.log(`  ${mark} ${entry.id.padEnd(14)} ${rate.padStart(5)}  ${(entry.passRate * 100).toFixed(0)}%`)
+    const rate = `${entry.passed}/${entry.scored}`
+    const mark = entry.scored === 0 ? 'NONE ' : entry.meetsThreshold ? 'ok  ' : 'UNDER'
+    const note = entry.errored ? `  (${entry.errored} provider error(s) excluded)` : ''
+    console.log(
+      `  ${mark} ${entry.id.padEnd(14)} ${rate.padStart(5)}  ${(entry.passRate * 100).toFixed(0)}%${note}`,
+    )
     // Reproducible failures are the actionable ones; one-offs are noise.
     for (const [failure, count] of Object.entries(entry.failureCounts).sort((a, b) => b[1] - a[1])) {
       if (count > 1) console.log(`        ${count}x ${failure}`)
@@ -664,7 +676,7 @@ if (options.repeat > 1) {
 const under = summary.filter((entry) => !entry.meetsThreshold)
 if (under.length) {
   console.error(
-    `\nForward tests below threshold: ${under.length}/${summary.length} case(s) under ${options.minPassRate} (${under.map((e) => `${e.id} ${e.passed}/${e.attempts}`).join(', ')})`,
+    `\nForward tests below threshold: ${under.length}/${summary.length} case(s) under ${options.minPassRate} (${under.map((e) => `${e.id} ${e.passed}/${e.scored}`).join(', ')})`,
   )
   process.exit(1)
 }
