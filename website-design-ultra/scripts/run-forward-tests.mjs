@@ -58,6 +58,8 @@ function parseArguments(argv) {
     report: null,
     traceDir: null,
     requireLive: false,
+    repeat: 1,
+    minPassRate: 1,
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -90,6 +92,14 @@ function parseArguments(argv) {
     } else if (argument === '--trace-dir') {
       options.traceDir = path.resolve(argv[index + 1])
       index += 1
+    } else if (argument === '--repeat') {
+      // Number(), not parseInt(): parseInt('2.5') is 2, and silently running a
+      // different number of attempts than asked for corrupts every rate below.
+      options.repeat = Number(argv[index + 1])
+      index += 1
+    } else if (argument === '--min-pass-rate') {
+      options.minPassRate = Number(argv[index + 1])
+      index += 1
     } else if (argument === '--help') {
       console.log(`Usage:
   node scripts/run-forward-tests.mjs --dry-run
@@ -99,6 +109,7 @@ function parseArguments(argv) {
                                      [--timeout-ms 300000]
                                      [--report /absolute/path/report.json]
                                      [--trace-dir /absolute/path/traces]
+                                     [--repeat 5] [--min-pass-rate 0.8]
                                      [--require-live]
 
 Live runs need an authenticated Codex or Claude Code CLI. Each case loads this
@@ -110,7 +121,17 @@ UNAVAILABLE, leaves the launch gate open, and exits 0 unless --require-live is
 set. It is never reported as a pass.
 
 --trace-dir writes the raw provider event stream per case. Those files are the
-archivable evidence behind a routing claim; --report links them by name.`)
+archivable evidence behind a routing claim; --report links them by name.
+
+Routing is not deterministic. A single attempt per case measures one sample of
+a distribution, so one green run is not evidence that a case is stable and one
+red run is not evidence of a regression. --repeat N runs every case N times and
+scores it by pass rate; --min-pass-rate is the per-case threshold that has to
+be met. The defaults (--repeat 1 --min-pass-rate 1) reproduce the older
+all-or-nothing behaviour, which is only meaningful as a smoke test.
+
+Cost scales with cases x repeats x --max-budget-usd. Six cases at --repeat 5
+and 0.60 is up to 18 USD.`)
       process.exit(0)
     } else {
       die(`unknown argument "${argument}"`)
@@ -119,6 +140,12 @@ archivable evidence behind a routing claim; --report links them by name.`)
 
   if (!Number.isFinite(Number(options.maxBudgetUsd)) || Number(options.maxBudgetUsd) <= 0) {
     die('--max-budget-usd must be a positive number')
+  }
+  if (!Number.isInteger(options.repeat) || options.repeat < 1) {
+    die('--repeat must be a positive integer')
+  }
+  if (!Number.isFinite(options.minPassRate) || options.minPassRate <= 0 || options.minPassRate > 1) {
+    die('--min-pass-rate must be greater than 0 and at most 1')
   }
   if (!Number.isInteger(options.timeoutMs) || options.timeoutMs < 10000) {
     die('--timeout-ms must be an integer of at least 10000')
@@ -246,7 +273,10 @@ function probeProvider(provider) {
 function writeTrace(options, testCase, provider, stdout) {
   if (!options.traceDir) return null
   fs.mkdirSync(options.traceDir, { recursive: true })
-  const file = path.join(options.traceDir, `${provider}-${testCase.id}.jsonl`)
+  // Repeated attempts would otherwise overwrite each other, and the whole point
+  // of repeating is being able to compare the attempts against one another.
+  const suffix = options.repeat > 1 ? `-${String(options.attempt).padStart(2, '0')}` : ''
+  const file = path.join(options.traceDir, `${provider}-${testCase.id}${suffix}.jsonl`)
   fs.writeFileSync(file, stdout ?? '')
   return file
 }
@@ -514,8 +544,11 @@ if (availability.status === 'UNAVAILABLE') {
 }
 
 const results = []
-let failedCases = 0
+const attemptsByCase = new Map(selectedCases.map((testCase) => [testCase.id, []]))
 for (const testCase of selectedCases) {
+ for (let attempt = 1; attempt <= options.repeat; attempt += 1) {
+  options.attempt = attempt
+  const label = options.repeat > 1 ? `${testCase.id} [${attempt}/${options.repeat}]` : testCase.id
   const prompt = `Case ID: ${testCase.id}
 
 /website-design-ultra:${testCase.command} ${testCase.prompt}
@@ -534,7 +567,6 @@ reported skill list, is the source of truth. Do not modify files.`
   const { run, tracePath } = providerResult
 
   if (run.error || run.status !== 0) {
-    failedCases += 1
     const providerError = (
       run.stderr ||
       run.stdout ||
@@ -543,35 +575,63 @@ reported skill list, is the source of truth. Do not modify files.`
     )
       .trim()
       .slice(0, 2000)
-    console.error(`FAIL ${testCase.id}: ${providerError}`)
-    results.push({
+    console.error(`FAIL ${label}: ${providerError}`)
+    const record = {
       id: testCase.id,
+      attempt,
       status: 'provider-error',
       failures: [providerError],
       tracePath,
-    })
+    }
+    results.push(record)
+    attemptsByCase.get(testCase.id).push(record)
     continue
   }
 
   const { result, trace } = providerResult
   const failures = evaluate(testCase, result, trace)
   if (failures.length) {
-    failedCases += 1
-    console.error(`FAIL ${testCase.id}: ${failures.join('; ')}`)
+    console.error(`FAIL ${label}: ${failures.join('; ')}`)
   } else {
     console.log(
-      `PASS ${testCase.id} (${trace.accessedFiles.length} plugin files, ~${trace.estimatedPluginTokens} plugin tokens)`,
+      `PASS ${label} (${trace.accessedFiles.length} plugin files, ~${trace.estimatedPluginTokens} plugin tokens)`,
     )
   }
-  results.push({
+  const record = {
     id: testCase.id,
+    attempt,
     status: failures.length ? 'failed' : 'passed',
     failures,
     result,
     trace,
     tracePath,
-  })
+  }
+  results.push(record)
+  attemptsByCase.get(testCase.id).push(record)
+ }
 }
+
+// Score by pass rate, not by the last attempt. A case is only as good as the
+// distribution it produces; a single green attempt says nothing about it.
+const summary = selectedCases.map((testCase) => {
+  const attempts = attemptsByCase.get(testCase.id)
+  const passed = attempts.filter((a) => a.status === 'passed').length
+  const passRate = attempts.length ? passed / attempts.length : 0
+  // Count each distinct failure once per attempt so a reproducible failure is
+  // visibly different from one that appeared in a single attempt.
+  const failureCounts = {}
+  for (const a of attempts) {
+    for (const f of new Set(a.failures ?? [])) failureCounts[f] = (failureCounts[f] ?? 0) + 1
+  }
+  return {
+    id: testCase.id,
+    attempts: attempts.length,
+    passed,
+    passRate,
+    meetsThreshold: passRate >= options.minPassRate,
+    failureCounts,
+  }
+})
 
 writeReport(options, {
   generatedAt: new Date().toISOString(),
@@ -582,11 +642,32 @@ writeReport(options, {
   plugin: identity,
   provenance,
   selfTest,
+  repeat: options.repeat,
+  minPassRate: options.minPassRate,
+  summary,
   results,
 })
 
-if (failedCases) {
-  console.error(`Forward tests failed: ${failedCases}/${selectedCases.length}`)
+if (options.repeat > 1) {
+  console.log(`\nPass rate over ${options.repeat} attempts (threshold ${options.minPassRate}):`)
+  for (const entry of summary) {
+    const rate = `${entry.passed}/${entry.attempts}`
+    const mark = entry.meetsThreshold ? 'ok  ' : 'UNDER'
+    console.log(`  ${mark} ${entry.id.padEnd(14)} ${rate.padStart(5)}  ${(entry.passRate * 100).toFixed(0)}%`)
+    // Reproducible failures are the actionable ones; one-offs are noise.
+    for (const [failure, count] of Object.entries(entry.failureCounts).sort((a, b) => b[1] - a[1])) {
+      if (count > 1) console.log(`        ${count}x ${failure}`)
+    }
+  }
+}
+
+const under = summary.filter((entry) => !entry.meetsThreshold)
+if (under.length) {
+  console.error(
+    `\nForward tests below threshold: ${under.length}/${summary.length} case(s) under ${options.minPassRate} (${under.map((e) => `${e.id} ${e.passed}/${e.attempts}`).join(', ')})`,
+  )
   process.exit(1)
 }
-console.log(`Forward tests passed: ${selectedCases.length}/${selectedCases.length}`)
+console.log(
+  `\nForward tests met threshold: ${summary.length}/${summary.length} case(s) at or above ${options.minPassRate}`,
+)
