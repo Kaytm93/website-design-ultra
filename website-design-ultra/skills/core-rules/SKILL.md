@@ -48,6 +48,10 @@ Read only what the task needs:
   button label, an empty state, or demo data still needs the tell catalogue even
   when the claim ledger was not otherwise in scope. Non-English output loads the
   matching locale annex in addition.
+  A plan-only or contract-only deliverable does not suspend this gate. Deciding
+  what a headline, subhead, CTA, label, or state message will say is writing
+  copy, whether the answer ships as a rendered line or as a row in a content
+  contract. "No code" limits the format of the output, not the tells in it.
 - Output looks machine-made, or an existing page is audited for it → `anti-slop`
   design tells.
 - Colors must be selected or audited → `color-palettes`.

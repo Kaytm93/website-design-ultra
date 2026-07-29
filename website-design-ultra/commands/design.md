@@ -17,7 +17,10 @@ If the briefing calls for 3D, WebGL, a scene, or an immersive experience → use
    **Copy form** — As soon as any user-visible line is written, load `anti-slop`
    and its prose reference. This gate is independent of step 2: a headline, a
    button label, or an empty state still needs it when the claim ledger was not
-   in scope. Add the locale annex for non-English output. Clear every Tier-1
+   in scope. A plan-only or contract-only brief does not suspend the gate:
+   deciding what a headline, CTA, or state message will say is writing copy,
+   even when the answer ships as a row in a content contract rather than as
+   code. Add the locale annex for non-English output. Clear every Tier-1
    tell, measure the Tier-3 budgets, and check the specificity floor before the
    copy enters the layout.
 

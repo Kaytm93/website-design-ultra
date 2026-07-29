@@ -24,10 +24,12 @@ A page can pass this skill and still lie. Run both.
 [references/prose-tells.md](references/prose-tells.md) is required, not a menu
 entry. Read it before producing output whenever this skill was loaded because
 copy is written, rewritten, or audited — a headline, a subhead, a blurb, a CTA,
-a label, a state message, or a demo string. `core-rules` §3 states the same gate
-in the same terms; this section exists so that the two agree at the point where
-the file is actually opened. Judging that the task does not need the tell
-catalogue is not one of the available decisions.
+a label, a state message, or a demo string. A plan, a contract, or a "no code"
+deliverable counts: deciding what a line will say is writing it, and the tells
+live in the decision, not in the file format that carries it. `core-rules` §3
+states the same gate in the same terms; this section exists so that the two
+agree at the point where the file is actually opened. Judging that the task does
+not need the tell catalogue is not one of the available decisions.
 
 The other two references are conditional:
 

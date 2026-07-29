@@ -46,7 +46,7 @@
         "skills/anti-slop/references/locale-de.md"
       ],
       "maxReferenceFiles": 6,
-      "maxEstimatedPluginTokens": 12403
+      "maxEstimatedPluginTokens": 12922
     }
   },
   {
@@ -98,7 +98,7 @@
         "skills/color-palettes/references/expressive.md"
       ],
       "maxReferenceFiles": 8,
-      "maxEstimatedPluginTokens": 15838
+      "maxEstimatedPluginTokens": 16211
     }
   },
   {
@@ -154,7 +154,7 @@
         "skills/anti-slop/references/locale-de.md"
       ],
       "maxReferenceFiles": 9,
-      "maxEstimatedPluginTokens": 14903
+      "maxEstimatedPluginTokens": 15411
     }
   },
   {
@@ -216,7 +216,7 @@
         "skills/anti-slop/references/locale-de.md"
       ],
       "maxReferenceFiles": 9,
-      "maxEstimatedPluginTokens": 20403
+      "maxEstimatedPluginTokens": 20166
     }
   },
   {
@@ -284,7 +284,7 @@
         "skills/anti-slop/references/locale-de.md"
       ],
       "maxReferenceFiles": 13,
-      "maxEstimatedPluginTokens": 24403
+      "maxEstimatedPluginTokens": 23520
     }
   },
   {
@@ -346,7 +346,7 @@
         "skills/style-directions/references/product.md"
       ],
       "maxReferenceFiles": 5,
-      "maxEstimatedPluginTokens": 11600
+      "maxEstimatedPluginTokens": 11721
     },
     "lintCopy": {
       "path": "copy.lines",

@@ -20,8 +20,11 @@ You will build an immersive 3D experience (hero, scene, viewer, or scroll-driven
    **Copy form** — As soon as any user-visible line is written, load `anti-slop`
    and its prose reference. A 3D brief does not suspend this gate: a hero
    headline, a hotspot label, a fallback message, or a configurator option name
-   is user-visible copy. Add the locale annex for non-English output. `§4` of
-   `immersive-3d` covers the scene, not the words in it.
+   is user-visible copy. Neither does a plan-only brief: deciding what those
+   lines will say is writing them, and "without writing code" limits the format
+   of the deliverable, not the tells inside it. Add the locale annex for
+   non-English output. `§4` of `immersive-3d` covers the scene, not the words
+   in it.
 
 5. **Choose and commit to a stack layer** (from `immersive-3d` §2). Base layer:
    exactly one, and only when code is actually written.
