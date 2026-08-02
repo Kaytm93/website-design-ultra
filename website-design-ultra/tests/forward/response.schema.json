@@ -6,6 +6,7 @@
     "skills",
     "direction",
     "content",
+    "copy",
     "responsive",
     "accessibility",
     "immersive"
@@ -94,7 +95,8 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "lines"
+        "lines",
+        "slopChecks"
       ],
       "properties": {
         "lines": {

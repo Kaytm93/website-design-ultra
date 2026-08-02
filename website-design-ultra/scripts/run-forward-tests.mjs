@@ -15,6 +15,7 @@ import {
   pluginTreeDigest,
   selfTestTraceAudit,
 } from './forward-trace.mjs'
+import { strictObjectSchemaFailures } from './forward-schema.mjs'
 
 const pluginRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const casesPath = path.join(pluginRoot, 'tests', 'forward', 'cases.json')
@@ -60,6 +61,7 @@ function parseArguments(argv) {
     requireLive: false,
     repeat: 1,
     minPassRate: 1,
+    providerCli: null,
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -73,6 +75,9 @@ function parseArguments(argv) {
       index += 1
     } else if (argument === '--provider') {
       options.provider = argv[index + 1]
+      index += 1
+    } else if (argument === '--provider-cli') {
+      options.providerCli = argv[index + 1]
       index += 1
     } else if (argument === '--model') {
       options.model = argv[index + 1]
@@ -104,6 +109,7 @@ function parseArguments(argv) {
       console.log(`Usage:
   node scripts/run-forward-tests.mjs --dry-run
   node scripts/run-forward-tests.mjs [--case dashboard] [--provider codex|claude]
+                                     [--provider-cli /absolute/path/to/cli]
                                      [--model sonnet] [--effort medium]
                                      [--max-budget-usd 0.75]
                                      [--timeout-ms 300000]
@@ -120,8 +126,12 @@ Provider availability follows ADR-010: a missing or unauthenticated CLI reports
 UNAVAILABLE, leaves the launch gate open, and exits 0 unless --require-live is
 set. It is never reported as a pass.
 
---trace-dir writes the raw provider event stream per case. Those files are the
-archivable evidence behind a routing claim; --report links them by name.
+--provider-cli selects one executable for version, authentication, and the live
+run. Use it when Codex or Claude Code is installed outside PATH.
+
+--trace-dir writes the raw provider event stream per case. Those files are
+archivable evidence for that attempt's routing result; --report links them by
+name.
 
 Routing is not deterministic. A single attempt per case measures one sample of
 a distribution, so one green run is not evidence that a case is stable and one
@@ -153,7 +163,85 @@ and 0.60 is up to 18 USD.`)
   if (!['codex', 'claude'].includes(options.provider)) {
     die('--provider must be "codex" or "claude"')
   }
+  if (options.providerCli !== null && !options.providerCli?.trim()) {
+    die('--provider-cli needs a non-empty executable path')
+  }
+  if (options.providerCli && !path.isAbsolute(options.providerCli)) {
+    die('--provider-cli must be an absolute path')
+  }
+  options.providerExecutable = options.providerCli ?? options.provider
   return options
+}
+
+function unwrapProviderError(value) {
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    if (!trimmed) return null
+    try {
+      return unwrapProviderError(JSON.parse(trimmed)) ?? trimmed
+    } catch {
+      return trimmed
+    }
+  }
+  if (!value || typeof value !== 'object') return null
+  for (const candidate of [
+    value.error?.message,
+    value.message,
+    value.result,
+    value.error,
+  ]) {
+    const unwrapped = unwrapProviderError(candidate)
+    if (unwrapped) return unwrapped
+  }
+  return null
+}
+
+function terminalProviderError(stdout) {
+  for (const event of parseJsonLines(stdout).reverse()) {
+    if (event.type === 'turn.failed') {
+      const message = unwrapProviderError(event.error)
+      if (message) return message
+    }
+    if (event.type === 'error') {
+      const message = unwrapProviderError(event)
+      if (message) return message
+    }
+    if (event.type === 'result' && (event.is_error || event.subtype === 'error')) {
+      const message = unwrapProviderError(event)
+      if (message) return message
+    }
+    // A budget or turn-limit termination is a well-formed result event with a
+    // non-success subtype and no error payload. Without this it falls through
+    // to the raw stream and reads like a crash.
+    if (event.type === 'result' && event.subtype && event.subtype !== 'success') {
+      return (
+        `provider stopped: ${event.subtype}` +
+        (typeof event.total_cost_usd === 'number'
+          ? ` after $${event.total_cost_usd.toFixed(4)}`
+          : '') +
+        (event.num_turns ? ` / ${event.num_turns} turns` : '')
+      )
+    }
+  }
+  return null
+}
+
+function providerErrorMessage(run) {
+  const eventError = terminalProviderError(run.stdout)
+  const spawnError = run.error?.message?.trim()
+  const stderr = run.stderr?.trim()
+  const stdout = run.stdout?.trim()
+  const status = `provider exited with status ${run.status ?? 'null'}${
+    run.signal ? ` / ${run.signal}` : ''
+  }`
+  const primary = eventError || spawnError || stderr || stdout || status
+  const diagnostics = []
+  if (eventError && stderr && stderr !== eventError) diagnostics.push(stderr)
+  if (spawnError && spawnError !== primary) diagnostics.push(spawnError)
+  return [primary, diagnostics.length ? `Diagnostics:\n${diagnostics.join('\n')}` : null]
+    .filter(Boolean)
+    .join('\n\n')
+    .slice(0, 2000)
 }
 
 function validateFixtures(cases, schema) {
@@ -162,6 +250,62 @@ function validateFixtures(cases, schema) {
   }
   if (schema.type !== 'object' || !schema.properties?.skills) {
     die('response schema is missing the skills contract')
+  }
+  const schemaFailures = strictObjectSchemaFailures(schema)
+  if (schemaFailures.length) {
+    die(`response schema is not strict-output compatible: ${schemaFailures.join('; ')}`)
+  }
+
+  const schemaRegression = strictObjectSchemaFailures({
+    type: 'object',
+    additionalProperties: false,
+    required: [],
+    properties: {
+      copy: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['lines'],
+        properties: { lines: { type: 'array' }, slopChecks: { type: 'array' } },
+      },
+    },
+  })
+  if (
+    !schemaRegression.some((failure) => failure.includes('required is missing copy')) ||
+    !schemaRegression.some((failure) => failure.includes('required is missing slopChecks'))
+  ) {
+    die('strict-output schema validator self-test failed')
+  }
+  const recursiveSchemaRegression = strictObjectSchemaFailures({
+    $defs: { nested: { type: 'object' } },
+  })
+  if (
+    !recursiveSchemaRegression.some((failure) =>
+      failure.includes('$.$defs.nested: properties must be an object'),
+    )
+  ) {
+    die('recursive strict-output schema validator self-test failed')
+  }
+  const duplicateRequiredRegression = strictObjectSchemaFailures({
+    type: 'object',
+    additionalProperties: false,
+    required: ['value', 'value'],
+    properties: { value: { type: 'string' } },
+  })
+  if (!duplicateRequiredRegression.some((failure) => failure.includes('required repeats value'))) {
+    die('strict-output duplicate-required self-test failed')
+  }
+
+  const providerErrorRegression = providerErrorMessage({
+    status: 1,
+    stderr: 'Reading additional input from stdin...',
+    stdout:
+      '{"type":"turn.failed","error":{"message":"{\\"error\\":{\\"code\\":\\"invalid_json_schema\\",\\"message\\":\\"Missing slopChecks\\"}}"}}',
+  })
+  if (
+    !providerErrorRegression.startsWith('Missing slopChecks') ||
+    !providerErrorRegression.includes('Diagnostics:')
+  ) {
+    die('provider error selection self-test failed')
   }
 
   const identifiers = new Set()
@@ -234,40 +378,74 @@ function validateFixtures(cases, schema) {
  * Provider availability, in the ADR-010 shape: a missing capability is reported
  * as UNAVAILABLE with a reason, never as a pass and never as a routing failure.
  */
-function probeProvider(provider) {
-  const version = spawnSync(provider, ['--version'], { encoding: 'utf8' })
+function probeProvider(provider, executable) {
+  const version = spawnSync(executable, ['--version'], { encoding: 'utf8' })
   if (version.error || version.status !== 0) {
-    return { status: 'UNAVAILABLE', reason: 'cli-missing', detail: `${provider} CLI not on PATH` }
+    return {
+      status: 'UNAVAILABLE',
+      reason: 'cli-missing',
+      detail: `could not run ${provider} CLI "${executable}"`,
+      executable,
+    }
   }
   const cliVersion = (version.stdout ?? '').trim().split('\n')[0] ?? null
 
   if (provider === 'claude') {
-    const auth = spawnSync('claude', ['auth', 'status', '--json'], { encoding: 'utf8' })
+    const auth = spawnSync(executable, ['auth', 'status', '--json'], { encoding: 'utf8' })
     let parsed = null
     try {
       parsed = JSON.parse(auth.stdout ?? '')
     } catch {
       parsed = null
     }
-    if (auth.status !== 0 || !parsed?.loggedIn) {
+    const detail = (auth.stderr || auth.stdout || '').trim()
+    if (parsed?.loggedIn === false) {
       return {
         status: 'UNAVAILABLE',
         reason: 'not-authenticated',
         detail: 'claude auth status reports no active login',
         cliVersion,
+        executable,
       }
     }
-    return { status: 'AVAILABLE', cliVersion, authMethod: parsed.authMethod ?? null }
-  }
-
-  const login = spawnSync('codex', ['login', 'status'], { encoding: 'utf8' })
-  if (login.status !== 0 && !login.error) {
-    const detail = (login.stderr || login.stdout || '').trim()
-    if (/not logged in|no credentials|unauthor/i.test(detail)) {
-      return { status: 'UNAVAILABLE', reason: 'not-authenticated', detail, cliVersion }
+    if (auth.error || auth.status !== 0 || !parsed || parsed.loggedIn !== true) {
+      return {
+        status: 'UNAVAILABLE',
+        reason: 'auth-probe-failed',
+        detail: detail || auth.error?.message || 'claude auth status returned no JSON',
+        cliVersion,
+        executable,
+      }
+    }
+    return {
+      status: 'AVAILABLE',
+      cliVersion,
+      authMethod: parsed.authMethod ?? null,
+      executable,
     }
   }
-  return { status: 'AVAILABLE', cliVersion }
+
+  const login = spawnSync(executable, ['login', 'status'], { encoding: 'utf8' })
+  if (login.error || login.status !== 0) {
+    const detail = (login.stderr || login.stdout || login.error?.message || '').trim()
+    if (/not logged in|no credentials|unauthor/i.test(detail)) {
+      return {
+        status: 'UNAVAILABLE',
+        reason: 'not-authenticated',
+        detail,
+        cliVersion,
+        executable,
+      }
+    }
+    return {
+      status: 'UNAVAILABLE',
+      reason: 'auth-probe-failed',
+      detail: detail || 'codex login status failed',
+      cliVersion,
+      executable,
+    }
+  }
+  return { status: 'AVAILABLE', cliVersion, executable }
 }
 
 function writeTrace(options, testCase, provider, stdout) {
@@ -315,7 +493,7 @@ function runClaude(testCase, prompt, schema, options) {
   if (options.effort) args.push('--effort', options.effort)
   args.push(prompt)
 
-  const run = spawnSync('claude', args, {
+  const run = spawnSync(options.providerExecutable, args, {
     cwd: pluginRoot,
     encoding: 'utf8',
     maxBuffer: 64 * 1024 * 1024,
@@ -362,7 +540,7 @@ SKILL.md files and the references they select.`
     codexPrompt,
   )
   const run = spawnSync(
-    'codex',
+    options.providerExecutable,
     args,
     {
       cwd: pluginRoot,
@@ -520,13 +698,19 @@ if (options.dryRun) {
   console.log(
     `Forward fixture validation passed: ${selectedCases.length} cases, ${selfTest.replayed} recorded traces replayed; no model behavior was tested`,
   )
+  for (const fixture of selfTest.fixtures ?? []) {
+    console.log(
+      `- historical ${fixture.provider}/${fixture.case}: plugin ${fixture.pluginVersion}, tree ${fixture.treeSha256.slice(0, 12)}, ${fixture.accessedFileCount} files`,
+    )
+  }
+  console.log('Current case contracts:')
   for (const testCase of selectedCases) {
     console.log(`- ${testCase.id}: /website-design-ultra:${testCase.command}`)
   }
   process.exit(0)
 }
 
-const availability = probeProvider(options.provider)
+const availability = probeProvider(options.provider, options.providerExecutable)
 if (availability.status === 'UNAVAILABLE') {
   console.error(
     `UNAVAILABLE ${options.provider}: ${availability.detail} (${availability.reason}).`,
@@ -559,7 +743,8 @@ for (const testCase of selectedCases) {
 Use the loaded website-design-ultra plugin and return only the schema-constrained
 planning contract. List every plugin skill actually used by exact folder name.
 For non-3D work, return null/empty values for immersive fields. Read every routed
-SKILL.md explicitly, then read only the references needed for this case. Do not
+SKILL.md explicitly, then read only the references needed for this case. Always
+return copy.lines and copy.slopChecks; use empty arrays when copy is not applicable. Do not
 scan skill or reference directories broadly. The provider tool trace, not your
 reported skill list, is the source of truth. Do not modify files.`
 
@@ -570,23 +755,7 @@ reported skill list, is the source of truth. Do not modify files.`
   const { run, tracePath } = providerResult
 
   if (run.error || run.status !== 0) {
-    // The CLI reports why it stopped in a trailing result event. Without this
-    // the failure line is 2000 characters of raw event stream and a budget
-    // termination is indistinguishable from a crash.
-    const terminal = parseJsonLines(run.stdout ?? '')
-      .reverse()
-      .find((event) => event.type === 'result')
-    const providerError = terminal?.subtype
-      ? `provider stopped: ${terminal.subtype}` +
-        (terminal.total_cost_usd ? ` after $${terminal.total_cost_usd.toFixed(4)}` : '') +
-        (terminal.num_turns ? ` / ${terminal.num_turns} turns` : '')
-      : (
-          run.stderr ||
-          run.error?.message ||
-          `provider exited with status ${run.status ?? 'null'}${run.signal ? ` / ${run.signal}` : ''}`
-        )
-          .trim()
-          .slice(0, 2000)
+    const providerError = providerErrorMessage(run)
     console.error(`FAIL ${label}: ${providerError}`)
     const record = {
       id: testCase.id,

@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.6.4 contains 17 skills and 5 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting, evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, trace-proven selective loading, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
+Version 1.6.6 contains 17 skills and 5 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting, evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
@@ -41,7 +41,7 @@ website-design-ultra/
     ├── style-directions/
     │   └── references/          # product, editorial, expressive
     ├── color-palettes/
-    │   └── references/          # only one palette family is loaded
+    │   └── references/          # select only the needed palette family
     ├── typography/
     │   └── references/              # pairings, hierarchy/loading, licenses
     ├── motion-system/
@@ -73,7 +73,8 @@ The plugin uses three levels:
 2. A triggered `SKILL.md` contains only selection logic, invariants, and the core workflow.
 3. Detailed palettes, directions, component recipes, and runtime-specific code live in one-level `references/` files.
 
-Examples:
+Intended routing contracts (a passing live attempt is still required for an
+exact provider, case, and tree):
 
 - SaaS palette request → `color-palettes/SKILL.md` plus `references/neutral-product.md`.
 - Any shipped copy line → `anti-slop/SKILL.md` plus `references/prose-tells.md`; the
@@ -96,12 +97,13 @@ Cross-skill mentions are selection pointers, not transitive dependencies. The
 router decides a task gate before reading a child; a child does not recursively
 reload its owner or sibling references.
 
-The live forward suite validates this from provider events. It extracts actual
+The live forward suite audits this from provider events. It extracts actual
 Claude `Read`/`Skill` calls or Codex command reads, rejects broad content scans,
 enforces per-case allowed files and reference/token budgets, and fails when a
-self-reported skill lacks read evidence. The dashboard case additionally proves
-that `neutral-product.md` is read while the editorial and expressive palette
-families are not.
+self-reported skill lacks read evidence. The dashboard contract requires
+`neutral-product.md` while forbidding the editorial and expressive palette
+families. Only a passing live attempt establishes that result for its exact
+provider, case, and tree.
 
 ## Anti-slop contract
 
@@ -331,7 +333,8 @@ Exit code 1 marks a Tier-1 hit or an exceeded Tier-3 budget; `--strict` adds
 Tier-2 clusters. A `PASS` reports the absence of catalogued patterns and is never
 a content approval.
 
-Validate the five forward-test fixtures and trace parsers without model usage:
+Validate the six forward-test contracts and replay the committed trace fixtures
+without model usage:
 
 ```bash
 node scripts/run-forward-tests.mjs --dry-run
@@ -339,6 +342,18 @@ node scripts/run-forward-tests.mjs --dry-run
 
 This command intentionally says that no model behavior was tested. It is not a
 Progressive Disclosure proof.
+
+### Committed evidence scope
+
+The repository commits two historical Claude traces: `dashboard`, recorded
+against version 1.5.1, and `slop`, recorded against a dirty 1.6.1 candidate whose
+manifest still read 1.6.0. Each fixture is bound to its recorded tree digest and
+replays its exact accessed and forbidden files.
+
+Those snapshots exercise the Claude trace parser and document those two attempts
+only. They do not establish current 1.6.6 routing, the other four cases, routing
+stability, or Codex behavior. `--dry-run` prints this historical inventory before
+the current case contracts so the local evidence boundary stays visible.
 
 Run isolated live forward tests through an authenticated Codex CLI (default) or Claude Code:
 
@@ -350,6 +365,16 @@ node scripts/run-forward-tests.mjs \
   --max-budget-usd 0.75 \
   --report /absolute/path/forward-report.json \
   --trace-dir /absolute/path/traces
+```
+
+If the selected CLI is installed outside `PATH`, pass its executable explicitly.
+The same binary is then used for version, authentication, and the live run:
+
+```bash
+node scripts/run-forward-tests.mjs \
+  --provider codex \
+  --provider-cli /absolute/path/to/codex \
+  --case dashboard
 ```
 
 Use `--provider claude` to test Claude plugin loading and `--case saas` (or another case ID) during iteration. Live tests load this plugin source read-only, request schema-constrained output, and fail on missing skill routes, missing read evidence, unexpected references, broad reads, off-root reads, or per-case Plugin-token budgets. Reports include accessed files, observed bytes, a deterministic `ceil(bytes / 4)` Plugin-token estimate, provider-reported total usage, the git provenance of the tree, and its content digest. `--max-budget-usd` applies to Claude; Codex uses its configured account limits.
@@ -393,11 +418,11 @@ skills and an installed copy of this same plugin, and the trace then measures th
 wrong tree. Paths outside the tested plugin root are reported as `offRootReads`
 and fail the case instead of counting as evidence.
 
-`--trace-dir` writes the raw provider event stream per case. Those files are the
-archivable evidence behind a routing claim. A recorded stream can be replayed
+`--trace-dir` writes the raw provider event stream per case. Those files are
+archivable evidence for that attempt's routing result. A recorded stream can be replayed
 against the parser without any CLI: fixtures in `tests/forward/traces/` run on
-every `--dry-run`, so the Claude path stays covered on machines where Claude Code
-is not authenticated.
+every `--dry-run`, so the Claude trace-parser path stays covered on machines
+where Claude Code is not authenticated.
 
 If the selected CLI is missing or unauthenticated, the run reports `UNAVAILABLE`
 with a reason, leaves the launch gate open, and exits 0 — the same contract as
@@ -421,6 +446,25 @@ unavailable is now a hard validation failure: a ruleset that requires evidence
 for every claim does not ship an unverifiable provenance claim of its own.
 
 ## Version
+
+**1.6.6** — evidence-scoped routing claims and an executable Codex gate:
+
+- replaced outcome language about proven/validated routing with the verifiable
+  capability: provider-trace audits for selective skill loading,
+- documented the exact two-trace historical evidence boundary,
+- made the strict response schema valid for Codex Structured Outputs and added
+  an offline recursive schema gate,
+- credited single shell-wrapped Codex reader commands instead of dropping their
+  file access from the trace,
+- surfaced structured provider failures before secondary CLI diagnostics, and
+- added `--provider-cli` for installations outside `PATH`.
+
+**1.6.5** — required references and honest test scoring:
+
+- moved mandatory reads to the point of use and aligned conflicting routing
+  contracts,
+- clarified that plan-only deliverables still write copy, and
+- added repeated attempts plus per-case pass-rate thresholds.
 
 **1.6.4** — locale-safe copy linting:
 
