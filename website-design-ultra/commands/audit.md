@@ -25,7 +25,10 @@ You will audit existing frontend code for quality.
      Locale is detected per file when the flag is omitted. Report the resolved
      locale and every auto-detection warning together with the tier counts and
      measured numbers. A `PASS` means no
-     catalogued pattern was found; it is not a content approval. If the project
+     catalogued pattern was found; it is not a content approval. `NO-COPY`
+     (exit 2) means nothing was checked — point the linter at the files that
+     hold the copy, or report the audit's copy layer as unverified. Never
+     summarize a `NO-COPY WARNING` as a clean result. If the project
      ships a `.anti-slop-protect.json`, pass it with `--protect` and report any
      entry that was ignored for missing a reason.
    - Visual slop, measured:

@@ -29,7 +29,28 @@ const TEXT_EXTENSIONS = new Set([
   '.html',
   '.htm',
   '.txt',
+  '.vue',
+  '.svelte',
+  '.astro',
+  '.json',
 ])
+
+/** Template languages whose visible text extracts like HTML. */
+const MARKUP_EXTENSIONS = new Set(['.html', '.htm', '.vue', '.svelte', '.astro'])
+
+/**
+ * JSON is where localized copy usually lives, and also where every config file
+ * lives. Linting the whole extension would bury real findings under
+ * package.json and tsconfig.json, so only message catalogues are collected:
+ * a locale-bearing directory, or a file named for a supported language.
+ */
+const CATALOGUE_DIRECTORY = /(?:^|\/)(?:locales?|i18n|lang|langs|messages|translations?)(?:\/|$)/i
+const CATALOGUE_FILE = /(?:^|[./_-])(?:en|de)(?:[-_][a-z]{2})?\.json$/i
+
+function isMessageCatalogue(file) {
+  const normalized = String(file).replaceAll('\\', '/')
+  return CATALOGUE_DIRECTORY.test(path.dirname(normalized)) || CATALOGUE_FILE.test(normalized)
+}
 
 const SUPPORTED_LOCALES = ['en', 'de']
 
@@ -165,9 +186,21 @@ export const PROFILES = {
 }
 
 export const BUDGETS = {
-  sentenceVariationMinCount: 5,
+  sentenceVariationMinCount: 10,
   tier2ClusterPer: 200,
 }
+
+/**
+ * Reported with its measured number, never fail-gating.
+ *
+ * Sentence-length variation is the one Tier-3 budget with no defensible
+ * threshold. Short, factual copy — a price paragraph, a retry policy — is
+ * legitimately uniform, and the rule failed exactly the specific, evidence-led
+ * writing the rest of this plugin demands. Tier 3 says "measure, then decide";
+ * for this rule the deciding is a reader's job, so the number is printed and
+ * the exit code stays out of it.
+ */
+export const ADVISORY_RULES = new Set(['sentence-variation'])
 
 const EMOJI = /[\u{1F300}-\u{1FAFF}\u{1F900}-\u{1F9FF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}]/u
 const ORNAMENT = /[→⇒▸✦✧★]/
@@ -208,7 +241,14 @@ Options:
   --strict             also fail on Tier-2 clusters
   --help               this text
 
-Exit codes: 0 pass, 1 Tier-1 hit or Tier-3 breach (or Tier-2 with --strict), 2 usage error.
+Reads Markdown, JSX/TSX, HTML, Vue, Svelte, Astro, and JSON message
+catalogues (a locales/i18n/lang/messages path, or en.json / de.json).
+
+Exit codes: 0 pass, 1 Tier-1 hit or Tier-3 breach (or Tier-2 with --strict),
+2 usage error or nothing checked — no file matched, or no visible copy could
+be extracted from any input.
+
+sentence-variation is advisory: it is measured and printed, never fail-gating.
 
 A pass proves the absence of catalogued patterns, not that the copy is true or
 specific. See skills/anti-slop/SKILL.md.`)
@@ -302,7 +342,10 @@ function collectFiles(targets) {
       if (entry.isDirectory()) {
         if (['node_modules', '.git', 'dist', 'build', '.next', 'output'].includes(entry.name)) continue
         files.push(...collectFiles([next]))
-      } else if (TEXT_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) {
+      } else {
+        const extension = path.extname(entry.name).toLowerCase()
+        if (!TEXT_EXTENSIONS.has(extension)) continue
+        if (extension === '.json' && !isMessageCatalogue(next)) continue
         files.push(next)
       }
     }
@@ -414,10 +457,36 @@ function extract(content, extension) {
     }
   }
 
-  if (['.html', '.htm'].includes(extension)) {
+  if (extension === '.json') {
+    // Values only. A message id is not copy, and linting it would flag the
+    // developer's naming instead of what a visitor reads.
+    const strings = []
+    const walk = (node) => {
+      if (typeof node === 'string') strings.push(node)
+      else if (Array.isArray(node)) node.forEach(walk)
+      else if (node && typeof node === 'object') Object.values(node).forEach(walk)
+    }
+    try {
+      walk(JSON.parse(content))
+    } catch {
+      return { body: '', prose: '', headings: [], listItems: [], labels: [] }
+    }
+    return {
+      body: strings.join('\n'),
+      prose: strings.join('\n'),
+      headings: [],
+      listItems: [],
+      labels: strings.filter((value) => value.length <= 40),
+    }
+  }
+
+  if (MARKUP_EXTENSIONS.has(extension)) {
     body = body
+      // Astro component script; Vue and Svelte carry theirs in <script>.
+      .replace(/^---\n[\s\S]*?\n---\n/, ' ')
       .replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' ')
       .replace(/<!--[\s\S]*?-->/g, ' ')
+      .replace(/\sclass(?:Name)?=(?:"[^"]*"|'[^']*'|\{[^}]*\})/g, ' ')
     for (const match of body.matchAll(/<h[1-3][^>]*>([\s\S]*?)<\/h[1-3]>/gi)) {
       headings.push(match[1].replace(/<[^>]+>/g, ' ').trim())
     }
@@ -761,7 +830,22 @@ const findings = results.flatMap((result) => result.findings)
 const byTier = { 1: 0, 2: 0, 3: 0 }
 for (const finding of findings) byTier[finding.tier] += 1
 
-const failed = byTier[1] > 0 || byTier[3] > 0 || (options.strict && byTier[2] > 0)
+const failingFindings = findings.filter((finding) => !ADVISORY_RULES.has(finding.rule))
+const failingByTier = { 1: 0, 2: 0, 3: 0 }
+for (const finding of failingFindings) failingByTier[finding.tier] += 1
+const failed =
+  failingByTier[1] > 0 || failingByTier[3] > 0 || (options.strict && failingByTier[2] > 0)
+
+/**
+ * A file the extractor could not read produces zero findings, which used to
+ * render as a pass. A linter that reports the absence of patterns in text it
+ * never saw is exactly the self-report this plugin refuses everywhere else.
+ */
+const filesWithoutCopy = inputs
+  .filter((_, index) => (results[index].measurements.words ?? 0) === 0)
+  .map((input) => input.file)
+const noCopy = inputs.length === 0 || filesWithoutCopy.length === inputs.length
+
 const resolvedLocales = SUPPORTED_LOCALES.filter((locale) =>
   Object.values(localeDetection).some((detection) => detection.locales.includes(locale)),
 )
@@ -769,16 +853,18 @@ const localeWarnings = Object.values(localeDetection)
   .map((detection) => detection.warning)
   .filter(Boolean)
 const payload = {
-  status: failed ? 'FAIL' : 'PASS',
+  status: noCopy ? 'NO-COPY' : failed ? 'FAIL' : 'PASS',
   localeMode: options.localeMode,
   locales: options.localeMode === 'explicit' ? options.locales : resolvedLocales,
   localeDetection,
   localeWarnings,
   profile: options.profile,
   files: inputs.length,
+  filesWithoutCopy,
   tier1: byTier[1],
   tier2: byTier[2],
   tier3: byTier[3],
+  advisory: findings.length - failingFindings.length,
   strict: options.strict,
   protectApplied: protect.applied.length,
   protectRejected: protect.rejected,
@@ -797,7 +883,8 @@ if (options.json) {
     if (!tierFindings.length) continue
     console.log(`\nTier ${tier} (${tierFindings.length})`)
     for (const finding of tierFindings) {
-      console.log(`  ${finding.file}:${finding.line}  ${finding.rule}`)
+      const advisory = ADVISORY_RULES.has(finding.rule) ? '  [advisory]' : ''
+      console.log(`  ${finding.file}:${finding.line}  ${finding.rule}${advisory}`)
       console.log(`    ${finding.quote}`)
     }
   }
@@ -805,15 +892,33 @@ if (options.json) {
     console.log(`\nProtect entries ignored for missing a reason: ${protect.rejected.join(', ')}`)
   }
   for (const warning of localeWarnings) console.log(`\nAUTO-LOCALE WARNING: ${warning}`)
+  if (filesWithoutCopy.length) {
+    console.log(
+      `\nNO-COPY WARNING: no visible text was extracted from ${filesWithoutCopy.length} file(s); ` +
+        'they were not checked. ' +
+        `${filesWithoutCopy.slice(0, 10).join(', ')}` +
+        (filesWithoutCopy.length > 10 ? `, +${filesWithoutCopy.length - 10} more` : ''),
+    )
+  }
   const localeSummary =
     options.localeMode === 'explicit'
       ? options.locales.join('+')
       : `auto → ${resolvedLocales.join('+') || 'none'}`
   console.log(
-    `\nLINT: ${payload.status} — ${inputs.length} file(s), locale ${localeSummary}, profile ${options.profile}, tier1 ${byTier[1]}, tier2 ${byTier[2]}, tier3 ${byTier[3]}`,
+    `\nLINT: ${payload.status} — ${inputs.length} file(s), locale ${localeSummary}, profile ${options.profile}, tier1 ${byTier[1]}, tier2 ${byTier[2]}, tier3 ${byTier[3]}` +
+      (payload.advisory ? ` (${payload.advisory} advisory)` : ''),
   )
+  if (noCopy) {
+    console.log(
+      inputs.length === 0
+        ? 'No lintable file matched the given path. Nothing was checked.'
+        : 'No visible copy was extracted from any input. Nothing was checked.',
+    )
+  }
   console.log(payload.note)
 }
 
-process.exitCode = failed ? 1 : 0
+// 2 is the "could not check" code, shared with usage errors: an unread tree is
+// not a clean tree, and a caller that treats 0 as green must not receive one.
+process.exitCode = noCopy ? 2 : failed ? 1 : 0
 }

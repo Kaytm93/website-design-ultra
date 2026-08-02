@@ -2,12 +2,18 @@
 
 Use one palette. Values are calibrated for the listed default background/action pairing; recalculate contrast after adaptation.
 
+A name here is the direction it belongs to, not the named product's token file.
+These values are re-derived to pass the state-contrast contract, so `border` is
+louder than the hairline those interfaces actually use. That is the price of a
+boundary that meets 3:1 — use `divider` for lines that only separate.
+
 ## 1. Linear Mono
 
 ```yaml
 bg: "#0a0a0a"
 surface: "#171717"
 border: "#a1a1aa"
+divider: "#2e2e2e"
 text: "#fafafa"
 muted: "#a1a1aa"
 action: "#10b981"
@@ -26,6 +32,7 @@ Use: productivity, developer tools, dark SaaS.
 bg: "#ffffff"
 surface: "#f6f9fc"
 border: "#425466"
+divider: "#e3e8ee"
 text: "#0a2540"
 muted: "#425466"
 action: "#635bff"
@@ -44,6 +51,7 @@ Use: B2B, payments, financial SaaS.
 bg: "#ffffff"
 surface: "#f5f5f7"
 border: "#6e6e73"
+divider: "#d2d2d7"
 text: "#1d1d1f"
 muted: "#6e6e73"
 action: "#0071e3"
@@ -62,6 +70,7 @@ Use: premium consumer, app marketing.
 bg: "#000000"
 surface: "#1d1d1f"
 border: "#a1a1a6"
+divider: "#333336"
 text: "#f5f5f7"
 muted: "#a1a1a6"
 action: "#0a84ff"
@@ -80,6 +89,7 @@ Use: Apple-like dark product presentation. True black is a deliberate direction 
 bg: "#ffffff"
 surface: "#f5f5f5"
 border: "#5f5f5f"
+divider: "#e0e0e0"
 text: "#0a0a0a"
 muted: "#5f5f5f"
 action: "#0070f3"
@@ -99,6 +109,7 @@ Use: enterprise, wealth, premium finance. Gold is decorative, not a second CTA.
 bg: "#ffffff"
 surface: "#fafafa"
 border: "#000000"
+divider: "#d4d4d4"
 text: "#000000"
 muted: "#4a4a4a"
 action: "#d1121c"
@@ -117,6 +128,7 @@ Use: art, architecture, photography. True black is intentional.
 bg: "#f8fafc"
 surface: "#ffffff"
 border: "#526077"
+divider: "#dbe2ea"
 text: "#0f172a"
 muted: "#526077"
 action: "#0369a1"

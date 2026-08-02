@@ -26,6 +26,7 @@ Every selected palette must expose at least:
   --color-bg: ...;
   --color-surface: ...;
   --color-border: ...;
+  --color-divider: ...;
   --color-text: ...;
   --color-text-muted: ...;
   --color-action: ...;
@@ -39,6 +40,13 @@ Every selected palette must expose at least:
 
 The curated palettes include `danger` and `disabled` so the validator can exercise real states. Add `warning`, `success`, and their `on-*` colors only when the interface needs those semantics. `disabled` is the text/icon token on the declared base surfaces; opacity alone is not the state signal.
 
+`border` and `divider` are two roles, not one line in two weights. `border` is a
+component boundary that carries meaning and owes 3:1. `divider` is decoration —
+a rule between list rows, a section separator — and WCAG sets no minimum for it,
+so it is deliberately quieter. Reach for `divider` first; a page whose every line
+is a 3:1 border reads harder than the direction intends, and each palette ships
+both so that choice does not require inventing a value.
+
 ## 3. Invariants
 
 - Body text must meet WCAG AA 4.5:1; target 7:1 where the brand permits.
@@ -47,7 +55,7 @@ The curated palettes include `danger` and `disabled` so the validator can exerci
 - Validate error text/icon against both base surfaces and `on-danger` against a filled danger surface.
 - Use one dominant action color. Additional direction colors may be decorative or semantic, not competing calls to action.
 - Test focus colors against every surface they touch.
-- Treat `border` as a meaningful component boundary with 3:1 contrast; create a separate decorative divider token if a quieter line is needed.
+- Treat `border` as a meaningful component boundary with 3:1 contrast, and use the palette's `divider` for any line that only separates. A `divider` has no contrast minimum; it must be visible and quieter than `border`, which the validator checks.
 - Disabled controls are WCAG contrast exceptions, but target 3:1 for their text/icons and add a non-color cue so the state remains understandable.
 - For translucent surfaces and borders, calculate the composited sRGB color over the declared background before measuring.
 - Preserve color meaning without relying on color alone.
@@ -76,5 +84,6 @@ Return the chosen palette as semantic CSS variables and mention:
 - [ ] Only one palette family reference was loaded.
 - [ ] Semantic roles, not raw color names, drive components.
 - [ ] Text, action, border/graphics, focus, disabled, and error states were checked.
+- [ ] Separating lines use `divider`; `border` is reserved for boundaries that mean something.
 - [ ] Decorative colors are not mistaken for action colors.
 - [ ] Contrast was calculated rather than estimated visually.

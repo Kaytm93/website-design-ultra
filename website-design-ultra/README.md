@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.6.6 contains 17 skills and 5 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting, evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
+Version 1.6.7 contains 17 skills and 5 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting, evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
@@ -166,7 +166,14 @@ Full pages and signature sections define wide, portrait, and narrow “shots” 
 
 ### State contrast
 
-Every curated palette declares and validates body/muted text, action, focus, meaningful border, danger, on-danger, and disabled tokens. RGBA glass surfaces and borders are composited over their declared backdrop before contrast is calculated.
+Every curated palette declares and validates body/muted text, action, focus, meaningful border, decorative divider, danger, on-danger, and disabled tokens. RGBA glass surfaces and borders are composited over their declared backdrop before contrast is calculated.
+
+`border` and `divider` are separate roles. A border is a boundary that carries
+meaning and owes 3:1; a divider only separates, so WCAG sets no minimum and the
+validator checks the role instead of a threshold — visible at all, and quieter
+than that palette's border. A palette name is the direction it belongs to, not
+the named product's token file: these values are re-derived to pass the contrast
+contract, so `border` is louder than the hairline those interfaces ship.
 
 ## Commands
 
@@ -333,6 +340,17 @@ Exit code 1 marks a Tier-1 hit or an exceeded Tier-3 budget; `--strict` adds
 Tier-2 clusters. A `PASS` reports the absence of catalogued patterns and is never
 a content approval.
 
+Exit code 2 marks `NO-COPY`: no file matched the path, or no visible text could
+be extracted from any input. That is not a pass. It reads Markdown, JSX/TSX,
+HTML, Vue, Svelte, Astro, and the string values of JSON message catalogues —
+message ids are not copy. Copy assembled at runtime in plain `.js`, or held in a
+format the extractor does not read, is reported as unchecked, and a partial miss
+prints a `NO-COPY WARNING` naming the skipped files.
+
+`sentence-variation` is advisory: measured and printed, never fail-gating. Short
+factual copy is legitimately uniform, and gating on it rejected the specific,
+evidence-led writing the skill asks for.
+
 Validate the six forward-test contracts and replay the committed trace fixtures
 without model usage:
 
@@ -446,6 +464,19 @@ unavailable is now a hard validation failure: a ruleset that requires evidence
 for every claim does not ship an unverifiable provenance claim of its own.
 
 ## Version
+
+**1.6.7** — an unread tree is not a clean tree:
+
+- the copy linter no longer reports `PASS` over files it never read; nothing
+  checked is `NO-COPY` with exit code 2, and a partial miss names the skipped
+  files,
+- added Vue, Svelte, Astro, and JSON message catalogues to the extractor; message
+  ids are not linted,
+- made `sentence-variation` advisory and raised its minimum sample to 10
+  sentences, because it failed short factual copy,
+- gave all 20 palettes a decorative `divider` token, validated as a role rather
+  than a threshold, and stated plainly that a palette name is a direction rather
+  than that product's tokens.
 
 **1.6.6** — evidence-scoped routing claims and an executable Codex gate:
 

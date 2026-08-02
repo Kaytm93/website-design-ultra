@@ -500,6 +500,21 @@ for (const testCase of copyExpectations.cases) {
       fail(`${label}: ${tier} was ${report[tier]}, expected at least ${testCase[key]}`)
     }
   }
+  // Proves the extractor's boundary, not just its reach: a rule that fires on
+  // a message id, a class attribute, or an identifier is a false positive the
+  // tier counts alone cannot distinguish from a real hit.
+  for (const rule of testCase.forbiddenRules ?? []) {
+    const hit = (report.findings ?? []).find((finding) => finding.rule === rule)
+    if (hit) {
+      fail(`${label}: rule ${rule} must not fire here, matched "${hit.quote}"`)
+    }
+  }
+  if (testCase.filesWithoutCopy !== undefined) {
+    const observed = (report.filesWithoutCopy ?? []).length
+    if (observed !== testCase.filesWithoutCopy) {
+      fail(`${label}: ${observed} file(s) without copy, expected ${testCase.filesWithoutCopy}`)
+    }
+  }
 }
 
 const selfLint = runLinter(['--self'])
@@ -736,6 +751,7 @@ for (const name of fs.readdirSync(paletteDirectory)) {
       'bg',
       'surface',
       'border',
+      'divider',
       'text',
       'muted',
       'action',
@@ -792,6 +808,22 @@ for (const name of fs.readdirSync(paletteDirectory)) {
         backdrop,
         3,
       )
+      // A divider carries no information, so WCAG sets no minimum for it. Its
+      // contract is the opposite one: it must be visible at all, and it must
+      // be quieter than the border — otherwise the palette ships two loud
+      // lines and the 3:1 border rule silently becomes the house style.
+      const dividerRatio = contrast(composite(colors.divider, backdrop), backdrop)
+      const borderRatio = contrast(composite(colors.border, backdrop), backdrop)
+      contrastCheckCount += 1
+      if (dividerRatio < 1.1) {
+        fail(
+          `${label}: divider/${surfaceName} contrast ${dividerRatio.toFixed(2)} is invisible (minimum 1.1)`,
+        )
+      } else if (dividerRatio >= borderRatio) {
+        fail(
+          `${label}: divider/${surfaceName} contrast ${dividerRatio.toFixed(2)} is not quieter than border ${borderRatio.toFixed(2)}`,
+        )
+      }
       requireContrast(
         `${label}: danger/${surfaceName}`,
         composite(colors.danger, backdrop),

@@ -1,5 +1,60 @@
 # website-design-ultra
 
+## 1.6.7 — An Unread Tree Is Not a Clean Tree (2026-08-02)
+
+A review of 1.6.4 found three defects that survived into 1.6.6. One of them
+inverted the plugin's own standard: the copy linter reported `PASS` on files it
+had never read.
+
+### The linter no longer passes what it did not read
+
+- `LINT: PASS — 0 file(s)` and a pass over files that yielded no extractable
+  text are both gone. The status is `NO-COPY` and the exit code is 2, which is
+  the "could not check" code, not the green one. A partial miss prints a
+  `NO-COPY WARNING` naming every skipped file.
+- Reproduced before the fix: a Svelte project and a `locales/de.json` bundle
+  each returned `PASS — 0 file(s)` with exit 0, and a Three.js page whose copy
+  is built in plain `.js` returned `PASS` over five files and zero words.
+- Added `.vue`, `.svelte`, and `.astro` to the extractor, routed through the
+  markup path with an Astro frontmatter strip and a class-attribute strip.
+- Added JSON message catalogues: string values only, from a `locales`, `i18n`,
+  `lang`, `messages`, or `translations` path, or an `en.json`/`de.json` file.
+  Message ids are not copy and are not linted — gettext-style catalogues use
+  the English source string as the id, so reading keys would report the source
+  language of a translated file. All other JSON is skipped so config files
+  cannot bury real findings.
+- `tests/copy/` gained three fixtures and a `forbiddenRules` assertion that
+  guards the extractor's boundary rather than only its reach: Tier-1 patterns
+  hidden in Svelte `<script>`/`<style>` blocks, English Tier-1 patterns used as
+  German message ids, and a runtime-built page that must report `NO-COPY`.
+
+### Sentence-length variation is advisory
+
+- The rule failed on short, factual, specific copy — a price paragraph, a retry
+  policy — which is exactly the writing §5 asks for. It is measured and printed,
+  and it no longer decides an exit code.
+- Its minimum sample rose from 5 sentences to 10.
+
+### Palettes ship the divider they told you to create
+
+- All 20 palettes gained a `divider` token. `border` stays the 3:1 boundary that
+  carries meaning; `divider` is the decorative rule, and WCAG sets no minimum
+  for it.
+- The validator enforces the role rather than a threshold: a divider must be
+  visible (≥ 1.1) and must be quieter than that palette's border. 282 state
+  contrast checks, up from 242.
+- The palette references now say plainly that a brand name is the direction, not
+  that product's token file, and that `border` is louder than the hairline those
+  interfaces actually ship.
+
+### Not in this release
+
+Light and dark remain separate palettes rather than a paired token set. Pairing
+20 palettes across two modes is design work with 240 new contrast obligations,
+not a mechanical edit, and several directions are deliberately single-mode.
+
+Release-Tag: v1.6.7
+
 ## 1.6.6 — Evidence-Scoped Routing Claims (2026-07-29)
 
 The public manifests described minimal routing as trace-proven or

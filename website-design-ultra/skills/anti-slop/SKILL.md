@@ -86,7 +86,7 @@ Recalibrate against your own approved copy and record the change.
 |---|---|---|
 | Em dash | ≤ 1 per 300 words of prose; never in a headline | used as the rhythm device instead of a comma or a period |
 | Triplet | ≤ 1 per 200 words | a three-item list has two real items and a filler |
-| Sentence-length variation | coefficient of variation ≥ 0.35 over any block of 5+ sentences | every sentence is the same length |
+| Sentence-length variation | coefficient of variation ≥ 0.35 over any block of 10+ sentences | every sentence is the same length |
 | Bold lead-in bullets | < 50% of items in a list | `**Term:** definition` is the shape of every row |
 | Evaluative adjectives | ≤ 1 per headline, ≤ 1 per blurb sentence | adjectives carry the claim instead of nouns and verbs |
 | Heading density | ≥ 40 words of prose per heading | headings replace paragraphs |
@@ -95,6 +95,12 @@ Two budgets are measured on prose only, because tables and definition lists have
 no rhythm to judge: a dash inside a table cell or directly after a term at the
 head of a list item is notation, and a heading that labels a data block is not a
 section. The adjective budget has no automated check; count it by hand.
+
+Sentence-length variation is **advisory**: the linter prints the coefficient and
+never fails on it. Short factual copy — a price paragraph, a retry policy, a
+shipping condition — is legitimately uniform, and gating on it rejected exactly
+the specific, evidence-led writing §5 asks for. A low number is worth a second
+read, not a blocked build.
 
 ## 5. Specificity floor — the positive rule
 
@@ -150,12 +156,24 @@ node scripts/lint-copy.mjs --path content --locale de --profile editorial # expl
 node scripts/lint-copy.mjs --stdin --json
 ```
 
-The linter reads Markdown prose and JSX/HTML visible text, skips code fences,
+The linter reads Markdown prose and the visible text of JSX/TSX, HTML, Vue,
+Svelte, and Astro, plus the string values of JSON message catalogues — a
+`locales/`, `i18n/`, `lang/`, `messages/`, or `translations/` path, or a file
+named `en.json`/`de.json`. Message ids are not copy and are not linted. Other
+JSON is skipped so config files cannot bury real findings. It skips code fences,
 inline code, blockquotes, class attributes, and imports, and reports per tier
 with counts, locations, and the measured numbers. Exit code 1 on any Tier-1 hit
 or exceeded Tier-3 budget; `--strict` also fails on Tier-2 clusters. Its own
 regression gate lives in `tests/copy/`: a rule change must still catch every slop
 fixture and still flag nothing in the authentic-prose fixtures.
+
+**`NO-COPY` and exit code 2.** When no file matched the path, or no visible text
+could be extracted from any input, the status is `NO-COPY` and the exit code is
+2 — never `PASS`. Copy built at runtime from a plain `.js` file, or held in a
+format the extractor does not read, is unchecked, not clean. A partial miss is
+reported as a `NO-COPY WARNING` naming the files that were skipped. Read that
+warning before quoting a pass: it is the same failure mode as a self-reported
+route, and it is the one this file exists to refuse.
 
 With no `--locale`, the linter detects English or German per file. Declared
 frontmatter/HTML language and locale-bearing path segments win; otherwise it
@@ -175,8 +193,9 @@ Known blind spots — a clean report is not their absence:
   reader,
 - the triplet count cannot tell three real items from two plus a filler, so it is
   a gate in `marketing` only and a number everywhere else,
-- JSX and HTML extraction is best effort and prefers missing a string over
-  inventing a finding,
+- markup extraction is best effort and prefers missing a string over inventing a
+  finding; what it missed shows up as a `NO-COPY WARNING`, not as a pass,
+- sentence-length variation is advisory and decides nothing on its own,
 - nothing here checks whether a claim is true.
 
 A lint pass proves the absence of catalogued patterns. It does not prove the copy
@@ -217,3 +236,4 @@ The fixes stay with their owner:
 - [ ] No rewrite invented a fact; unknowns stayed placeholders.
 - [ ] Protect-list entries carry reasons; collisions were reported.
 - [ ] The linter ran, or its absence was stated instead of implied.
+- [ ] The status was `PASS`, not `NO-COPY`, and any skipped-file warning was read.

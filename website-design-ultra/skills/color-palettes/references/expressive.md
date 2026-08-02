@@ -2,12 +2,17 @@
 
 Use one palette. Supporting colors are decorative unless a semantic role is explicitly assigned.
 
+`border` is the 3:1 boundary token and is louder than a decorative rule; use
+`divider` for lines that only separate. Brutalist and Neo-Memphis are the
+directions where the loud border is the point — there, `divider` is the exception.
+
 ## 1. Cyber Cockpit
 
 ```yaml
 bg: "#000814"
 surface: "#001d3d"
 border: "#7ea2c8"
+divider: "#113a63"
 text: "#ffffff"
 muted: "#7ea2c8"
 action: "#ffc300"
@@ -26,6 +31,7 @@ Use: aerospace, technical gaming, dense dark interfaces.
 bg: "#ededed"
 surface: "#ffffff"
 border: "#0f0f0f"
+divider: "#cfcfcf"
 text: "#0f0f0f"
 muted: "#4a4a4a"
 action: "#ff5e3a"
@@ -45,6 +51,7 @@ Use: agencies, music, streetwear. Choose orange as action; green is decorative o
 bg: "#c0c0c0"
 surface: "#ffffff"
 border: "#404040"
+divider: "#9a9a9a"
 text: "#000000"
 muted: "#404040"
 action: "#c70068"
@@ -64,6 +71,7 @@ Use: fashion, music, nostalgia.
 bg: "#050505"
 surface: "#0a0a14"
 border: "#9ea3ad"
+divider: "#26262e"
 text: "#f5f5f5"
 muted: "#9ea3ad"
 action: "#00c4d8"
@@ -83,6 +91,7 @@ Use: gaming, underground technology.
 bg: "#ffd23f"
 surface: "#ffffff"
 border: "#000000"
+divider: "#d8b134"
 text: "#000000"
 muted: "#4a4a4a"
 action: "#b21e45"
@@ -102,6 +111,7 @@ Use: education, festivals, bold brands.
 bg: "#134e4a"
 surface: "rgba(255,255,255,.07)"
 border: "rgba(255,255,255,.55)"
+divider: "rgba(255,255,255,.18)"
 text: "#f8fafc"
 muted: "#cbd5e1"
 action: "#2dd4bf"
