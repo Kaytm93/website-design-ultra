@@ -13,7 +13,9 @@ You will refresh existing frontend into a new direction. Functionality stays, th
    - If the user names no direction: offer 3 proposals from `style-directions` and let the user choose
 
 2. **Load only the relevant skills/references**:
-   - `style-directions` — the chosen direction family
+   - `style-directions` — the chosen direction family, its token block, and one
+     signature move from `references/signature-moves.md`. A refresh that changes
+     the palette and keeps the old grid, rhythm, and radii is a recolor
    - `content-design` — when hierarchy, claims, CTA, state, or locale copy changes
    - `anti-slop` — design tells for the new direction always; the prose reference
      whenever a line of copy is rewritten. A refresh is where the old page's
@@ -24,7 +26,7 @@ You will refresh existing frontend into a new direction. Functionality stays, th
    - `motion-system` — only when the motion profile changes
    - `component-patterns` — only for patterns actually being replaced
    - `ui-states` — only for affected data/interaction-dependent components
-   - Responsive recomposition reference from `core-rules` — when signature sections or viewport priorities change
+   - Responsive recomposition and composition-contract references from `core-rules` — when signature sections or viewport priorities change
    - For 3D: `immersive-3d`, `3d-art-direction`, `3d-runtime-quality` plus only the affected implementation skills
 
 3. **Refresh strategy**:

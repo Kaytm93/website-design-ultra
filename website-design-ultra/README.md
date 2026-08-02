@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.6.7 contains 17 skills and 5 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting, evidence-led content, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
+Version 1.7.0 contains 17 skills and 6 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting, evidence-led content, a declared 2D composition contract, per-direction design tokens, a catalogue of signature devices, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
@@ -13,6 +13,7 @@ website-design-ultra/
 ├── LICENSE
 ├── commands/
 │   ├── design.md
+│   ├── tweak.md                    # scoped single-component track
 │   ├── audit.md
 │   ├── refresh.md
 │   ├── immersive.md
@@ -33,13 +34,14 @@ website-design-ultra/
 │   └── verify-browser.mjs          # capability-gated browser adapter
 └── skills/
     ├── core-rules/
-    │   └── references/              # responsive recomposition contract
+    │   └── references/              # composition contract, responsive recomposition
     ├── anti-slop/
-    │   └── references/              # prose tells, design tells, German annex
+    │   └── references/              # prose tells, Tier-2 words, design tells,
+    │                                # German annex, operations
     ├── content-design/
     │   └── references/              # claims/proof, microcopy, localization
     ├── style-directions/
-    │   └── references/          # product, editorial, expressive
+    │   └── references/          # product, editorial, expressive, signature moves
     ├── color-palettes/
     │   └── references/          # select only the needed palette family
     ├── typography/
@@ -78,9 +80,19 @@ exact provider, case, and tree):
 
 - SaaS palette request → `color-palettes/SKILL.md` plus `references/neutral-product.md`.
 - Any shipped copy line → `anti-slop/SKILL.md` plus `references/prose-tells.md`; the
-  design and locale references stay unread.
+  design, vocabulary, locale, and operations references stay unread.
 - German landing page → the same two files plus `references/locale-de.md`.
+- Reporting findings or running the linter → `anti-slop/references/operations.md`;
+  writing one line does not load it.
+- A hand-judged Tier-2 cluster → `anti-slop/references/tier2-vocabulary.md`; a
+  linted surface never needs it.
+- One scoped component via `/tweak` → `core-rules/SKILL.md` plus a linter run;
+  no direction, palette, or pattern skill.
 - Visual refresh with unchanged copy → `anti-slop/references/design-tells.md` only.
+- Full page composition → `core-rules/references/composition-contract.md` next to
+  the responsive contract; a component does not load either.
+- Signature device for a page → `style-directions/references/signature-moves.md`
+  after the direction is chosen, never during the shortlist.
 - Claim/CTA rewrite → `content-design/SKILL.md` plus only claims or microcopy.
 - Localized editorial page → content localization plus typography licensing, not every type reference.
 - Full-page responsive work → `core-rules` plus `references/responsive-recomposition.md`.
@@ -137,7 +149,10 @@ copy leaf — a whole subtree would match the model's own report of the pattern 
 avoided. `scripts/validate-content.mjs` binds the linter to the references — a Tier-1 rule id or Tier-2 term that is not
 documented fails the build — and replays `tests/copy/` so a rule change must still
 catch every slop fixture while flagging nothing in the authentic-prose fixtures,
-in English and German. The plugin lints its own 57 documents on every run. The
+in English and German. The English binding surface spans two files since 1.7.0:
+the structural tells stayed in `prose-tells.md`, the Tier-2 word list moved to
+`tier2-vocabulary.md`, and both are bound. The plugin lints its own 61 documents
+on every run. The
 skill states its blind spots: fake-profound kickers, synonym cycling, and triplets
 with a filler third item need a reader, and no lint result claims a copy line is
 true.
@@ -160,6 +175,37 @@ overrides.
 
 Full pages and signature sections define wide, portrait, and narrow “shots” with explicit focal element, reading order, media crop/camera, CTA placement, density, proof, and interaction model. A smaller grid or font size alone is not considered complete responsive art direction.
 
+### Composition contract and direction tokens
+
+A 3D scene had to declare camera, safe area, and poster frame before scene code;
+a 2D page had no equivalent, so its composition was decided by whichever
+component happened to be written first.
+`core-rules/references/composition-contract.md` closes that gap with a filled
+block: visual thesis, focal element, first-screen occupancy, asymmetry, dominant
+contrast, quiet zones, and one signature move. It loads under the same condition
+as the responsive contract and answers the complementary question — what must
+survive every viewport, where recomposition answers what changes.
+
+Each of the 12 style directions now carries a token block in the same YAML shape
+as the palettes: grid, type ratio, space scale, section padding, radii, dominant
+contrast, and motion profile. `validate-content.mjs` binds every direction to one
+and every `motion-profile` to a profile `motion-system` defines. The block also
+changes what an audit measures: the Tier-3 visual budgets compare the built page
+against the declaration when one exists, and against the generic defaults
+otherwise. A deliberately three-radius brutalist page is now conformant by
+declaration rather than a finding, while an undeclared one still fails.
+
+`style-directions/references/signature-moves.md` catalogues 20 implementable
+devices, each with the direction it belongs to and the invariant it must not
+break. `component-patterns` required one signature pattern per viewport without
+ever defining a signature; this file is that definition.
+
+`/design` step 3 requires three named variants before the direction is chosen,
+one line each, differing in composition rather than palette. The direction choice
+was the one gate in the plugin with no counter-measure against the attractor the
+anti-slop thesis names: the most likely option wins whenever the brief did not
+constrain, and picking the closest row of a shortlist has exactly that shape.
+
 ### Typography licensing
 
 `typography` is now a progressive-disclosure router. Pairings, hierarchy/loading, and the complete license/open-alternative matrix load independently. Commercial, free-proprietary, OS-bundled, and OFL fonts are deliberately separate statuses.
@@ -178,6 +224,7 @@ contract, so `border` is louder than the hairline those interfaces ship.
 ## Commands
 
 - `/website-design-ultra:design <briefing>` — build a 2D website or component.
+- `/website-design-ultra:tweak <briefing>` — change one existing component without loading the page-level stack.
 - `/website-design-ultra:immersive <briefing>` — build a justified 3D experience.
 - `/website-design-ultra:audit <path>` — inspect design, code, states, accessibility, and optional 3D.
 - `/website-design-ultra:refresh <path>` — change art direction while preserving functionality.
@@ -369,7 +416,7 @@ manifest still read 1.6.0. Each fixture is bound to its recorded tree digest and
 replays its exact accessed and forbidden files.
 
 Those snapshots exercise the Claude trace parser and document those two attempts
-only. They do not establish current 1.6.6 routing, the other four cases, routing
+only. They do not establish current 1.7.0 routing, the other four cases, routing
 stability, or Codex behavior. `--dry-run` prints this historical inventory before
 the current case contracts so the local evidence boundary stays visible.
 
@@ -464,6 +511,30 @@ unavailable is now a hard validation failure: a ruleset that requires evidence
 for every claim does not ship an unverifiable provenance claim of its own.
 
 ## Version
+
+**1.7.0** — a page declares its composition, and the small path costs less:
+
+- added `core-rules/references/composition-contract.md`, the 2D twin of the
+  art-direction contract: thesis, focal element, first-screen occupancy,
+  asymmetry, dominant contrast, quiet zones, signature move,
+- gave all 12 style directions a token block in the palette YAML shape, bound by
+  the validator, and made the Tier-3 visual budgets measure against the
+  declaration when one exists,
+- added `style-directions/references/signature-moves.md`: 20 devices, each with
+  its direction and the invariant it must not break,
+- required three named variants before a direction is committed, in `/design`
+  step 3 and in `style-directions` §4,
+- wired `DESIGN_VARIANCE` and `VISUAL_DENSITY` to checks instead of leaving them
+  unreferenced next to `MOTION_INTENSITY`,
+- moved the protect list, the linter manual, and the owner routing out of
+  `anti-slop/SKILL.md` into `references/operations.md`, and the Tier-2 word list
+  into `references/tier2-vocabulary.md`; the binding gate now spans both English
+  files,
+- added `/tweak` for a single scoped component: no direction, palette, or
+  pattern skill, and a linter run instead of the tell catalogue for at most three
+  changed text surfaces,
+- compressed `core-rules` §3 into a gate table and cut §7 to the four checks no
+  other skill owns.
 
 **1.6.7** — an unread tree is not a clean tree:
 

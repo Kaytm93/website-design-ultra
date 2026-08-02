@@ -17,13 +17,17 @@ This hierarchy resolves apparent conflicts. Example: off-black is the default; t
 
 ## 1. Working profile
 
-Use these defaults unless the brief or existing system implies otherwise:
+Defaults unless the brief or system implies otherwise. Each names what verifies
+it; an unverified value is decoration and gets deleted.
 
-- `DESIGN_VARIANCE: 7` — asymmetrical, but composed.
-- `MOTION_INTENSITY: 6` — expressive, not distracting.
-- `VISUAL_DENSITY: 4` — spacious, not empty.
+| Value | Default | Verified by |
+|---|---|---|
+| `DESIGN_VARIANCE` | 7 / asymmetrical, composed | ≥ 2 deliberate grid breaks per page, plus the ≤ 60% uniformity budget in `anti-slop` design tells |
+| `MOTION_INTENSITY` | 6 / expressive, not loud | the profile and duration table in `motion-system` |
+| `VISUAL_DENSITY` | 4 / spacious, not empty | `space-scale` and `section-padding` in the direction token block; at 4, hero padding ≥ 2× CTA |
 
-Treat them as decisions for the current task, not values to write into this skill.
+Task decisions, not values to edit here. Lowering one lowers its check: state the
+new number, keep the artifact.
 
 ## 2. Reconnaissance before code
 
@@ -35,37 +39,35 @@ Treat them as decisions for the current task, not values to write into this skil
 
 ## 3. Minimal skill routing
 
-Read only what the task needs:
+Read only what the task needs. A row fires on its gate, not on the topic.
 
-- Style exploration is explicitly requested, or neither brand/system nor
-  functional product cues provide a usable direction → `style-directions`.
-  A direction the briefing already names is an input, not a request to explore:
-  apply it from the briefing. A clear product context or named palette alone
-  does not require the skill either.
-- Content hierarchy, claims, CTAs, state copy, or localization changes → `content-design`.
-- **Any user-visible copy is written, rewritten, or audited → `anti-slop`.** This
-  gate is independent of `content-design`: a hero headline, a section subhead, a
-  button label, an empty state, or demo data still needs the tell catalogue even
-  when the claim ledger was not otherwise in scope. Non-English output loads the
-  matching locale annex in addition.
-  A plan-only or contract-only deliverable does not suspend this gate. Deciding
-  what a headline, subhead, CTA, label, or state message will say is writing
-  copy, whether the answer ships as a rendered line or as a row in a content
-  contract. "No code" limits the format of the output, not the tells in it.
-- Output looks machine-made, or an existing page is audited for it → `anti-slop`
-  design tells.
-- Colors must be selected or audited → `color-palettes`.
-- Font family, license/loading, language coverage, detailed type scale, or
-  wrapping behavior must be selected, changed, or audited → `typography`.
-  Generic content/layout hierarchy alone does not activate it.
-- Full page, signature section, or multi-region layout crosses viewports → [references/responsive-recomposition.md](references/responsive-recomposition.md).
-- Motion is requested, already present, or selected as part of the direction → `motion-system`; then use the working-profile intensity to calibrate it.
-- A concrete hero, card, form, navigation, or overlay recipe is explicitly
-  needed and not already decided by the existing system/layout contract →
-  `component-patterns`. Generic page or dashboard planning alone does not
-  activate it.
-- A component owns async data, validation, mutation, or interactive state → `ui-states`.
-- 3D, WebGL, WebGPU, shaders, Three.js, or R3F → `immersive-3d`, then `3d-art-direction`, `3d-runtime-quality`, and only the relevant implementation sub-skill.
+| Gate | Load |
+|---|---|
+| Any user-visible copy is written, rewritten, or audited | `anti-slop`, plus the locale annex for non-English |
+| Output looks machine-made, or a page is audited for it | `anti-slop` design tells |
+| Content hierarchy, claims, CTAs, state copy, or localization change | `content-design` |
+| Style exploration is requested, or no brand, system, or product cue yields a direction | `style-directions` |
+| Colors are selected or audited | `color-palettes` |
+| Font family, license/loading, language coverage, type scale, or wrapping changes | `typography` |
+| A page, signature section, or multi-region layout crosses viewports | `references/composition-contract.md` and `references/responsive-recomposition.md` |
+| Motion is requested, already present, or part of the direction | `motion-system`, calibrated by `MOTION_INTENSITY` |
+| A hero, card, form, navigation, or overlay recipe is still undecided | `component-patterns` |
+| A component owns async data, validation, mutation, or interactive state | `ui-states` |
+| 3D, WebGL, WebGPU, shaders, Three.js, or R3F | `immersive-3d`, then `3d-art-direction` and `3d-runtime-quality`, then one implementation sub-skill |
+
+Three clarifications the table cannot carry:
+
+- **The copy gate is independent of `content-design`.** A headline, subhead,
+  button label, empty state, or demo string needs the tell catalogue even when
+  the claim ledger was out of scope. Plan-only and contract-only deliverables
+  included: deciding what a line says is writing it, whatever format ships it.
+- **A named direction is an input, not a request to explore.** Apply it from the
+  briefing; a clear product context or a named palette does not activate
+  `style-directions` either.
+- **Two gates fire on a concrete decision, never on a topic.**
+  Generic content/layout hierarchy does not activate `typography`; generic page
+  or dashboard planning does not activate `component-patterns`. Both need a
+  choice the existing system has not already made.
 
 Do not load every design skill by default.
 
@@ -139,6 +141,12 @@ These are defaults, not universal prohibitions:
 
 ## 6. Composition defaults
 
+Full pages and signature sections declare their composition before layout code,
+in [references/composition-contract.md](references/composition-contract.md), and
+recompose it across viewports with
+[references/responsive-recomposition.md](references/responsive-recomposition.md).
+The defaults below apply to everything smaller.
+
 - Create a clear visual focal point and reading order.
 - Use one dominant action color; secondary palette colors may be decorative or semantic when the chosen direction defines them.
 - Use semantic design tokens rather than scattered literal values.
@@ -147,22 +155,20 @@ These are defaults, not universal prohibitions:
 
 ## 7. Pre-flight
 
-Check only applicable items:
+Every loaded skill carries its own Check list. Restating them here produced a
+second copy that drifts, so this pre-flight keeps only the four items no other
+skill owns:
 
-- [ ] Existing stack and design system were inspected.
-- [ ] Primary direction and any scoped secondary influence are explicit.
-- [ ] Content hierarchy, claim evidence, and main action are clear.
-- [ ] Shipped copy has zero Tier-1 slop tells, clears the specificity floor, and
-      was linted rather than self-assessed.
-- [ ] Wide, portrait, and narrow compositions have an explicit priority/crop/interaction contract where applicable.
-- [ ] Async/interactive components cover their applicable states.
-- [ ] Focus, keyboard, contrast, touch, and reduced-motion behavior are present.
-- [ ] Motion has one timing owner per subtree and no `transition: all`.
-- [ ] External assets and fonts have valid sources/licenses; factual claims map to evidence.
-- [ ] Relevant locale expansion, formatting, script coverage, and RTL behavior were tested.
-- [ ] 3D work has an art-direction contract, budget, fallback, alternative content, and stable quality tiers.
+- [ ] The existing stack, design system, tokens, and content were inspected
+      before any code was written.
+- [ ] Every §3 gate that fired was loaded, and every loaded skill maps back to a
+      gate. The routing ledger names both directions.
+- [ ] Every direction exception overrode a default and never an invariant, and
+      each was stated once with its reason.
+- [ ] The Check list of every loaded skill ran. A skill that no gate selected has
+      no applicable check — that is the routing decision, not an omission.
 
-Fix failed applicable checks before delivery.
+Fix failed items before delivery.
 
 ## 8. Output
 

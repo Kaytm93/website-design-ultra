@@ -33,6 +33,17 @@ If the briefing calls for 3D, WebGL, a scene, or an immersive experience → use
    automatically either. Choose from the briefing and the existing system, not
    from forced variation.
 
+   **Divergence before commitment** — For a page or a signature section, name
+   three variants before choosing one, whether or not `style-directions` was
+   loaded. One line each: direction plus signature move plus what the first
+   screen looks like. They have to differ in composition, not in palette alone.
+   Then choose and state what the other two lose against this brief. This costs
+   almost nothing and is the only counter-measure to the attractor the anti-slop
+   thesis names: the most likely option wins whenever the brief did not
+   constrain, and picking the closest row of a shortlist has exactly that shape.
+   Skip it for a single component or where the system already declares its
+   direction, and say which decision made it unnecessary.
+
 4. **Palette and type** — Load `color-palettes` only when colors are chosen or
    changed. Load `typography` only when font family, license/loading, language
    coverage, a detailed type scale, or wrapping is chosen, changed, or audited;
@@ -40,7 +51,12 @@ If the briefing calls for 3D, WebGL, a scene, or an immersive experience → use
    each skill, read only the matching reference family. For every font file,
    check license/embedding and a free alternative.
 
-5. **Responsive art direction** — For full pages or signature sections, load the responsive recomposition reference from `core-rules`. Define wide, portrait, and narrow each with focus, order, crop/media, CTA, density, and interaction model.
+5. **Composition and responsive art direction** — For full pages or signature
+   sections, load both `core-rules` references. The composition contract fixes
+   what must survive every viewport: thesis, focal element, first-screen
+   occupancy, asymmetry, dominant contrast, quiet zones, signature move. The
+   recomposition reference then defines wide, portrait, and narrow each with
+   focus, order, crop/media, CTA, density, and interaction model.
 
 6. **Motion profile** — Load `motion-system` only when motion is requested, already present, or part of the chosen direction. Then use `MOTION_INTENSITY` to calibrate it and load only the selected runtime reference.
 
@@ -57,10 +73,10 @@ If the briefing calls for 3D, WebGL, a scene, or an immersive experience → use
    load a sibling reference “just in case”.
 
 9. **Output format**:
-   - 1–2 sentences of direction rationale
+   - 1–2 sentences of direction rationale, with the two rejected variants named
    - Content/claim contract with unknowns marked
    - Copy-lint result: tier counts and the command that produced them
-   - Wide/portrait/narrow recomposition for pages and signature sections
+   - Composition contract and wide/portrait/narrow recomposition for pages and signature sections
    - `npm install ...` if libraries are needed
    - Working code
    - Short note on relevant states/accessibility

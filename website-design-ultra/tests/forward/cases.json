@@ -28,15 +28,18 @@
       ],
       "allowedReferences": [
         "skills/core-rules/references/responsive-recomposition.md",
+        "skills/core-rules/references/composition-contract.md",
         "skills/content-design/references/claims-and-proof.md",
         "skills/content-design/references/microcopy.md",
         "skills/component-patterns/references/heroes-and-sections.md",
         "skills/anti-slop/references/prose-tells.md",
+        "skills/anti-slop/references/operations.md",
         "skills/anti-slop/references/design-tells.md",
         "skills/core-rules/references/accessibility.md"
       ],
       "requiredFiles": [
         "skills/core-rules/references/responsive-recomposition.md",
+        "skills/core-rules/references/composition-contract.md",
         "skills/content-design/references/claims-and-proof.md",
         "skills/anti-slop/references/prose-tells.md"
       ],
@@ -46,8 +49,8 @@
         "skills/color-palettes/references/expressive.md",
         "skills/anti-slop/references/locale-de.md"
       ],
-      "maxReferenceFiles": 7,
-      "maxEstimatedPluginTokens": 13781
+      "maxReferenceFiles": 9,
+      "maxEstimatedPluginTokens": 16112
     }
   },
   {
@@ -78,18 +81,21 @@
       ],
       "allowedReferences": [
         "skills/core-rules/references/responsive-recomposition.md",
+        "skills/core-rules/references/composition-contract.md",
         "skills/content-design/references/localization.md",
         "skills/content-design/references/microcopy.md",
         "skills/typography/references/pairings-and-roles.md",
         "skills/typography/references/hierarchy-and-loading.md",
         "skills/typography/references/licensing-and-alternatives.md",
         "skills/anti-slop/references/prose-tells.md",
+        "skills/anti-slop/references/operations.md",
         "skills/anti-slop/references/locale-de.md",
         "skills/anti-slop/references/design-tells.md",
         "skills/core-rules/references/accessibility.md"
       ],
       "requiredFiles": [
         "skills/core-rules/references/responsive-recomposition.md",
+        "skills/core-rules/references/composition-contract.md",
         "skills/content-design/references/localization.md",
         "skills/typography/references/licensing-and-alternatives.md",
         "skills/anti-slop/references/prose-tells.md",
@@ -100,8 +106,8 @@
         "skills/color-palettes/references/editorial-natural.md",
         "skills/color-palettes/references/expressive.md"
       ],
-      "maxReferenceFiles": 10,
-      "maxEstimatedPluginTokens": 17585
+      "maxReferenceFiles": 12,
+      "maxEstimatedPluginTokens": 19863
     }
   },
   {
@@ -136,6 +142,7 @@
       ],
       "allowedReferences": [
         "skills/core-rules/references/responsive-recomposition.md",
+        "skills/core-rules/references/composition-contract.md",
         "skills/content-design/references/claims-and-proof.md",
         "skills/content-design/references/microcopy.md",
         "skills/color-palettes/references/neutral-product.md",
@@ -143,11 +150,13 @@
         "skills/ui-states/references/forms-and-feedback.md",
         "skills/ui-states/references/accessibility.md",
         "skills/anti-slop/references/prose-tells.md",
+        "skills/anti-slop/references/operations.md",
         "skills/anti-slop/references/design-tells.md",
         "skills/core-rules/references/accessibility.md"
       ],
       "requiredFiles": [
         "skills/core-rules/references/responsive-recomposition.md",
+        "skills/core-rules/references/composition-contract.md",
         "skills/color-palettes/references/neutral-product.md",
         "skills/core-rules/references/accessibility.md",
         "skills/anti-slop/references/prose-tells.md"
@@ -157,8 +166,8 @@
         "skills/color-palettes/references/expressive.md",
         "skills/anti-slop/references/locale-de.md"
       ],
-      "maxReferenceFiles": 10,
-      "maxEstimatedPluginTokens": 16177
+      "maxReferenceFiles": 12,
+      "maxEstimatedPluginTokens": 18455
     }
   },
   {
@@ -196,6 +205,7 @@
       ],
       "allowedReferences": [
         "skills/core-rules/references/responsive-recomposition.md",
+        "skills/core-rules/references/composition-contract.md",
         "skills/content-design/references/claims-and-proof.md",
         "skills/3d-art-direction/references/camera-and-composition.md",
         "skills/3d-art-direction/references/light-material-and-tone.md",
@@ -203,6 +213,7 @@
         "skills/3d-runtime-quality/references/tier-matrix.md",
         "skills/3d-runtime-quality/references/adaptive-runtime.md",
         "skills/anti-slop/references/prose-tells.md",
+        "skills/anti-slop/references/operations.md",
         "skills/anti-slop/references/design-tells.md",
         "skills/core-rules/references/accessibility.md"
       ],
@@ -220,8 +231,8 @@
         "skills/color-palettes/references/expressive.md",
         "skills/anti-slop/references/locale-de.md"
       ],
-      "maxReferenceFiles": 10,
-      "maxEstimatedPluginTokens": 21025
+      "maxReferenceFiles": 12,
+      "maxEstimatedPluginTokens": 23045
     }
   },
   {
@@ -262,6 +273,7 @@
       ],
       "allowedReferences": [
         "skills/core-rules/references/responsive-recomposition.md",
+        "skills/core-rules/references/composition-contract.md",
         "skills/content-design/references/claims-and-proof.md",
         "skills/content-design/references/microcopy.md",
         "skills/3d-art-direction/references/camera-and-composition.md",
@@ -273,6 +285,7 @@
         "skills/r3f-interaction/references/configurator-animation.md",
         "skills/r3f-interaction/references/touch-and-gestures.md",
         "skills/anti-slop/references/prose-tells.md",
+        "skills/anti-slop/references/operations.md",
         "skills/anti-slop/references/design-tells.md",
         "skills/core-rules/references/accessibility.md"
       ],
@@ -289,8 +302,8 @@
         "skills/color-palettes/references/expressive.md",
         "skills/anti-slop/references/locale-de.md"
       ],
-      "maxReferenceFiles": 14,
-      "maxEstimatedPluginTokens": 24379
+      "maxReferenceFiles": 16,
+      "maxEstimatedPluginTokens": 26399
     },
     "maxBudgetUsd": 1.2
   },
@@ -336,10 +349,13 @@
       ],
       "allowedReferences": [
         "skills/anti-slop/references/prose-tells.md",
+        "skills/anti-slop/references/tier2-vocabulary.md",
+        "skills/anti-slop/references/operations.md",
         "skills/anti-slop/references/locale-de.md",
         "skills/content-design/references/claims-and-proof.md",
         "skills/content-design/references/microcopy.md",
         "skills/core-rules/references/responsive-recomposition.md",
+        "skills/core-rules/references/composition-contract.md",
         "skills/core-rules/references/accessibility.md"
       ],
       "requiredFiles": [
@@ -353,8 +369,8 @@
         "skills/color-palettes/references/expressive.md",
         "skills/style-directions/references/product.md"
       ],
-      "maxReferenceFiles": 6,
-      "maxEstimatedPluginTokens": 12579
+      "maxReferenceFiles": 9,
+      "maxEstimatedPluginTokens": 14921
     },
     "lintCopy": {
       "path": "copy.lines",

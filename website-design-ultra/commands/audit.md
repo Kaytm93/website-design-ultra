@@ -58,12 +58,19 @@ You will audit existing frontend code for quality.
      see: fake-profound kickers, synonym cycling, category headlines that pass
      the swap test by accident. Load the design reference only when the audit
      covers visuals, and the locale annex only for non-English copy. Run the
-     squint test on the `/verify` screenshots before judging hierarchy.
+     squint test on the `/verify` screenshots before judging hierarchy. Measure
+     the Tier-3 visual budgets against the project's declared direction token
+     block when one exists and against the defaults otherwise, and say which of
+     the two the numbers were compared with.
    - `motion-system` → only when motion exists: timing owner, cleanup, runtime, reduced motion
    - `ui-states` → only with data/interaction: applicable states and accessibility
    - `color-palettes` → semantic tokens and calculated contrast
    - `typography` → font bans **including exceptions** (body Inter allowed in Brutalist/Editorial/Swiss/Magazine-Tech)
    - Responsive recomposition reference from `core-rules` → real wide/portrait/narrow priority instead of mere scaling
+   - Composition-contract reference from `core-rules` → for a full page: one
+     focal element, a named dominant contrast axis, at least one quiet zone, and
+     one signature move. A page that reads as competent and has none of the four
+     declared is a 🟢 finding with a concrete device proposed, never a verdict
 
    Only when 3D appears in the code, additionally:
    - `immersive-3d` → anti-slop 3D (§4), perf budget respected (§3), mandatory fallbacks present (§5)

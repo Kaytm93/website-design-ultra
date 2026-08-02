@@ -31,15 +31,18 @@ states the same gate in the same terms; this section exists so that the two
 agree at the point where the file is actually opened. Judging that the task does
 not need the tell catalogue is not one of the available decisions.
 
-The other two references are conditional:
+The other references are conditional:
 
 | Condition | Read |
 |---|---|
 | Layout, card, badge, spacing, dark-mode, or effect defaults are written or audited | [references/design-tells.md](references/design-tells.md) |
+| A Tier-2 cluster is judged without a linter run, or a flagged term needs a protect-list decision | [references/tier2-vocabulary.md](references/tier2-vocabulary.md) |
+| Findings are reported, the linter is operated beyond §6, a protect list is written, or a fix is routed to its owner | [references/operations.md](references/operations.md) |
 | The output or the audited material is German | [references/locale-de.md](references/locale-de.md), in addition to prose tells and never instead of them |
 
 A visual refresh that changes no copy is the one case that loads design tells
-alone.
+alone. A single label or state message on a linted surface is the one case that
+loads no reference beyond prose tells.
 
 ## 2. Mode
 
@@ -102,6 +105,11 @@ shipping condition — is legitimately uniform, and gating on it rejected exactl
 the specific, evidence-led writing §5 asks for. A low number is worth a second
 read, not a blocked build.
 
+The visual Tier-3 budgets live in `references/design-tells.md`. They are measured
+against the direction's declared token block when `style-directions` filled one,
+and against the stated defaults otherwise. A deliberate three-radius brutalist
+page is a declaration, not a finding; an undeclared one is still a finding.
+
 ## 5. Specificity floor — the positive rule
 
 Prohibition alone yields correct, forgettable copy. Every headline, subhead, and
@@ -122,87 +130,29 @@ deliberate category claim can survive it, an accidental one cannot.
 Unknown facts stay as explicit placeholders. Never resolve a specificity finding
 by inventing the specific.
 
-## 6. Protect list
-
-A protect list prevents the de-slop pass from flattening real voice or a real
-product name. It is a declared artifact, not an assumption, and every entry
-carries a reason — the same standard as a claim in the ledger.
-
-```json
-{
-  "terms": [
-    { "value": "Seamless", "reason": "product name, verified in package.json" },
-    { "value": "robust", "reason": "reliability claim, engineering docs term" }
-  ],
-  "patterns": [
-    { "value": "Not sure yet\\.", "reason": "founder voice, appears in approved copy" }
-  ]
-}
-```
-
-Store it as `.anti-slop-protect.json` at project root. An unexplained entry is
-not a protect entry; it is a suppressed finding. Report collisions instead of
-silently keeping the term.
-
-## 7. Deterministic check
+## 6. Deterministic check
 
 Self-reported de-slopping is not evidence, for the same reason a self-reported
 skill route is not evidence of Progressive Disclosure. Run the linter:
 
 ```bash
 node scripts/lint-copy.mjs --path src --profile marketing --protect .anti-slop-protect.json
-node scripts/lint-copy.mjs --path content --profile editorial
-node scripts/lint-copy.mjs --path content --locale de --profile editorial # explicit override
-node scripts/lint-copy.mjs --stdin --json
 ```
 
-The linter reads Markdown prose and the visible text of JSX/TSX, HTML, Vue,
-Svelte, and Astro, plus the string values of JSON message catalogues — a
-`locales/`, `i18n/`, `lang/`, `messages/`, or `translations/` path, or a file
-named `en.json`/`de.json`. Message ids are not copy and are not linted. Other
-JSON is skipped so config files cannot bury real findings. It skips code fences,
-inline code, blockquotes, class attributes, and imports, and reports per tier
-with counts, locations, and the measured numbers. Exit code 1 on any Tier-1 hit
-or exceeded Tier-3 budget; `--strict` also fails on Tier-2 clusters. Its own
-regression gate lives in `tests/copy/`: a rule change must still catch every slop
-fixture and still flag nothing in the authentic-prose fixtures.
+Three rules govern the result and stay here rather than in the reference:
 
-**`NO-COPY` and exit code 2.** When no file matched the path, or no visible text
-could be extracted from any input, the status is `NO-COPY` and the exit code is
-2 — never `PASS`. Copy built at runtime from a plain `.js` file, or held in a
-format the extractor does not read, is unchecked, not clean. A partial miss is
-reported as a `NO-COPY WARNING` naming the files that were skipped. Read that
-warning before quoting a pass: it is the same failure mode as a self-reported
-route, and it is the one this file exists to refuse.
+- Exit code 2 is `NO-COPY`, not a pass. Nothing was read, so nothing was checked.
+- A partial miss prints a `NO-COPY WARNING` naming the skipped files. Read it
+  before quoting a pass.
+- A pass proves the absence of catalogued patterns. It never approves content;
+  only §5 and `content-design` do that.
 
-With no `--locale`, the linter detects English or German per file. Declared
-frontmatter/HTML language and locale-bearing path segments win; otherwise it
-scores high-frequency function words in the visible copy, not the vocabulary it
-is judging. Mixed files run both rule sets. An inconclusive file also runs both
-and emits `AUTO-LOCALE WARNING`, so an omitted flag can never silently mean
-English. Use `--locale en` or `--locale de` only as a deliberate override.
+Registers, locale detection, the protect-list schema, and the catalogued blind
+spots live in [references/operations.md](references/operations.md). Twelve of the
+16 English Tier-1 tells carry a rule id; the other four need a reader, and a
+clean report is not their absence.
 
-`--self` lints the plugin's own documents in the `docs` register and skips this
-skill's reference files, which necessarily quote the patterns they forbid. That is
-the only exemption, and it is the reason the exemption is stated here rather than
-left implicit.
-
-Known blind spots — a clean report is not their absence:
-
-- fake-profound kickers, synonym cycling, and invented concept labels need a
-  reader,
-- the triplet count cannot tell three real items from two plus a filler, so it is
-  a gate in `marketing` only and a number everywhere else,
-- markup extraction is best effort and prefers missing a string over inventing a
-  finding; what it missed shows up as a `NO-COPY WARNING`, not as a pass,
-- sentence-length variation is advisory and decides nothing on its own,
-- nothing here checks whether a claim is true.
-
-A lint pass proves the absence of catalogued patterns. It does not prove the copy
-is true, specific, or worth reading — only §5 and `content-design` do that. Never
-report a lint pass as a content approval.
-
-## 8. Output contract
+## 7. Output contract
 
 Return:
 
@@ -212,19 +162,6 @@ Return:
 4. rewritten copy or the marked placeholder, with the fact each rewrite rests on,
 5. protect-list collisions,
 6. the linter command and its result, or why it was not run.
-
-## 9. Routing — do not duplicate an owner
-
-This skill owns the catalogue, the budgets, the protect list, and the linter.
-The fixes stay with their owner:
-
-- fabricated claims, evidence ladder, state microcopy → `content-design`
-- font bans and their documented exceptions → `typography`
-- palette, gradients, contrast tokens → `color-palettes`
-- generic hero, equal card rows, cursor and layout defaults → `core-rules` §5
-- rotating cube, aimless particles, rigid loops → `immersive-3d` §4
-- identical fade-ins, snapping buttons, timing ownership → `motion-system`
-- three-cards-by-reflex versus a real pattern choice → `component-patterns`
 
 ## Check
 

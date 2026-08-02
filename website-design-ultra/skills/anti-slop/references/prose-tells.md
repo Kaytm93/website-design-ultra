@@ -38,35 +38,10 @@ cannot see them. Do not read a clean report as their absence.
 
 ## Tier 2 — Vocabulary, flag in cluster
 
-Flag at 3 or more distinct hits per 200 words, or any hit inside an H1/H2.
-
-**Verbs.** delve, leverage, utilize, facilitate, foster, empower, unlock,
-streamline, harness, supercharge, elevate, transform, revolutionize, navigate
-(figurative), underscore, showcase, curate, ensure, drive (figurative), dive into.
-
-**Adjectives.** seamless, robust, cutting-edge, innovative, holistic,
-comprehensive, bespoke, effortless, powerful, intuitive, transformative,
-unparalleled, world-class, next-generation, crucial, vital, pivotal, intricate.
-
-**Nouns.** paradigm shift, game changer, tapestry, landscape (figurative),
-ecosystem (figurative), journey (figurative), synergy, cornerstone, blueprint,
-roadmap (as metaphor), testament, potential, deep dive, treasure trove.
-
-**Filler phrases.** it's worth noting, at the end of the day, in today's
-fast-paced world, at its core, let's dive in, take it to the next level, unlock
-the full potential, the key to success, more than just.
-
-**Hedges that weaken a real claim.** really, just, simply, actually, truly,
-literally, genuinely, fundamentally, essentially.
-
-Three of these — *delves*, *underscores*, *showcasing* — are the highest-excess
-style words measured in post-2022 biomedical abstracts against a pre-LLM
-baseline (Kobak et al., *Science Advances* 2025). They are strong signals in any
-register.
-
-Not a ban. `robust` in a reliability claim, `ecosystem` about an actual
-integration graph, and `seamless` as the term of art for a marquee loop are all
-correct. Record such uses in the protect list with a reason.
+The word list lives in [tier2-vocabulary.md](tier2-vocabulary.md) and the
+threshold in `SKILL.md` §3: 3 or more distinct hits per 200 words, or any hit
+inside an H1/H2. `scripts/lint-copy.mjs` carries the same list executably, so
+read the leaf only when a cluster is judged without it.
 
 ## Formatting tells in rendered copy
 

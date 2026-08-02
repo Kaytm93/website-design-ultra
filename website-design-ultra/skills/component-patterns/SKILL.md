@@ -22,7 +22,10 @@ Do not load all three for a single component.
 - Match the content shape before the aesthetic label.
 - Use `content-design` first when claims, proof, labels, or state copy are unresolved.
 - Use one signature pattern per viewport; let supporting sections become quieter.
-- For full pages or signature sections, load `core-rules`’ responsive recomposition reference and define viewport-specific priority, media, and interaction.
+  A signature is a specific describable device, not a component choice:
+  `style-directions/references/signature-moves.md` catalogues them, each with the
+  invariant it must not break.
+- For full pages or signature sections, load `core-rules`’ responsive recomposition and composition-contract references, then define viewport-specific priority, media, and interaction.
 - Prefer semantic structure and natural document flow.
 - Every hover/pointer effect needs focus and touch behavior.
 - Persistent motion needs reduced-motion and pause behavior.

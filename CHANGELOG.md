@@ -1,5 +1,118 @@
 # website-design-ultra
 
+## 1.7.0 — A Page Declares Its Composition (2026-08-02)
+
+Two gaps, one on each side of the plugin. On the cost side, the minimum copy
+path was 7,604 tokens of mandatory reading before a button label could be
+written. On the quality side, a 3D scene had to declare its camera, safe area,
+and poster frame before scene code, while a 2D page declared nothing: its
+composition was whatever the first component written happened to imply.
+
+### The 2D composition contract
+
+- Added `core-rules/references/composition-contract.md` with seven fields:
+  `visual-thesis`, `focal-element`, `first-screen-occupancy`, `asymmetry`,
+  `dominant-contrast`, `quiet-zones`, `signature-move`. It loads under the same
+  condition as the responsive contract.
+- The two contracts answer complementary questions. Recomposition says what
+  changes across wide, portrait, and narrow; this one says what must survive all
+  three. If a narrow shot loses both the thesis and the signature move, it is a
+  different page rather than a recomposition.
+- `/design` step 5, `/refresh` step 2, `/audit` step 3, and `component-patterns`
+  route to it. `validate-content.mjs` binds all seven field names.
+
+### Directions carry tokens, and Tier 3 measures against them
+
+- All 12 style directions gained a token block in the same YAML shape as the
+  palettes: `grid`, `type-ratio`, `space-scale`, `section-padding`, `radius`,
+  `dominant-contrast`, `motion-profile`.
+- The validator requires one block per direction, all seven keys, and a
+  `motion-profile` that `motion-system` actually defines. It counts 12.
+- The Tier-3 visual budgets in `anti-slop` design tells now measure against the
+  declaration when one is filled and against the generic defaults otherwise.
+  Y2K and Neo-Memphis declare three radii and are conformant; an undeclared
+  three-radius page still fails the two-radius budget. Before this change, Tier 3
+  measured every page against a default, so an intentional direction and an
+  unconstrained one produced the same finding.
+- The per-direction `Avoid` bullets moved into `anti-slop/references/design-tells.md`
+  as a Direction-specific tells table. The catalogue has one owner; the direction
+  references now carry the token block in that space.
+
+### Signature moves
+
+- Added `style-directions/references/signature-moves.md`: 20 implementable
+  devices, each with the directions it suits and the invariant it must not break.
+- `component-patterns` has required "one signature pattern per viewport" since
+  1.0 without defining a signature anywhere. This file is that definition, and
+  both `component-patterns` and the composition contract now point at it.
+
+### Divergence before commitment
+
+- `/design` step 3 and `style-directions` §4 require three named variants before
+  a direction is chosen: one line each, differing in composition rather than in
+  palette, then a choice with the constraint the other two failed.
+- This is the plugin's own thesis applied to itself. Slop is the statistically
+  most likely choice when the brief did not constrain, and reading a shortlist
+  and taking the closest row is exactly that shape. Every other gate had a
+  counter-measure; the direction choice had none. It costs roughly zero tokens.
+
+### The profile values are wired or they are decoration
+
+- `DESIGN_VARIANCE: 7` and `VISUAL_DENSITY: 4` sat in `core-rules` §1 and were
+  referenced nowhere; only `MOTION_INTENSITY` was used. Each now names what
+  verifies it: variance against the ≤ 60% uniformity budget plus two deliberate
+  grid breaks, density against `space-scale` and `section-padding` in the
+  direction's token block.
+
+### A cheaper minimum path
+
+- `anti-slop/SKILL.md` fell from 12,280 to 9,320 bytes. The protect list, the
+  linter manual, and the owner routing moved to `references/operations.md`, and
+  the Tier-2 word list to `references/tier2-vocabulary.md`. The tier model, the
+  budgets, and the specificity floor stayed inline, as did the three rules that
+  decide a lint result: exit 2 is `NO-COPY`, a partial miss warns, a pass is not
+  a content approval.
+- The binding gate in `validate-content.mjs` now reads both English files.
+  Splitting a reference must not let a Tier-2 term go undocumented; all 85 terms
+  stay bound.
+- `core-rules` §3 became a gate table, and §7 dropped from eleven items to the
+  four no other skill owns. Restating each skill's own Check list produced a
+  second copy that drifts.
+- Measured: the minimum copy path (`core-rules` + `anti-slop` + prose tells) fell
+  from 7,604 to 6,590 estimated tokens. That is 13%, not the 25% projected before
+  the composition wiring was counted; §1 and §6 gained what §3 and §7 released.
+
+### /tweak
+
+- Added a sixth command for one scoped component, where direction, palette, and
+  pattern are already decided. It skips `style-directions`, `color-palettes`,
+  and `component-patterns` by default, and with at most three changed text
+  surfaces it runs the linter instead of reading the tell catalogue.
+- That substitution is a shift from reading to execution, not a lower standard:
+  the linter fires 12 of the 16 English Tier-1 tells with rule ids. It does not
+  cover the four that carry no id or the specificity floor, so a changed H1,
+  subhead, or feature blurb still loads `anti-slop` and its prose reference.
+- The path costs about 2,500 tokens against 7,604.
+
+### Forward contracts
+
+- All six cases authorize `operations.md` and `composition-contract.md`; `saas`,
+  `editorial`, and `dashboard` require the composition contract as read evidence.
+  `slop` additionally authorizes `tier2-vocabulary.md`, since a copy case may
+  judge a cluster by hand.
+- Reference and token budgets moved by exactly the difference the new
+  authorizations and the shrunken files produce, not by what a run happened to
+  consume.
+
+### Not in this release
+
+The `signature-move` field has no deterministic check. A page can declare one and
+implement nothing, and no script can see the difference. `/verify` screenshots
+plus the squint test remain the only evidence, which is the same boundary the
+specificity floor has always had.
+
+Release-Tag: v1.7.0
+
 ## 1.6.7 — An Unread Tree Is Not a Clean Tree (2026-08-02)
 
 A review of 1.6.4 found three defects that survived into 1.6.6. One of them

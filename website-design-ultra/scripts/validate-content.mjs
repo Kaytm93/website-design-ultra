@@ -167,8 +167,8 @@ for (const directory of skillDirectories) {
 const commandDirectories = fs
   .readdirSync(path.join(pluginRoot, 'commands'))
   .filter((name) => name.endsWith('.md'))
-if (commandDirectories.length !== 5) {
-  fail(`expected 5 commands, found ${commandDirectories.length}`)
+if (commandDirectories.length !== 6) {
+  fail(`expected 6 commands, found ${commandDirectories.length}`)
 }
 
 const priorityOneContracts = [
@@ -326,12 +326,15 @@ const antiSlopContracts = [
       'prose-tells.md',
       'design-tells.md',
       'locale-de.md',
+      'tier2-vocabulary.md',
+      'operations.md',
       'Tier 1',
       'Tier 2',
       'Tier 3',
       'protect list',
       'specificity floor',
       'lint-copy.mjs',
+      'NO-COPY',
       'detect',
       'rewrite',
     ],
@@ -339,6 +342,14 @@ const antiSlopContracts = [
   [
     'skills/anti-slop/references/prose-tells.md',
     ['negative parallelism', 'vague attribution', 'swap test', 'Tier 1', 'Tier 2'],
+  ],
+  [
+    'skills/anti-slop/references/tier2-vocabulary.md',
+    ['seamless', 'delve', 'paradigm shift', 'not a ban'],
+  ],
+  [
+    'skills/anti-slop/references/operations.md',
+    ['.anti-slop-protect.json', 'NO-COPY', '--self', 'blind spots', 'style-directions'],
   ],
   [
     'skills/anti-slop/references/design-tells.md',
@@ -365,6 +376,10 @@ const antiSlopContracts = [
     ['anti-slop'],
   ],
   [
+    'commands/tweak.md',
+    ['anti-slop', 'lint-copy.mjs', 'NO-COPY'],
+  ],
+  [
     'scripts/lint-copy.mjs',
     ['--profile', '--protect', '--locale', 'marketing', 'docs', 'editorial'],
   ],
@@ -384,11 +399,118 @@ for (const [file, markers] of antiSlopContracts) {
   }
 }
 
+const compositionContracts = [
+  [
+    'skills/core-rules/references/composition-contract.md',
+    [
+      'visual-thesis',
+      'focal-element',
+      'first-screen-occupancy',
+      'asymmetry',
+      'dominant-contrast',
+      'quiet-zones',
+      'signature-move',
+    ],
+  ],
+  [
+    'skills/style-directions/references/signature-moves.md',
+    ['Overprint', 'Density inversion', 'Invariant it must not break', 'per viewport'],
+  ],
+  [
+    'skills/core-rules/SKILL.md',
+    ['composition-contract.md', 'DESIGN_VARIANCE', 'MOTION_INTENSITY', 'VISUAL_DENSITY'],
+  ],
+  [
+    'skills/style-directions/SKILL.md',
+    ['signature-moves.md', 'Divergence before commitment', 'Token block'],
+  ],
+  [
+    'skills/component-patterns/SKILL.md',
+    ['signature-moves.md', 'composition-contract'],
+  ],
+]
+
+for (const [file, markers] of compositionContracts) {
+  const fullPath = path.join(pluginRoot, file)
+  if (!fs.existsSync(fullPath)) {
+    fail(`${file}: missing composition artifact`)
+    continue
+  }
+  const content = read(fullPath).toLowerCase()
+  for (const marker of markers) {
+    if (!content.includes(marker.toLowerCase())) {
+      fail(`${file}: missing composition marker "${marker}"`)
+    }
+  }
+}
+
+/**
+ * A direction without a token block is measured against a generic default, which
+ * is the failure the block exists to remove. Bind every direction to one, and
+ * bind its motion profile to a profile `motion-system` actually defines.
+ */
+const directionFamilies = ['product.md', 'editorial.md', 'expressive.md']
+const directionTokenKeys = [
+  'grid',
+  'type-ratio',
+  'space-scale',
+  'section-padding',
+  'radius',
+  'dominant-contrast',
+  'motion-profile',
+]
+const motionProfiles = new Set(['emil', 'jakub', 'jhey'])
+let directionCount = 0
+
+for (const name of directionFamilies) {
+  const file = path.join(skillsRoot, 'style-directions', 'references', name)
+  if (!fs.existsSync(file)) {
+    fail(`skills/style-directions/references/${name}: missing direction family`)
+    continue
+  }
+  const markdown = read(file)
+  const headings = [...markdown.matchAll(/^## .+$/gm)]
+  const blocks = [...markdown.matchAll(/```yaml\n([\s\S]*?)```/g)]
+  if (headings.length !== blocks.length) {
+    fail(
+      `style-directions/${name}: ${headings.length} direction(s) but ${blocks.length} token block(s)`,
+    )
+  }
+  for (const block of blocks) {
+    directionCount += 1
+    const values = {}
+    for (const line of block[1].split('\n')) {
+      const field = line.match(/^([a-z-]+):\s+(.+)$/)
+      if (field) values[field[1]] = field[2].trim()
+    }
+    const label = `style-directions/${name} token block ${directionCount}`
+    for (const key of directionTokenKeys) {
+      if (!values[key]) fail(`${label}: missing ${key}`)
+    }
+    const profile = values['motion-profile']
+    if (profile && !motionProfiles.has(profile)) {
+      fail(`${label}: unknown motion-profile "${profile}"`)
+    }
+  }
+}
+
+if (directionCount !== 12) {
+  fail(`expected 12 direction token blocks, found ${directionCount}`)
+}
+
 /**
  * The linter is the executable form of the catalogue; the references are the
  * human form. Bind them so a rule cannot enter the script undocumented.
+ *
+ * The English side spans two files since 1.7.0: the structural tells stayed in
+ * prose-tells.md, which every copy task reads, while the Tier-2 word list moved
+ * to a leaf that only a hand-judged cluster needs. Both are part of the binding
+ * surface — splitting the reference must not let a term go undocumented.
  */
-const proseTells = read(path.join(skillsRoot, 'anti-slop', 'references', 'prose-tells.md'))
+const proseTells = [
+  read(path.join(skillsRoot, 'anti-slop', 'references', 'prose-tells.md')),
+  read(path.join(skillsRoot, 'anti-slop', 'references', 'tier2-vocabulary.md')),
+].join('\n')
 const localeDeTells = read(path.join(skillsRoot, 'anti-slop', 'references', 'locale-de.md'))
 
 function normalizeTerm(value) {
@@ -859,6 +981,7 @@ if (paletteCount !== 20) {
 notes.push(`${skillDirectories.length} skills`)
 notes.push(`${commandDirectories.length} commands`)
 notes.push(`${paletteCount} palettes / ${contrastCheckCount} state contrast checks`)
+notes.push(`${directionCount} direction token blocks`)
 notes.push(`${compositedPaletteCount} composited glass palette`)
 notes.push(`${boundTerms} bound anti-slop terms`)
 notes.push(`${copyCases} copy-lint regression cases`)

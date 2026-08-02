@@ -61,9 +61,36 @@ near-black is the usual companion failure.
 **Bento by reflex.** A bento grid selected before knowing whether the content has
 items of genuinely different weight. See `component-patterns`.
 
+## Direction-specific tells
+
+Each named direction has one failure mode that only appears inside it, and it is
+the one a generated page reaches for. These moved here from
+`style-directions/references/` so the catalogue has a single owner; the
+directions themselves now carry a token block instead.
+
+| Direction | The tell |
+|---|---|
+| Refined Minimalism | Anonymous monochrome with no distinctive content idea — restraint standing in for a decision. |
+| Glass / Liquid | Unreadable composited contrast, and the generic purple mesh gradient behind the panel. |
+| Apple-like Product Precision | Copied Apple trade dress, or SF fonts called on platforms that do not license them. |
+| Bento Feature Engine | Every feature becomes an animated rounded rectangle of equal weight. |
+| Editorial / Magazine | Generic text-over-image instead of type and image composed together. |
+| Organic / Natural | Greenwashing clichés, and decorative blobs that carry no content meaning. |
+| Brutalist / Raw | Illegibility presented as experimentation. |
+| Y2K | Reproducing genuinely inaccessible Web 1.0 behavior rather than quoting its look. |
+| Cyberpunk | Neon on black with no hierarchy underneath it. |
+| Neo-Memphis | Shape energy that breaks reading order, touch targets, or content clarity. |
+
 ## Tier 3 — Measurable defaults
 
 Report these as numbers, not impressions.
+
+Measure against the direction's declared token block when `style-directions`
+filled one, and against the defaults below otherwise. A brutalist page that
+declares `radius: [0, 2, 24]` has three radii by intent and passes; the same page
+without a declaration fails the radius budget. The declaration has to be filled
+and justified — an empty schema is not a defence, and no declaration overrides an
+accessibility or performance invariant.
 
 | Budget | Default | Fails when |
 |---|---|---|
@@ -107,7 +134,8 @@ Also verify at thumbnail size:
 4. Measure the Tier-3 budgets in the token and utility layer.
 5. Route each finding to its owner: fonts → `typography`, color and contrast →
    `color-palettes`, hero and card recipes → `component-patterns`, motion →
-   `motion-system`, 3D → `immersive-3d` §4.
+   `motion-system`, 3D → `immersive-3d` §4, a contested Tier-3 measurement →
+   `style-directions`, which owns the token block it is measured against.
 6. Report the count per tier and the measured numbers.
 
 A design that clears every tell is not automatically good. It is only free of the
