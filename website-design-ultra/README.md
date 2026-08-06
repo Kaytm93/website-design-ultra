@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.7.0 contains 17 skills and 6 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting, evidence-led content, a declared 2D composition contract, per-direction design tokens, a catalogue of signature devices, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Copy quality is enforced deterministically, not by self-report.
+Version 1.8.0 contains 21 skills and 6 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting, evidence-led content, a declared 2D composition contract, per-direction design tokens, a catalogue of signature devices, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Four negative-gated add-ons cover the canvas-first class — architecture, multi-pass render graph, loading choreography, and sound — and stay unloaded until a brief names their condition. Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
@@ -47,7 +47,8 @@ website-design-ultra/
     ├── typography/
     │   └── references/              # pairings, hierarchy/loading, licenses
     ├── motion-system/
-    │   └── references/          # profiles, Motion, GSAP/scroll
+    │   └── references/          # profiles, Motion, GSAP/scroll,
+    │                            # frame-rate independence for render loops
     ├── component-patterns/
     │   └── references/          # hero, cards, forms/overlays
     ├── ui-states/
@@ -64,8 +65,20 @@ website-design-ultra/
     ├── shaders-tsl/
     │   └── references/          # TSL syntax, WebGPU feature matrix
     ├── scroll-immersion/
-    └── 3d-asset-pipeline/
+    ├── 3d-asset-pipeline/
+    ├── canvas-first-architecture/   # on demand: the canvas is the page
+    │   └── references/          # parallel DOM layer, scene state and clock
+    ├── render-graph/                # on demand: passes read earlier passes
+    │   └── references/          # pass catalogue, buffers and precision
+    ├── loading-choreography/        # on demand: staged first frame
+    │   └── references/          # manifest/buckets, warm-up and first frame
+    └── spatial-audio/               # on demand: the deliverable plays sound
+        └── references/          # graph and mixing, event sound design
 ```
+
+The last four are add-ons behind an already-loaded 3D stack. Each description
+names one activating condition and closes by naming what does not activate it,
+and `validate-content.mjs` fails the build when either sentence is missing.
 
 ## Progressive disclosure
 
@@ -102,6 +115,19 @@ exact provider, case, and tree):
 - Runtime adaptation → `3d-runtime-quality/SKILL.md` plus tier matrix and only then the adaptive controller.
 - WebGPU feature → `shaders-tsl/SKILL.md` plus `references/webgpu-feature-matrix.md`.
 - Simple CSS hover → `motion-system/SKILL.md`; no GSAP or Motion reference.
+- 3D hero on a normal page → the three mandatory 3D skills only. The
+  canvas-first, render-graph, loading, and audio add-ons stay unread, and both
+  3D forward cases forbid all four files.
+- The canvas owns the page → `canvas-first-architecture/SKILL.md` plus
+  `references/parallel-dom-layer.md`; a hero above a DOM page never reaches it.
+- One bloom → `r3f-patterns`; a chain whose passes read each other →
+  `render-graph/SKILL.md` plus only the catalogue or the buffer reference.
+- One model behind Suspense → `r3f-patterns`; a staged manifest with an
+  art-directed arrival → `loading-choreography/SKILL.md`.
+- Sound named in the brief → `spatial-audio/SKILL.md`; a scene that merely could
+  have sound does not load it.
+- A hand-written `useFrame` damp → `motion-system/references/frame-rate-independence.md`;
+  a GSAP or Motion tween is already time-based and does not.
 
 Do not preload all design skills or all references.
 
@@ -151,7 +177,7 @@ documented fails the build — and replays `tests/copy/` so a rule change must s
 catch every slop fixture while flagging nothing in the authentic-prose fixtures,
 in English and German. The English binding surface spans two files since 1.7.0:
 the structural tells stayed in `prose-tells.md`, the Tier-2 word list moved to
-`tier2-vocabulary.md`, and both are bound. The plugin lints its own 61 documents
+`tier2-vocabulary.md`, and both are bound. The plugin lints its own 74 documents
 on every run. The
 skill states its blind spots: fake-profound kickers, synonym cycling, and triplets
 with a filler third item need a reader, and no lint result claims a copy line is
@@ -241,6 +267,17 @@ contract, so `border` is louder than the hairline those interfaces ship.
 - TSL/WebGPU or custom material → `shaders-tsl`.
 - Scroll storytelling → `scroll-immersion`.
 - Blender/Spline/glTF/KTX2 → `3d-asset-pipeline`.
+
+Four further layers exist and stay unloaded until the brief names their
+condition. Needing one says nothing about the others:
+
+- The canvas is the page, sections are scene states, no DOM page behind it →
+  `canvas-first-architecture`, which also carries the parallel DOM layer that
+  keeps the `core-rules` canvas-only invariant satisfied rather than waived.
+- Passes read what earlier passes wrote, or more than two effects share the
+  frame → `render-graph`.
+- The first meaningful frame depends on staged assets → `loading-choreography`.
+- The deliverable plays sound → `spatial-audio`.
 
 WebGLRenderer is the mature default. WebGPURenderer is selected for a concrete TSL/WebGPU benefit and uses renderer-compatible postprocessing.
 
@@ -511,6 +548,33 @@ unavailable is now a hard validation failure: a ruleset that requires evidence
 for every claim does not ship an unverifiable provenance claim of its own.
 
 ## Version
+
+**1.8.0** — the canvas-first class, gated so it stays out of the way:
+
+- added `canvas-first-architecture` for experiences where the canvas is the page:
+  a gate that ends the skill for a 3D hero, a compensation contract with nine
+  fields, one owner per axis, and the list of what never moves into the scene,
+- added `canvas-first-architecture/references/parallel-dom-layer.md`, the
+  mechanism that satisfies the `core-rules` canvas-only invariant instead of
+  waiving it, plus a four-run verification matrix,
+- added `render-graph` for multi-pass chains: a pass contract with a resolution
+  scale per pass, the fill-cost model, ping-pong and precision rules, and a
+  pass-level degradation order that feeds the runtime controller,
+- added `loading-choreography`, including the rule that a progress readout is a
+  claim and needs a real signal — a bar that eases to 90 percent and waits is
+  invented data under the same rule that governs copy,
+- added `spatial-audio` with the unlock gesture, the mix discipline, and the
+  separation the accessibility invariants require: motion and sound are two
+  preferences with two controls,
+- added `motion-system/references/frame-rate-independence.md`, which converts an
+  existing per-frame coefficient without retuning it and names the boundary
+  where a spring needs a fixed sub-step,
+- gave `immersive-3d` a second budget class for full-canvas experiences, so the
+  component-class numbers are no longer exceeded quietly,
+- bound all four add-on descriptions in `validate-content.mjs`: each must state
+  one activating condition and close by naming what does not activate it, and
+  both 3D forward cases now forbid all four files, so over-triggering is a test
+  failure rather than a matter of taste.
 
 **1.7.0** — a page declares its composition, and the small path costs less:
 

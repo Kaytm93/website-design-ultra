@@ -226,6 +226,10 @@
       ],
       "forbiddenFiles": [
         "skills/r3f-interaction/references/touch-and-gestures.md",
+        "skills/canvas-first-architecture/SKILL.md",
+        "skills/render-graph/SKILL.md",
+        "skills/loading-choreography/SKILL.md",
+        "skills/spatial-audio/SKILL.md",
         "skills/color-palettes/references/neutral-product.md",
         "skills/color-palettes/references/editorial-natural.md",
         "skills/color-palettes/references/expressive.md",
@@ -297,6 +301,10 @@
         "skills/anti-slop/references/prose-tells.md"
       ],
       "forbiddenFiles": [
+        "skills/canvas-first-architecture/SKILL.md",
+        "skills/render-graph/SKILL.md",
+        "skills/loading-choreography/SKILL.md",
+        "skills/spatial-audio/SKILL.md",
         "skills/color-palettes/references/neutral-product.md",
         "skills/color-palettes/references/editorial-natural.md",
         "skills/color-palettes/references/expressive.md",

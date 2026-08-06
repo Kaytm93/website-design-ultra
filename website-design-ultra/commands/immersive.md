@@ -11,6 +11,13 @@ You will build an immersive 3D experience (hero, scene, viewer, or scroll-driven
 
 1. **Justification** — Load `immersive-3d`. Check first: does 3D carry a statement here? If not → say so honestly and point to `/design` (2D).
 
+   **Who owns the page** — Second question, same step. Does the document still
+   own the headings, links, and sections, or does the scene? Almost always the
+   document, and then this is a normal 3D build. Only when the canvas *is* the
+   page — full viewport, sections as scene states, no DOM page behind it — load
+   `canvas-first-architecture` and answer its gate before continuing. A 3D hero
+   above a normal page is not that case, and neither is a pinned scroll scene.
+
 2. **Reconnaissance** — If inside a repo: read `package.json` (React/Next? Tailwind v3/v4? three/R3F already installed?). Do not assume the stack, verify it.
 
 3. **Fix the art direction** — Load `3d-art-direction`. Define FOV/camera, composition/safe area, lighting dramaturgy, material ranking, tone mapping, portrait reframe, spatial typography, and poster shot as a contract.
@@ -39,6 +46,12 @@ You will build an immersive 3D experience (hero, scene, viewer, or scroll-driven
    - Scroll-driven → `scroll-immersion`
    - Clickable/hoverable, hotspots, configurator, camera on click, animation clips, 3D text → `r3f-interaction`
    - Custom models/textures that must be prepared first → `3d-asset-pipeline`
+   - Passes that read what earlier passes wrote, or more than two effects whose
+     order matters → `render-graph`. One bloom does not.
+   - A first frame that depends on staged assets, or an art-directed arrival →
+     `loading-choreography`. One model behind Suspense does not.
+   - The brief says the experience plays sound → `spatial-audio`. A scene that
+     would suit sound does not.
 
 6. **Direction and colors** — Load `style-directions` only when the direction is unclear, and `color-palettes` only when colors are chosen.
 

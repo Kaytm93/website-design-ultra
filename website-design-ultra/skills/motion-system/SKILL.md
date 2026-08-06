@@ -42,6 +42,7 @@ Libraries may exist on the same page behind explicit component boundaries. Do no
 
 - **Motion for React, layout, presence, gestures:** read [references/motion-react.md](references/motion-react.md).
 - **GSAP, ScrollTrigger, Lenis boundaries:** read [references/gsap-and-scroll.md](references/gsap-and-scroll.md).
+- **Motion written inside a render loop (`useFrame`, a scene clock, a canvas system):** read [references/frame-rate-independence.md](references/frame-rate-independence.md). A duration-based library needs none of it.
 - **3D camera/object animation:** use `r3f-patterns`, `r3f-interaction`, or `scroll-immersion`.
 
 Do not read all references for a simple CSS transition.

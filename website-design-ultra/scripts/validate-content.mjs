@@ -127,8 +127,8 @@ const skillDirectories = fs
   .readdirSync(skillsRoot, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
 
-if (skillDirectories.length !== 17) {
-  fail(`expected 17 skills, found ${skillDirectories.length}`)
+if (skillDirectories.length !== 21) {
+  fail(`expected 21 skills, found ${skillDirectories.length}`)
 }
 
 for (const directory of skillDirectories) {
@@ -441,6 +441,110 @@ for (const [file, markers] of compositionContracts) {
     if (!content.includes(marker.toLowerCase())) {
       fail(`${file}: missing composition marker "${marker}"`)
     }
+  }
+}
+
+/**
+ * The canvas-first layer inverts the plugin's default assumption: the document
+ * stops owning the page. Bind the fields that keep the invariants reachable
+ * under that inversion, because a contract nothing validates decays into a
+ * heading.
+ */
+const canvasFirstContracts = [
+  [
+    'skills/canvas-first-architecture/SKILL.md',
+    [
+      'dom-parallel-layer',
+      'focus-model',
+      'section-contract',
+      'deep-link-model',
+      'motion-opt-out',
+      'audio-opt-out',
+      'poster-route',
+      'input-parity',
+    ],
+  ],
+  [
+    'skills/canvas-first-architecture/references/parallel-dom-layer.md',
+    ['skip', 'focus', 'forced-colors', 'live region', 'static twin'],
+  ],
+  [
+    'skills/render-graph/SKILL.md',
+    ['scale', 'ping-pong', 'tone map', 'unencoded', 'budget-full-res-passes'],
+  ],
+  [
+    'skills/render-graph/references/buffers-and-precision.md',
+    ['half float', 'resize', 'dispose', 'depth'],
+  ],
+  [
+    'skills/loading-choreography/SKILL.md',
+    ['progress-source', 'critical-bucket', 'warm-up', 'skip-path', 'failure-path'],
+  ],
+  [
+    'skills/loading-choreography/references/warmup-and-first-frame.md',
+    ['compil', 'upload', 'first meaningful frame', 'reveal'],
+  ],
+  [
+    'skills/spatial-audio/SKILL.md',
+    ['unlock-gesture', 'default-state', 'ducking', 'opt-out', '1.4.2'],
+  ],
+  [
+    'skills/motion-system/references/frame-rate-independence.md',
+    ['exp(', 'lambda', 'clamp', 'sub-step'],
+  ],
+  // The add-ons only stay optional while their owners point at them by name.
+  [
+    'skills/immersive-3d/SKILL.md',
+    ['canvas-first-architecture', 'render-graph', 'loading-choreography', 'spatial-audio', 'Budget class'],
+  ],
+  [
+    'skills/core-rules/SKILL.md',
+    ['canvas-first-architecture', 'not an exemption'],
+  ],
+]
+
+for (const [file, markers] of canvasFirstContracts) {
+  const fullPath = path.join(pluginRoot, file)
+  if (!fs.existsSync(fullPath)) {
+    fail(`${file}: missing canvas-first artifact`)
+    continue
+  }
+  const content = read(fullPath).toLowerCase()
+  for (const marker of markers) {
+    if (!content.includes(marker.toLowerCase())) {
+      fail(`${file}: missing canvas-first marker "${marker}"`)
+    }
+  }
+}
+
+/**
+ * A description that only says when a skill applies competes for every
+ * neighbouring task. These four are add-ons behind an already-loaded 3D stack,
+ * so each states its single activating condition and, explicitly, what does not
+ * activate it. Without the negative sentence a router pulls all four into every
+ * scene, which is the cost this plugin's routing model exists to avoid.
+ */
+const onDemandSkills = [
+  'canvas-first-architecture',
+  'loading-choreography',
+  'render-graph',
+  'spatial-audio',
+]
+
+for (const name of onDemandSkills) {
+  const file = path.join(skillsRoot, name, 'SKILL.md')
+  if (!fs.existsSync(file)) {
+    fail(`skills/${name}: missing on-demand skill`)
+    continue
+  }
+  const description = (parseFrontmatter(read(file), file).description ?? '').trim()
+  if (!/\bdoes not activate this skill\.?$/i.test(description)) {
+    fail(
+      `skills/${name}: description must close with the sentence naming what does not activate it`,
+    )
+  }
+  if (!/\buse only when\b/i.test(description)) {
+    fail(`skills/${name}: description must state the single condition that activates it`)
   }
 }
 
@@ -979,6 +1083,7 @@ if (paletteCount !== 20) {
 }
 
 notes.push(`${skillDirectories.length} skills`)
+notes.push(`${onDemandSkills.length} negative-gated add-ons`)
 notes.push(`${commandDirectories.length} commands`)
 notes.push(`${paletteCount} palettes / ${contrastCheckCount} state contrast checks`)
 notes.push(`${directionCount} direction token blocks`)

@@ -105,7 +105,10 @@ because these are invariants of every page.
 
 - Preserve semantic HTML, keyboard access, visible focus, readable contrast, and meaningful alternative content.
 - Respect `prefers-reduced-motion`; moving content that persists must also be pausable when required.
-- Never make essential information or functionality canvas-only.
+- Never make essential information or functionality canvas-only. An experience
+  where the canvas is the page meets this through a declared parallel DOM layer,
+  specified in `canvas-first-architecture`. That is a mechanism for satisfying
+  the invariant, not an exemption from it.
 
 ### Performance
 

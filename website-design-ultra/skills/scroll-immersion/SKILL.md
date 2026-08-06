@@ -14,8 +14,20 @@ Scroll should reveal spatial meaning, not merely move decoration.
 | Native document plus smooth inertia | Lenis |
 | DOM and Canvas timeline/pinning | Lenis + GSAP ticker/ScrollTrigger |
 | Self-contained Canvas scroll area | drei `ScrollControls` |
+| Canvas owns the viewport, no document scroll | a virtual scroll owned by the scene |
 
 Do not run Lenis and `ScrollControls` as competing masters. A separate animation library may consume progress, but one source owns scroll time.
+
+A virtual scroll replaces the document's scrollbar and with it the keyboard
+behavior, scroll anchoring, and position restoration the browser provided.
+Reimplement all three or choose a different master. It is only the right answer
+inside a `canvas-first-architecture` build; a DOM page that removes its own
+scrollbar has taken the cost without the reason.
+
+Whichever master is chosen, publish exactly one progress value and one velocity
+value. Systems, materials, and shaders read those. A shader deriving its own
+progress from a second source is the same two-clock failure in a different
+place.
 
 ## Lenis with GSAP
 

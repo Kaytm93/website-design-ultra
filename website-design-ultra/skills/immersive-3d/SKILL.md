@@ -16,6 +16,17 @@ Before building anything, check — use 3D only when it carries a statement:
 
 If 3D is justified: commit, define the shot, and select ONE stack layer.
 
+### Who owns the page
+
+One further fork, decided at the same moment. Does the document still own the
+page's headings, links, and sections, or does the scene? Almost always the
+document, and then nothing more is needed here.
+
+When the canvas is the page — full viewport, sections as scene states, no DOM
+page behind it — the experience needs an architecture and an accessibility
+mechanism this file does not carry. Load `canvas-first-architecture` and answer
+its gate first. A 3D hero above a normal page is not that case.
+
 ## 2. Mandatory layers and stack
 
 Load for every shipped 3D experience:
@@ -51,6 +62,9 @@ others.
 | The experience is told through scrolling | Lenis/ScrollTrigger/ScrollControls | `scroll-immersion` |
 | Meshes the user clicks, hovers, inspects, or configures | R3F events + camera rig | `r3f-interaction` |
 | Custom models or textures that must be prepared first | Blender/Spline → glTF | `3d-asset-pipeline` |
+| Passes that read what earlier passes wrote, or more than two effects whose order matters | multi-pass render chain | `render-graph` |
+| A first frame that depends on staged assets, or an art-directed arrival | manifest and loading sequence | `loading-choreography` |
+| The experience plays sound | audio graph, unlock gesture, opt-out | `spatial-audio` |
 
 **Renderer:** WebGLRenderer is the mature default. Select WebGPURenderer only when TSL/WebGPU/node features justify the additional effort; compatible features can fall back to WebGL2. Renderer-specific limits and postprocessing live in `shaders-tsl`.
 
@@ -69,11 +83,30 @@ Immersive does not mean heavy. Set a budget and monitor it:
 - **Quality tiers:** concrete values and stable adaptation go to `3d-runtime-quality`
 - **Lifecycle:** pause the render loop when the scene is offscreen or `document.hidden`
 
-## 4. Anti-slop for 3D — SINGLE SOURCE OF TRUTH (extends `core-rules` §4)
+### Budget class
+
+The numbers above describe the component class: a scene inside a page that also
+carries DOM content. A full-canvas experience trades initial load against the
+experience and is measured differently. Declare that explicitly rather than
+exceeding the component numbers quietly:
+
+- **Time to first meaningful frame** and **time to interactive scene**, both
+  measured under throttling on a mid-range device.
+- **Peak GPU memory**, render targets included.
+- **Total transfer before the reveal**, reported separately from the transfer
+  for the whole experience.
+- The per-frame ceilings above still apply unchanged. A larger asset set buys a
+  longer load, never a heavier frame.
+
+`canvas-first-architecture` decides whether this class applies at all,
+`loading-choreography` owns the staged arrival, and `render-graph` owns the
+render-target share of the memory number.
+
+## 4. Anti-slop for 3D — SINGLE SOURCE OF TRUTH (extends `core-rules` §5)
 
 - No endlessly rotating default cube or torus knot as a hero.
 - No aimless particle sparkle without a link to the content.
-- The color prohibitions from `core-rules` §4 apply unchanged to 3D materials and shaders.
+- The color prohibitions from `core-rules` §5 apply unchanged to 3D materials and shaders.
 - Motion must be non-rigid: soft easing curves, inertia/damping, subtle perpetual idle motion (breathing, drifting) instead of mechanical loops.
 - Light, camera, material, and tone mapping follow the contract from `3d-art-direction`.
 - Camera transitions use restrained damping/inertia. No abrupt snapping.
@@ -126,6 +159,10 @@ For production or complex scenes → `r3f-patterns`.
 - Scroll-driven story → **`scroll-immersion`**
 - Click/hover interaction, hotspots, configurator, animation clips, 3D text → **`r3f-interaction`**
 - Custom models/textures → **`3d-asset-pipeline`**
+- The canvas is the page → **`canvas-first-architecture`**
+- Multi-pass chain, buffers, grading → **`render-graph`**
+- Manifest, buckets, progress, warm-up → **`loading-choreography`**
+- Sound → **`spatial-audio`**
 - Before every output: walk the `core-rules` pre-flight plus the 3D budget from section 3.
 
 ## 8. Browser verification and launch gate

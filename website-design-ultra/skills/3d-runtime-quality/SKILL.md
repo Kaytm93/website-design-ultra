@@ -73,6 +73,11 @@ Choose the order by subject and document it. A sensible starting point:
 4. reduce LOD and material complexity,
 5. switch to poster when interaction or stability would otherwise become unreliable.
 
+When a `render-graph` chain is present, its declared pass-level order supplies
+steps 1 and 2. This controller decides the tier; the chain decides which pass
+that tier drops and at which resolution scale. Two systems deciding that
+independently is the oscillation this skill exists to prevent.
+
 Never remove the DOM alternative, selection states, or CTA functionality.
 
 ## Output

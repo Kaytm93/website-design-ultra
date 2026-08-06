@@ -1,5 +1,102 @@
 # website-design-ultra
 
+## 1.8.0 — The Canvas Is the Page (2026-08-06)
+
+The plugin could describe a 3D component on a document. It could not describe a
+site where the canvas *is* the document, and its own invariants said so: "never
+make essential information or functionality canvas-only." That rule is right for
+almost every project and it left one class of work undescribed rather than
+merely discouraged.
+
+The gap analysis came from a shipped example — a full-canvas site whose bundle
+carries roughly 180 render-target references, an off-thread decode pipeline for
+compressed geometry and textures, a message-per-interaction sound set, and a DOM
+consisting of two empty `div` elements. The first three are engineering this
+plugin had no vocabulary for. The fourth is the reason the new layer leads with
+an accessibility mechanism instead of a technique.
+
+### Four add-ons, gated to stay out of the way
+
+- `canvas-first-architecture` — a three-question gate that ends the skill for a
+  3D hero, a nine-field compensation contract, one owner per axis for time,
+  section state, camera, assets, input, and quality, and the list of content
+  that never moves into the scene.
+- `render-graph` — a pass contract carrying a resolution scale per pass, the
+  fill-cost model that makes a chain priceable before it is built, ping-pong and
+  precision rules, and a pass-level degradation order that the runtime
+  controller consumes rather than duplicates.
+- `loading-choreography` — manifest, priority buckets, off-thread decode, shader
+  warm-up before the reveal, and the skip, reduced-motion, and failure paths.
+- `spatial-audio` — layer inventory, the unlock gesture, master and per-layer
+  gain, ducking, event variation, and the opt-out.
+
+### The invariant kept its teeth
+
+`core-rules` §4 still says essential content is never canvas-only. What changed
+is that there is now a specified way to satisfy it in a canvas-first build —
+the parallel DOM layer, with a skip control, a focus model, input parity per
+gesture, and a four-run verification matrix — rather than an unwritten
+expectation that the case would not come up.
+
+### Progress is a claim
+
+`content-design` bans invented numbers in copy. A progress readout is a number
+in the interface, so `loading-choreography` §3 applies the same rule to it: a
+percentage needs a real signal, an unweighted asset count is a different
+quantity than it appears to report, and a bar that eases to 90 percent and waits
+is fabricated data. A designed intro with a declared duration is legitimate and
+is a separate field in the contract.
+
+### Motion inside a render loop
+
+`motion-system` has banned fixed-factor damping since 1.0 without saying what
+replaces it. `references/frame-rate-independence.md` is that answer: the
+exponential form, the identity that converts an existing per-frame coefficient
+without retuning it, and the boundary where a spring needs a fixed sub-step
+instead. A duration-based library needs none of it, and the file says so.
+
+### Selective loading, enforced rather than requested
+
+Four new skills is four new descriptions competing for every neighbouring task,
+which is the cost this plugin's routing model exists to avoid. Three gates:
+
+- Every add-on description states one activating condition and closes by naming
+  what does not activate it. `validate-content.mjs` fails the build when either
+  sentence is missing.
+- `immersive-3d` §2 lists them in the add-on table, under the standing rule that
+  needing one add-on says nothing about the others.
+- The `3d-hero` and `configurator` forward cases forbid all four files.
+  A plain 3D hero that reads one of them fails its case. Reference and token
+  budgets are unchanged, because the existing routes gained no required reading.
+
+### Second budget class
+
+`immersive-3d` §3 was written for a scene inside a page. A full-canvas
+experience is measured by time to first meaningful frame, time to interactive
+scene, peak GPU memory, and transfer before the reveal. The per-frame ceilings
+are unchanged: a larger asset set buys a longer load, never a heavier frame.
+
+### Two corrections in passing
+
+- `immersive-3d` §4 pointed at `core-rules` §4 for the colour prohibitions, in
+  both its heading and its bullet. Those rules live in §5; §4 is the invariants
+  block. Sibling files already cited §5 correctly, so this was the only broken
+  section pointer in the tree.
+- The README's self-lint count moved from 61 to 74 documents, which is what
+  `lint-copy.mjs --self` reports once this release's files are in the tree.
+
+### Not in this release
+
+No forward case exercises a canvas-first brief, so the positive route is
+unsampled: the suite proves the four skills stay out of a conventional 3D task,
+not that they load correctly for the task they were written for. The technical
+content also has no deterministic check — the validator binds the contract
+fields, and nothing verifies that a pass order or an audio graph is correct.
+`/verify` screenshots and a real device remain the only evidence, which is the
+same boundary the specificity floor has always had.
+
+Release-Tag: v1.8.0
+
 ## 1.7.0 — A Page Declares Its Composition (2026-08-02)
 
 Two gaps, one on each side of the plugin. On the cost side, the minimum copy

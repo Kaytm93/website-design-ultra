@@ -51,7 +51,7 @@ For production, self-host a licensed environment map instead of relying on a pre
 
 1. Use `useFrame` for frame work.
 2. Mutate refs; never call React state setters every frame.
-3. Use `delta` with `MathUtils.damp` or `maath/easing`; avoid fixed-factor lerps.
+3. Use `delta` with `MathUtils.damp` or `maath/easing`; avoid fixed-factor lerps. `motion-system` owns the conversion from an existing per-frame coefficient and the boundary where a spring needs a fixed sub-step.
 4. Reuse expensive resources and dispose resources created outside R3F’s declarative lifecycle.
 5. Pause or switch to `frameloop="demand"` when the scene is offscreen, hidden, or static.
 
