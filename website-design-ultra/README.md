@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.8.0 contains 21 skills and 6 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting, evidence-led content, a declared 2D composition contract, per-direction design tokens, a catalogue of signature devices, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Four negative-gated add-ons cover the canvas-first class — architecture, multi-pass render graph, loading choreography, and sound — and stay unloaded until a brief names their condition. Copy quality is enforced deterministically, not by self-report.
+Version 1.8.1 contains 21 skills and 6 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting, evidence-led content, a declared 2D composition contract, per-direction design tokens, a catalogue of signature devices, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Four negative-gated add-ons cover the canvas-first class — architecture, multi-pass render graph, loading choreography, and sound — and stay unloaded until a brief names their condition. Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
@@ -548,6 +548,27 @@ unavailable is now a hard validation failure: a ruleset that requires evidence
 for every claim does not ship an unverifiable provenance claim of its own.
 
 ## Version
+
+**1.8.1** — the deterministic layer, made runnable and made German:
+
+- fixed the copy-linter command in `anti-slop/SKILL.md`,
+  `anti-slop/references/operations.md`, and `/tweak`: a bare relative
+  `scripts/lint-copy.mjs` resolves against the user's project and dies with
+  `Cannot find module`, so all three now use the `<plugin-root>` convention that
+  `/audit` and `/verify` already used,
+- tightened the `anti-slop` check line so a command that never started counts as
+  an unverified copy layer rather than a stated linter absence,
+- fixed `de:negative-parallelism`: it gated `nicht nur … sondern auch`, a correct
+  correlative conjunction, and now matches the `It's not just X, it's Y` calque
+  it was meant to catch,
+- added `de:more-than-just`, `de:fast-paced-world`, `de:false-range`, and
+  `de:revolutionize-the-way`; widened `de:next-level` and
+  `de:importance-puffery`; made the German patterns whitespace-tolerant so a
+  wrapped markdown line still matches,
+- rewrote both German fixtures from real marketing copy instead of from the
+  regexes, added `clean-de-correlative.md` as the false-positive guard, and added
+  `requiredRules` to `tests/copy/expected.json` so a fixture names the tells it
+  covers instead of only how many findings it produces.
 
 **1.8.0** — the canvas-first class, gated so it stays out of the way:
 

@@ -1,5 +1,77 @@
 # website-design-ultra
 
+## 1.8.1 — A Check That Cannot Run Is Not a Check (2026-08-09)
+
+Both defects in this release sit in the deterministic layer — the one the plugin
+points at every time it refuses a self-report. Neither was visible from the
+plugin root, which is the only place anyone had run them from.
+
+### The linter command was unrunnable from a user's project
+
+Six documented invocations named the linter by a bare relative path:
+`node scripts/lint-copy.mjs --path src`. `scripts/` ships in the plugin cache,
+so from any project directory the command died with `Cannot find module` before
+reading a line of copy.
+
+The failure was quiet in the worst possible way. `anti-slop`'s own check list
+accepted "the linter ran, or its absence was stated instead of implied" — so a
+command that never started satisfied the check by failing, in the file that is
+loaded for every copy task. The deterministic foundation cancelled itself.
+
+`SKILL.md` §6, `references/operations.md`, and `/tweak` now use the
+`<plugin-root>` convention that `/audit` and `/verify` already used, and §6
+carries a fourth rule: a command that never started is an unverified copy layer,
+not a linter absence. The check line says the same. `README.md` and `--self` are
+unchanged; they run from the plugin root and address a developer, not a model
+working inside someone else's repository.
+
+### German was gated on a correct sentence and blind to the common calques
+
+`de:negative-parallelism` matched `nicht nur … sondern auch`. That is a
+correlative conjunction, not an empty form, and Tier 1 means "always rewrite, no
+direction exception" — so the linter demanded that informative German be made
+worse. It now matches the calque it was meant to catch, the doubled copula of
+`It's not just X, it's Y`, with `sondern` tempered out of the span.
+
+Four rules added and two widened, all of them shapes that produced no finding
+before: `de:more-than-just`, `de:fast-paced-world`, `de:false-range`,
+`de:revolutionize-the-way`, plus `de:next-level` beyond the single phrasing
+`auf das nächste Level` and `de:importance-puffery` beyond
+`Es ist wichtig zu beachten`. `next-level` requires the lift verb the reference
+documents, which keeps a game page out of the report. The patterns are also
+whitespace-tolerant now: several rules had been silently unable to match across
+a wrapped markdown line. German goes from 13 rules to 19 patterns under 17 ids,
+and `locale-de.md` moved in the same commit, as the doc/code binding requires.
+
+### The fixture was the reason it stayed hidden
+
+`slop-de.md` used the very construction the regex matched. It had been written
+against the rule instead of against the language, so the regression gate could
+never see that the rule was wrong — it only ever counted findings.
+
+Both German fixtures are rewritten as real marketing copy first, with the
+patterns derived from them afterwards. `expected.json` gains `requiredRules`,
+the mirror of `forbiddenRules`: a fixture now names the tells it covers instead
+of only how many it produces. `clean-de-correlative.md` is new and holds
+`nicht nur … sondern auch` in correct use; it must stay a `PASS`, and that is
+what stops the false positive from returning.
+
+### Not in this release
+
+Six fresh German slop sentences, written after the patterns were fixed and from
+domains the fixtures do not use, were checked as a held-out set: two of six
+produced a Tier-1 finding. Three of the four misses are shapes the reference
+already documents — a false range whose poles are not in the lexical list, a
+`fast-paced world` variant with an uncatalogued adjective, and `Lass uns
+eintauchen` against a `Tauche ein in` pattern. The German rules catch the forms
+they were derived from and do not yet generalize past them the way the English
+set does. The number is reported rather than fixed, because tuning against that
+set is the same mistake the old fixture made.
+
+Nothing here changes the English rules.
+
+Release-Tag: v1.8.1
+
 ## 1.8.0 — The Canvas Is the Page (2026-08-06)
 
 The plugin could describe a 3D component on a document. It could not describe a
