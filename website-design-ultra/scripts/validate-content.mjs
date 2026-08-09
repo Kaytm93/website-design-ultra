@@ -685,13 +685,12 @@ for (const testCase of copyExpectations.cases) {
   const localeArguments = testCase.locales
     ? ['--locale', testCase.locales.join(',')]
     : []
-  const report = runLinter([
-    '--path',
-    fixture,
-    '--profile',
-    testCase.profile,
-    ...localeArguments,
-  ])
+  // A case with profileMode "auto" passes no --profile, because the thing under
+  // test is the register the linter picks per file. Passing one would silence
+  // exactly the decision the case exists to check.
+  const profileArguments =
+    testCase.profileMode === 'auto' ? [] : ['--profile', testCase.profile]
+  const report = runLinter(['--path', fixture, ...profileArguments, ...localeArguments])
   if (!report) {
     fail(`tests/copy: linter produced no report for ${testCase.fixture}`)
     continue
@@ -749,6 +748,31 @@ for (const testCase of copyExpectations.cases) {
     const observed = (report.filesWithoutCopy ?? []).length
     if (observed !== testCase.filesWithoutCopy) {
       fail(`${label}: ${observed} file(s) without copy, expected ${testCase.filesWithoutCopy}`)
+    }
+  }
+  // Coverage is part of the verdict. A directory fixture that silently loses a
+  // file reports the same PASS as one that read everything, so the file count,
+  // the register split, and the number of skipped directories are all asserted.
+  if (testCase.files !== undefined && report.files !== testCase.files) {
+    fail(`${label}: read ${report.files} file(s), expected ${testCase.files}`)
+  }
+  if (testCase.registers) {
+    const observed = JSON.stringify(
+      Object.fromEntries(Object.entries(report.registers ?? {}).sort()),
+    )
+    const expected = JSON.stringify(
+      Object.fromEntries(Object.entries(testCase.registers).sort()),
+    )
+    if (observed !== expected) {
+      fail(`${label}: registers ${observed}, expected ${expected}`)
+    }
+  }
+  if (testCase.skippedDirectories !== undefined) {
+    const observed = (report.skippedDirectories ?? []).length
+    if (observed !== testCase.skippedDirectories) {
+      fail(
+        `${label}: skipped ${observed} director(y|ies), expected ${testCase.skippedDirectories}`,
+      )
     }
   }
 }

@@ -19,11 +19,15 @@ You will audit existing frontend code for quality.
      ```
    - Copy slop, deterministic — run this before reading copy by hand:
      ```bash
-     node "<plugin-root>/scripts/lint-copy.mjs" --path src --profile marketing
+     node "<plugin-root>/scripts/lint-copy.mjs" --path src
      node "<plugin-root>/scripts/lint-copy.mjs" --path src --locale de   # explicit override
      ```
-     Locale is detected per file when the flag is omitted. Report the resolved
-     locale and every auto-detection warning together with the tier counts and
+     Point it at the shipped tree, not the repository root: aimed at the root it
+     walks past dot directories and build output and judges repo prose in the
+     `docs` register, so the tier counts then answer a different question.
+     Locale and register are resolved per file when the flags are omitted. Report
+     the resolved locale, the `profile auto →` split, and every auto-detection or
+     `SKIPPED` line together with the tier counts and
      measured numbers. A `PASS` means no
      catalogued pattern was found; it is not a content approval. `NO-COPY`
      (exit 2) means nothing was checked — point the linter at the files that

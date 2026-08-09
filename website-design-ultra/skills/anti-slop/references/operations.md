@@ -34,11 +34,16 @@ skill route is not evidence of Progressive Disclosure. `<plugin-root>` resolves
 as in `SKILL.md` §6.
 
 ```bash
-node "<plugin-root>/scripts/lint-copy.mjs" --path src --profile marketing --protect .anti-slop-protect.json
-node "<plugin-root>/scripts/lint-copy.mjs" --path content --profile editorial
-node "<plugin-root>/scripts/lint-copy.mjs" --path content --locale de --profile editorial # explicit override
+node "<plugin-root>/scripts/lint-copy.mjs" --path src --protect .anti-slop-protect.json
+node "<plugin-root>/scripts/lint-copy.mjs" --path .            # whole repo, register per file
+node "<plugin-root>/scripts/lint-copy.mjs" --path content --profile editorial # one register for all
+node "<plugin-root>/scripts/lint-copy.mjs" --path content --locale de --profile editorial
 node "<plugin-root>/scripts/lint-copy.mjs" --stdin --json
 ```
+
+Point it at the shipped tree when one exists. `--path src` is the sharpest run
+available: it is all copy, one register, no judgement call about what counts as a
+page.
 
 The linter reads Markdown prose and the visible text of JSX/TSX, HTML, Vue,
 Svelte, and Astro, plus the string values of JSON message catalogues — a
@@ -58,6 +63,27 @@ format the extractor does not read, is unchecked, not clean. A partial miss is
 reported as a `NO-COPY WARNING` naming the files that were skipped. Read that
 warning before quoting a pass: it is the same failure mode as a self-reported
 route, and it is the one this catalogue exists to refuse.
+
+**What a directory walk skips, and why it says so.** Dot-directories and build
+output are not entered: `.claude/worktrees`, `.codex`, `.next`, `dist`. Agent
+scratch space holds whole copies of the repository, so a walk that enters it
+reports the same sentence once per copy. Measured on one real site, that walk
+produced 3304 Tier-1 findings, 2292 of them from `.claude` and 2 from `src`.
+Every skip is printed as a `SKIPPED` line, because a linter that quietly walks
+past two thirds of a repository reports a pass it did not earn. The skip is a
+default, not an exclusion: `--path .claude/notes` lints that directory.
+
+**Register per file, without `--profile`.** Repo prose — `README`, `CHANGELOG`,
+`AGENTS.md`, `CLAUDE.md`, and Markdown outside a shipped-copy path — is judged in
+the `docs` register. Internal notes legitimately run em dashes, tick-box
+headings, and one heading per paragraph; scoring them as marketing copy is what
+turned that site's two real findings into thousands. Three Tier-1 rules are
+published-typography rules and relax with the register: `em-dash-in-heading`,
+`emoji-in-heading`, and the locale rule `de:english-em-dash`. Every construction
+tell stays on in every register — a docs file full of German slop still fails.
+The summary line prints the split (`profile auto → docs 61 / marketing 108`), and
+`--profile` overrides it for every file. Check that split before quoting a
+number: it names what the linter thought it was reading.
 
 With no `--locale`, the linter detects English or German per file. Declared
 frontmatter/HTML language and locale-bearing path segments win; otherwise it

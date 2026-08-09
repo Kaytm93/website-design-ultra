@@ -52,6 +52,71 @@ function isMessageCatalogue(file) {
   return CATALOGUE_DIRECTORY.test(path.dirname(normalized)) || CATALOGUE_FILE.test(normalized)
 }
 
+/**
+ * Build output, by name. The dot-directory rule below covers the rest and is
+ * the one that matters: agent and editor scratch space — `.claude/worktrees`,
+ * `.codex`, `.cursor` — holds whole copies of the repository. A walk that
+ * enters it reports the same sentence once per copy, and the shipped copy
+ * disappears under the duplicates. Measured on one real site: 3304 Tier-1
+ * findings, of which 2292 came from `.claude` and 2 from `src`.
+ *
+ * This is a default, not an exclusion. A directory named as `--path` is always
+ * walked, so `--path .claude/notes` still lints it.
+ */
+const SKIPPED_DIRECTORIES = new Set([
+  'node_modules',
+  'dist',
+  'build',
+  'output',
+  'out',
+  'coverage',
+  'vendor',
+])
+
+/**
+ * Directories whose text is published: prose here is page content. Any ancestor
+ * segment counts, because content sits at every depth. That reach is why the
+ * segment names have to be conventions rather than ordinary words — a `copy`
+ * entry matched this plugin's own `tests/copy/` and silently promoted every
+ * fixture to the marketing register.
+ */
+const SHIPPED_COPY_PATH =
+  /(?:^|\/)(?:src|app|pages|content|posts|articles|blog|_posts|locales?|i18n|lang|langs|messages|translations?|data)(?:\/|$)/i
+
+/** Repo prose by name, whatever directory it sits in. */
+const DOCUMENTATION_NAME =
+  /^(?:readme|changelog|contributing|license|licence|code_of_conduct|security|support|agents|claude|codex|todo|notes|notizen|roadmap|architecture|adr)(?:[.-][a-z0-9-]+)*\.(?:md|mdx|markdown|txt)$/i
+
+/**
+ * Conventional page files, and the reason this rule is anchored to the scanned
+ * root: `index.md` at the top of a site is the home page, while `INDEX.md` deep
+ * inside a vault is a table of contents. Measured on one real site, the
+ * unanchored version handed a session index the marketing register and produced
+ * 14 of the 16 remaining findings.
+ */
+const PAGE_NAME = /^(?:index|page|home|start|landing)\.(?:md|mdx|markdown)$/i
+
+const PROSE_EXTENSIONS = new Set(['.md', '.mdx', '.markdown', '.txt'])
+
+/**
+ * The register question is not "which words are in this file" but "will a
+ * reader ever meet this text on a page". `CLAUDE.md`, an architecture note, and
+ * a vault of internal Markdown are prose the marketing budgets were never
+ * written for: they legitimately run em dashes, tick-box headings, and one
+ * heading per paragraph. Judging them as marketing copy is what turned a real
+ * site's two shipped findings into thousands.
+ *
+ * Only ever relaxes toward `docs`, and only when no `--profile` was given.
+ */
+function documentationRegister(file, scanRoots = new Set()) {
+  const normalized = String(file).replaceAll('\\', '/')
+  const base = path.basename(normalized)
+  if (PAGE_NAME.test(base) && scanRoots.has(path.dirname(path.resolve(file)))) return false
+  if (DOCUMENTATION_NAME.test(base)) return true
+  if (!PROSE_EXTENSIONS.has(path.extname(normalized).toLowerCase())) return false
+  return !SHIPPED_COPY_PATH.test(path.dirname(normalized))
+}
+
 const SUPPORTED_LOCALES = ['en', 'de']
 
 /**
@@ -183,6 +248,8 @@ export const PROFILES = {
     ornamentMax: 2,
     tier2ClusterMin: 3,
     emDashInHeading: true,
+    emojiInHeading: true,
+    localeTypography: true,
   },
   docs: {
     emDashWordsPer: 120,
@@ -194,6 +261,8 @@ export const PROFILES = {
     ornamentMax: null,
     tier2ClusterMin: 5,
     emDashInHeading: false,
+    emojiInHeading: false,
+    localeTypography: false,
   },
   editorial: {
     emDashWordsPer: 400,
@@ -205,8 +274,20 @@ export const PROFILES = {
     ornamentMax: 1,
     tier2ClusterMin: 3,
     emDashInHeading: false,
+    // Editorial is published prose, so published typography still applies: the
+    // em dash is allowed to carry the rhythm, an emoji heading is not, and
+    // German still sets the en dash.
+    emojiInHeading: true,
+    localeTypography: true,
   },
 }
+
+/**
+ * Tier-1 rules that judge published typography rather than a slop
+ * construction. `em-dash-in-heading` is already profile-gated for the same
+ * reason; these are the locale-specific members of that family.
+ */
+export const TYPOGRAPHY_RULES = new Set(['english-em-dash'])
 
 export const BUDGETS = {
   sentenceVariationMinCount: 10,
@@ -258,7 +339,9 @@ function usage() {
 Options:
   --locale <en|de>     explicit rule-set override; repeat or comma-separate
                        for both (default: auto-detect each file)
-  --profile <name>     marketing (default), docs, or editorial Tier-3 sensitivity
+  --profile <name>     marketing, docs, or editorial register for the whole run;
+                       without it, each file gets its own (default: marketing
+                       for shipped copy, docs for repo prose)
   --protect <file>     protect list JSON; entries need a reason to apply
   --json               machine-readable report
   --strict             also fail on Tier-2 clusters
@@ -266,6 +349,15 @@ Options:
 
 Reads Markdown, JSX/TSX, HTML, Vue, Svelte, Astro, and JSON message
 catalogues (a locales/i18n/lang/messages path, or en.json / de.json).
+
+Walking a directory skips dot-directories and build output, because agent
+scratch space holds whole copies of the repository. Every skip is printed. Name
+such a directory as --path to lint it anyway.
+
+Repo prose — README, CHANGELOG, AGENTS.md, CLAUDE.md, and Markdown outside a
+shipped-copy path — is judged with the docs register: em dashes, tick-box
+headings, and one heading per paragraph are normal there. --profile overrides
+this for every file.
 
 Exit codes: 0 pass, 1 Tier-1 hit or Tier-3 breach (or Tier-2 with --strict),
 2 usage error or nothing checked — no file matched, or no visible copy could
@@ -292,6 +384,7 @@ function parseArguments(argv) {
     stdin: false,
     self: false,
     profile: 'marketing',
+    profileMode: 'auto',
     localeMode: 'auto',
   }
   for (let index = 0; index < argv.length; index += 1) {
@@ -306,7 +399,10 @@ function parseArguments(argv) {
     else if (argument === '--strict') options.strict = true
     else if (argument === '--stdin') options.stdin = true
     else if (argument === '--self') options.self = true
-    else if (argument === '--profile') options.profile = argv[++index]
+    else if (argument === '--profile') {
+      options.profileMode = 'explicit'
+      options.profile = argv[++index]
+    }
     else if (argument === '--help') {
       usage()
       process.exit(0)
@@ -319,6 +415,7 @@ function parseArguments(argv) {
   }
   if (!PROFILES[options.profile]) die(`unsupported profile "${options.profile}"`)
   if (options.self) {
+    options.profileMode = 'explicit'
     options.profile = 'docs'
     options.paths.push(path.join(pluginRoot, 'README.md'), path.join(pluginRoot, 'commands'), path.join(pluginRoot, 'skills'))
   }
@@ -351,6 +448,8 @@ function loadProtect(file) {
   return { applied, rejected }
 }
 
+const skippedDirectories = []
+
 function collectFiles(targets) {
   const files = []
   for (const target of targets) {
@@ -363,7 +462,10 @@ function collectFiles(targets) {
     for (const entry of fs.readdirSync(target, { withFileTypes: true })) {
       const next = path.join(target, entry.name)
       if (entry.isDirectory()) {
-        if (['node_modules', '.git', 'dist', 'build', '.next', 'output'].includes(entry.name)) continue
+        if (entry.name.startsWith('.') || SKIPPED_DIRECTORIES.has(entry.name)) {
+          skippedDirectories.push(next)
+          continue
+        }
         files.push(...collectFiles([next]))
       } else {
         const extension = path.extname(entry.name).toLowerCase()
@@ -608,6 +710,7 @@ function lintText({ file, content, extension, locales, protectList, profile }) {
 
   for (const locale of locales) {
     for (const [name, pattern] of TIER1[locale]) {
+      if (TYPOGRAPHY_RULES.has(name) && !budgets.localeTypography) continue
       const scoped = new RegExp(pattern.source, pattern.flags.includes('g') ? pattern.flags : `${pattern.flags}g`)
       for (const match of body.matchAll(scoped)) {
         if (protectedBy(match[0], protectList)) continue
@@ -688,7 +791,7 @@ function lintText({ file, content, extension, locales, protectList, profile }) {
         quote: quote(heading),
       })
     }
-    if (EMOJI.test(heading)) {
+    if (budgets.emojiInHeading && EMOJI.test(heading)) {
       findings.push({
         tier: 1,
         rule: 'emoji-in-heading',
@@ -841,12 +944,38 @@ const localeDetection = Object.fromEntries(
       : detectLocales(input),
   ]),
 )
+/**
+ * One register per file, so a repo can be linted in one pass. `--profile` is an
+ * override for the whole run; without it, repo prose is judged as documentation
+ * and everything else keeps the base register.
+ */
+const scanRoots = new Set(
+  options.paths.map((target) => {
+    const resolved = path.resolve(target)
+    return fs.statSync(resolved).isDirectory() ? resolved : path.dirname(resolved)
+  }),
+)
+const registerByFile = Object.fromEntries(
+  inputs.map((input) => [
+    input.file,
+    options.profileMode === 'explicit'
+      ? options.profile
+      : documentationRegister(input.file, scanRoots)
+        ? 'docs'
+        : options.profile,
+  ]),
+)
+const registerCounts = {}
+for (const register of Object.values(registerByFile)) {
+  registerCounts[register] = (registerCounts[register] ?? 0) + 1
+}
+
 const results = inputs.map((input) =>
   lintText({
     ...input,
     locales: localeDetection[input.file].locales,
     protectList: protect.applied,
-    profile: options.profile,
+    profile: registerByFile[input.file],
   }),
 )
 const findings = results.flatMap((result) => result.findings)
@@ -882,6 +1011,12 @@ const payload = {
   localeDetection,
   localeWarnings,
   profile: options.profile,
+  profileMode: options.profileMode,
+  registers: registerCounts,
+  registerByFile,
+  skippedDirectories: skippedDirectories.map(
+    (directory) => path.relative(process.cwd(), directory) || directory,
+  ),
   files: inputs.length,
   filesWithoutCopy,
   tier1: byTier[1],
@@ -923,12 +1058,36 @@ if (options.json) {
         (filesWithoutCopy.length > 10 ? `, +${filesWithoutCopy.length - 10} more` : ''),
     )
   }
+  /**
+   * A skipped directory is a coverage decision, so it is printed. A linter that
+   * silently walks past two thirds of a repository reports a pass it did not
+   * earn — the same failure as counting a file it could not read.
+   */
+  if (payload.skippedDirectories.length) {
+    console.log(
+      `\nSKIPPED ${payload.skippedDirectories.length} director(y|ies) — build output and dot-directories ` +
+        'hold copies, not shipped copy. Name one as --path to lint it anyway. ' +
+        `${payload.skippedDirectories.slice(0, 10).join(', ')}` +
+        (payload.skippedDirectories.length > 10
+          ? `, +${payload.skippedDirectories.length - 10} more`
+          : ''),
+    )
+  }
   const localeSummary =
     options.localeMode === 'explicit'
       ? options.locales.join('+')
       : `auto → ${resolvedLocales.join('+') || 'none'}`
+  const profileSummary =
+    options.profileMode === 'explicit'
+      ? options.profile
+      : `auto → ${
+          Object.entries(registerCounts)
+            .sort((a, b) => b[1] - a[1])
+            .map(([register, count]) => `${register} ${count}`)
+            .join(' / ') || options.profile
+        }`
   console.log(
-    `\nLINT: ${payload.status} — ${inputs.length} file(s), locale ${localeSummary}, profile ${options.profile}, tier1 ${byTier[1]}, tier2 ${byTier[2]}, tier3 ${byTier[3]}` +
+    `\nLINT: ${payload.status} — ${inputs.length} file(s), locale ${localeSummary}, profile ${profileSummary}, tier1 ${byTier[1]}, tier2 ${byTier[2]}, tier3 ${byTier[3]}` +
       (payload.advisory ? ` (${payload.advisory} advisory)` : ''),
   )
   if (noCopy) {

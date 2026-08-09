@@ -1,5 +1,5 @@
 {
-  "note": "Regression gate for scripts/lint-copy.mjs. A rule change must still catch every slop fixture and must still flag nothing in the authentic-prose fixtures. Fixture pairs also prove that the register profile, not the rule list, decides Tier-3 verdicts. forbiddenRules guards the extractor's boundary: slop-hero.svelte hides Tier-1 patterns in the script and style blocks, and slop-catalogue-de.json uses gettext-style English source strings as message ids, so a linter that read keys would report the source language of a translated file. runtime-only.js builds its copy at runtime and must report NO-COPY rather than a pass over text that was never read. requiredRules exists because the German fixture was once written against the regex instead of against the language: it reused the very construction the rule matched, so a count-only gate could never see that the rule was wrong. Write the copy first, derive the rule from it, and name the rules the copy must trigger. slop-wrapped-en.md holds the same tells as slop-en.md but broken across line ends, because copy is stored wrapped and a pattern built from literal spaces only fires when the whole phrase lands on one source line. Every other slop fixture keeps its tells on one line, so nothing else in this suite can see that failure.",
+  "note": "Regression gate for scripts/lint-copy.mjs. A rule change must still catch every slop fixture and must still flag nothing in the authentic-prose fixtures. Fixture pairs also prove that the register profile, not the rule list, decides Tier-3 verdicts. forbiddenRules guards the extractor's boundary: slop-hero.svelte hides Tier-1 patterns in the script and style blocks, and slop-catalogue-de.json uses gettext-style English source strings as message ids, so a linter that read keys would report the source language of a translated file. runtime-only.js builds its copy at runtime and must report NO-COPY rather than a pass over text that was never read. requiredRules exists because the German fixture was once written against the regex instead of against the language: it reused the very construction the rule matched, so a count-only gate could never see that the rule was wrong. Write the copy first, derive the rule from it, and name the rules the copy must trigger. slop-wrapped-en.md holds the same tells as slop-en.md but broken across line ends, because copy is stored wrapped and a pattern built from literal spaces only fires when the whole phrase lands on one source line. Every other slop fixture keeps its tells on one line, so nothing else in this suite can see that failure. The tree/ fixture is the only case about coverage rather than copy: every other fixture is one file handed to the linter, so none of them could see that walking a real repository reads agent scratch copies and judges internal notes as marketing copy. It is asserted three ways, because a single verdict cannot separate the two halves of that fix — auto proves the shipped files are read and the repo prose is not judged as marketing, --profile marketing proves the rules still exist and the register is what relaxed them, and naming tree/.claude as the path proves the skip is a default rather than an exclusion. The file count, register split, and skip count are asserted for the same reason NO-COPY exists: a tree that lost half its files reports the same PASS as one that read all of them.",
   "cases": [
     {
       "fixture": "slop-en.md",
@@ -145,6 +145,45 @@
       "locales": ["en"],
       "status": "NO-COPY",
       "filesWithoutCopy": 1
+    },
+    {
+      "fixture": "tree",
+      "profile": "auto",
+      "profileMode": "auto",
+      "status": "PASS",
+      "localeMode": "auto",
+      "detectedLocales": ["de"],
+      "files": 4,
+      "registers": { "docs": 2, "marketing": 2 },
+      "skippedDirectories": 2
+    },
+    {
+      "fixture": "tree",
+      "profile": "marketing",
+      "status": "FAIL",
+      "files": 4,
+      "minTier1": 5,
+      "minTier3": 1,
+      "requiredRules": ["de:english-em-dash", "em-dash-in-heading", "emoji-in-heading"]
+    },
+    {
+      "fixture": "tree/.claude",
+      "profile": "auto",
+      "profileMode": "auto",
+      "status": "FAIL",
+      "files": 1,
+      "registers": { "docs": 1 },
+      "skippedDirectories": 0,
+      "minTier1": 6,
+      "requiredRules": [
+        "de:more-than-just",
+        "de:next-level",
+        "de:fast-paced-world",
+        "de:false-range",
+        "de:revolutionize-the-way",
+        "de:summary-recap"
+      ],
+      "forbiddenRules": ["de:english-em-dash", "emoji-in-heading"]
     }
   ]
 }
