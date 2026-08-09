@@ -744,6 +744,23 @@ for (const testCase of copyExpectations.cases) {
       fail(`${label}: rule ${rule} must fire here, but did not`)
     }
   }
+  // The line is part of the finding. A report that names the right rule at the
+  // wrong line sends a reader to a line they did not write, and every count and
+  // rule-name assertion above stays green while it does. Each entry names a rule
+  // and every source line it must be reported at, so a missing hit and a
+  // misplaced one fail differently.
+  for (const [rule, expected] of Object.entries(testCase.lines ?? {})) {
+    const observed = (report.findings ?? [])
+      .filter((finding) => finding.rule === rule)
+      .map((finding) => finding.line)
+      .sort((left, right) => left - right)
+    const wanted = [expected].flat().sort((left, right) => left - right)
+    if (JSON.stringify(observed) !== JSON.stringify(wanted)) {
+      fail(
+        `${label}: rule ${rule} reported at line(s) ${observed.join(', ') || 'none'}, expected ${wanted.join(', ')}`,
+      )
+    }
+  }
   if (testCase.filesWithoutCopy !== undefined) {
     const observed = (report.filesWithoutCopy ?? []).length
     if (observed !== testCase.filesWithoutCopy) {

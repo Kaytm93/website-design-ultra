@@ -555,30 +555,96 @@ function detectLocales({ file, content, extension }) {
 }
 
 /**
+ * Blank a span without moving what follows it: every character becomes a space,
+ * every newline survives. Stripping by deletion is what made a finding's line
+ * unrecoverable — offsets in the extracted text no longer matched the file the
+ * reader has to open. Masking keeps the two in the same coordinate system.
+ */
+function blank(text) {
+  return text.replace(/[^\n]/g, ' ')
+}
+
+function mask(content, patterns) {
+  let masked = content
+  for (const pattern of patterns) masked = masked.replace(pattern, blank)
+  return masked
+}
+
+/** A masked extraction maps one-to-one onto the file it came from. */
+function sameShape(content) {
+  return [{ body: 0, source: 0, length: content.length }]
+}
+
+/**
+ * Body offset → source offset. Extractors that mask keep the file's layout, so
+ * the map is the identity; extractors that collect pieces — JSX props, JSON
+ * values — record where each piece was found, because their body is a rewrite
+ * of the file rather than a copy of it. An offset that lands between two pieces
+ * resolves to the start of the next one.
+ */
+function sourceOffset(segments, bodyIndex) {
+  for (const segment of segments) {
+    if (bodyIndex < segment.body) return segment.source
+    if (bodyIndex < segment.body + segment.length) {
+      return segment.source + (bodyIndex - segment.body)
+    }
+  }
+  const last = segments[segments.length - 1]
+  return last ? last.source + last.length : 0
+}
+
+/** Join collected pieces into a body and keep the map back to the source. */
+function joinPieces(pieces) {
+  const segments = []
+  let offset = 0
+  for (const piece of pieces) {
+    segments.push({ body: offset, source: piece.index, length: piece.text.length })
+    offset += piece.text.length + 1
+  }
+  return { body: pieces.map((piece) => piece.text).join('\n'), segments }
+}
+
+/**
  * Reduce a source file to the text a visitor actually reads. Best effort for
  * JSX and HTML: it favours missing a string over inventing a finding.
+ *
+ * Headings, list items and labels carry their source offset for the same reason
+ * the body does: they are reported as findings, and a finding without a line is
+ * a finding nobody can open.
  */
 function extract(content, extension) {
   const headings = []
   let body = content
 
   if (['.md', '.mdx', '.markdown'].includes(extension)) {
-    body = body
-      .replace(/^---\n[\s\S]*?\n---\n/, '')
-      .replace(/```[\s\S]*?```/g, '\n')
-      .replace(/~~~[\s\S]*?~~~/g, '\n')
-      .replace(/`[^`\n]*`/g, ' ')
-      .replace(/^>.*$/gm, '')
-      .replace(/<!--[\s\S]*?-->/g, '')
-      .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
-      .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
-    for (const match of body.matchAll(/^#{1,4}\s+(.+)$/gm)) headings.push(match[1].trim())
+    body = mask(body, [
+      /^---\n[\s\S]*?\n---\n/,
+      /```[\s\S]*?```/g,
+      /~~~[\s\S]*?~~~/g,
+      /`[^`\n]*`/g,
+      /^>.*$/gm,
+      /<!--[\s\S]*?-->/g,
+      /!\[[^\]]*\]\([^)]*\)/g,
+    ])
+    // Link text is copy; the brackets and the URL are not. Keeping the text
+    // where it stands is what a masked replacement buys over a shortening one.
+    body = body.replace(
+      /\[([^\]]*)\]\([^)]*\)/g,
+      (match, text) => ` ${text}${blank(match.slice(1 + text.length))}`,
+    )
+    for (const match of body.matchAll(/^#{1,4}\s+(.+)$/gm)) {
+      headings.push({ text: match[1].trim(), index: match.index })
+    }
     return {
       body,
-      prose: body.replace(/^\s*\|.*\|\s*$/gm, ''),
+      prose: mask(body, [/^\s*\|.*\|\s*$/gm]),
       headings,
-      listItems: [...content.matchAll(/^\s*[-*+]\s+(.*)$/gm)].map((match) => match[1]),
+      listItems: [...content.matchAll(/^\s*[-*+]\s+(.*)$/gm)].map((match) => ({
+        text: match[1],
+        index: match.index,
+      })),
       labels: [],
+      segments: sameShape(body),
     }
   }
 
@@ -594,52 +660,96 @@ function extract(content, extension) {
     try {
       walk(JSON.parse(content))
     } catch {
-      return { body: '', prose: '', headings: [], listItems: [], labels: [] }
+      return { body: '', prose: '', headings: [], listItems: [], labels: [], segments: [] }
     }
+    // Parsing discards positions, so each value is located again in document
+    // order. A cursor that only moves forward keeps a value from matching an
+    // earlier key, and a value written with different escapes than
+    // JSON.stringify produces simply keeps the cursor's line rather than
+    // inventing one.
+    let cursor = 0
+    const pieces = strings.map((value) => {
+      const literal = JSON.stringify(value)
+      const found = content.indexOf(literal, cursor)
+      if (found < 0) return { text: value, index: cursor }
+      cursor = found + literal.length
+      return { text: value, index: found + 1 }
+    })
+    const { body: joined, segments } = joinPieces(pieces)
     return {
-      body: strings.join('\n'),
-      prose: strings.join('\n'),
+      body: joined,
+      prose: joined,
       headings: [],
       listItems: [],
-      labels: strings.filter((value) => value.length <= 40),
+      labels: pieces.filter((piece) => piece.text.length <= 40),
+      segments,
     }
   }
 
   if (MARKUP_EXTENSIONS.has(extension)) {
-    body = body
+    const masked = mask(body, [
       // Astro component script; Vue and Svelte carry theirs in <script>.
-      .replace(/^---\n[\s\S]*?\n---\n/, ' ')
-      .replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' ')
-      .replace(/<!--[\s\S]*?-->/g, ' ')
-      .replace(/\sclass(?:Name)?=(?:"[^"]*"|'[^']*'|\{[^}]*\})/g, ' ')
-    for (const match of body.matchAll(/<h[1-3][^>]*>([\s\S]*?)<\/h[1-3]>/gi)) {
-      headings.push(match[1].replace(/<[^>]+>/g, ' ').trim())
+      /^---\n[\s\S]*?\n---\n/,
+      /<(script|style)[\s\S]*?<\/\1>/gi,
+      /<!--[\s\S]*?-->/g,
+      /\sclass(?:Name)?=(?:"[^"]*"|'[^']*'|\{[^}]*\})/g,
+    ])
+    for (const match of masked.matchAll(/<h[1-3][^>]*>([\s\S]*?)<\/h[1-3]>/gi)) {
+      headings.push({ text: match[1].replace(/<[^>]+>/g, ' ').trim(), index: match.index })
     }
     return {
-      body: body.replace(/<[^>]+>/g, ' '),
+      body: mask(masked, [/<[^>]+>/g]),
       headings,
       listItems: [],
-      labels: [...body.matchAll(/>([^<>]{2,40})</g)].map((match) => match[1].trim()),
+      labels: [...masked.matchAll(/>([^<>]{2,40})</g)].map((match) => ({
+        text: match[1].trim(),
+        index: match.index + 1,
+      })),
+      segments: sameShape(body),
     }
   }
 
   // JSX / TS: visible text nodes plus copy-bearing props.
   const pieces = []
-  const source = body
-    .replace(/\/\*[\s\S]*?\*\//g, ' ')
-    .replace(/^\s*(?:import|export)\s.*$/gm, ' ')
-    .replace(/className=(?:"[^"]*"|'[^']*'|\{`[^`]*`\})/g, ' ')
-    .replace(/class="[^"]*"/g, ' ')
+  const source = mask(body, [
+    /\/\*[\s\S]*?\*\//g,
+    /^\s*(?:import|export)\s.*$/gm,
+    /className=(?:"[^"]*"|'[^']*'|\{`[^`]*`\})/g,
+    /class="[^"]*"/g,
+  ])
+  // Each capture ends one character before its match — the closing `<` or the
+  // closing quote — which is what makes the group's offset exact rather than a
+  // search for its text.
+  const captureIndex = (match) => match.index + match[0].length - 1 - match[1].length
+  const leadingSpace = (raw) => raw.length - raw.trimStart().length
   for (const match of source.matchAll(/>([^<>{}]+)</g)) {
     const text = match[1].replace(/\s+/g, ' ').trim()
-    if (text.length > 2 && /[a-zA-ZÀ-ɏ]{3}/.test(text)) pieces.push(text)
+    if (text.length > 2 && /[a-zA-ZÀ-ɏ]{3}/.test(text)) {
+      pieces.push({ text, index: captureIndex(match) + leadingSpace(match[1]) })
+    }
   }
   const propPattern =
     /\b(?:title|label|heading|subheading|subtitle|placeholder|alt|description|caption|tooltip|cta|message|helper|error|emptyState|ariaLabel|"aria-label")\s*[:=]\s*(?:\{?\s*)?["'`]([^"'`]{3,300})["'`]/g
-  for (const match of source.matchAll(propPattern)) pieces.push(match[1].trim())
-  for (const match of source.matchAll(/<h[1-3][^>]*>([^<]{3,200})</gi)) headings.push(match[1].trim())
-  const labels = pieces.filter((piece) => piece.length <= 40)
-  return { body: pieces.join('\n'), headings, listItems: [], labels }
+  for (const match of source.matchAll(propPattern)) {
+    pieces.push({
+      text: match[1].trim(),
+      index: captureIndex(match) + leadingSpace(match[1]),
+    })
+  }
+  for (const match of source.matchAll(/<h[1-3][^>]*>([^<]{3,200})</gi)) {
+    headings.push({
+      text: match[1].trim(),
+      index: captureIndex(match) + leadingSpace(match[1]),
+    })
+  }
+  const { body: joined, segments } = joinPieces(pieces)
+  return {
+    body: joined,
+    headings,
+    listItems: [],
+    labels: pieces.filter((piece) => piece.text.length <= 40),
+    segments,
+  }
 }
 
 function wordCount(text) {
@@ -662,33 +772,26 @@ function coefficientOfVariation(values) {
   return Math.sqrt(variance) / mean
 }
 
+/**
+ * Line numbers are reported against the original file, so a finding can be
+ * opened where it was written. The offset is carried out of the extractor
+ * rather than recovered by searching the file for the matched text: a one-
+ * character match like an em dash has no distinguishing text to search for, and
+ * a search found the first occurrence anywhere — a comment, a URL, line 1 —
+ * instead of the occurrence that was flagged.
+ */
 function lineOf(content, index) {
   return content.slice(0, index).split('\n').length
 }
 
 /**
- * Report line numbers against the original file, not the stripped body, so a
- * finding can be opened where it was written.
+ * Where a match's text begins, not where its regex did. `summary-recap` and the
+ * other `^\s*` rules start at the paragraph break, so the raw match index points
+ * at the blank line above the sentence — a line the writer did not write.
  */
-function lineIn(original, text, fallbackIndex = 0) {
-  const needle = String(text).replace(/\s+/g, ' ').trim().toLowerCase()
-  if (needle) {
-    const lines = original.split('\n')
-    const probes = [needle.slice(0, 60), needle.split(' ').slice(0, 4).join(' ')]
-    for (const probe of probes) {
-      if (probe.length < 2) continue
-      for (let index = 0; index < lines.length; index += 1) {
-        const window = `${lines[index]} ${lines[index + 1] ?? ''}`
-          .replace(/\s+/g, ' ')
-          .toLowerCase()
-        if (!window.includes(probe)) continue
-        const single = lines[index].replace(/\s+/g, ' ').toLowerCase()
-        if (single.includes(probe) || lines[index].trim()) return index + 1
-        return index + 2
-      }
-    }
-  }
-  return lineOf(original, fallbackIndex)
+function matchOffset(match) {
+  const index = match.index ?? 0
+  return index + (match[0].length - match[0].trimStart().length)
 }
 
 function quote(text) {
@@ -702,8 +805,10 @@ function protectedBy(text, protectList) {
 
 function lintText({ file, content, extension, locales, protectList, profile }) {
   const budgets = { ...BUDGETS, ...PROFILES[profile] }
-  const { body, prose = body, headings, listItems, labels } = extract(content, extension)
-  const at = (text, fallbackIndex = 0) => lineIn(content, text, fallbackIndex)
+  const { body, prose = body, headings, listItems, labels, segments } = extract(content, extension)
+  // `at` takes an offset into the extracted body; `atSource` one into the file.
+  const atSource = (index) => lineOf(content, index)
+  const at = (index) => atSource(sourceOffset(segments, index))
   const findings = []
   const words = wordCount(body)
   const proseWords = wordCount(prose)
@@ -718,7 +823,7 @@ function lintText({ file, content, extension, locales, protectList, profile }) {
           tier: 1,
           rule: `${locale}:${name}`,
           file,
-          line: at(match[0], match.index ?? 0),
+          line: at(matchOffset(match)),
           quote: quote(match[0]),
         })
       }
@@ -733,13 +838,16 @@ function lintText({ file, content, extension, locales, protectList, profile }) {
       if (!matches.length) continue
       tier2Hits.push({ locale, term, count: matches.length, index: matches[0].index ?? 0 })
       for (const heading of headings) {
-        if (new RegExp(pattern.source, 'iu').test(heading) && !protectedBy(heading, protectList)) {
+        if (
+          new RegExp(pattern.source, 'iu').test(heading.text) &&
+          !protectedBy(heading.text, protectList)
+        ) {
           findings.push({
             tier: 2,
             rule: `${locale}:vocabulary-in-heading`,
             file,
-            line: at(heading),
-            quote: `${heading} / "${term}"`,
+            line: atSource(heading.index),
+            quote: `${heading.text} / "${term}"`,
           })
         }
       }
@@ -755,7 +863,7 @@ function lintText({ file, content, extension, locales, protectList, profile }) {
       tier: 2,
       rule: 'vocabulary-cluster',
       file,
-      line: at(tier2Hits[0].term, tier2Hits[0].index),
+      line: at(tier2Hits[0].index),
       quote: `${tier2Hits.length} distinct terms in ${words} words (allowance ${clusterAllowance}): ${tier2Hits
         .slice(0, 8)
         .map((hit) => hit.term)
@@ -764,10 +872,12 @@ function lintText({ file, content, extension, locales, protectList, profile }) {
   }
 
   const measurements = {}
-  const rhythmText = prose
-    .replace(/^#{1,6}\s.*$/gm, ' ')
-    .replace(/^\s*(?:[-*+]|\d+\.)\s+[^—\n]{0,48}—/gm, ' ')
+  const rhythmText = mask(prose, [
+    /^#{1,6}\s.*$/gm,
+    /^\s*(?:[-*+]|\d+\.)\s+[^—\n]{0,48}—/gm,
+  ])
   const emDashes = (rhythmText.match(/—/g) ?? []).length
+  const firstEmDash = rhythmText.indexOf('—')
   measurements.words = words
   measurements.proseWords = proseWords
   measurements.emDashes = emDashes
@@ -777,39 +887,39 @@ function lintText({ file, content, extension, locales, protectList, profile }) {
       tier: 3,
       rule: 'em-dash-budget',
       file,
-      line: at('—'),
+      line: firstEmDash >= 0 ? at(firstEmDash) : 1,
       quote: `${emDashes} em dashes in ${proseWords} words (allowance ${measurements.emDashAllowance})`,
     })
   }
   for (const heading of headings) {
-    if (budgets.emDashInHeading && /—/.test(heading)) {
+    if (budgets.emDashInHeading && /—/.test(heading.text)) {
       findings.push({
         tier: 1,
         rule: 'em-dash-in-heading',
         file,
-        line: at(heading),
-        quote: quote(heading),
+        line: atSource(heading.index),
+        quote: quote(heading.text),
       })
     }
-    if (budgets.emojiInHeading && EMOJI.test(heading)) {
+    if (budgets.emojiInHeading && EMOJI.test(heading.text)) {
       findings.push({
         tier: 1,
         rule: 'emoji-in-heading',
         file,
-        line: at(heading),
-        quote: quote(heading),
+        line: atSource(heading.index),
+        quote: quote(heading.text),
       })
     }
   }
 
   for (const label of labels ?? []) {
-    if (!EMOJI.test(label) || protectedBy(label, protectList)) continue
+    if (!EMOJI.test(label.text) || protectedBy(label.text, protectList)) continue
     findings.push({
       tier: 1,
       rule: 'emoji-in-ui-label',
       file,
-      line: at(label),
-      quote: quote(label),
+      line: atSource(label.index),
+      quote: quote(label.text),
     })
   }
 
@@ -830,7 +940,7 @@ function lintText({ file, content, extension, locales, protectList, profile }) {
       tier: 3,
       rule: 'triplet-budget',
       file,
-      line: at(triplets[0][0], triplets[0].index ?? 0),
+      line: at(matchOffset(triplets[0])),
       quote: `${triplets.length} triplets in ${proseWords} words (allowance ${measurements.tripletAllowance})`,
     })
   }
@@ -854,7 +964,7 @@ function lintText({ file, content, extension, locales, protectList, profile }) {
   }
 
   if (budgets.boldLeadRatioMax !== null && listItems.length >= budgets.boldLeadMinItems) {
-    const bold = listItems.filter((item) => /^\*\*[^*]+\*\*/.test(item.trim())).length
+    const bold = listItems.filter((item) => /^\*\*[^*]+\*\*/.test(item.text.trim())).length
     const ratio = bold / listItems.length
     measurements.boldLeadRatio = Number(ratio.toFixed(2))
     if (ratio >= budgets.boldLeadRatioMax) {
@@ -890,13 +1000,14 @@ function lintText({ file, content, extension, locales, protectList, profile }) {
   }
 
   const ornaments = (prose.match(new RegExp(ORNAMENT.source, 'g')) ?? []).length
+  const firstOrnament = prose.search(ORNAMENT)
   measurements.ornaments = ornaments
   if (budgets.ornamentMax !== null && ornaments > budgets.ornamentMax) {
     findings.push({
       tier: 3,
       rule: 'ornament-density',
       file,
-      line: at(prose.slice(prose.search(ORNAMENT), prose.search(ORNAMENT) + 20)),
+      line: firstOrnament >= 0 ? at(firstOrnament) : 1,
       quote: `${ornaments} decorative arrow/sparkle characters`,
     })
   }

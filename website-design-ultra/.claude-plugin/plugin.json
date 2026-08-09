@@ -1,7 +1,7 @@
 {
   "name": "website-design-ultra",
   "description": "Premium website design plugin: tiered anti-slop enforcement for generated copy and visual defaults with a deterministic copy linter, evidence-led content hierarchy, a provider-trace harness for selective-loading audits, responsive recomposition, license-aware typography, validated state contrast, and immersive 3D art direction with portable browser verification.",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "author": {
     "name": "Kay"
   },

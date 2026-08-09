@@ -1,5 +1,46 @@
 # website-design-ultra
 
+## 1.9.1 — The Line a Finding Points At (2026-08-09)
+
+Pointed at a real Next.js layout, the linter reported `de:english-em-dash` at
+line 1. The em dash was on line 55. The finding was right, the file was right,
+and the location was unusable — and a location nobody can trust is a finding
+nobody opens.
+
+The extractor rewrites a file before the rules run: Markdown loses its code
+fences, JSX keeps only text nodes and copy-bearing props. Match offsets were
+therefore offsets into that rewrite, and the line was recovered afterwards by
+searching the original file for the matched string. For a phrase that mostly
+works. For `—` there is nothing to search for, so the search returned the first
+em dash anywhere in the file — a comment, a URL, or nothing, which fell back to
+line 1.
+
+Offsets are now carried out of the extractor instead of being recovered. Markdown
+and markup mask what they strip: every removed character becomes a space,
+newlines survive, and the extracted text stays in the file's own coordinate
+system. JSX and JSON rebuild their text from pieces, so each piece records where
+it was found and the map back is exact. Every finding — Tier 1, headings, UI
+labels, the vocabulary cluster, the em-dash and triplet and ornament budgets —
+now reports a source line. `lineIn`, the search that produced the wrong ones, is
+gone.
+
+Two smaller corrections fell out of it. A match that starts at a paragraph break,
+which every `^\s*` rule does, was reported on the blank line above the sentence;
+it now points at the first character of its own text. And a cross-line match —
+`So hebst du dein Team auf ein neues Level.` wrapping from one line to the next —
+was reported one line early in every format, Markdown included, because the old
+search widened its window to two lines and then returned the first.
+
+No rule changed. Across the whole fixture suite, not one finding appeared,
+vanished, or changed tier; 20 line numbers moved, and each one now names the line
+the text is on. The suite can say so for the first time: `expected.json` cases
+carry a `lines` map, asserting every line a rule fires at, and
+`tests/copy/fixtures/source-lines-de.tsx` is built for the case that started this
+— one em dash in copy on line 16, a decoy em dash in a comment on line 4. Against
+the previous linter the new assertions fail 19 times.
+
+Release-Tag: v1.9.1
+
 ## 1.9.0 — A Repository Is Not a Website (2026-08-09)
 
 Pointed at a real client site, the linter reported 3304 Tier-1 findings across

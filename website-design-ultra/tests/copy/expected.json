@@ -1,5 +1,5 @@
 {
-  "note": "Regression gate for scripts/lint-copy.mjs. A rule change must still catch every slop fixture and must still flag nothing in the authentic-prose fixtures. Fixture pairs also prove that the register profile, not the rule list, decides Tier-3 verdicts. forbiddenRules guards the extractor's boundary: slop-hero.svelte hides Tier-1 patterns in the script and style blocks, and slop-catalogue-de.json uses gettext-style English source strings as message ids, so a linter that read keys would report the source language of a translated file. runtime-only.js builds its copy at runtime and must report NO-COPY rather than a pass over text that was never read. requiredRules exists because the German fixture was once written against the regex instead of against the language: it reused the very construction the rule matched, so a count-only gate could never see that the rule was wrong. Write the copy first, derive the rule from it, and name the rules the copy must trigger. slop-wrapped-en.md holds the same tells as slop-en.md but broken across line ends, because copy is stored wrapped and a pattern built from literal spaces only fires when the whole phrase lands on one source line. Every other slop fixture keeps its tells on one line, so nothing else in this suite can see that failure. The tree/ fixture is the only case about coverage rather than copy: every other fixture is one file handed to the linter, so none of them could see that walking a real repository reads agent scratch copies and judges internal notes as marketing copy. It is asserted three ways, because a single verdict cannot separate the two halves of that fix — auto proves the shipped files are read and the repo prose is not judged as marketing, --profile marketing proves the rules still exist and the register is what relaxed them, and naming tree/.claude as the path proves the skip is a default rather than an exclusion. The file count, register split, and skip count are asserted for the same reason NO-COPY exists: a tree that lost half its files reports the same PASS as one that read all of them.",
+  "note": "Regression gate for scripts/lint-copy.mjs. A rule change must still catch every slop fixture and must still flag nothing in the authentic-prose fixtures. Fixture pairs also prove that the register profile, not the rule list, decides Tier-3 verdicts. forbiddenRules guards the extractor's boundary: slop-hero.svelte hides Tier-1 patterns in the script and style blocks, and slop-catalogue-de.json uses gettext-style English source strings as message ids, so a linter that read keys would report the source language of a translated file. runtime-only.js builds its copy at runtime and must report NO-COPY rather than a pass over text that was never read. requiredRules exists because the German fixture was once written against the regex instead of against the language: it reused the very construction the rule matched, so a count-only gate could never see that the rule was wrong. Write the copy first, derive the rule from it, and name the rules the copy must trigger. slop-wrapped-en.md holds the same tells as slop-en.md but broken across line ends, because copy is stored wrapped and a pattern built from literal spaces only fires when the whole phrase lands on one source line. Every other slop fixture keeps its tells on one line, so nothing else in this suite can see that failure. The tree/ fixture is the only case about coverage rather than copy: every other fixture is one file handed to the linter, so none of them could see that walking a real repository reads agent scratch copies and judges internal notes as marketing copy. It is asserted three ways, because a single verdict cannot separate the two halves of that fix — auto proves the shipped files are read and the repo prose is not judged as marketing, --profile marketing proves the rules still exist and the register is what relaxed them, and naming tree/.claude as the path proves the skip is a default rather than an exclusion. The file count, register split, and skip count are asserted for the same reason NO-COPY exists: a tree that lost half its files reports the same PASS as one that read all of them. `lines` asserts where a finding is reported, which no count and no rule name can: the linter named the right rule and the right file while pointing at line 1, because the match index came from the extracted text and the line was then recovered by searching the file for the matched string. A one-character match like an em dash has nothing to search for. source-lines-de.tsx is built around that case — its only em dash in copy sits on line 16, and a decoy em dash sits in a comment on line 4, so a report that searches instead of mapping lands on a line nobody wrote. Every entry lists all lines a rule fires at, so a hit that moves is as loud as a hit that vanishes. The four extractors are asserted separately because each one maps offsets differently: Markdown and markup mask in place, JSX and JSON rebuild the text from pieces.",
   "cases": [
     {
       "fixture": "slop-en.md",
@@ -45,7 +45,27 @@
       "profile": "marketing",
       "locales": ["en"],
       "status": "FAIL",
-      "minTier1": 3
+      "minTier1": 3,
+      "lines": {
+        "en:negative-parallelism": 7,
+        "en:unlock-potential": 9,
+        "emoji-in-ui-label": 6,
+        "vocabulary-cluster": 12
+      }
+    },
+    {
+      "fixture": "source-lines-de.tsx",
+      "profile": "marketing",
+      "locales": ["de"],
+      "status": "FAIL",
+      "minTier1": 3,
+      "requiredRules": ["de:english-em-dash", "de:more-than-just", "emoji-in-ui-label"],
+      "lines": {
+        "de:english-em-dash": 16,
+        "de:more-than-just": 26,
+        "de:vocabulary-in-heading": 24,
+        "emoji-in-ui-label": 23
+      }
     },
     {
       "fixture": "slop-de.md",
@@ -72,7 +92,15 @@
         "de:actorless-passive",
         "de:unlock-potential",
         "de:english-em-dash"
-      ]
+      ],
+      "lines": {
+        "de:english-em-dash": 12,
+        "de:more-than-just": 9,
+        "de:next-level": 16,
+        "de:summary-recap": 28,
+        "de:importance-puffery": [3, 15],
+        "de:vocabulary-in-heading": [1, 1]
+      }
     },
     {
       "fixture": "slop-auto.md",
@@ -123,7 +151,12 @@
       "locales": ["en"],
       "status": "FAIL",
       "minTier1": 3,
-      "forbiddenRules": ["en:throat-clearing", "en:faux-insight"]
+      "forbiddenRules": ["en:throat-clearing", "en:faux-insight"],
+      "lines": {
+        "en:unlock-potential": 9,
+        "en:negative-parallelism": 10,
+        "en:vague-attribution": 12
+      }
     },
     {
       "fixture": "slop-catalogue-de.json",
@@ -137,7 +170,15 @@
         "en:unlock-potential",
         "en:vague-attribution",
         "en:next-level"
-      ]
+      ],
+      "lines": {
+        "de:discovery-opener": 2,
+        "de:importance-puffery": 4,
+        "de:vague-attribution": 4,
+        "de:metaphor-opener": 5,
+        "de:staged-transition": 7,
+        "de:summary-recap": 8
+      }
     },
     {
       "fixture": "runtime-only.js",

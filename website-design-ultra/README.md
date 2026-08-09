@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.9.0 contains 21 skills and 6 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting that reads a whole repository with one register per file, evidence-led content, a declared 2D composition contract, per-direction design tokens, a catalogue of signature devices, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Four negative-gated add-ons cover the canvas-first class — architecture, multi-pass render graph, loading choreography, and sound — and stay unloaded until a brief names their condition. Copy quality is enforced deterministically, not by self-report.
+Version 1.9.1 contains 21 skills and 6 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting that reads a whole repository with one register per file, evidence-led content, a declared 2D composition contract, per-direction design tokens, a catalogue of signature devices, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Four negative-gated add-ons cover the canvas-first class — architecture, multi-pass render graph, loading choreography, and sound — and stay unloaded until a brief names their condition. Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
@@ -560,6 +560,25 @@ unavailable is now a hard validation failure: a ruleset that requires evidence
 for every claim does not ship an unverifiable provenance claim of its own.
 
 ## Version
+
+**1.9.1** — the line a finding points at:
+
+- fixed the line number every finding is reported at: match offsets came from the
+  rewritten text the rules run on, and the line was recovered afterwards by
+  searching the file for the matched string, which for a one-character match like
+  `—` returned the first em dash anywhere in the file, or line 1,
+- offsets are now carried out of the extractor — Markdown and markup mask what
+  they strip so the text keeps the file's coordinates, JSX and JSON record where
+  each collected piece was found,
+- a match starting at a paragraph break no longer lands on the blank line above
+  its sentence, and a match wrapped across two source lines no longer reports the
+  line above it,
+- no rule changed: across the fixture suite no finding appeared, vanished, or
+  changed tier, and 20 line numbers moved onto the line their text is on,
+- `expected.json` cases now carry a `lines` map, and
+  `tests/copy/fixtures/source-lines-de.tsx` holds one em dash in copy on line 16
+  and a decoy em dash in a comment on line 4; the previous linter fails the new
+  assertions 19 times.
 
 **1.9.0** — a repository is not a website:
 
