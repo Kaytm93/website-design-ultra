@@ -1,5 +1,32 @@
 # website-design-ultra
 
+## 1.8.2 — The Same Blind Spot, in English (2026-08-09)
+
+Rewriting the German fixtures for 1.8.1 turned up a defect that had nothing to
+do with German: several rules could not match a phrase that had been broken
+across a line end. The English rules had it too, and were left alone because
+they were out of scope for that release. They are fixed here.
+
+`Many experts` + newline + `agree that this matters.` produced no finding. The
+same sentence on one line produced one. Every English Tier-1 pattern was built
+from literal spaces, so a tell fired only when the whole phrase happened to land
+on one source line — and copy is stored wrapped. Measured against the new
+fixture, the old patterns find 1 of 12 tells.
+
+Every literal space is now `\s+`, and the bounded spans in
+`en:negative-parallelism` and `en:false-range` tolerate a single newline while
+still refusing to reach across a paragraph break. No tell was added, removed, or
+widened: on a single line the rules match exactly what they matched before, the
+clean English fixtures still pass, and `--self` still reports `PASS` over the
+plugin's own 74 wrapped files — so nothing had been hiding there.
+
+`tests/copy/fixtures/slop-wrapped-en.md` is new: the tells of `slop-en.md`
+broken across line ends, with `requiredRules` naming all ten. Every other slop
+fixture in the suite keeps its tells on one line, which is precisely why the
+suite could not see this.
+
+Release-Tag: v1.8.2
+
 ## 1.8.1 — A Check That Cannot Run Is Not a Check (2026-08-09)
 
 Both defects in this release sit in the deterministic layer — the one the plugin

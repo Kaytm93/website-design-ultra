@@ -79,24 +79,30 @@ const LOCALE_SIGNALS = {
 
 /** Tier 1 — structural forms that carry no information. */
 export const TIER1 = {
+  // Every literal space is `\s+` and every bounded span tolerates a single
+  // newline, because copy is stored wrapped. The tells below fired only when a
+  // whole phrase landed on one source line: a hard wrap between "experts" and
+  // "agree" hid the finding entirely, which is the silent pass this linter
+  // exists to refuse. Paragraph breaks stay excluded so a span cannot reach
+  // across two blocks. No tell was added, removed, or otherwise widened.
   en: [
-    ['negative-parallelism', /\bit(?:'|’)?s not (?:just |only |merely )?[^.!?\n]{1,60}?[,.—–-]\s*(?:it(?:'|’)?s|but)\b/i],
-    ['negative-parallelism', /\bnot (?:just|only|merely) [^.!?\n]{2,60}?,?\s+but\b/i],
-    ['more-than-just', /\bmore than just\b/i],
-    ['triple-negation', /\bnot [\w\s]{1,24}\.\s*not [\w\s]{1,24}\./i],
-    ['throat-clearing', /\b(?:here(?:'|’)?s the thing|let(?:'|’)?s be (?:honest|clear)|let me be clear|i(?:'|’)?ll be honest|make no mistake)\b/i],
-    ['faux-insight', /\b(?:most (?:people|teams|companies|founders|developers) (?:get this wrong|don(?:'|’)?t realize|miss this)|what (?:most people|nobody) get(?:s)? wrong)\b/i],
-    ['rhetorical-setup', /\b(?:what if (?:i|we) told you|imagine a world where|think about it for a|plot twist|here(?:'|’)?s why that matters)\b/i],
-    ['superficial-analysis', /,\s(?:highlighting|underscoring|showcasing|emphasizing|reflecting|demonstrating|signaling|signalling|marking) (?:the|a|an|its|their|how)\b/i],
-    ['importance-puffery', /\b(?:play(?:s|ing)? an? (?:pivotal|crucial|vital|key|integral|essential) role|is a testament to|stands as a testament|cannot be overstated)\b/i],
-    ['vague-attribution', /\b(?:experts? (?:agree|say|note)|studies show|research shows|it(?:'|’)?s widely (?:known|believed)|many believe)\b/i],
-    ['false-range', /\bfrom (?:solo|small|startups?|individuals?|freelancers?|hobbyists?|students?|indie)[\w\s-]{0,24} to (?:global|enterprises?|fortune|multinational|large|the world)[\w\s-]{0,24}/i],
-    ['false-range', /\bwhether you(?:'|’)?re an? [^.!?\n]{3,40} or an? [^.!?\n]{3,40}/i],
-    ['summary-recap', /^\s*(?:#{1,6}\s*)?(?:in (?:conclusion|summary)|to summari[sz]e|overall,|in short,|bottom line:)\b/im],
-    ['audience-flattery', /\b(?:for (?:builders|makers|creators|teams|founders|people) (?:like you|who care)|you(?:'|’)?re not alone (?:here|in this))\b/i],
-    ['unlock-potential', /\b(?:unlock|unleash|realize) (?:the|your|its) (?:full )?potential\b/i],
-    ['next-level', /\b(?:to|reach) the next level\b/i],
-    ['fast-paced-world', /\bin today(?:'|’)?s (?:fast[- ]paced|ever[- ]changing|digital) world\b/i],
+    ['negative-parallelism', /\bit(?:'|’)?s\s+not\s+(?:just\s+|only\s+|merely\s+)?(?:(?!\n\s*\n)[^.!?]){1,60}?[,.—–-]\s*(?:it(?:'|’)?s|but)\b/i],
+    ['negative-parallelism', /\bnot\s+(?:just|only|merely)\s+(?:(?!\n\s*\n)[^.!?]){2,60}?,?\s+but\b/i],
+    ['more-than-just', /\bmore\s+than\s+just\b/i],
+    ['triple-negation', /\bnot\s+[\w\s]{1,24}\.\s*not\s+[\w\s]{1,24}\./i],
+    ['throat-clearing', /\b(?:here(?:'|’)?s\s+the\s+thing|let(?:'|’)?s\s+be\s+(?:honest|clear)|let\s+me\s+be\s+clear|i(?:'|’)?ll\s+be\s+honest|make\s+no\s+mistake)\b/i],
+    ['faux-insight', /\b(?:most\s+(?:people|teams|companies|founders|developers)\s+(?:get\s+this\s+wrong|don(?:'|’)?t\s+realize|miss\s+this)|what\s+(?:most\s+people|nobody)\s+get(?:s)?\s+wrong)\b/i],
+    ['rhetorical-setup', /\b(?:what\s+if\s+(?:i|we)\s+told\s+you|imagine\s+a\s+world\s+where|think\s+about\s+it\s+for\s+a|plot\s+twist|here(?:'|’)?s\s+why\s+that\s+matters)\b/i],
+    ['superficial-analysis', /,\s+(?:highlighting|underscoring|showcasing|emphasizing|reflecting|demonstrating|signaling|signalling|marking)\s+(?:the|a|an|its|their|how)\b/i],
+    ['importance-puffery', /\b(?:play(?:s|ing)?\s+an?\s+(?:pivotal|crucial|vital|key|integral|essential)\s+role|is\s+a\s+testament\s+to|stands\s+as\s+a\s+testament|cannot\s+be\s+overstated)\b/i],
+    ['vague-attribution', /\b(?:experts?\s+(?:agree|say|note)|studies\s+show|research\s+shows|it(?:'|’)?s\s+widely\s+(?:known|believed)|many\s+believe)\b/i],
+    ['false-range', /\bfrom\s+(?:solo|small|startups?|individuals?|freelancers?|hobbyists?|students?|indie)[\w\s-]{0,24}\s+to\s+(?:global|enterprises?|fortune|multinational|large|the\s+world)[\w\s-]{0,24}/i],
+    ['false-range', /\bwhether\s+you(?:'|’)?re\s+an?\s+(?:(?!\n\s*\n)[^.!?]){3,40}\s+or\s+an?\s+(?:(?!\n\s*\n)[^.!?]){3,40}/i],
+    ['summary-recap', /^\s*(?:#{1,6}\s*)?(?:in\s+(?:conclusion|summary)|to\s+summari[sz]e|overall,|in\s+short,|bottom\s+line:)\b/im],
+    ['audience-flattery', /\b(?:for\s+(?:builders|makers|creators|teams|founders|people)\s+(?:like\s+you|who\s+care)|you(?:'|’)?re\s+not\s+alone\s+(?:here|in\s+this))\b/i],
+    ['unlock-potential', /\b(?:unlock|unleash|realize)\s+(?:the|your|its)\s+(?:full\s+)?potential\b/i],
+    ['next-level', /\b(?:to|reach)\s+the\s+next\s+level\b/i],
+    ['fast-paced-world', /\bin\s+today(?:'|’)?s\s+(?:fast[-\s]paced|ever[-\s]changing|digital)\s+world\b/i],
   ],
   de: [
     // The tell is the doubled copula of the English calque "it's not X, it's Y",

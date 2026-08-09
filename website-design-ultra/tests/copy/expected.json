@@ -1,5 +1,5 @@
 {
-  "note": "Regression gate for scripts/lint-copy.mjs. A rule change must still catch every slop fixture and must still flag nothing in the authentic-prose fixtures. Fixture pairs also prove that the register profile, not the rule list, decides Tier-3 verdicts. forbiddenRules guards the extractor's boundary: slop-hero.svelte hides Tier-1 patterns in the script and style blocks, and slop-catalogue-de.json uses gettext-style English source strings as message ids, so a linter that read keys would report the source language of a translated file. runtime-only.js builds its copy at runtime and must report NO-COPY rather than a pass over text that was never read. requiredRules exists because the German fixture was once written against the regex instead of against the language: it reused the very construction the rule matched, so a count-only gate could never see that the rule was wrong. Write the copy first, derive the rule from it, and name the rules the copy must trigger.",
+  "note": "Regression gate for scripts/lint-copy.mjs. A rule change must still catch every slop fixture and must still flag nothing in the authentic-prose fixtures. Fixture pairs also prove that the register profile, not the rule list, decides Tier-3 verdicts. forbiddenRules guards the extractor's boundary: slop-hero.svelte hides Tier-1 patterns in the script and style blocks, and slop-catalogue-de.json uses gettext-style English source strings as message ids, so a linter that read keys would report the source language of a translated file. runtime-only.js builds its copy at runtime and must report NO-COPY rather than a pass over text that was never read. requiredRules exists because the German fixture was once written against the regex instead of against the language: it reused the very construction the rule matched, so a count-only gate could never see that the rule was wrong. Write the copy first, derive the rule from it, and name the rules the copy must trigger. slop-wrapped-en.md holds the same tells as slop-en.md but broken across line ends, because copy is stored wrapped and a pattern built from literal spaces only fires when the whole phrase lands on one source line. Every other slop fixture keeps its tells on one line, so nothing else in this suite can see that failure.",
   "cases": [
     {
       "fixture": "slop-en.md",
@@ -20,6 +20,25 @@
       "profile": "marketing",
       "locales": ["en"],
       "status": "PASS"
+    },
+    {
+      "fixture": "slop-wrapped-en.md",
+      "profile": "marketing",
+      "locales": ["en"],
+      "status": "FAIL",
+      "minTier1": 12,
+      "requiredRules": [
+        "en:negative-parallelism",
+        "en:more-than-just",
+        "en:faux-insight",
+        "en:importance-puffery",
+        "en:vague-attribution",
+        "en:false-range",
+        "en:summary-recap",
+        "en:unlock-potential",
+        "en:next-level",
+        "en:fast-paced-world"
+      ]
     },
     {
       "fixture": "slop-hero.tsx",
