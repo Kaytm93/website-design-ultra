@@ -11,27 +11,48 @@ shapes.
 
 ## Tier 1 — Structural, always rewrite
 
+Most of these are calques. German model output is rarely German slop invented
+from scratch; it is an English tell carried across with the words translated and
+the form left standing. That is why the shapes below name the frame rather than
+the vocabulary, and why the English annex is not a translation source.
+
 | Tell | Shape | Replace with |
 |---|---|---|
-| `nicht nur … sondern auch` | The German negative parallelism, usually with an unconstrained second half | The positive claim alone |
-| `Es ist wichtig zu beachten, dass …` | Announces importance instead of stating it | The fact |
+| `Es ist nicht nur ein X, es ist ein Y` | Calque of `It's not just X, it's Y`. The doubled copula stages a reveal the second half does not deliver | The positive claim alone |
+| `Mehr als nur ein X` | Defines the product by what it exceeds instead of by what it does | What it does |
+| `Es ist wichtig zu beachten, dass …` / `spielt eine entscheidende Rolle` | Announces importance instead of stating it | The fact |
 | `Entdecke, wie du …` | Invites discovery instead of naming the outcome | The outcome |
 | `Tauche ein in …` | Metaphorical opener, direct calque of "dive into" | The action label |
 | `Sag Tschüss zu X und Hallo zu Y` | Advertising formula with no content | The change, stated once |
-| `… auf das nächste Level bringen` | Unbounded improvement claim | The measurable change |
+| `… auf ein neues Level heben` / `auf die nächste Stufe` | Unbounded improvement claim | The measurable change |
+| `In der heutigen schnelllebigen Welt …` | Scene-setting opener that dates nothing and names no one | The first sentence that carries a fact |
+| `Ob Freelancer oder Konzern …` / `vom Startup bis zum Weltkonzern` | False range: two poles asserted as if they were coverage | The audience the product was actually built for |
+| `revolutionieren die Art und Weise, wie …` | Category claim standing in for the mechanism | What the product does differently |
 | `Viele Experten sind sich einig` | Borrowed authority, unsourced | A named source, or drop it |
 | `Doch damit ist es nicht getan` / `Doch das ist noch nicht alles` | Transition that stages the next paragraph | Delete |
 | Rhetorical question opener (`Was wäre, wenn …?`) | Asks the reader to supply the benefit | The assertion |
 | `Fazit:` block on a short page | Recap the page does not need | Delete, or end on the action |
+| `das volle Potenzial entfalten` | Unbounded outcome with no unit and no owner | The outcome the reader can check |
 | Nominal style (`die Durchführung der Erstellung von`) | Chains of `-ung` nouns replacing verbs | Verbs: `erstellen`, `prüfen`, `exportieren` |
 | Passive with no actor (`wird sichergestellt, dass`) | Hides who acts | Name the actor, or use the active form |
 
 Linter rule ids for this table: `de:negative-parallelism`,
-`de:importance-puffery`, `de:rhetorical-setup`, `de:discovery-opener`,
-`de:metaphor-opener`, `de:ad-formula`, `de:next-level`, `de:vague-attribution`,
-`de:staged-transition`, `de:summary-recap`, `de:actorless-passive`,
-`de:unlock-potential`, `de:english-em-dash`. The nominal-style row has no id:
-chains of `-ung` nouns need a reader, not a regex.
+`de:more-than-just`, `de:importance-puffery`, `de:rhetorical-setup`,
+`de:discovery-opener`, `de:metaphor-opener`, `de:ad-formula`, `de:next-level`,
+`de:fast-paced-world`, `de:false-range`, `de:revolutionize-the-way`,
+`de:vague-attribution`, `de:staged-transition`, `de:summary-recap`,
+`de:actorless-passive`, `de:unlock-potential`. The em-dash tell carries
+`de:english-em-dash` and is described under typography below. The nominal-style
+row has no id: chains of `-ung` nouns need a reader, not a regex.
+
+**Not a tell: `nicht nur … sondern auch`.** The correlative conjunction is
+ordinary, informative German, and the second half normally carries the item it
+promises. It was gated as Tier 1, which meant "always rewrite, no exception", so
+the linter demanded that correct sentences be made worse. It is now deliberately
+ungated. The tell is the first row above, where the negation is asyndetic and
+the second half only restates the first with a larger noun.
+`tests/copy/fixtures/clean-de-correlative.md` holds the correct use and must
+stay a `PASS`; that fixture is what stops the rule from coming back.
 
 ## Tier 2 — Vocabulary, flag in cluster
 

@@ -99,18 +99,35 @@ export const TIER1 = {
     ['fast-paced-world', /\bin today(?:'|’)?s (?:fast[- ]paced|ever[- ]changing|digital) world\b/i],
   ],
   de: [
-    ['negative-parallelism', /\bnicht nur\b[^.!?\n]{3,80}\bsondern auch\b/i],
-    ['importance-puffery', /\bes ist wichtig zu beachten\b/i],
-    ['rhetorical-setup', /\bwas wäre,? wenn\b/i],
-    ['discovery-opener', /\bentdecke,? wie\b/i],
-    ['metaphor-opener', /\btauche? ein in\b/i],
-    ['ad-formula', /\bsag(?:e)? tschüss zu\b/i],
-    ['next-level', /\bauf das nächste level\b/i],
-    ['vague-attribution', /\bviele experten sind sich einig\b/i],
-    ['staged-transition', /\bdoch (?:damit ist es nicht getan|das ist noch nicht alles)\b/i],
+    // The tell is the doubled copula of the English calque "it's not X, it's Y",
+    // not the correlative conjunction. `nicht nur … sondern auch` is ordinary,
+    // informative German and is tempered out of the span on purpose: gating it
+    // as Tier 1 forced a rewrite that made correct copy worse.
+    ['negative-parallelism', /\b(?:es|das|dies|er|sie|wir)\s+(?:ist|sind)\s+(?:nicht|kein|keine|keinerlei)\b(?:(?!\bsondern\b)(?!\n\s*\n)[^.!?]){1,60}[,.;:–—-]\s*(?:es|das|dies|er|sie|wir)\s+(?:ist|sind)\b/i],
+    ['more-than-just', /\bmehr\s+als\s+(?:nur|bloß|lediglich|einfach)\b/i],
+    ['importance-puffery', /\bes\s+ist\s+wichtig\s+zu\s+beachten\b/i],
+    ['importance-puffery', /\bspiel(?:t|en)\s+(?:dabei\s+|hier(?:bei)?\s+|damit\s+)?eine\s+(?:entscheidende|zentrale|wichtige|wesentliche|tragende|maßgebliche|schlüssel\w*)\s*rolle\b/i],
+    ['rhetorical-setup', /\bwas\s+wäre,?\s+wenn\b/i],
+    ['discovery-opener', /\bentdecke,?\s+wie\b/i],
+    ['metaphor-opener', /\btauche?\s+ein\s+in\b/i],
+    ['ad-formula', /\bsag(?:e)?\s+tschüss\s+zu\b/i],
+    // The documented shape includes the lift verb, and requiring it is what
+    // keeps a game page ("der Spieler steigt auf ein neues Level auf") out of
+    // the report. German brackets the verb, so both orders need a pattern.
+    ['next-level', /\b(?:heb|bring|katapultier|hiev|führ)\w*\s+(?:(?!\n\s*\n)[^.!?]){0,50}?\bauf\s+(?:das|die|ein|eine)\s+(?:(?:völlig|ganz|komplett|gänzlich)\s+)?(?:nächste|neue|höhere)[sn]?\s+(?:level|stufe|niveau)\b/i],
+    ['next-level', /\bauf\s+(?:das|die|ein|eine)\s+(?:(?:völlig|ganz|komplett|gänzlich)\s+)?(?:nächste|neue|höhere)[sn]?\s+(?:level|stufe|niveau)\b(?:(?!\n\s*\n)[^.!?]){0,40}?\b(?:heb|bring|katapultier|hiev|führ)(?:en|t|st)\b/i],
+    ['fast-paced-world', /\bin\s+(?:der|einer|unserer)\s+(?:heutigen|zunehmend|immer)\s+(?:\w+\s+){0,2}(?:schnelllebigen|digitalen|vernetzten|globalisierten|dynamischen|modernen)\s+(?:welt|arbeitswelt|geschäftswelt|zeit)\b/i],
+    // Two shapes, as in English: the scale poles named lexically, and the
+    // "whether you are X or Y" frame. The second is anchored to a sentence start
+    // because German `ob` is also an ordinary subordinator ("prüfen Sie, ob …").
+    ['false-range', /\b(?:ob|vom|von)\s+(?:kleinen?\s+)?(?:startups?|start-ups?|freelancer\w*|einzelkämpfer\w*|solo\w*|gründer\w*|einsteiger\w*|anfänger\w*|hobby\w*|student\w*|kleinunternehm\w*|einzelunternehmer\w*|kmu)\b[\w\s,-]{0,24}?\b(?:oder|bis\s+(?:zu[mr]?|hin\s+zu[m]?))\s+[\w\s-]{0,24}?\b(?:konzern\w*|gro(?:ß|ss)konzern\w*|gro(?:ß|ss)unternehmen\w*|gro(?:ß|ss)kund\w*|weltkonzern\w*|weltmarktführer\w*|enterprise\w*|profi\w*|dax)\b/i],
+    ['false-range', /(?:^|[.!?]\s+)ob\s+(?:du|sie|ihr)\s+(?:nun\s+|gerade\s+|bereits\s+)?(?:(?!\n\s*\n)[^.!?]){3,40}?\boder\b(?:(?!\n\s*\n)[^.!?]){3,40}?\b(?:bist|sind|seid)\b/im],
+    ['revolutionize-the-way', /\b(?:revolutionier|transformier|veränder|ändern?|neu\s+definier)\w*\s+(?:die|unsere|eure|deine|ihre)\s+art(?:\s+und\s+weise)?\s*,?\s*wie\b/i],
+    ['vague-attribution', /\bviele\s+experten\s+sind\s+sich\s+einig\b/i],
+    ['staged-transition', /\bdoch\s+(?:damit\s+ist\s+es\s+nicht\s+getan|das\s+ist\s+noch\s+nicht\s+alles)\b/i],
     ['summary-recap', /^\s*(?:#{1,6}\s*)?fazit\s*:/im],
-    ['actorless-passive', /\bwird (?:sichergestellt|gewährleistet),? dass\b/i],
-    ['unlock-potential', /\bdas (?:volle |gesamte )?potenzial (?:entfalten|ausschöpfen|freisetzen)\b/i],
+    ['actorless-passive', /\bwird\s+(?:sichergestellt|gewährleistet),?\s+dass\b/i],
+    ['unlock-potential', /\bdas\s+(?:volle\s+|gesamte\s+)?potenzial\s+(?:entfalten|ausschöpfen|freisetzen)\b/i],
     ['english-em-dash', /—/],
   ],
 }

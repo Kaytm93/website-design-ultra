@@ -1,7 +1,26 @@
-# Nahtlos ganzheitliche Lösungen
+# Die Zukunft der Baustellendokumentation
 
-Es ist wichtig zu beachten, dass unsere Plattform nicht nur transkribiert, sondern auch Aufgaben erstellt. Tauche ein in eine neue Art der Zusammenarbeit — bahnbrechend und maßgeschneidert.
+In einer zunehmend digitalen Welt bleibt der Bautagesbericht ein Zettel. Das ist
+nicht nur unpraktisch, das ist teuer.
 
-Viele Experten sind sich einig: So bringen Sie Ihr Team auf das nächste Level.
+Mehr als nur eine Foto-App: Entdecke, wie du deine Baustelle in Echtzeit
+dokumentierst. Tauche ein in eine ganzheitliche Lösung, die sich nahtlos in
+deinen Bauablauf einfügt.
 
-Fazit: Jetzt das volle Potenzial entfalten.
+## Nahtlos vom Aufmaß bis zur Abnahme
+
+Ob Einzelunternehmer oder Großkonzern, die maßgeschneiderte Anwendung passt sich
+an. Viele Experten sind sich einig: Wer heute nicht digitalisiert, verliert
+morgen den Anschluss.
+
+Wir verändern die Art und Weise, wie auf dem Bau kommuniziert wird. Die Übergabe
+spielt dabei eine zentrale Rolle — sie hebt eure Zusammenarbeit auf ein neues
+Level.
+
+Doch das ist noch nicht alles. Jeder Mangel wird erfasst, so wird gewährleistet,
+dass die Frist eingehalten wird.
+
+Was wäre, wenn die Abnahme nur noch eine Formsache wäre?
+
+Fazit: Sag Tschüss zu Papier und Hallo zu Klarheit. Jetzt das volle Potenzial
+ausschöpfen.

@@ -30,13 +30,14 @@ silently keeping the term.
 ## Operating the linter
 
 Self-reported de-slopping is not evidence, for the same reason a self-reported
-skill route is not evidence of Progressive Disclosure.
+skill route is not evidence of Progressive Disclosure. `<plugin-root>` resolves
+as in `SKILL.md` §6.
 
 ```bash
-node scripts/lint-copy.mjs --path src --profile marketing --protect .anti-slop-protect.json
-node scripts/lint-copy.mjs --path content --profile editorial
-node scripts/lint-copy.mjs --path content --locale de --profile editorial # explicit override
-node scripts/lint-copy.mjs --stdin --json
+node "<plugin-root>/scripts/lint-copy.mjs" --path src --profile marketing --protect .anti-slop-protect.json
+node "<plugin-root>/scripts/lint-copy.mjs" --path content --profile editorial
+node "<plugin-root>/scripts/lint-copy.mjs" --path content --locale de --profile editorial # explicit override
+node "<plugin-root>/scripts/lint-copy.mjs" --stdin --json
 ```
 
 The linter reads Markdown prose and the visible text of JSX/TSX, HTML, Vue,
@@ -90,8 +91,8 @@ is true, specific, or worth reading — only the specificity floor and
 Of the 16 Tier-1 prose tells, 12 carry a linter rule id and fire without a
 reader. The remaining four — the fake-profound kicker, both-sides hedging,
 synonym cycling, and invented concept labels — have no id, and a clean report is
-not evidence that they are absent. The same split holds in German: 12 of the 13
-rows carry ids, and nominal style needs a reader.
+not evidence that they are absent. The German split is tighter: 17 of the 18
+tells carry ids, and nominal style needs a reader.
 
 This is the boundary that decides when a linter run may replace reading the
 catalogue. It may where the deterministic rules cover the surface — a handful of

@@ -735,6 +735,16 @@ for (const testCase of copyExpectations.cases) {
       fail(`${label}: rule ${rule} must not fire here, matched "${hit.quote}"`)
     }
   }
+  // The mirror of forbiddenRules, and the guard the German set was missing: a
+  // minimum tier count says a fixture is dirty, never which tell it covers. A
+  // rule written to fit the fixture instead of the language keeps that count
+  // green forever. Naming the rules the text must trigger is what makes the
+  // fixture a claim about the language rather than about the regex.
+  for (const rule of testCase.requiredRules ?? []) {
+    if (!(report.findings ?? []).some((finding) => finding.rule === rule)) {
+      fail(`${label}: rule ${rule} must fire here, but did not`)
+    }
+  }
   if (testCase.filesWithoutCopy !== undefined) {
     const observed = (report.filesWithoutCopy ?? []).length
     if (observed !== testCase.filesWithoutCopy) {
