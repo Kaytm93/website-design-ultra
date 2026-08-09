@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.8.2 contains 21 skills and 6 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting, evidence-led content, a declared 2D composition contract, per-direction design tokens, a catalogue of signature devices, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Four negative-gated add-ons cover the canvas-first class — architecture, multi-pass render graph, loading choreography, and sound — and stay unloaded until a brief names their condition. Copy quality is enforced deterministically, not by self-report.
+Version 1.9.0 contains 21 skills and 6 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting that reads a whole repository with one register per file, evidence-led content, a declared 2D composition contract, per-direction design tokens, a catalogue of signature devices, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Four negative-gated add-ons cover the canvas-first class — architecture, multi-pass render graph, loading choreography, and sound — and stay unloaded until a brief names their condition. Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
@@ -413,9 +413,10 @@ node scripts/validate-content.mjs
 Lint a project's copy, or this plugin's own documents:
 
 ```bash
-node scripts/lint-copy.mjs --path src --profile marketing
-node scripts/lint-copy.mjs --path content --profile editorial
-node scripts/lint-copy.mjs --path content --locale de --profile editorial # explicit override
+node scripts/lint-copy.mjs --path src
+node scripts/lint-copy.mjs --path .                                      # whole repo, register per file
+node scripts/lint-copy.mjs --path content --profile editorial            # one register for all
+node scripts/lint-copy.mjs --path content --locale de --profile editorial
 node scripts/lint-copy.mjs --path src --protect .anti-slop-protect.json --strict
 node scripts/lint-copy.mjs --self
 ```
@@ -423,6 +424,17 @@ node scripts/lint-copy.mjs --self
 Exit code 1 marks a Tier-1 hit or an exceeded Tier-3 budget; `--strict` adds
 Tier-2 clusters. A `PASS` reports the absence of catalogued patterns and is never
 a content approval.
+
+Aimed at a repository root, the walk skips dot directories and build output and
+prints every skip: agent scratch space such as `.claude/worktrees` holds whole
+copies of the repository, and entering it reports the same sentence once per copy.
+Repo prose — `README`, `CHANGELOG`, `AGENTS.md`, `CLAUDE.md`, Markdown outside a
+shipped-copy path — is judged in the `docs` register, where em dashes, tick-box
+headings, and one heading per paragraph are normal. Construction tells stay on in
+every register; only `em-dash-in-heading`, `emoji-in-heading`, and
+`de:english-em-dash` relax, because those three judge published typography.
+`--profile` sets one register for every file. Read the printed `profile auto →`
+split before quoting a count.
 
 Exit code 2 marks `NO-COPY`: no file matched the path, or no visible text could
 be extracted from any input. That is not a pass. It reads Markdown, JSX/TSX,
@@ -548,6 +560,22 @@ unavailable is now a hard validation failure: a ruleset that requires evidence
 for every claim does not ship an unverifiable provenance claim of its own.
 
 ## Version
+
+**1.9.0** — a repository is not a website:
+
+- the directory walk skips dot directories and build output and prints every
+  skip; on one real site `.claude/worktrees` alone produced 2292 of 3304 Tier-1
+  findings by holding whole copies of the checkout,
+- without `--profile`, each file gets its own register — `docs` for repo prose,
+  the base register for shipped copy — printed as `profile auto → docs 61 /
+  marketing 108`,
+- `emoji-in-heading` and `de:english-em-dash` now relax with the register, as
+  `em-dash-in-heading` already did; every construction tell stays on everywhere,
+- same site after both changes: 641 files and 3304 Tier-1 became 169 and 2, and
+  both survivors are real em dashes in German `alt` and `aria-label` text,
+- added `tests/copy/fixtures/tree/`, the suite's first directory fixture,
+  asserted under auto, under `--profile marketing`, and with the skipped
+  directory named as the path.
 
 **1.8.2** — the same blind spot, in English:
 

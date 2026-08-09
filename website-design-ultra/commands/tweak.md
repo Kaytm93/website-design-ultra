@@ -44,6 +44,9 @@ into an unreviewed redesign.
    node "<plugin-root>/scripts/lint-copy.mjs" --path <file> --profile marketing
    ```
 
+   The register is explicit here on purpose: a changed text surface is shipped
+   copy whatever file holds it, so the per-file default must not relax it.
+
    This is a shift from reading to execution, not a relaxed standard: the linter
    fires 12 of the 16 English Tier-1 tells and both Tier-3 gates deterministically
    and with rule ids. It does not cover the four tells that carry no id (the

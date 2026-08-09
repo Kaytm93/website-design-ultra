@@ -138,10 +138,10 @@ of this file and run the bundled linter; `scripts/` ships with the plugin, not
 with the project being linted:
 
 ```bash
-node "<plugin-root>/scripts/lint-copy.mjs" --path src --profile marketing --protect .anti-slop-protect.json
+node "<plugin-root>/scripts/lint-copy.mjs" --path src --protect .anti-slop-protect.json
 ```
 
-Four rules govern the result and stay here rather than in the reference:
+Five rules govern the result and stay here rather than in the reference:
 
 - A bare `scripts/lint-copy.mjs` resolves against the project directory and dies
   with `Cannot find module`. A command that never started is an unverified copy
@@ -150,11 +150,17 @@ Four rules govern the result and stay here rather than in the reference:
 - Exit code 2 is `NO-COPY`, not a pass. Nothing was read, so nothing was checked.
 - A partial miss prints a `NO-COPY WARNING` naming the skipped files. Read it
   before quoting a pass.
+- Point it at the shipped tree. Aimed at a repository root it walks past dot
+  directories and build output, prints what it skipped, and judges repo prose in
+  the `docs` register; quote the printed `profile auto →` split alongside the
+  tier counts, because the number means nothing without knowing which register
+  produced it.
 - A pass proves the absence of catalogued patterns. It never approves content;
   only §5 and `content-design` do that.
 
-Registers, locale detection, the protect-list schema, and the catalogued blind
-spots live in [references/operations.md](references/operations.md). Twelve of the
+Registers, coverage, locale detection, the protect-list schema, and the
+catalogued blind spots live in
+[references/operations.md](references/operations.md). Twelve of the
 16 English Tier-1 tells carry a rule id; the other four need a reader, and a
 clean report is not their absence.
 

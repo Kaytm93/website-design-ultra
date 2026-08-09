@@ -1,5 +1,55 @@
 # website-design-ultra
 
+## 1.9.0 — A Repository Is Not a Website (2026-08-09)
+
+Pointed at a real client site, the linter reported 3304 Tier-1 findings across
+641 files. The shipped tree held 2. Both numbers were produced by the same run,
+and the gap is not a rule problem: every one of those 3304 matches was a literal
+match of a documented pattern. The linter was reading the repository and
+reporting on the website.
+
+Two mechanisms, measured separately. 2292 of the findings came from
+`.claude/worktrees` — agent scratch space holding whole copies of the checkout,
+so every sentence was counted once per copy. The walk now skips dot directories
+and build output, and prints a `SKIPPED` line for each one, because a linter that
+quietly walks past two thirds of a repository reports a pass it did not earn. The
+skip is a default, not an exclusion: naming such a directory as `--path` still
+lints it.
+
+The rest came from internal German Markdown — a project vault, `CLAUDE.md`,
+`AGENTS.md` — judged with the marketing budgets. Notes legitimately run em
+dashes, tick-box headings, and one heading per paragraph. Without `--profile`,
+each file now gets its own register: `docs` for repo prose, the base register for
+shipped copy, printed as `profile auto → docs 61 / marketing 108`. Three Tier-1
+rules relax with the register, because they judge published typography rather
+than a construction: `em-dash-in-heading`, which already did, plus
+`emoji-in-heading` and the locale rule `de:english-em-dash`. Every construction
+tell stays on in every register — the vault fixture still fails with six of them
+under `docs`.
+
+Same site after both: 169 files, 2 Tier-1, and both survivors are real — em
+dashes inside a German `alt` text and an `aria-label`. `--path src` reports the
+same 2. Tier-3 went from 346 to 20, all of them em-dash density in vault notes
+measured against the stricter `docs` budget, which is the number doing its job
+rather than a threshold that needed loosening.
+
+`tests/copy/fixtures/tree/` is the suite's first directory fixture: every other
+case is one file handed to the linter, so none of them could see a walk. It is
+asserted three ways, because one verdict cannot separate the two halves of the
+fix — auto proves the shipped files are read and the notes are not scored as
+marketing, `--profile marketing` proves the rules still exist and the register is
+what relaxed them, and naming `tree/.claude` as the path proves the skip is a
+default. File count, register split, and skip count are asserted too: a walk that
+silently loses half its files reports the same `PASS` as one that read everything.
+
+One collision found while measuring, and it is why the segment lists are
+conventions rather than words: a `copy` entry in the shipped-copy paths matched
+this plugin's own `tests/copy/`, and an unanchored `index.md` rule handed a
+vault's session index the marketing register — 14 of the last 16 findings. The
+page-file rule now only applies at the directory actually being scanned.
+
+Release-Tag: v1.9.0
+
 ## 1.8.2 — The Same Blind Spot, in English (2026-08-09)
 
 Rewriting the German fixtures for 1.8.1 turned up a defect that had nothing to
