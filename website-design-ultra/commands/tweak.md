@@ -36,10 +36,12 @@ into an unreviewed redesign.
    decision, and say which.
 
 4. **Copy.** With at most three changed text surfaces, run the linter instead of
-   reading the tell catalogue:
+   reading the tell catalogue. Determine the plugin root of this file and run the
+   bundled linter; `scripts/` ships with the plugin, not with the project being
+   linted:
 
    ```bash
-   node scripts/lint-copy.mjs --path <file> --profile marketing
+   node "<plugin-root>/scripts/lint-copy.mjs" --path <file> --profile marketing
    ```
 
    This is a shift from reading to execution, not a relaxed standard: the linter

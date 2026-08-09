@@ -133,14 +133,20 @@ by inventing the specific.
 ## 6. Deterministic check
 
 Self-reported de-slopping is not evidence, for the same reason a self-reported
-skill route is not evidence of Progressive Disclosure. Run the linter:
+skill route is not evidence of Progressive Disclosure. Determine the plugin root
+of this file and run the bundled linter; `scripts/` ships with the plugin, not
+with the project being linted:
 
 ```bash
-node scripts/lint-copy.mjs --path src --profile marketing --protect .anti-slop-protect.json
+node "<plugin-root>/scripts/lint-copy.mjs" --path src --profile marketing --protect .anti-slop-protect.json
 ```
 
-Three rules govern the result and stay here rather than in the reference:
+Four rules govern the result and stay here rather than in the reference:
 
+- A bare `scripts/lint-copy.mjs` resolves against the project directory and dies
+  with `Cannot find module`. A command that never started is an unverified copy
+  layer, not a linter absence, and it is the one failure this check cannot be
+  allowed to swallow.
 - Exit code 2 is `NO-COPY`, not a pass. Nothing was read, so nothing was checked.
 - A partial miss prints a `NO-COPY WARNING` naming the skipped files. Read it
   before quoting a pass.
@@ -172,5 +178,7 @@ Return:
 - [ ] Every headline and blurb clears the specificity floor.
 - [ ] No rewrite invented a fact; unknowns stayed placeholders.
 - [ ] Protect-list entries carry reasons; collisions were reported.
-- [ ] The linter ran, or its absence was stated instead of implied.
+- [ ] The linter ran and printed a status line. A command that errored before it
+      linted anything leaves the copy layer unverified; report it as unverified
+      and never as a stated absence.
 - [ ] The status was `PASS`, not `NO-COPY`, and any skipped-file warning was read.
