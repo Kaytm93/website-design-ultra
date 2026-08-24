@@ -5,8 +5,10 @@ This directory turns `TODO.md` into a resumable serial implementation chain:
 > one bounded queue item → one new Hermes process → one commit → one verified
 > push → the next new process.
 
-No chat is resumed. Successor agents learn only from committed repository state,
-`TODO.md`, and `QUEUE.md`.
+No chat is resumed. `--ignore-rules` disables injected memory, project/user rules,
+and preloaded skills, so task coordination comes from committed repository state,
+`TODO.md`, and `QUEUE.md`. Provider credentials and enabled runtime tools,
+plugins, or MCP servers remain process-level environment rather than chat history.
 
 ## Files
 
@@ -63,11 +65,13 @@ The driver:
 3. validates that every checked task has only checked predecessors, then selects
    only the first unchecked task in the requested PR and rechecks its direct
    dependencies;
-4. launches `hermes chat --query-file … --in … -Q --yolo` with no resume or
-   continue flag, producing a fresh session;
+4. launches `hermes chat --query-file … --in … -Q --yolo --ignore-rules` with
+   no resume or continue flag, producing a fresh session without injected
+   memory, rules, or preloaded skills;
 5. stops on timeout, non-zero exit, empty/no-reply output, unexpected branch,
    dirty worktree, zero/multiple task commits, or failed remote-head verification;
-6. retries an empty reply once only if HEAD and the worktree are unchanged;
+6. retries an empty reply once by default (configurable with `--empty-retries`),
+   and only if HEAD and the worktree are unchanged;
 7. reads queue blobs as raw bytes and checks that the task commit leaves
    `QUEUE.md` unchanged except for its own exact checkbox transition, so line
    endings, boundary whitespace, later tasks, and specifications cannot be rewritten;

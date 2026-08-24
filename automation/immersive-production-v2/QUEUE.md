@@ -27,10 +27,10 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** The ADR keeps starters, lab, implementation fixtures, and automation outside `website-design-ultra/`; marketplace installation remains scoped to the plugin directory.
   - **Verify:** Review paths and run both strict plugin validations before the first root-only executable project lands.
 
-- [x] `IP-01B` **Ship the fresh-agent implementation plan** — Add a PR-scoped queue, zero-context Hermes driver, tests, and operating instructions.
+- [x] `IP-01B` **Ship the fresh-agent implementation plan** — Add a PR-scoped queue, non-resumed rules-isolated Hermes driver, tests, and operating instructions.
   - **Depends on:** IP-01A
   - **Deliver:** `automation/immersive-production-v2/`.
-  - **Acceptance:** Queue parsing, dependency checks, dry-run prompt generation, empty-response handling, branch/worktree safety, commit/push verification, and stop-on-failure are tested.
+  - **Acceptance:** Unit tests cover queue parsing and checked dependency closure, noncontiguous PR rejection, exact byte-level queue transitions, dry-run prompt construction, empty-response detection, commit ancestry, and linked-worktree Git paths. Branch/remote preflight, subprocess timeout/retry, and commit/push readback are specified fail-closed and require a live canary before PR 2; they are not claimed as unit-tested here.
   - **Verify:** `python3 -m unittest automation/immersive-production-v2/test_chain_driver.py` and `python3 automation/immersive-production-v2/chain_driver.py --check`.
 
 ## PR 2 — Determinism contract and reference implementation

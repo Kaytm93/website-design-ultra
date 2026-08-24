@@ -159,7 +159,7 @@ def validate_queue(tasks: Sequence[Task]) -> None:
                 f"{seen[task.task_id].line_number} and {task.line_number}"
             )
         seen[task.task_id] = task
-        if task.pr not in pr_numbers:
+        if not pr_numbers or pr_numbers[-1] != task.pr:
             pr_numbers.append(task.pr)
         for dependency in task.dependencies:
             if dependency not in seen:
@@ -171,6 +171,8 @@ def validate_queue(tasks: Sequence[Task]) -> None:
                     f"{task.task_id}: checked task depends on unchecked {dependency}"
                 )
 
+    if len(set(pr_numbers)) != len(pr_numbers):
+        raise ChainError(f"PR groups cannot repeat noncontiguously; found {pr_numbers}")
     expected = list(range(min(pr_numbers), max(pr_numbers) + 1))
     if pr_numbers != expected:
         raise ChainError(f"PR groups must be contiguous and ordered; found {pr_numbers}")
@@ -347,6 +349,37 @@ def response_is_empty(result: AgentResult) -> bool:
     return any(marker in lowered for marker in EMPTY_REPLY_MARKERS)
 
 
+def build_agent_command(
+    prompt_path: Path,
+    timeout: int,
+    max_turns: int,
+    provider: str | None,
+    model: str | None,
+) -> list[str]:
+    command = [
+        "hermes",
+        "chat",
+        "--query-file",
+        str(prompt_path),
+        "--in",
+        str(REPO_ROOT),
+        "-Q",
+        "--yolo",
+        "--ignore-rules",
+        "--max-turns",
+        str(max_turns),
+        "--run-budget",
+        str(max(60, timeout - 30)),
+        "--source",
+        "automation",
+    ]
+    if provider:
+        command.extend(("--provider", provider))
+    if model:
+        command.extend(("--model", model))
+    return command
+
+
 def execute_agent(
     task: Task,
     branch: str,
@@ -370,26 +403,7 @@ def execute_agent(
         handle.write(prompt)
         prompt_path = Path(handle.name)
 
-    command = [
-        "hermes",
-        "chat",
-        "--query-file",
-        str(prompt_path),
-        "--in",
-        str(REPO_ROOT),
-        "-Q",
-        "--yolo",
-        "--max-turns",
-        str(max_turns),
-        "--run-budget",
-        str(max(60, timeout - 30)),
-        "--source",
-        "automation",
-    ]
-    if provider:
-        command.extend(("--provider", provider))
-    if model:
-        command.extend(("--model", model))
+    command = build_agent_command(prompt_path, timeout, max_turns, provider, model)
 
     try:
         result = subprocess.run(

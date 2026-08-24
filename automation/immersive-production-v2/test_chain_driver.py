@@ -80,6 +80,18 @@ class QueueTests(unittest.TestCase):
         with self.assertRaisesRegex(DRIVER.ChainError, "checked task depends on unchecked IP-02A"):
             DRIVER.validate_queue(tasks)
 
+    def test_noncontiguous_pr_group_repetition_is_invalid(self) -> None:
+        queue = VALID_QUEUE + """
+## PR 1 — Repeated
+
+- [ ] `IP-01Z` **Repeated group** — Invalid.
+  - **Depends on:** none
+  - **Acceptance:** Never runs.
+"""
+        tasks = DRIVER.parse_queue(self.write_queue(queue))
+        with self.assertRaisesRegex(DRIVER.ChainError, "cannot repeat noncontiguously"):
+            DRIVER.validate_queue(tasks)
+
     def test_missing_dependency_metadata_is_invalid(self) -> None:
         queue = VALID_QUEUE.replace("  - **Depends on:** IP-02A\n", "", 1)
         with self.assertRaisesRegex(DRIVER.ChainError, "missing '\*\*Depends on"):
@@ -123,6 +135,24 @@ class QueueTests(unittest.TestCase):
         self.assertIn("git push -u origin HEAD", prompt)
         self.assertIn("UNAVAILABLE, never PASS", prompt)
         self.assertNotIn("IP-02B`, **Third**", prompt)
+
+    def test_fresh_agent_command_is_rules_isolated_and_non_resumed(self) -> None:
+        command = DRIVER.build_agent_command(
+            Path("/tmp/prompt.md"),
+            timeout=300,
+            max_turns=42,
+            provider="provider-test",
+            model="model-test",
+        )
+        self.assertIn("--ignore-rules", command)
+        self.assertIn("--query-file", command)
+        self.assertIn("--provider", command)
+        self.assertIn("provider-test", command)
+        self.assertIn("--model", command)
+        self.assertIn("model-test", command)
+        self.assertNotIn("--resume", command)
+        self.assertNotIn("--continue", command)
+        self.assertEqual(command[0:2], ["hermes", "chat"])
 
     def test_ancestry_and_linked_worktree_git_path(self) -> None:
         directory = tempfile.TemporaryDirectory()
