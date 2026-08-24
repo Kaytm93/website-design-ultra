@@ -183,6 +183,27 @@ class QueueTests(unittest.TestCase):
         self.assertEqual(tasks[-1].task_id, "IP-11D")
 
         readme = DRIVER.SCRIPT_DIR.joinpath("README.md").read_text(encoding="utf-8")
+        queue = DRIVER.QUEUE_FILE.read_text(encoding="utf-8")
+        queue_flat = " ".join(queue.split())
+        for contract in (
+            "**1.10 = Tier 0 only.** Cut it only after PR 4 is merged and every T0.1–T0.3 acceptance gate is evidenced.",
+            "**1.11 = Tier 1 only.** Cut it only after PR 7 is merged and every T1.1–T1.4 acceptance gate is evidenced.",
+            "**1.12 = Tier 2 only.** Cut it only after PR 12 is merged and every T2.1–T2.4 acceptance gate is evidenced.",
+            "**2.0 = Tier 3 plus closure.** Do not call any branch, tag, or changelog section “2.0” before PRs 13–14 are merged and `IP-11D` passes every definition-of-done line with linked fixture evidence.",
+        ):
+            self.assertIn(contract, queue_flat)
+        self.assertIn(
+            "Every 1.10/1.11/1.12/2.0 release must resolve to a real tag",
+            queue_flat,
+        )
+        self.assertIn(
+            "its changelog section must name the fixtures that proved that version's capability",
+            queue_flat,
+        )
+        self.assertIn(
+            "| T4.3 version discipline | `1.10`/Tier 0, `1.11`/Tier 1, `1.12`/Tier 2, `2.0`/Tier 3 plus `IP-11D` closure |",
+            readme,
+        )
         for item in (
             "T0.1",
             "T0.2",

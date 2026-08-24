@@ -42,7 +42,7 @@ one source row is split into several reviewable pull requests.
 | T3.3 volume research gate | `IP-10D` |
 | T4.1 distribution decision | `IP-01A`, ADR-011 |
 | T4.2 self-lint new surfaces | `IP-05D` |
-| T4.3 version discipline | manual release gates; evidence closes in `IP-11D` |
+| T4.3 version discipline | `1.10`/Tier 0, `1.11`/Tier 1, `1.12`/Tier 2, `2.0`/Tier 3 plus `IP-11D` closure |
 | T4.4 baseline comparison | `IP-06C` |
 | T4.5 audio automation | `IP-06B` |
 | Definition of done | `IP-11D` links and re-runs all evidence |

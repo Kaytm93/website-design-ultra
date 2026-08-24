@@ -259,10 +259,18 @@ splits that proposal into implementation-sized units.
 
 These are deliberate operator gates, not fresh-agent queue items:
 
-1. Do not call any branch or changelog section “2.0” before `IP-11D` passes.
-2. Cut incremental 1.x minors only from resolvable tags and only when their
-   changelog sections name the fixtures that proved the capability.
-3. After every PR group, inspect the pushed commit(s), CI artifacts, queue diff,
+1. **1.10 = Tier 0 only.** Cut it only after PR 4 is merged and every T0.1–T0.3
+   acceptance gate is evidenced. Do not include Tier 1 implementation in 1.10.
+2. **1.11 = Tier 1 only.** Cut it only after PR 7 is merged and every T1.1–T1.4
+   acceptance gate is evidenced. Do not include Tier 2 implementation in 1.11.
+3. **1.12 = Tier 2 only.** Cut it only after PR 12 is merged and every T2.1–T2.4
+   acceptance gate is evidenced. Do not include Tier 3 implementation in 1.12.
+4. **2.0 = Tier 3 plus closure.** Do not call any branch, tag, or changelog
+   section “2.0” before PRs 13–14 are merged and `IP-11D` passes every
+   definition-of-done line with linked fixture evidence.
+5. Every 1.10/1.11/1.12/2.0 release must resolve to a real tag, and its changelog
+   section must name the fixtures that proved that version's capability.
+6. After every PR group, inspect the pushed commit(s), CI artifacts, queue diff,
    and declared unavailable capabilities before merge.
-4. Start the next PR group from the merged target branch, never from an
+7. Start the next PR group from the merged target branch, never from an
    unreviewed predecessor branch.
