@@ -97,7 +97,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** A fresh checkout installs and builds; the page is not made wholly client-rendered; no Vite starter or particle template is introduced.
   - **Verify:** Clean install, typecheck, tests, production build, and strict root/plugin validation.
 
-- [ ] `IP-05B` **Implement the copied quality controller** — Add one heavily commented zero-runtime-dependency file owning Poster/Low/Medium/High transitions, DPR steps, hysteresis, offscreen pause, and thermal backoff.
+- [x] `IP-05B` **Implement the copied quality controller** — Add one heavily commented zero-runtime-dependency file owning Poster/Low/Medium/High transitions, DPR steps, hysteresis, offscreen pause, and thermal backoff.
   - **Depends on:** IP-05A
   - **Deliver:** Copyable controller plus tests and starter integration; values remain owned by `3d-runtime-quality`.
   - **Acceptance:** The controller exposes the IP-03 telemetry surface, has one transition owner, avoids per-frame React state, and does not become an npm package.

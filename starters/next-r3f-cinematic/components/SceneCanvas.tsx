@@ -3,6 +3,7 @@
 import { Canvas } from '@react-three/fiber'
 import { CameraRig } from './CameraRig.tsx'
 import { HeroObject } from './HeroObject.tsx'
+import { QualityRuntime } from './QualityRuntime.tsx'
 import { SceneRuntime } from './SceneRuntime.tsx'
 import { CAMERA_STATIONS } from '../lib/camera-stations.ts'
 import type { RuntimeMode } from '../lib/runtime-config.ts'
@@ -17,11 +18,14 @@ interface SceneCanvasProps {
  * (SceneClient loads it with ssr: false); the page around it stays a server
  * component. The canvas is decorative: every semantic surface lives in the
  * DOM outside it.
+ *
+ * There is deliberately no `dpr` prop on the Canvas: the quality controller
+ * (IP-05B) is the one owner of pixel ratio and applies it imperatively in
+ * QualityRuntime.
  */
 export function SceneCanvas({ mode, stationId }: SceneCanvasProps) {
   return (
     <Canvas
-      dpr={[1, 1.5]}
       gl={{ antialias: true, powerPreference: 'high-performance' }}
       camera={{ fov: 35, near: 0.1, far: 100, position: [0, 1.1, 4.6] }}
       className="scene-canvas"
@@ -32,6 +36,7 @@ export function SceneCanvas({ mode, stationId }: SceneCanvasProps) {
       <pointLight position={[-3, 1, -2]} intensity={12} color="#ffb86b" />
       <SceneRuntime mode={mode} stationId={stationId}>
         <CameraRig stations={CAMERA_STATIONS} stationId={stationId} />
+        <QualityRuntime />
         <HeroObject />
       </SceneRuntime>
     </Canvas>

@@ -82,6 +82,21 @@ contract, not conventions:
   `tests/runtime.test.mjs` fails if the copies drift. The root seed is
   `next-r3f-cinematic-v1`; the hero rotation phase reads the named
   `hero-motion` stream.
+- **One quality owner.** `lib/quality-controller.ts` is a byte-identical copy
+  of the repository reference `references/quality-controller.ts` (IP-05B): a
+  zero-dependency controller that owns Poster/Low/Medium/High transitions, DPR
+  steps, hysteresis, offscreen pause, and thermal backoff. It is created at
+  exactly one site (`SceneRuntime`) with time injected from the scene clock,
+  so in deterministic mode its decisions are a pure function of the fixed-step
+  clock and the declared frame-time input. `QualityRuntime` is the only
+  component that writes pixel ratio (`gl.setPixelRatio`) or pauses the render
+  loop (`setFrameloop`); the Canvas carries no `dpr` prop. The controller
+  holds no values: every number is filled from `lib/quality-config.ts`, which
+  declares the project's tier matrix and hysteresis windows from the
+  `3d-runtime-quality` skill (tier-matrix.md, adaptive-runtime.md). The
+  controller reports the IP-03 telemetry slice through `qualityState()` —
+  `{ tier, dpr: { value, unit: 'ratio' } }` — and fires `onChange` only when
+  the tier or DPR actually changes, never per frame.
 
 ## Scene systems and the injected clock
 
@@ -98,11 +113,11 @@ camera during the stable-frame sequence.
 
 ## Scope of this scaffold
 
-This is the IP-05A scaffold. It deliberately does not yet include the quality
-controller (Poster/Low/Medium/High, IP-05B), the art-directed poster,
-reduced-motion handling, context-loss recovery, portrait composition, or
-disposal and route-transition checks (IP-05C). Those land as separate queue
-items in the same PR group and extend this tree.
+This is the IP-05A/IP-05B scaffold. The quality controller (Poster/Low/
+Medium/High, IP-05B) is implemented and wired as the single quality owner.
+Still to land as separate queue items in the same PR group: the art-directed
+poster, reduced-motion handling, context-loss recovery, portrait composition,
+and disposal and route-transition checks (IP-05C). Those extend this tree.
 
 ## License
 

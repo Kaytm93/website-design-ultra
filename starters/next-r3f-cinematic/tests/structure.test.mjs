@@ -70,10 +70,13 @@ test('exactly one clock is created and no wall-clock path exists in scene code',
 })
 
 test('exactly one camera owner exists', () => {
+  // The invariant is camera *writes*: position, lookAt, or field of view.
+  // (QualityRuntime legitimately reads the R3F store for gl and setFrameloop,
+  // never the camera.)
   const cameraWriters = SOURCES.filter(
     (file) =>
       file.startsWith('components/') &&
-      /useThree|camera\.position|camera\.lookAt|camera\.fov/.test(read(file)),
+      /camera\.position|camera\.lookAt|camera\.fov/.test(read(file)),
   )
   assert.deepEqual(cameraWriters, ['components/CameraRig.tsx'])
 
@@ -134,4 +137,44 @@ test('determinism is wired into the scene bootstrap', () => {
 
   const rig = read('components/CameraRig.tsx')
   assert.ok(rig.includes('onCameraApplied'), 'the rig reports station application')
+})
+
+test('the quality controller is created at exactly one site and owns every transition', () => {
+  const qualitySites = SOURCES.filter((file) => read(file).includes('createQualityController('))
+  // Definition in the copied controller, single creation site in the runtime.
+  assert.deepEqual(qualitySites, [
+    'components/SceneRuntime.tsx',
+    'lib/quality-controller.ts',
+  ])
+
+  const canvas = read('components/SceneCanvas.tsx')
+  assert.ok(!/dpr=/.test(canvas), 'the Canvas carries no dpr prop: the controller owns DPR')
+
+  const dprWriters = SOURCES.filter((file) => read(file).includes('setPixelRatio'))
+  assert.deepEqual(
+    dprWriters,
+    ['components/QualityRuntime.tsx'],
+    'QualityRuntime is the only site that writes pixel ratio',
+  )
+
+  const qualityRuntime = read('components/QualityRuntime.tsx')
+  assert.ok(!qualityRuntime.includes('useState'), 'no per-frame React state for quality')
+  assert.ok(qualityRuntime.includes('recordFrameTime'))
+  assert.ok(qualityRuntime.includes('attachVisibility'))
+
+  // The only two R3F store readers: CameraRig (the camera owner) and
+  // QualityRuntime (gl + setFrameloop). No other component touches the store.
+  const storeReaders = SOURCES.filter((file) => read(file).includes('useThree'))
+  assert.deepEqual(storeReaders, ['components/CameraRig.tsx', 'components/QualityRuntime.tsx'])
+
+  const runtime = read('components/SceneRuntime.tsx')
+  assert.ok(runtime.includes('createQualityController'))
+  assert.ok(runtime.includes('clock.elapsed * 1000'), 'controller time comes from the one clock')
+})
+
+test('the quality controller and its config read no wall clock', () => {
+  const wallClock = /performance\.now|Date\.now/
+  for (const file of ['lib/quality-controller.ts', 'lib/quality-config.ts']) {
+    assert.ok(!wallClock.test(read(file)), `${file} must not read a wall clock`)
+  }
 })

@@ -16,6 +16,12 @@ import {
   type RandomStream,
   type SceneClock,
 } from '../lib/determinism-runtime.ts'
+import {
+  createQualityController,
+  type QualityController,
+  type QualityTelemetryState,
+} from '../lib/quality-controller.ts'
+import { QUALITY_CONFIG } from '../lib/quality-config.ts'
 import { ROOT_SEED, STABLE_FRAME, STEP_SECONDS } from '../lib/scene-config.ts'
 import assetManifest from '../lib/asset-manifest.json'
 import type { RuntimeMode } from '../lib/runtime-config.ts'
@@ -41,6 +47,13 @@ interface SceneRuntimeValue {
   seedNames: readonly string[]
   /** The camera owner reports a completed station application through this. */
   onCameraApplied: () => void
+  /**
+   * The one quality owner (IP-05B). Tier and DPR transitions happen only
+   * here; scene code reads the decided state and never re-decides quality.
+   */
+  quality: QualityController
+  /** Change subscription for React surfaces that display the quality state. */
+  onQualityChange: (listener: (state: QualityTelemetryState) => void) => () => void
 }
 
 interface SceneBootstrap {
@@ -50,6 +63,7 @@ interface SceneBootstrap {
   marker: ReturnType<typeof createStableFrameMarker>
   streamsInitialized: boolean
   assetsReady: boolean
+  quality: QualityController
 }
 
 const SceneRuntimeContext = createContext<SceneRuntimeValue | null>(null)
@@ -71,6 +85,14 @@ function createBootstrap(mode: RuntimeMode): SceneBootstrap {
       ? { mode: 'deterministic', stepSeconds: STEP_SECONDS }
       : { mode: 'live' },
   )
+  // One quality owner: created here, once per mount, with time injected from
+  // the one scene clock. The controller never reads a wall clock, so in
+  // deterministic mode its decisions are a pure function of the fixed-step
+  // clock and the declared frame-time input — same run, same tier, same DPR.
+  const quality = createQualityController({
+    ...QUALITY_CONFIG,
+    now: () => clock.elapsed * 1000,
+  })
   const streams = createRandomStreams(ROOT_SEED)
   const heroMotion = streams.stream('hero-motion')
   const marker = createStableFrameMarker({
@@ -79,6 +101,7 @@ function createBootstrap(mode: RuntimeMode): SceneBootstrap {
   })
   return {
     clock,
+    quality,
     heroMotion,
     seedNames: streams.names(),
     marker,
@@ -116,10 +139,15 @@ export function SceneRuntime({ mode, stationId, children }: SceneRuntimeProps) {
     bootstrapRef.current?.marker.invalidate()
   }, [stationId])
 
-  // Remove readiness when the scene unmounts.
+  // Dispose the quality controller's DOM observers with the scene. The
+  // controller itself is garbage-collected with the bootstrap; nothing leaks
+  // a visibility listener past unmount.
   useEffect(() => {
     const boot = bootstrapRef.current
-    return () => boot?.marker.invalidate()
+    return () => {
+      boot?.marker.invalidate()
+      boot?.quality.dispose()
+    }
   }, [])
 
   // Advance the injected clock exactly once per rendered frame, before the
@@ -146,6 +174,8 @@ export function SceneRuntime({ mode, stationId, children }: SceneRuntimeProps) {
     heroMotion: bootstrap.heroMotion,
     seedNames: bootstrap.seedNames,
     onCameraApplied,
+    quality: bootstrap.quality,
+    onQualityChange: bootstrap.quality.onChange,
   }
 
   return (
