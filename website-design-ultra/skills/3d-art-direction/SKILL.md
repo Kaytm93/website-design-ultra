@@ -5,7 +5,11 @@ description: Direct the visual language of a web 3D scene. Use for camera and FO
 
 # 3D Art Direction
 
-Define a reproducible image first, then the technique. Use `immersive-3d` for justification and budget, `3d-runtime-quality` for runtime tiers, and this skill as the visual single source of truth.
+Define a reproducible image first, then the technique. Use `immersive-3d` for
+justification and budget, `3d-runtime-quality` for runtime tiers, and this skill
+as the visual single source of truth. When its evidence gate fired,
+`reference-intake` is the predecessor: read its traced ledger and poster target
+before selecting values here.
 
 ## Art-direction contract
 
@@ -14,6 +18,11 @@ schema, not the values. `fov: 38` is one filled example, not a default to
 reuse; the ranges each key must be chosen from live in the references. A
 contract filled from this block alone is unfilled rather than shortened, and a
 plan or contract-only answer is exactly where that shortcut is tempting.
+
+When `reference-intake` preceded this skill, keep its trace ledger attached to
+the contract. Every leaf below retains a `source-frame` citation or remains
+`unknown`; a written token or direction name never repairs missing visual
+evidence.
 
 ```yaml
 visual-thesis: "Which statement does the space carry?"
@@ -43,13 +52,15 @@ Justify deviations inside the contract instead of hiding them in scattered compo
 A step that names a reference requires it before that step can be answered.
 Answering the step from this file alone leaves it unfilled.
 
-1. State a visual thesis and determine what must be recognizable after two seconds.
-2. Fix camera, FOV, target point, silhouette, negative space, and DOM safe area. Read [references/camera-and-composition.md](references/camera-and-composition.md).
-3. Stage light, material roles, color space, tone mapping, and exposure together. Read [references/light-material-and-tone.md](references/light-material-and-tone.md).
-4. For every text layer, decide between semantic DOM, `<Html>`, `<Text>`, and the rare `<Text3D>`. Read [references/spatial-typography.md](references/spatial-typography.md).
-5. Design at least one dedicated portrait shot; do not merely scale the desktop scene.
-6. Choose the poster frame from the same composition. It may read as a deliberate key visual, never as a loading error.
-7. Hand measurable quality hooks to `3d-runtime-quality` without changing the visual ranking of the scene.
+1. If `reference-intake` ran, inspect its poster target, citations,
+   contradictions, and `unknown` fields before choosing a reference below.
+2. State a visual thesis and determine what must be recognizable after two seconds.
+3. Fix camera, FOV, target point, silhouette, negative space, and DOM safe area. Read [references/camera-and-composition.md](references/camera-and-composition.md).
+4. Stage light, material roles, color space, tone mapping, and exposure together. Read [references/light-material-and-tone.md](references/light-material-and-tone.md).
+5. For every text layer, decide between semantic DOM, `<Html>`, `<Text>`, and the rare `<Text3D>`. Read [references/spatial-typography.md](references/spatial-typography.md).
+6. Design at least one dedicated portrait shot; do not merely scale the desktop scene.
+7. Choose the poster frame from the same composition. It may read as a deliberate key visual, never as a loading error.
+8. Hand measurable quality hooks to `3d-runtime-quality` without changing the visual ranking of the scene.
 
 ## Invariants
 
@@ -69,7 +80,9 @@ Deliver:
 2. the completed art-direction contract,
 3. desktop, portrait, and poster composition,
 4. light and material roles,
-5. the smallest changeable hooks for camera, light, exposure, and spatial typography.
+5. the smallest changeable hooks for camera, light, exposure, and spatial typography,
+6. when reference intake ran, the source-frame ledger and poster target it
+   produced before scene code.
 
 ## Check
 
@@ -80,3 +93,5 @@ Deliver:
 - [ ] Color spaces, tone mapping, and exposure are fixed.
 - [ ] Spatial text stays readable and semantically present in the DOM.
 - [ ] Poster, reduced motion, and the live scene tell the same statement.
+- [ ] When `reference-intake` ran, every field still cites a source frame or is
+      `unknown`, and the poster target existed before scene code.

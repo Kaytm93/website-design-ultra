@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.9.1 contains 21 skills and 6 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting that reads a whole repository with one register per file, evidence-led content, a declared 2D composition contract, per-direction design tokens, a catalogue of signature devices, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Four negative-gated add-ons cover the canvas-first class — architecture, multi-pass render graph, loading choreography, and sound — and stay unloaded until a brief names their condition. Copy quality is enforced deterministically, not by self-report.
+Version 1.9.1 contains 22 skills and 6 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting that reads a whole repository with one register per file, evidence-led content, a declared 2D composition contract, per-direction design tokens, a catalogue of signature devices, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with traceable reference intake, cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Four negative-gated add-ons cover the canvas-first class — architecture, multi-pass render graph, loading choreography, and sound — and stay unloaded until a brief names their condition. Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
@@ -54,6 +54,9 @@ website-design-ultra/
     ├── ui-states/
     │   └── references/          # async, forms, accessibility
     ├── immersive-3d/
+    ├── reference-intake/              # on demand: 6–10 exported frames + tokens
+    │   ├── references/                 # source grammar and extraction method
+    │   └── templates/                  # traced contract and poster target
     ├── 3d-art-direction/
     │   └── references/          # camera, light/material/tone, spatial type
     ├── 3d-runtime-quality/
@@ -114,6 +117,9 @@ exact provider, case, and tree):
   work and an ordinary 3D hero do not load it.
 - Form component → `component-patterns/SKILL.md` plus `references/navigation-forms-overlays.md`.
 - R3F in Next.js → `r3f-patterns/SKILL.md` plus `references/nextjs.md`.
+- Six to ten exported PNG and SVG frames plus a written token block for a 3D
+  direction → `reference-intake/SKILL.md` before `3d-art-direction`; a named
+  direction without reference material does not load it.
 - 3D camera/light brief → `3d-art-direction/SKILL.md` plus only the relevant shot, light, or type reference.
 - Runtime adaptation → `3d-runtime-quality/SKILL.md` plus tier matrix and only then the adaptive controller.
 - WebGPU feature → `shaders-tsl/SKILL.md` plus `references/webgpu-feature-matrix.md`.
@@ -263,6 +269,12 @@ contract, so `border` is louder than the hairline those interfaces ship.
 
 `immersive-3d` decides whether 3D is justified and selects the smallest stack:
 
+- Six to ten exported PNG and SVG reference frames plus a written token block →
+  `reference-intake` before `3d-art-direction`; it produces the traced contract
+  and poster target before scene code. In a checkout of the same repository
+  commit or tag, `automation/reference-intake/validate-reference-intake.mjs`
+  validates the companion JSON and bytes offline; its fixtures and optional
+  Figma REST helper remain root-only.
 - Every shipped scene → `3d-art-direction` for camera, composition, light, materials, tone mapping, responsive shots, and spatial type.
 - Every shipped scene → `3d-runtime-quality` for Poster/Low/Medium/High, adaptive shadows/LOD/PostFX/particles/DPR, pause, and hysteresis.
 - R3F production scene → `r3f-patterns`.
@@ -474,7 +486,7 @@ prints a `NO-COPY WARNING` naming the skipped files.
 factual copy is legitimately uniform, and gating on it rejected the specific,
 evidence-led writing the skill asks for.
 
-Validate the six forward-test contracts and replay the committed trace fixtures
+Validate the seven forward-test contracts and replay the committed trace fixtures
 without model usage:
 
 ```bash
@@ -492,7 +504,7 @@ manifest still read 1.6.0. Each fixture is bound to its recorded tree digest and
 replays its exact accessed and forbidden files.
 
 Those snapshots exercise the Claude trace parser and document those two attempts
-only. They do not establish current 1.7.0 routing, the other four cases, routing
+only. They do not establish current 1.7.0 routing, the other five cases, routing
 stability, or Codex behavior. `--dry-run` prints this historical inventory before
 the current case contracts so the local evidence boundary stays visible.
 
@@ -546,8 +558,8 @@ acting on. Failures appearing in a single attempt are usually noise, and editing
 rule prose to chase them tends to displace a different requirement rather than
 fix anything.
 
-Cost is cases × repeats × `--max-budget-usd`. Six cases at `--repeat 5` and
-`0.60` is up to 18 USD, so iterate with `--case` and raise `--repeat` only when
+Cost is cases × repeats × `--max-budget-usd`. Seven cases at `--repeat 5` and
+`0.60` is up to 21 USD, so iterate with `--case` and raise `--repeat` only when
 a change is ready to be judged.
 
 The defaults (`--repeat 1 --min-pass-rate 1`) reproduce the older

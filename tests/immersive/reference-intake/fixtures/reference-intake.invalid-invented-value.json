@@ -1,0 +1,193 @@
+{
+  "schemaVersion": "wdu-reference-intake/v1",
+  "frames": [
+    {
+      "id": "frame-01",
+      "file": "assets/frame-01.png",
+      "format": "png",
+      "sha256": "3a1d3a0272197724b72df441221d39a840caed29d100eced693e45007abe8c1f",
+      "dimensionsOrViewBox": "2x1",
+      "viewport": "wide",
+      "role": "first-screen",
+      "provenance": "generated repository fixture"
+    },
+    {
+      "id": "frame-02",
+      "file": "assets/frame-02.svg",
+      "format": "svg",
+      "sha256": "7a76f9aced91793b762e66d217cecd33681932f3e6e3540b2b07f4849707828e",
+      "dimensionsOrViewBox": "0 0 1200 800",
+      "viewport": "wide",
+      "role": "poster-candidate",
+      "provenance": "generated repository fixture"
+    },
+    {
+      "id": "frame-03",
+      "file": "assets/frame-03.png",
+      "format": "png",
+      "sha256": "c1bb55ef26dab9d24a5349d9b87524e83a6bdc30929f9f975be44a1850b0fbbf",
+      "dimensionsOrViewBox": "1x2",
+      "viewport": "portrait",
+      "role": "detail",
+      "provenance": "generated repository fixture"
+    },
+    {
+      "id": "frame-04",
+      "file": "assets/frame-04.svg",
+      "format": "svg",
+      "sha256": "2dc88628c26dbbaaf63441540c7660b83aea33d16a7089171a95272b06512bb4",
+      "dimensionsOrViewBox": "0 0 800 1200",
+      "viewport": "portrait",
+      "role": "mobile-reframe",
+      "provenance": "generated repository fixture"
+    },
+    {
+      "id": "frame-05",
+      "file": "assets/frame-05.png",
+      "format": "png",
+      "sha256": "36fad4b0b918b4a6f981b254b192c742348ee963353d52afb513e31297849ec9",
+      "dimensionsOrViewBox": "1x1",
+      "viewport": "square",
+      "role": "material-detail",
+      "provenance": "generated repository fixture"
+    },
+    {
+      "id": "frame-06",
+      "file": "assets/frame-06.svg",
+      "format": "svg",
+      "sha256": "b2c333edddf2444348299e48d1a53389a32c46790df4d1a980222c4035c62714",
+      "dimensionsOrViewBox": "0 0 1000 1000",
+      "viewport": "square",
+      "role": "material-order",
+      "provenance": "generated repository fixture"
+    }
+  ],
+  "writtenTokenBlock": {
+    "file": "tokens.json",
+    "sha256": "c6e3f02cee9debbd8e46d686f5837cb09d37a799108b4722c371c2e4d660a1c9"
+  },
+  "artDirection": [
+    {
+      "field": "visual-thesis",
+      "value": "One mineral silhouette held against a graphite field",
+      "sourceFrame": "frame-01",
+      "observation": "A single light subject occupies the center-right of the dark frame."
+    },
+    {
+      "field": "hero-subject",
+      "value": "Triangular mineral form",
+      "sourceFrame": "frame-02",
+      "observation": "One triangular form dominates the exported frame."
+    },
+    {
+      "field": "camera.framing",
+      "value": "Subject centered right with a left quiet zone",
+      "sourceFrame": "frame-01",
+      "observation": "The wide export leaves an uninterrupted region on the left."
+    },
+    {
+      "field": "camera.fov",
+      "value": "40mm",
+      "sourceFrame": "unknown",
+      "observation": "No calibrated evidence was supplied."
+    },
+    {
+      "field": "camera.position",
+      "value": "unknown",
+      "sourceFrame": "unknown",
+      "observation": "The exported pixels do not establish a numeric camera position."
+    },
+    {
+      "field": "camera.target",
+      "value": "unknown",
+      "sourceFrame": "unknown",
+      "observation": "The exported pixels do not establish a numeric camera target."
+    },
+    {
+      "field": "camera.near-far",
+      "value": "unknown",
+      "sourceFrame": "unknown",
+      "observation": "No clipping planes are evidenced by the reference set."
+    },
+    {
+      "field": "composition.subject-anchor",
+      "value": "center-right",
+      "sourceFrame": "frame-01",
+      "observation": "The subject mass is visibly anchored right of center."
+    },
+    {
+      "field": "composition.dom-safe-area",
+      "value": "left four columns",
+      "sourceFrame": "frame-01",
+      "observation": "The left region is quiet and does not overlap the subject."
+    },
+    {
+      "field": "lighting",
+      "value": "upper-left key against a dark ground",
+      "sourceFrame": "frame-02",
+      "observation": "The upper-left edge is the brightest contour in the frame."
+    },
+    {
+      "field": "material-order",
+      "value": "matte ground, mineral subject, restrained accent",
+      "sourceFrame": "frame-06",
+      "observation": "The subject reads brighter than the ground without mirror highlights."
+    },
+    {
+      "field": "color-output",
+      "value": "unknown",
+      "sourceFrame": "unknown",
+      "observation": "The export does not identify its renderer output transform."
+    },
+    {
+      "field": "tone-mapping",
+      "value": "unknown",
+      "sourceFrame": "unknown",
+      "observation": "Highlight roll-off alone does not identify a tone-mapping operator."
+    },
+    {
+      "field": "mobile-reframe",
+      "value": "centered subject above the DOM layer",
+      "sourceFrame": "frame-04",
+      "observation": "The portrait export centers the subject in its upper half."
+    },
+    {
+      "field": "spatial-type",
+      "value": "unknown",
+      "sourceFrame": "unknown",
+      "observation": "No supplied frame establishes semantic ownership of type."
+    },
+    {
+      "field": "poster-frame",
+      "value": "wide triangular silhouette with left safe area",
+      "sourceFrame": "frame-02",
+      "observation": "The frame preserves both the dominant silhouette and a comparison-ready crop."
+    }
+  ],
+  "contradictions": [],
+  "openQuestions": [
+    "camera.fov remains unknown until calibrated evidence is supplied",
+    "camera.position remains unknown until scene-space evidence is supplied",
+    "tone-mapping remains unknown until renderer evidence is supplied"
+  ],
+  "posterTarget": {
+    "asset": "poster-target.svg",
+    "format": "svg",
+    "sha256": "68c89ad2c8da25d9a1f9ac97f38ca4443afa66aa810119745312f775edd87dc0",
+    "sourceFrames": [
+      "frame-01",
+      "frame-02",
+      "frame-04"
+    ],
+    "wideCrop": "1200x800",
+    "portraitCrop": "800x1200",
+    "subjectAnchor": "center-right wide; centered upper-half portrait",
+    "domSafeArea": "left four columns wide; lower third portrait",
+    "silhouette": "single triangular mineral form",
+    "lightingDirection": "upper-left to lower-right",
+    "materialRanking": "mineral subject above matte ground above accent",
+    "tonalRange": "graphite black floor with restrained mineral highlights",
+    "comparisonSize": "1200x800"
+  },
+  "sceneCodeStatus": "ready-for-3d-art-direction"
+}

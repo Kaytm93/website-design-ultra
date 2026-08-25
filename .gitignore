@@ -17,3 +17,8 @@ node_modules/
 
 # macOS
 .DS_Store
+
+# Credential accident guard (optional Figma REST path)
+.env
+.env.*
+!.env.example

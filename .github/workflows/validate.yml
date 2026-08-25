@@ -29,6 +29,14 @@ jobs:
             node --check "$script"
           done
 
+      - name: Check reference-intake automation syntax
+        run: |
+          node --check automation/reference-intake/validate-reference-intake.mjs
+          node --check automation/reference-intake/export-figma-rest.mjs
+
+      - name: Test offline reference intake
+        run: node --test tests/immersive/reference-intake/reference-intake.test.mjs
+
       - name: Test immersive telemetry calculations and status handling
         run: node --test tests/immersive/telemetry/telemetry-schema.test.mjs tests/immersive/telemetry/performance-summary.test.mjs tests/immersive/telemetry/ip-03c-status.test.mjs
 
