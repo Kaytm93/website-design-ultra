@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "exactOptionalPropertyTypes": true,
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "noUncheckedIndexedAccess": true,
+    "strict": true,
+    "target": "ES2022"
+  },
+  "include": [
+    "../../references/determinism-runtime.ts",
+    "./determinism-runtime.type-test.ts"
+  ]
+}

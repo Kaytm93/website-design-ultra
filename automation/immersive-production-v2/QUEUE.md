@@ -35,20 +35,20 @@ splits that proposal into implementation-sized units.
 
 ## PR 2 — Determinism contract and reference implementation
 
-- [ ] `IP-02A` **Define the deterministic runtime contract** — Make `WDU_DETERMINISTIC`, injectable time, stable seeds, named camera stations, and `data-wdu-ready` normative and routable.
+- [x] `IP-02A` **Define the deterministic runtime contract** — Make `WDU_DETERMINISTIC`, injectable time, stable seeds, named camera stations, and `data-wdu-ready` normative and routable.
   - **Depends on:** IP-01B
   - **Read first:** `TODO.md` T0.1; `website-design-ultra/skills/core-rules/SKILL.md`; `website-design-ultra/skills/canvas-first-architecture/references/scene-state-and-clock.md`; `website-design-ultra/commands/verify.md`.
   - **Deliver:** `website-design-ultra/skills/core-rules/references/determinism.md`, minimal routing updates, and validator bindings.
   - **Acceptance:** Scene code has no direct `performance.now()` path while deterministic mode is active; every stochastic subsystem receives a named seed; ready means the first stable frame, not a timeout.
   - **Verify:** `node website-design-ultra/scripts/validate-content.mjs` and `node website-design-ultra/scripts/run-forward-tests.mjs --dry-run`.
 
-- [ ] `IP-02B` **Implement the copyable determinism runtime** — Add one zero-dependency TypeScript module for the injectable clock, seeded PRNG streams, camera-station lookup, and stable-frame marker.
+- [x] `IP-02B` **Implement the copyable determinism runtime** — Add one zero-dependency TypeScript module for the injectable clock, seeded PRNG streams, camera-station lookup, and stable-frame marker.
   - **Depends on:** IP-02A
   - **Deliver:** A root-only copied reference implementation and isolated tests; do not publish a package.
   - **Acceptance:** Same seed and clock produce the same sequence; subsystem streams do not change when an unrelated stream is added; unknown station ids fail explicitly; production mode still uses the live clock.
   - **Verify:** Run the module's unit/type tests plus `node website-design-ultra/scripts/validate-content.mjs`.
 
-- [ ] `IP-02C` **Prove byte-identical deterministic capture** — Add one minimal fixture and a two-run comparator whose acceptance condition is identical PNG bytes.
+- [x] `IP-02C` **Prove byte-identical deterministic capture** — Add one minimal fixture and a two-run comparator whose acceptance condition is identical PNG bytes.
   - **Depends on:** IP-02B
   - **Deliver:** Root-only deterministic fixture, capture runner, committed expected metadata, and CI hook.
   - **Acceptance:** Two clean runs of the same commit and declared device profile hash the compared PNGs identically; mismatch reports both hashes and keeps the gate red.

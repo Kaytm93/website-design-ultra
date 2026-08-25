@@ -50,6 +50,7 @@ Read only what the task needs. A row fires on its gate, not on the topic.
 | Colors are selected or audited | `color-palettes` |
 | Font family, license/loading, language coverage, type scale, or wrapping changes | `typography` |
 | A page, signature section, or multi-region layout crosses viewports | `references/composition-contract.md` and `references/responsive-recomposition.md` |
+| A runnable scene needs reproducible dynamic capture, a visual baseline, a poster/checkpoint frame, or deterministic bug reproduction | `references/determinism.md` |
 | Motion is requested, already present, or part of the direction | `motion-system`, calibrated by `MOTION_INTENSITY` |
 | A hero, card, form, navigation, or overlay recipe is still undecided | `component-patterns` |
 | A component owns async data, validation, mutation, or interactive state | `ui-states` |
@@ -64,6 +65,10 @@ Three clarifications the table cannot carry:
 - **A named direction is an input, not a request to explore.** Apply it from the
   briefing; a clear product context or a named palette does not activate
   `style-directions` either.
+- **The determinism gate is evidence-scoped.** Read
+  `references/determinism.md` for reproducible dynamic capture or scene bug
+  reproduction. Ordinary 2D work, an ordinary 3D hero, and a plan without a
+  runnable capture target do not activate it.
 - **Two gates fire on a concrete decision, never on a topic.**
   Generic content/layout hierarchy does not activate `typography`; generic page
   or dashboard planning does not activate `component-patterns`. Both need a
