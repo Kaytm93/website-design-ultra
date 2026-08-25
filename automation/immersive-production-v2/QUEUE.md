@@ -48,7 +48,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Same seed and clock produce the same sequence; subsystem streams do not change when an unrelated stream is added; unknown station ids fail explicitly; production mode still uses the live clock.
   - **Verify:** Run the module's unit/type tests plus `node website-design-ultra/scripts/validate-content.mjs`.
 
-- [ ] `IP-02C` **Prove byte-identical deterministic capture** — Add one minimal fixture and a two-run comparator whose acceptance condition is identical PNG bytes.
+- [x] `IP-02C` **Prove byte-identical deterministic capture** — Add one minimal fixture and a two-run comparator whose acceptance condition is identical PNG bytes.
   - **Depends on:** IP-02B
   - **Deliver:** Root-only deterministic fixture, capture runner, committed expected metadata, and CI hook.
   - **Acceptance:** Two clean runs of the same commit and declared device profile hash the compared PNGs identically; mismatch reports both hashes and keeps the gate red.

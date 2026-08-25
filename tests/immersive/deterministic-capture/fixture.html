@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WDU deterministic capture fixture</title>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: #071018;
+      }
+
+      [data-capture-root] {
+        display: block;
+        width: 320px;
+        height: 240px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas data-capture-root width="320" height="240" aria-label="Deterministic geometric fixture"></canvas>
+    <script type="module">
+      /* __WDU_RUNTIME__ */
+
+      const expected = __WDU_EXPECTED_JSON__
+      const requestedMode = __WDU_MODE_INPUT_JSON__
+      if (requestedMode !== 'WDU_DETERMINISTIC=1') {
+        throw new Error('deterministic fixture received the wrong mode input')
+      }
+
+      const canvas = document.querySelector('[data-capture-root]')
+      const context = canvas.getContext('2d', { alpha: false })
+      if (!context) throw new Error('2D canvas is unavailable')
+
+      const { width, height } = expected.deviceProfile.viewport
+      if (canvas.width !== width || canvas.height !== height) {
+        throw new Error('fixture dimensions do not match the declared device profile')
+      }
+
+      const clock = createClock({
+        mode: 'deterministic',
+        stepSeconds: expected.deterministicRuntime.stepSeconds,
+      })
+      const streams = createRandomStreams(expected.deterministicRuntime.rootSeed)
+      const geometry = streams.stream('geometry')
+      const palette = streams.stream('palette')
+      const stations = {
+        'fixture-wide': {
+          position: [0, 0.5, 4],
+          target: [0, 0, 0],
+          projection: 'perspective',
+          fov: 40,
+          sceneState: 'capture',
+        },
+      }
+      const station = getCameraStation(
+        stations,
+        expected.deterministicRuntime.cameraStation,
+      )
+
+      const shapes = Array.from({ length: 18 }, () => ({
+        x: 20 + Math.floor(geometry.next() * 280),
+        y: 18 + Math.floor(geometry.next() * 204),
+        radius: 4 + Math.floor(geometry.next() * 18),
+        color: Math.floor(palette.next() * 4),
+      }))
+      const colors = ['#f2c14e', '#6ad5cb', '#e96b8d', '#8f7df2']
+
+      for (let frame = 0; frame < expected.deterministicRuntime.stableFrame; frame += 1) {
+        clock.tick()
+      }
+
+      context.fillStyle = '#071018'
+      context.fillRect(0, 0, width, height)
+      context.strokeStyle = '#203342'
+      context.lineWidth = 1
+      for (let x = 0; x <= width; x += 20) {
+        context.beginPath()
+        context.moveTo(x + 0.5, 0)
+        context.lineTo(x + 0.5, height)
+        context.stroke()
+      }
+      for (let y = 0; y <= height; y += 20) {
+        context.beginPath()
+        context.moveTo(0, y + 0.5)
+        context.lineTo(width, y + 0.5)
+        context.stroke()
+      }
+
+      const cameraScale = station.position[2] / station.fov
+      for (const shape of shapes) {
+        context.beginPath()
+        context.arc(
+          shape.x,
+          shape.y,
+          shape.radius * (1 + cameraScale),
+          0,
+          Math.PI * 2,
+        )
+        context.fillStyle = colors[shape.color]
+        context.fill()
+      }
+
+      context.fillStyle = '#f4f7f8'
+      context.fillRect(28, 108, 264, 24)
+      context.fillStyle = '#071018'
+      context.fillRect(92, 116, 136, 8)
+
+      const seedNames = streams.names()
+      if (JSON.stringify(seedNames) !== JSON.stringify(expected.deterministicRuntime.seedNames)) {
+        throw new Error('fixture seed streams do not match committed metadata')
+      }
+
+      const ready = createStableFrameMarker({
+        target: document.documentElement,
+        stableFrame: expected.deterministicRuntime.stableFrame,
+      })
+      ready.afterVisibleRender({
+        frame: clock.frame,
+        assetsReady: true,
+        cameraStationApplied: true,
+        streamsInitialized: true,
+      })
+
+      window.__WDU_CAPTURE_METADATA__ = {
+        fixtureId: expected.fixtureId,
+        requestedMode,
+        resolvedMode: 'deterministic',
+        frame: clock.frame,
+        rootSeed: expected.deterministicRuntime.rootSeed,
+        seedNames,
+        cameraStation: expected.deterministicRuntime.cameraStation,
+        deviceProfileSha256: expected.deviceProfileSha256,
+      }
+    </script>
+  </body>
+</html>

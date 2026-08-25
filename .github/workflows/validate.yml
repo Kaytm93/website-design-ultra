@@ -16,9 +16,9 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: 22
 
@@ -42,15 +42,47 @@ jobs:
         working-directory: website-design-ultra
         run: node scripts/run-forward-tests.mjs --dry-run
 
+  deterministic-capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22
+
+      - name: Test deterministic capture contract
+        env:
+          NODE_NO_WARNINGS: 1
+        run: node --test tests/immersive/deterministic-capture/capture-comparator.test.mjs
+
+      - name: Install pinned Chromium
+        run: npx --yes --package playwright@1.62.1 playwright install --with-deps chromium
+
+      - name: Compare two clean deterministic captures
+        env:
+          NODE_NO_WARNINGS: 1
+        run: node tests/immersive/deterministic-capture/compare-captures.mjs --out "${{ runner.temp }}/wdu-deterministic-capture"
+
+      - name: Archive deterministic capture evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: deterministic-capture
+          path: ${{ runner.temp }}/wdu-deterministic-capture
+          if-no-files-found: error
+          retention-days: 14
+
   release-provenance:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: 22
 

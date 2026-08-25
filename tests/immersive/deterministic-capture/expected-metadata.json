@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "ip-02c-minimal-canvas-v1",
+  "acceptance": "byte-identical-png-bytes",
+  "captureFile": "capture.png",
+  "hashAlgorithm": "sha256",
+  "deterministicRuntime": {
+    "modeInput": "WDU_DETERMINISTIC=1",
+    "stepSeconds": 0.016666666666666666,
+    "rootSeed": "ip-02c-capture-seed-v1",
+    "seedNames": [
+      "geometry",
+      "palette"
+    ],
+    "cameraStation": "fixture-wide",
+    "stableFrame": 12,
+    "readyMarker": "html[data-wdu-ready=\"true\"]"
+  },
+  "deviceProfile": {
+    "browser": "chromium",
+    "browserBuild": "playwright-bundled",
+    "playwrightVersion": "1.62.1",
+    "headless": true,
+    "viewport": {
+      "width": 320,
+      "height": 240
+    },
+    "deviceScaleFactor": 1,
+    "colorScheme": "dark",
+    "locale": "en-US",
+    "timezoneId": "UTC",
+    "userAgent": "WDU-Deterministic-Capture/1",
+    "network": "none",
+    "fontInputs": []
+  },
+  "deviceProfileSha256": "ace48f5485c9c86f445751360e662285d8878869df8ee4d11bc0da5c9324425e"
+}
