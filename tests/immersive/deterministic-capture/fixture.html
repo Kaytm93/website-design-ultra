@@ -136,6 +136,30 @@
         cameraStation: expected.deterministicRuntime.cameraStation,
         deviceProfileSha256: expected.deviceProfileSha256,
       }
+
+      const telemetryDocument = structuredClone(expected.telemetry.document)
+      window.__WDU_IMMERSIVE_TELEMETRY__ = {
+        rendererInfo: structuredClone(expected.telemetry.rendererInfo),
+        read() {
+          return telemetryDocument
+        },
+        collect({ warmupFrames, sampleWindow }) {
+          if (
+            warmupFrames !== telemetryDocument.budget.gates[0].warmup.value ||
+            sampleWindow !== telemetryDocument.budget.gates[0].sampleWindow.value
+          ) {
+            throw new Error('telemetry verifier did not use the declared frame window')
+          }
+          telemetryDocument.runtime.frame.warmGpu.samples =
+            Array.from({ length: sampleWindow }, (_, index) => ({
+              value: expected.telemetry.sampleValuesMs[index],
+              unit: 'ms',
+            }))
+          telemetryDocument.runtime.frame.warmGpu.median = null
+          telemetryDocument.runtime.frame.warmGpu.p95 = null
+          return telemetryDocument
+        },
+      }
     </script>
   </body>
 </html>

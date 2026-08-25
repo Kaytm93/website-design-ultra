@@ -321,6 +321,12 @@ node scripts/verify-browser.mjs \
   --out output/playwright/verify/manual
 ```
 
+For a runnable target with the shared immersive telemetry surface, the same
+output directory also contains `performance-summary.json`: a timestamp-free
+comparison of the declared three-gate budget with the fixed warm sample window,
+first meaningful frame, and transfer completed before that marker. Missing
+browser, GPU, or surface evidence remains `UNAVAILABLE`, never `PASS`.
+
 The adapter accepts an explicit CLI, a compatible Codex wrapper, a CLI on
 `PATH`, or the npm CLI only after the required session, `run-code`, and
 screenshot capabilities pass. If no compatible CLI exists, use the host’s

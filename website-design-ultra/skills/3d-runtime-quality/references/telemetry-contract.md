@@ -78,9 +78,12 @@ only its fields:
   `medium`, or `high`) and its capped `quality.dpr` as a `ratio`. It remains the
   one owner of tier-derived runtime settings.
 - The verifier reads the declared `deviceProfile` and `budget` together with
-  this runtime surface. IP-03A defines the shape; a later collection step may
-  sample and compare it. It may report gate results only for the three declared
-  classes above.
+  this runtime surface. It invokes the project-owned
+  `window.__WDU_IMMERSIVE_TELEMETRY__` collection method, recalculates the fixed
+  warm window, and emits `performance-summary.json`. The collection protocol,
+  marker boundary, raw `renderer.info` preservation, and timestamp-free output
+  are specified in [references/telemetry-collection.md](telemetry-collection.md).
+  It may report gate results only for the three declared classes above.
 
 Before the meaningful frame exists, `firstMeaningfulFrame.observed` and
 `transfer.observed` may be `null`. That is an incomplete observation, not a

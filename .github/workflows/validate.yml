@@ -29,8 +29,8 @@ jobs:
             node --check "$script"
           done
 
-      - name: Test immersive telemetry schema
-        run: node --test tests/immersive/telemetry/telemetry-schema.test.mjs
+      - name: Test immersive telemetry calculations
+        run: node --test tests/immersive/telemetry/telemetry-schema.test.mjs tests/immersive/telemetry/performance-summary.test.mjs
 
       - name: Validate plugin content
         working-directory: website-design-ultra
@@ -67,6 +67,11 @@ jobs:
         env:
           NODE_NO_WARNINGS: 1
         run: node tests/immersive/deterministic-capture/compare-captures.mjs --out "${{ runner.temp }}/wdu-deterministic-capture"
+
+      - name: Capture IP-02C performance summary
+        env:
+          NODE_NO_WARNINGS: 1
+        run: node tests/immersive/telemetry/capture-ip-02c.mjs --out "${{ runner.temp }}/wdu-ip-03b-capture"
 
       - name: Archive deterministic capture evidence
         if: always()

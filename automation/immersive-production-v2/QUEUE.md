@@ -63,7 +63,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** The schema has exactly three gate classes—warm GPU frame median/p95, first meaningful frame, and transfer before that frame. Context counters remain evidence, not new universal gates.
   - **Verify:** Schema fixtures accept a justified 30fps/33ms budget and reject missing units, missing device profile, or an invented implicit threshold.
 
-- [ ] `IP-03B` **Collect telemetry and emit performance-summary.json** — Extend `verify-browser.mjs` to warm up, sample, read the shared surface, and compare observations with the declared project budget.
+- [x] `IP-03B` **Collect telemetry and emit performance-summary.json** — Extend `verify-browser.mjs` to warm up, sample, read the shared surface, and compare observations with the declared project budget.
   - **Depends on:** IP-03A
   - **Deliver:** Deterministic JSON output with observed values, budget values, comparison result, evidence source, and explicit unavailable fields.
   - **Acceptance:** Median and p95 are calculated from a fixed declared window; transfer stops at the meaningful-frame marker; `renderer.info` context is preserved; timestamps do not make deterministic artifacts incomparable.

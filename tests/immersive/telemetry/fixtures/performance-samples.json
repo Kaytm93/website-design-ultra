@@ -1,0 +1,29 @@
+{
+  "warmupFrames": 2,
+  "sampleWindow": 5,
+  "samplesMs": [
+    16,
+    18,
+    17,
+    19,
+    21
+  ],
+  "resourceEntries": [
+    {
+      "name": "before.glb",
+      "responseEnd": 40,
+      "transferSize": 100
+    },
+    {
+      "name": "at-marker.ktx2",
+      "responseEnd": 100,
+      "encodedBodySize": 200
+    },
+    {
+      "name": "after-marker.bin",
+      "responseEnd": 100.001,
+      "transferSize": 900
+    }
+  ],
+  "meaningfulFrameAtMs": 100
+}

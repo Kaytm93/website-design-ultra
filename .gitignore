@@ -9,6 +9,7 @@ ziqxczzS
 project-vault/
 
 # Tool output
+.playwright-cli/
 website-design-ultra/.playwright-cli/
 website-design-ultra/output/
 node_modules/
