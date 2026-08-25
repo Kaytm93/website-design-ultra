@@ -842,17 +842,17 @@ export function createTelemetryCollectionScript() {
       collectionFailed = true
       method = 'surface-collection-failed'
     }
-    const document = collectedDocument ?? await readDocument(surface)
-    const gpu = await probeGpu(document?.deviceProfile?.renderer ?? null)
+    const telemetryDocument = collectedDocument ?? await readDocument(surface)
+    const gpu = await probeGpu(telemetryDocument?.deviceProfile?.renderer ?? null)
     const telemetryCapability = {
       status: collectionFailed
         ? 'UNAVAILABLE'
-        : document
+        : telemetryDocument
           ? 'AVAILABLE'
           : 'UNAVAILABLE',
       reason: collectionFailed
         ? 'telemetry collection did not complete'
-        : document
+        : telemetryDocument
           ? null
           : 'telemetry surface did not return a document',
       evidence: {
@@ -860,7 +860,7 @@ export function createTelemetryCollectionScript() {
         collectionMethod: method,
       },
     }
-    const meaningfulFrameAtMs = document?.runtime?.frame?.firstMeaningfulFrame?.observed?.value
+    const meaningfulFrameAtMs = telemetryDocument?.runtime?.frame?.firstMeaningfulFrame?.observed?.value
     const resources = performance.getEntriesByType('resource').map((entry) => ({
       name: entry.name,
       responseEnd: entry.responseEnd,
@@ -896,7 +896,7 @@ export function createTelemetryCollectionScript() {
     }
     const rendererInfo = collectedRendererInfo ?? surface?.rendererInfo ?? surface?.renderer?.info ?? globalThis.__WDU_RENDERER__?.info ?? null
     return {
-      document: clone(document),
+      document: clone(telemetryDocument),
       rendererInfo: clone(rendererInfo),
       evidenceSource: 'window.' + surfaceName,
       capabilities: {

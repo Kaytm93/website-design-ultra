@@ -162,6 +162,8 @@ test('the browser collection script includes an explicit GPU capability probe', 
   assert.match(source, /requestAdapter|webgl2/)
   assert.match(source, /capabilities/)
   assert.match(source, /telemetry surface is not available/)
+  assert.match(source, /const telemetryDocument = collectedDocument/)
+  assert.doesNotMatch(source, /const document = collectedDocument/)
 })
 
 test('an explicitly missing browser CLI cannot fall through to another backend', () => {
