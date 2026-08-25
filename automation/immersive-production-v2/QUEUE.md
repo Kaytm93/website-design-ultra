@@ -42,7 +42,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Scene code has no direct `performance.now()` path while deterministic mode is active; every stochastic subsystem receives a named seed; ready means the first stable frame, not a timeout.
   - **Verify:** `node website-design-ultra/scripts/validate-content.mjs` and `node website-design-ultra/scripts/run-forward-tests.mjs --dry-run`.
 
-- [ ] `IP-02B` **Implement the copyable determinism runtime** — Add one zero-dependency TypeScript module for the injectable clock, seeded PRNG streams, camera-station lookup, and stable-frame marker.
+- [x] `IP-02B` **Implement the copyable determinism runtime** — Add one zero-dependency TypeScript module for the injectable clock, seeded PRNG streams, camera-station lookup, and stable-frame marker.
   - **Depends on:** IP-02A
   - **Deliver:** A root-only copied reference implementation and isolated tests; do not publish a package.
   - **Acceptance:** Same seed and clock produce the same sequence; subsystem streams do not change when an unrelated stream is added; unknown station ids fail explicitly; production mode still uses the live clock.
