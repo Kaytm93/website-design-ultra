@@ -27,6 +27,15 @@ page behind it — the experience needs an architecture and an accessibility
 mechanism this file does not carry. Load `canvas-first-architecture` and answer
 its gate first. A 3D hero above a normal page is not that case.
 
+### Reference evidence gate
+
+Before the art-direction layer, inspect the supplied artifacts rather than the
+direction name. When the 3D brief includes six to ten exported PNG and SVG
+reference frames plus a written token block, load `reference-intake` before
+`3d-art-direction`. It produces the traced contract and poster target before
+scene code. A named direction or mood label without that material skips this
+gate and proceeds directly to the normal art-direction contract.
+
 ## 2. Mandatory layers and stack
 
 Load for every shipped 3D experience:
@@ -152,6 +161,7 @@ For production or complex scenes → `r3f-patterns`.
 
 ## 7. Routing
 
+- Six to ten exported PNG and SVG frames plus a written token block → **`reference-intake` before `3d-art-direction`**
 - Camera, light, materials, tone mapping, mobile shot, spatial typography → **`3d-art-direction`**
 - Tiers, adaptive shadows/LOD/PostFX/particles/DPR, hysteresis, offscreen pause → **`3d-runtime-quality`**
 - React production → **`r3f-patterns`**
@@ -185,7 +195,7 @@ with the first runnable build the browser check becomes mandatory.
 ## 9. Output format (in addition to core-rules)
 
 1. One sentence: why 3D is justified here plus the selected stack layer
-2. Art-direction contract with desktop, portrait, and poster shot
+2. When the evidence gate fired, traced reference intake and poster target; then the art-direction contract with desktop, portrait, and poster shot
 3. `npm install …` (R3F) or importmap (vanilla)
 4. Working code with reduced-motion, DOM, and 2D fallback
 5. Perf budget plus Poster/Low/Medium/High matrix

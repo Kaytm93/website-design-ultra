@@ -77,7 +77,7 @@ splits that proposal into implementation-sized units.
 
 ## PR 4 — Reference intake
 
-- [ ] `IP-04A` **Add the negatively gated reference-intake skill** — Route six-to-ten frames plus a written token block before `3d-art-direction`.
+- [x] `IP-04A` **Add the negatively gated reference-intake skill** — Route six-to-ten frames plus a written token block before `3d-art-direction`.
   - **Depends on:** IP-03C
   - **Deliver:** `website-design-ultra/skills/reference-intake/SKILL.md` and one-level references/templates for traceable extraction.
   - **Acceptance:** Every art-direction field cites a source frame or is `unknown`; the poster target precedes scene code; a named direction with no reference material does not activate the skill.

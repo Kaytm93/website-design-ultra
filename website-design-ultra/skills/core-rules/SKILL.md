@@ -54,7 +54,8 @@ Read only what the task needs. A row fires on its gate, not on the topic.
 | Motion is requested, already present, or part of the direction | `motion-system`, calibrated by `MOTION_INTENSITY` |
 | A hero, card, form, navigation, or overlay recipe is still undecided | `component-patterns` |
 | A component owns async data, validation, mutation, or interactive state | `ui-states` |
-| 3D, WebGL, WebGPU, shaders, Three.js, or R3F | `immersive-3d`, then `3d-art-direction` and `3d-runtime-quality`, then one implementation sub-skill |
+| A 3D brief supplies six to ten exported PNG and SVG frames plus a written token block | `reference-intake`, before `3d-art-direction` |
+| 3D, WebGL, WebGPU, shaders, Three.js, or R3F | `immersive-3d`; if the reference gate fired, `reference-intake`; then `3d-art-direction` and `3d-runtime-quality`, then one implementation sub-skill |
 
 Three clarifications the table cannot carry:
 
@@ -69,6 +70,9 @@ Three clarifications the table cannot carry:
   `references/determinism.md` for reproducible dynamic capture or scene bug
   reproduction. Ordinary 2D work, an ordinary 3D hero, and a plan without a
   runnable capture target do not activate it.
+- **The reference gate requires both artifacts.** A named direction, style label,
+  or text-only 3D briefing without the six-to-ten-frame set and written token
+  block does not activate `reference-intake`.
 - **Two gates fire on a concrete decision, never on a topic.**
   Generic content/layout hierarchy does not activate `typography`; generic page
   or dashboard planning does not activate `component-patterns`. Both need a
@@ -91,8 +95,9 @@ dependencies:
 For ordinary 2D work, target at most four domain skills beyond `core-rules` and
 one reference per selected family. More is valid only when independent user
 requirements activate independent contracts. The 3D master is the documented
-exception: `3d-art-direction` and `3d-runtime-quality` are mandatory, followed
-by only the implementation layers the scene actually needs.
+exception: when the evidence gate fires, `reference-intake` runs first;
+`3d-art-direction` and `3d-runtime-quality` remain mandatory, followed by only
+the implementation layers the scene actually needs.
 
 Keep an internal routing ledger of selected skills and references. Provider
 access traces in the forward suite are authoritative; a self-reported route is

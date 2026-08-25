@@ -207,7 +207,7 @@ class QueueTests(unittest.TestCase):
         tasks = DRIVER.parse_queue(DRIVER.QUEUE_FILE)
         DRIVER.validate_queue(tasks)
         self.assertEqual(len(tasks), 35)
-        self.assertEqual(sum(task.checked for task in tasks), 8)
+        self.assertEqual(sum(task.checked for task in tasks), 9)
         self.assertEqual(sorted({task.pr for task in tasks}), list(range(1, 15)))
         self.assertEqual(tasks[0].task_id, "IP-01A")
         self.assertEqual(tasks[-1].task_id, "IP-11D")

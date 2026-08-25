@@ -127,8 +127,8 @@ const skillDirectories = fs
   .readdirSync(skillsRoot, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
 
-if (skillDirectories.length !== 21) {
-  fail(`expected 21 skills, found ${skillDirectories.length}`)
+if (skillDirectories.length !== 22) {
+  fail(`expected 22 skills, found ${skillDirectories.length}`)
 }
 
 for (const directory of skillDirectories) {
@@ -370,6 +370,113 @@ for (const [file, markers] of determinismContracts) {
   }
 }
 
+/**
+ * Reference material is useful only when its influence remains inspectable.
+ * Bind the complete input gate, every leaf in the downstream art-direction
+ * contract, the concrete poster target, and the predecessor routing edge.
+ */
+const referenceIntakeContracts = [
+  [
+    'skills/reference-intake/SKILL.md',
+    [
+      'six to ten',
+      'PNG',
+      'SVG',
+      'written token block',
+      'traceable-extraction.md',
+      'templates/reference-intake.md',
+      'poster target',
+      'before scene code',
+      'before `3d-art-direction`',
+      'does not activate this skill',
+    ],
+  ],
+  [
+    'skills/reference-intake/references/traceable-extraction.md',
+    ['source-frame', '`unknown`', 'contradiction', 'poster target', 'before scene code'],
+  ],
+  [
+    'skills/reference-intake/templates/reference-intake.md',
+    ['written-token-block', 'poster-target', 'scene-code-status: blocked'],
+  ],
+  [
+    'skills/immersive-3d/SKILL.md',
+    ['reference-intake', 'six to ten', 'written token block', 'before `3d-art-direction`'],
+  ],
+  [
+    'skills/3d-art-direction/SKILL.md',
+    ['reference-intake', 'source-frame', 'unknown', 'poster target'],
+  ],
+  [
+    'skills/core-rules/SKILL.md',
+    ['reference-intake', 'six to ten', 'written token block'],
+  ],
+  [
+    'commands/immersive.md',
+    ['reference-intake', 'six to ten', 'written token block', 'before scene code'],
+  ],
+  [
+    'README.md',
+    ['reference-intake', 'six to ten', 'written token block', 'before `3d-art-direction`'],
+  ],
+]
+
+for (const [file, markers] of referenceIntakeContracts) {
+  const fullPath = path.join(pluginRoot, file)
+  if (!fs.existsSync(fullPath)) {
+    fail(`${file}: missing reference-intake artifact`)
+    continue
+  }
+  const content = read(fullPath).toLowerCase()
+  for (const marker of markers) {
+    if (!content.includes(marker.toLowerCase())) {
+      fail(`${file}: missing reference-intake marker "${marker}"`)
+    }
+  }
+}
+
+const artDirectionTraceFields = [
+  'visual-thesis',
+  'hero-subject',
+  'camera.framing',
+  'camera.fov',
+  'camera.position',
+  'camera.target',
+  'camera.near-far',
+  'composition.subject-anchor',
+  'composition.dom-safe-area',
+  'lighting',
+  'material-order',
+  'color-output',
+  'tone-mapping',
+  'mobile-reframe',
+  'spatial-type',
+  'poster-frame',
+]
+const referenceIntakeTemplatePath = path.join(
+  skillsRoot,
+  'reference-intake',
+  'templates',
+  'reference-intake.md',
+)
+if (fs.existsSync(referenceIntakeTemplatePath)) {
+  const template = read(referenceIntakeTemplatePath)
+  const observedFields = [...template.matchAll(/^\s*- field:\s+([a-z.-]+)\s*$/gm)].map(
+    (match) => match[1],
+  )
+  if (JSON.stringify(observedFields) !== JSON.stringify(artDirectionTraceFields)) {
+    fail(
+      `skills/reference-intake/templates/reference-intake.md: traced fields must be exactly ${artDirectionTraceFields.join(', ')}`,
+    )
+  }
+  const sourceSlots = [...template.matchAll(/^\s+source-frame:\s+(?:unknown|frame-\d{2})\s*$/gm)]
+  if (sourceSlots.length !== artDirectionTraceFields.length) {
+    fail(
+      `skills/reference-intake/templates/reference-intake.md: expected ${artDirectionTraceFields.length} source-frame slots, found ${sourceSlots.length}`,
+    )
+  }
+}
+
 const antiSlopContracts = [
   [
     'skills/anti-slop/SKILL.md',
@@ -570,22 +677,23 @@ for (const [file, markers] of canvasFirstContracts) {
 
 /**
  * A description that only says when a skill applies competes for every
- * neighbouring task. These four are add-ons behind an already-loaded 3D stack,
- * so each states its single activating condition and, explicitly, what does not
- * activate it. Without the negative sentence a router pulls all four into every
- * scene, which is the cost this plugin's routing model exists to avoid.
+ * neighbouring task. Each expensive or evidence-specific skill states its
+ * activating condition and, explicitly, what does not activate it. Without the
+ * negative sentence a router pulls it into ordinary 2D and 3D work, which is the
+ * cost this plugin's routing model exists to avoid.
  */
-const onDemandSkills = [
+const negativeGatedSkills = [
   'canvas-first-architecture',
   'loading-choreography',
+  'reference-intake',
   'render-graph',
   'spatial-audio',
 ]
 
-for (const name of onDemandSkills) {
+for (const name of negativeGatedSkills) {
   const file = path.join(skillsRoot, name, 'SKILL.md')
   if (!fs.existsSync(file)) {
-    fail(`skills/${name}: missing on-demand skill`)
+    fail(`skills/${name}: missing negative-gated skill`)
     continue
   }
   const description = (parseFrontmatter(read(file), file).description ?? '').trim()
@@ -596,6 +704,18 @@ for (const name of onDemandSkills) {
   }
   if (!/\buse only when\b/i.test(description)) {
     fail(`skills/${name}: description must state the single condition that activates it`)
+  }
+  if (name === 'reference-intake') {
+    for (const marker of [
+      'six to ten',
+      'written token block',
+      'named direction',
+      'without reference material',
+    ]) {
+      if (!description.toLowerCase().includes(marker)) {
+        fail(`skills/reference-intake: description must contain "${marker}"`)
+      }
+    }
   }
 }
 
@@ -879,6 +999,15 @@ for (const testCase of forwardCases) {
   if (!testCase.trace?.forbiddenFiles?.includes(determinismReference)) {
     fail(
       `tests/forward/cases.json: ${testCase.id} must forbid determinism.md when reproducible runtime evidence is not requested`,
+    )
+  }
+}
+
+const referenceIntakeSkill = 'skills/reference-intake/SKILL.md'
+for (const testCase of forwardCases) {
+  if (!testCase.trace?.forbiddenFiles?.includes(referenceIntakeSkill)) {
+    fail(
+      `tests/forward/cases.json: ${testCase.id} must forbid reference-intake without a six-to-ten-frame set and written token block`,
     )
   }
 }
@@ -1194,7 +1323,7 @@ if (paletteCount !== 20) {
 }
 
 notes.push(`${skillDirectories.length} skills`)
-notes.push(`${onDemandSkills.length} negative-gated add-ons`)
+notes.push(`${negativeGatedSkills.length} negative-gated skills`)
 notes.push(`${commandDirectories.length} commands`)
 notes.push(`${paletteCount} palettes / ${contrastCheckCount} state contrast checks`)
 notes.push(`${directionCount} direction token blocks`)

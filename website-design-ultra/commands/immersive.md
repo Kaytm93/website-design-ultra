@@ -20,6 +20,12 @@ You will build an immersive 3D experience (hero, scene, viewer, or scroll-driven
 
 2. **Reconnaissance** — If inside a repo: read `package.json` (React/Next? Tailwind v3/v4? three/R3F already installed?). Do not assume the stack, verify it.
 
+   **Reference evidence gate (conditional, before step 3)** — When and only when
+   the briefing supplies six to ten exported PNG and SVG frames plus a
+   written token block, load `reference-intake`. Complete its traced ledger and
+   poster target before scene code, then hand both to `3d-art-direction`. A named
+   direction or text-only mood brief without those artifacts does not load it.
+
 3. **Fix the art direction** — Load `3d-art-direction`. Define FOV/camera, composition/safe area, lighting dramaturgy, material ranking, tone mapping, portrait reframe, spatial typography, and poster shot as a contract.
 
 4. **Content contract** — When headline, claim, proof, CTA, hotspot, or configurator copy is created, load `content-design`. The DOM statement and the canvas staging must carry the same evidenced claim.
@@ -95,7 +101,7 @@ You will build an immersive 3D experience (hero, scene, viewer, or scroll-driven
 ## Output format
 
 1. One sentence: why 3D is justified + the selected stack layer + direction
-2. Content/claim contract plus art-direction contract for desktop, portrait, and poster
+2. When supplied, reference-intake trace and poster target; then the content/claim contract plus art-direction contract for desktop, portrait, and poster
 3. Wide/portrait/narrow recomposition of the page
 4. `npm install …` (R3F) or importmap (vanilla)
 5. Working code with reduced-motion, DOM, and 2D fallback
