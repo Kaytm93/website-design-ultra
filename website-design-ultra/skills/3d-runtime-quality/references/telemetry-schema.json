@@ -1,0 +1,771 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wdu://immersive-telemetry/v1",
+  "title": "Website Design Ultra immersive telemetry surface",
+  "description": "Versioned project budget and runtime evidence shared by the renderer, quality controller, and verifier. Gate thresholds are project declarations; this schema supplies no defaults.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "surface",
+    "deviceProfile",
+    "budget",
+    "runtime"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "surface": {
+      "const": "wdu.immersive-telemetry"
+    },
+    "deviceProfile": {
+      "$ref": "#/$defs/deviceProfile"
+    },
+    "budget": {
+      "$ref": "#/$defs/budget"
+    },
+    "runtime": {
+      "$ref": "#/$defs/runtime"
+    }
+  },
+  "$defs": {
+    "quantity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit"
+      ],
+      "properties": {
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "bytes": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/quantity"
+        },
+        {
+          "properties": {
+            "value": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "unit": {
+              "const": "bytes"
+            }
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "count": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/quantity"
+        },
+        {
+          "properties": {
+            "value": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "unit": {
+              "const": "count"
+            }
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "cssPixels": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/quantity"
+        },
+        {
+          "properties": {
+            "value": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            },
+            "unit": {
+              "const": "css-px"
+            }
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "fps": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/quantity"
+        },
+        {
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "unit": {
+              "const": "fps"
+            }
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "frames": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/quantity"
+        },
+        {
+          "properties": {
+            "value": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "unit": {
+              "const": "frames"
+            }
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "positiveFrames": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/quantity"
+        },
+        {
+          "properties": {
+            "value": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            },
+            "unit": {
+              "const": "frames"
+            }
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "milliseconds": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/quantity"
+        },
+        {
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "unit": {
+              "const": "ms"
+            }
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "ratio": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/quantity"
+        },
+        {
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "unit": {
+              "const": "ratio"
+            }
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "deviceProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "class",
+        "browser",
+        "browserVersion",
+        "renderer",
+        "viewport",
+        "deviceScaleFactor",
+        "network"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "class": {
+          "enum": [
+            "desktop",
+            "mobile"
+          ]
+        },
+        "browser": {
+          "type": "string",
+          "minLength": 1
+        },
+        "browserVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "renderer": {
+          "enum": [
+            "webgl",
+            "webgl2",
+            "webgpu"
+          ]
+        },
+        "viewport": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "width",
+            "height"
+          ],
+          "properties": {
+            "width": {
+              "$ref": "#/$defs/cssPixels"
+            },
+            "height": {
+              "$ref": "#/$defs/cssPixels"
+            }
+          }
+        },
+        "deviceScaleFactor": {
+          "$ref": "#/$defs/ratio"
+        },
+        "network": {
+          "enum": [
+            "offline",
+            "online",
+            "throttled"
+          ]
+        }
+      }
+    },
+    "frameTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rate",
+        "frameTime",
+        "justification"
+      ],
+      "properties": {
+        "rate": {
+          "$ref": "#/$defs/fps"
+        },
+        "frameTime": {
+          "$ref": "#/$defs/milliseconds"
+        },
+        "justification": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "gateBase": {
+      "type": "object",
+      "required": [
+        "class",
+        "comparison",
+        "justification"
+      ],
+      "properties": {
+        "class": {
+          "enum": [
+            "warm-gpu-frame-time",
+            "first-meaningful-frame",
+            "transfer-before-first-meaningful-frame"
+          ]
+        },
+        "comparison": {
+          "const": "less-than-or-equal"
+        },
+        "justification": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "warmGpuGate": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/gateBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "class",
+            "comparison",
+            "targets",
+            "warmup",
+            "sampleWindow",
+            "justification"
+          ],
+          "properties": {
+            "class": {
+              "const": "warm-gpu-frame-time"
+            },
+            "targets": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "median",
+                "p95"
+              ],
+              "properties": {
+                "median": {
+                  "$ref": "#/$defs/milliseconds"
+                },
+                "p95": {
+                  "$ref": "#/$defs/milliseconds"
+                }
+              }
+            },
+            "warmup": {
+              "$ref": "#/$defs/frames"
+            },
+            "sampleWindow": {
+              "$ref": "#/$defs/positiveFrames"
+            },
+            "comparison": {
+              "const": "less-than-or-equal"
+            },
+            "justification": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "firstMeaningfulFrameGate": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/gateBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "class",
+            "comparison",
+            "marker",
+            "target",
+            "justification"
+          ],
+          "properties": {
+            "class": {
+              "const": "first-meaningful-frame"
+            },
+            "marker": {
+              "type": "string",
+              "minLength": 1
+            },
+            "target": {
+              "$ref": "#/$defs/milliseconds"
+            },
+            "comparison": {
+              "const": "less-than-or-equal"
+            },
+            "justification": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "transferGate": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/gateBase"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "class",
+            "comparison",
+            "boundary",
+            "target",
+            "justification"
+          ],
+          "properties": {
+            "class": {
+              "const": "transfer-before-first-meaningful-frame"
+            },
+            "boundary": {
+              "const": "first-meaningful-frame"
+            },
+            "target": {
+              "$ref": "#/$defs/bytes"
+            },
+            "comparison": {
+              "const": "less-than-or-equal"
+            },
+            "justification": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "gate": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "enum": [
+            "warm-gpu-frame-time",
+            "first-meaningful-frame",
+            "transfer-before-first-meaningful-frame"
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/warmGpuGate"
+        },
+        {
+          "$ref": "#/$defs/firstMeaningfulFrameGate"
+        },
+        {
+          "$ref": "#/$defs/transferGate"
+        }
+      ]
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "frameTarget",
+        "gates"
+      ],
+      "properties": {
+        "frameTarget": {
+          "$ref": "#/$defs/frameTarget"
+        },
+        "gates": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "$ref": "#/$defs/gate"
+          },
+          "allOf": [
+            {
+              "contains": {
+                "required": [
+                  "class"
+                ],
+                "properties": {
+                  "class": {
+                    "const": "warm-gpu-frame-time"
+                  }
+                },
+                "type": "object"
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "required": [
+                  "class"
+                ],
+                "properties": {
+                  "class": {
+                    "const": "first-meaningful-frame"
+                  }
+                },
+                "type": "object"
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "required": [
+                  "class"
+                ],
+                "properties": {
+                  "class": {
+                    "const": "transfer-before-first-meaningful-frame"
+                  }
+                },
+                "type": "object"
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        }
+      }
+    },
+    "warmGpuEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "samples",
+        "median",
+        "p95"
+      ],
+      "properties": {
+        "samples": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/milliseconds"
+          }
+        },
+        "median": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/milliseconds"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "p95": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/milliseconds"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "frame",
+        "renderer",
+        "quality",
+        "errors",
+        "contextLoss"
+      ],
+      "properties": {
+        "frame": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "warmGpu",
+            "firstMeaningfulFrame",
+            "transfer",
+            "longFrameCount"
+          ],
+          "properties": {
+            "warmGpu": {
+              "$ref": "#/$defs/warmGpuEvidence"
+            },
+            "firstMeaningfulFrame": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "marker",
+                "observed"
+              ],
+              "properties": {
+                "marker": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "observed": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/milliseconds"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "transfer": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "boundary",
+                "observed"
+              ],
+              "properties": {
+                "boundary": {
+                  "const": "first-meaningful-frame"
+                },
+                "observed": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/bytes"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "longFrameCount": {
+              "$ref": "#/$defs/count"
+            }
+          }
+        },
+        "renderer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "api",
+            "counters"
+          ],
+          "properties": {
+            "api": {
+              "type": "string",
+              "minLength": 1
+            },
+            "counters": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "drawCalls",
+                "visibleTriangles",
+                "textures",
+                "geometries",
+                "programs"
+              ],
+              "properties": {
+                "drawCalls": {
+                  "$ref": "#/$defs/count"
+                },
+                "visibleTriangles": {
+                  "$ref": "#/$defs/count"
+                },
+                "textures": {
+                  "$ref": "#/$defs/count"
+                },
+                "geometries": {
+                  "$ref": "#/$defs/count"
+                },
+                "programs": {
+                  "$ref": "#/$defs/count"
+                }
+              }
+            }
+          }
+        },
+        "quality": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tier",
+            "dpr"
+          ],
+          "properties": {
+            "tier": {
+              "enum": [
+                "poster",
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "dpr": {
+              "$ref": "#/$defs/ratio"
+            }
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "message"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "resource-load",
+                  "shader-compile",
+                  "runtime"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1
+              },
+              "resource": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "contextLoss": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "count",
+            "events"
+          ],
+          "properties": {
+            "count": {
+              "$ref": "#/$defs/count"
+            },
+            "events": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "reason",
+                  "recovered"
+                ],
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "recovered": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -56,7 +56,7 @@ splits that proposal into implementation-sized units.
 
 ## PR 3 — Frame telemetry in the verifier
 
-- [ ] `IP-03A` **Define one budget and telemetry surface** — Specify the project-declared budget shape and the runtime surface shared by renderer, quality controller, and verifier.
+- [x] `IP-03A` **Define one budget and telemetry surface** — Specify the project-declared budget shape and the runtime surface shared by renderer, quality controller, and verifier.
   - **Depends on:** IP-02C
   - **Read first:** `TODO.md` T0.2; `website-design-ultra/skills/immersive-3d/SKILL.md` §3; `website-design-ultra/skills/3d-runtime-quality/`.
   - **Deliver:** A versioned schema/reference for device profile, frame target, first meaningful frame, transfer boundary, renderer counters, quality tier, DPR, errors, and context loss.

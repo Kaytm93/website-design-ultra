@@ -29,6 +29,9 @@ jobs:
             node --check "$script"
           done
 
+      - name: Test immersive telemetry schema
+        run: node --test tests/immersive/telemetry/telemetry-schema.test.mjs
+
       - name: Validate plugin content
         working-directory: website-design-ultra
         run: node scripts/validate-content.mjs

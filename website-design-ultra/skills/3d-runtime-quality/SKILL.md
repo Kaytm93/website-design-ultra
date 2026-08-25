@@ -10,6 +10,11 @@ Preserve the visual statement from `3d-art-direction` within the budget from `im
 ## Runtime contract
 
 Define before implementation. The block below is the schema, not the values.
+The versioned project budget and shared renderer/controller/verifier evidence
+surface live in [references/telemetry-contract.md](references/telemetry-contract.md)
+and the formal `telemetry-schema.json` beside it. Copy the repository-root
+`references/immersive-telemetry.ts` reference into a project; do not infer a
+frame-time threshold from fps or promote context counters into universal gates.
 `initial-tier` and the window lengths are one filled example; the concrete
 Poster, Low, Medium, and High profiles live in
 [references/tier-matrix.md](references/tier-matrix.md), and `immersive-3d` §3
