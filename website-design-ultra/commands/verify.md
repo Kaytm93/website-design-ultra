@@ -78,6 +78,26 @@ capability or required measurement is `UNAVAILABLE`. The adapter exits 1 for
 `FAIL` and 2 for `UNAVAILABLE`, and writes a non-empty summary before reporting
 an unavailable browser or telemetry surface.
 
+For declared interaction checkpoints, use checkpoint capture mode. Read
+`core-rules/references/determinism.md` section 7 and the manifest schema
+`core-rules/references/interaction-checkpoints.schema.json`, then pass the
+project's manifest:
+
+```bash
+node "<plugin-root>/scripts/verify-browser.mjs" \
+  --url "$VERIFY_URL" \
+  --checkpoints "$PROJECT/interaction-checkpoints.json" \
+  --out "$VERIFY_OUT"
+```
+
+The mode captures every declared checkpoint under deterministic mode into
+`checkpoints/<checkpoint-id>.png`, writes timestamp-free metadata
+(`checkpoints.json`) and a status summary (`checkpoints-summary.json`), and
+exits 1 on any failed checkpoint and 2 when deterministic mode is not
+resolved. The standard matrix and telemetry summary are skipped in this mode.
+The manifest is the project's declaration: do not add, rename, or invent
+checkpoints in the script.
+
 The adapter closes sessions even after failures. With a host tool, produce the
 same named artifacts:
 

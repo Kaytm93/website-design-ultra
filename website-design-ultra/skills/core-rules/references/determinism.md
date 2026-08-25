@@ -120,7 +120,45 @@ as ready. For a target outside this contract, the verifier may use its existing
 font, asset, and application readiness checks, but it must not claim deterministic
 capture.
 
-## 7. Evidence checklist
+## 7. Interaction checkpoints
+
+Declared interaction states are captured the same way stations are: the state
+is part of the capture contract, and the ready marker gates the capture.
+
+- A project declares its checkpoints in a checkpoint manifest (schema:
+  `core-rules/references/interaction-checkpoints.schema.json`). Hover declares
+  before/during/after, click declares before/peak/recovered, scroll declares
+  normalized progress in [0, 1], and loading, ready, and failure declare their
+  own state conditions. The manifest names the project's ready marker and
+  requires `WDU_DETERMINISTIC=1`. Nothing in the verifier names a concrete
+  checkpoint; the manifest is the declaration.
+- Deterministic capture filenames are derived from checkpoint ids
+  (`<checkpoint-id>.png`, ids matching `^[a-z0-9][a-z0-9-]*$`). Capture
+  metadata is timestamp-free so two runs stay comparable.
+- A declared interaction-state change (for example a pointer entering or
+  pressing the subject) removes the ready marker and re-sets it after the next
+  rendered frame. The deterministic clock stays frozen across the change, so
+  the captured pose is a pure function of the frozen clock and the declared
+  state — never of the frame the input happened to land on. Interaction-state
+  changes must not resume the clock or move the camera.
+- The resolved interaction state is recorded on the document root
+  (`html[data-wdu-pointer="idle|hover|pressed"]` in the reference starter) and
+  the verifier waits for the declared state condition plus the re-set ready
+  marker before capturing.
+- A project may declare a loading capture state (the reference starter uses
+  `?wdu-loading=1`): asset readiness stays unresolved, so the composed loading
+  surface stays visible deterministically. A verifier must not invent such a
+  switch; it only uses what the manifest declares.
+- An entry may declare what must be visible in the viewport for the capture
+  (`scrollIntoView` selector): the verifier scrolls that element to the
+  viewport center before interacting or capturing. The final position is a
+  pure function of the fixed layout, so it is deterministic; scroll
+  checkpoints define their own position and never declare this.
+- The verifier waits for `html[data-wdu-ready="true"]` for every entry unless
+  the entry declares its own surface condition. Its timeout bounds the wait
+  and reports failure; it never counts as ready.
+
+## 8. Evidence checklist
 
 Before calling a dynamic capture deterministic, verify:
 
@@ -131,6 +169,9 @@ Before calling a dynamic capture deterministic, verify:
 - [ ] The requested camera-station id exists and its complete shot was applied.
 - [ ] The ready marker appeared only after the first stable frame rendered.
 - [ ] A readiness timeout remains a failure rather than a substitute signal.
+- [ ] Interaction checkpoints come from the project's manifest, their
+      filenames derive from checkpoint ids, and two deterministic runs of the
+      same commit produce identical stable states.
 
 The copyable runtime and byte-identical two-run fixture are separate executable
 tasks. This reference defines their contract and does not claim those later gates

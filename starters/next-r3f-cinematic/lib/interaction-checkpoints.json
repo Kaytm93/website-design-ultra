@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.interaction-checkpoints",
+  "project": "next-r3f-cinematic",
+  "modeInput": "WDU_DETERMINISTIC=1",
+  "readyMarker": "html[data-wdu-ready=\"true\"]",
+  "checkpoints": [
+    {
+      "id": "hero-hover-before",
+      "interaction": "hover",
+      "group": "hero-hover",
+      "phase": "before",
+      "target": "[data-wdu-pointer-target]",
+      "waitFor": "html[data-wdu-ready=\"true\"]",
+      "scrollIntoView": "[data-wdu-pointer-target]"
+    },
+    {
+      "id": "hero-hover-during",
+      "interaction": "hover",
+      "group": "hero-hover",
+      "phase": "during",
+      "target": "[data-wdu-pointer-target]",
+      "waitFor": "html[data-wdu-pointer=\"hover\"]",
+      "scrollIntoView": "[data-wdu-pointer-target]"
+    },
+    {
+      "id": "hero-hover-after",
+      "interaction": "hover",
+      "group": "hero-hover",
+      "phase": "after",
+      "target": "[data-wdu-pointer-target]",
+      "waitFor": "html[data-wdu-pointer=\"idle\"]",
+      "scrollIntoView": "[data-wdu-pointer-target]"
+    },
+    {
+      "id": "hero-click-before",
+      "interaction": "click",
+      "group": "hero-click",
+      "phase": "before",
+      "target": "[data-wdu-pointer-target]",
+      "waitFor": "html[data-wdu-ready=\"true\"]",
+      "scrollIntoView": "[data-wdu-pointer-target]"
+    },
+    {
+      "id": "hero-click-peak",
+      "interaction": "click",
+      "group": "hero-click",
+      "phase": "peak",
+      "target": "[data-wdu-pointer-target]",
+      "waitFor": "html[data-wdu-pointer=\"pressed\"]",
+      "scrollIntoView": "[data-wdu-pointer-target]"
+    },
+    {
+      "id": "hero-click-recovered",
+      "interaction": "click",
+      "group": "hero-click",
+      "phase": "recovered",
+      "target": "[data-wdu-pointer-target]",
+      "waitFor": "html[data-wdu-pointer=\"idle\"]",
+      "scrollIntoView": "[data-wdu-pointer-target]"
+    },
+    {
+      "id": "page-scroll-0",
+      "interaction": "scroll",
+      "progress": 0
+    },
+    {
+      "id": "page-scroll-50",
+      "interaction": "scroll",
+      "progress": 0.5
+    },
+    {
+      "id": "page-scroll-100",
+      "interaction": "scroll",
+      "progress": 1
+    },
+    {
+      "id": "scene-loading",
+      "interaction": "loading",
+      "url": "?wdu-loading=1",
+      "waitFor": ".scene-poster:not([hidden])",
+      "scrollIntoView": ".scene-frame"
+    },
+    {
+      "id": "scene-ready",
+      "interaction": "ready",
+      "scrollIntoView": ".scene-frame"
+    },
+    {
+      "id": "scene-failure",
+      "interaction": "failure",
+      "action": "lose-webgl-context",
+      "waitFor": "html[data-wdu-context=\"lost\"]",
+      "scrollIntoView": ".scene-frame"
+    }
+  ]
+}

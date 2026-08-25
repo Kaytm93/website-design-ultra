@@ -69,6 +69,45 @@ The page is `force-dynamic` so the mode is never baked into a static page at
 build time; the copy is still server-rendered into the initial HTML on every
 request.
 
+## Interaction checkpoints (IP-06A)
+
+The project owns its interaction capture declaration:
+`lib/interaction-checkpoints.json` (schema:
+`website-design-ultra/skills/core-rules/references/interaction-checkpoints.schema.json`,
+validator: `references/interaction-checkpoints.ts`, copied byte-identical into
+`lib/interaction-checkpoints.ts`). It declares:
+
+- hover before/during/after and click before/peak/recovered on the hero, driven
+  through a deterministic pointer target (`[data-wdu-pointer-target]`, a 2x2 px
+  capture anchor projected onto the torus-knot tube),
+- scroll at declared normalized progress (0, 0.5, 1),
+- loading (`?wdu-loading=1`, the declared loading capture state that holds
+  asset readiness so the composed poster surface stays visible
+  deterministically), ready (the stable-frame marker), and failure (forced
+  WebGL context loss through `WEBGL_lose_context`).
+
+The pointer interaction is real product behaviour: hovering lifts the hero
+(scale 1.03 plus an emissive lift), pressing compresses it (scale 0.97). The
+state is written synchronously in the pointer handler, readiness is invalidated
+as a capture-state change without resuming the frozen clock, and the ready
+marker re-sets on the next rendered frame — so the captured pose is a pure
+function of the frozen clock and the declared state, never of input timing.
+
+Capture every declared checkpoint twice and compare stable states:
+
+```bash
+npm run build
+node ../../tests/immersive/interaction-capture/compare-checkpoints.mjs \
+  --out /tmp/wdu-ip06a-comparison
+```
+
+or, once built, `npm run verify:ip06a`. The comparator starts the server with
+`WDU_DETERMINISTIC=1`, runs the plugin verifier twice with
+`--checkpoints lib/interaction-checkpoints.json`, and requires byte-identical
+PNGs per checkpoint id plus identical timestamp-free metadata
+(`checkpoints.json`). A browser or deterministic-mode gap is `UNAVAILABLE`,
+never a pass.
+
 ## Ownership boundaries
 
 These are enforced by `tests/structure.test.mjs` and are part of the scaffold
@@ -120,16 +159,20 @@ camera during the stable-frame sequence.
 
 ## Scope of this scaffold
 
-This is the IP-05A/IP-05B/IP-05C scaffold. The quality controller
+This is the IP-05A/IP-05B/IP-05C scaffold plus the IP-06A interaction-capture
+layer. The quality controller
 (Poster/Low/Medium/High, IP-05B) is implemented and wired as the single
 quality owner. The fallback and lifecycle contracts (IP-05C) are implemented
 in this tree: the art-directed desktop and portrait posters, the visible
 motion control with WDU_REDUCED_MOTION capture state, context-loss recovery
 through a DOM restore action, the named hero-portrait station, and disposal
 wiring with a diagnostic handle (`globalThis.__WDU_CINEMATIC__`) for
-lifecycle resource assertions. The automated IP-05C verification driver
-(`scripts/verify-ip05c.mjs`) is the next queue item's work; until it lands,
-the browser evidence for these contracts is the manual matrix documented in
+lifecycle resource assertions. The interaction checkpoints (IP-06A) are
+declared in `lib/interaction-checkpoints.json` with real pointer behaviour on
+the hero and a two-run byte-identical comparison through the plugin verifier.
+The automated IP-05C verification driver
+(`scripts/verify-ip05c.mjs`) is a later queue item's work; until it lands,
+the browser evidence for those contracts is the manual matrix documented in
 the queue item.
 
 ## License

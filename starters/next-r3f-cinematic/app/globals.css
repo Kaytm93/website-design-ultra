@@ -313,6 +313,18 @@ h2 {
   pointer-events: none;
 }
 
+/* Deterministic pointer-target capture anchor (IP-06A): an invisible 2x2 px
+   surface the verifier addresses with [data-wdu-pointer-target]. It never
+   intercepts input and never renders. */
+.pointer-target-anchor {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+}
+
 .run-steps li {
   margin-bottom: 0.6rem;
   color: var(--text-dim);

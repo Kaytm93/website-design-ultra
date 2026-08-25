@@ -117,7 +117,7 @@ splits that proposal into implementation-sized units.
 
 ## PR 6 — Interaction capture and comparison
 
-- [ ] `IP-06A` **Declare and capture interaction checkpoints** — Add a project-owned checkpoint manifest for normalized scroll, hover, click, loading, ready, and failure states.
+- [x] `IP-06A` **Declare and capture interaction checkpoints** — Add a project-owned checkpoint manifest for normalized scroll, hover, click, loading, ready, and failure states.
   - **Depends on:** IP-05D
   - **Deliver:** Schema, starter declaration, verifier support, and deterministic filenames tied to checkpoint ids.
   - **Acceptance:** Hover has before/during/after; click has before/peak/recovered; scroll uses declared normalized progress; no checkpoint is hardcoded in the verifier.

@@ -164,12 +164,14 @@ test('the quality controller is created at exactly one site and owns every trans
 
   // The only R3F store readers: CameraRig (the camera owner), QualityRuntime
   // (gl + setFrameloop), SceneRuntime (renderer info for the diagnostic
-  // handle), and ContextLossGate (the context-loss observer). No other
-  // component touches the store.
+  // handle), ContextLossGate (the context-loss observer), and HeroObject
+  // (camera + invalidate for the pointer-interaction capture, IP-06A). No
+  // other component touches the store.
   const storeReaders = SOURCES.filter((file) => read(file).includes('useThree'))
   assert.deepEqual(storeReaders, [
     'components/CameraRig.tsx',
     'components/ContextLossGate.tsx',
+    'components/HeroObject.tsx',
     'components/QualityRuntime.tsx',
     'components/SceneRuntime.tsx',
   ])

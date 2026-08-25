@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { MotionControl } from './MotionControl.tsx'
+import { PointerTargetAnchor } from './PointerTargetAnchor.tsx'
 import { Poster } from './Poster.tsx'
 import { StationControl } from './StationControl.tsx'
 import {
@@ -81,6 +82,15 @@ export function SceneClient({ mode, stationId: initialStationId, motion: initial
   const [mountKey, setMountKey] = useState(0)
   const [everReady, setEverReady] = useState(false)
   const userPickedStationRef = useRef(false)
+  // Declared loading capture state (IP-06A): the ?wdu-loading=1 capture
+  // entry holds asset readiness so the composed loading surface (the poster)
+  // stays visible deterministically. The canvas is client-only, so this
+  // never reaches server-rendered HTML and cannot cause a hydration mismatch.
+  const [loadingHold] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      new URLSearchParams(window.location.search).has('wdu-loading'),
+  )
 
   // Live mode: portrait viewports start on the named portrait station unless
   // the user has explicitly picked one. Deterministic mode never
@@ -188,9 +198,11 @@ export function SceneClient({ mode, stationId: initialStationId, motion: initial
           mode={mode}
           stationId={stationId}
           motion={motion}
+          loadingHold={loadingHold}
           onQualityChange={onQualityChange}
           onContextLost={onContextLost}
         />
+        <PointerTargetAnchor />
         {contextLost ? (
           <div className="context-panel" role="alert">
             <h3>Scene context lost</h3>

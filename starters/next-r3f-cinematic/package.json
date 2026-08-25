@@ -14,7 +14,8 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "node --test \"tests/*.test.mjs\"",
-    "verify": "npm run typecheck && npm test && npm run build"
+    "verify": "npm run typecheck && npm test && npm run build",
+    "verify:ip06a": "node ../../tests/immersive/interaction-capture/compare-checkpoints.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "9.7.0",
