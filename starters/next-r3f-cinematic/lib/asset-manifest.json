@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "description": "The single asset manifest for next-r3f-cinematic. Every runtime asset is listed here; the scene loads no network asset, so a fresh checkout renders offline.",
+  "buckets": ["critical", "progressive"],
+  "assets": [
+    {
+      "id": "brand-mark",
+      "kind": "image",
+      "url": "/brand-mark.svg",
+      "bucket": "critical",
+      "purpose": "Header brand mark, rendered in the server HTML."
+    }
+  ]
+}

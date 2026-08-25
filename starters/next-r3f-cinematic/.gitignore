@@ -1,0 +1,10 @@
+# Dependencies and build output
+node_modules/
+.next/
+out/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# macOS
+.DS_Store

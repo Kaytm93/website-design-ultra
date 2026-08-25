@@ -91,7 +91,7 @@ splits that proposal into implementation-sized units.
 
 ## PR 5 — next-r3f-cinematic and quality controller
 
-- [ ] `IP-05A` **Scaffold the single Next/R3F cinematic starter** — Add the root-only TypeScript starter with a pinned React/R3F/Three matrix and a server-rendered page around a client-only Canvas leaf.
+- [x] `IP-05A` **Scaffold the single Next/R3F cinematic starter** — Add the root-only TypeScript starter with a pinned React/R3F/Three matrix and a server-rendered page around a client-only Canvas leaf.
   - **Depends on:** IP-04B
   - **Deliver:** `starters/next-r3f-cinematic/` with real semantic DOM copy, exact lockfile, one camera owner, one clock, one asset manifest, and wired determinism.
   - **Acceptance:** A fresh checkout installs and builds; the page is not made wholly client-rendered; no Vite starter or particle template is introduced.
