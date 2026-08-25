@@ -53,10 +53,11 @@ Answering the step from this file alone leaves it unfilled.
    matrix. A slash command or a Codex path is not a prerequisite.
 
 With a runnable target, the mandatory step ends in `PASS`, `FAIL`, or
-`UNAVAILABLE`. `UNAVAILABLE` applies only after a failed adapter probe and a
-missing host browser capability: run build/typecheck plus static poster, DOM,
-and reduced-motion checks, hand over the experience explicitly as **unverified**,
-and leave the launch gate open. These checks do not replace visual verification.
+`UNAVAILABLE`. `UNAVAILABLE` applies when the required browser, GPU, or telemetry
+capability is missing, or the target cannot be reached. Run build/typecheck plus
+static poster, DOM, and reduced-motion checks, hand over the experience explicitly
+as **unverified**, and leave the launch gate open. These checks do not replace
+visual or telemetry verification.
 For a pure plan/contract without a runnable target, use `NOT_APPLICABLE
 (plan-only)` plus the planned capture matrix; as soon as an implementation runs,
 the check becomes the launch gate.

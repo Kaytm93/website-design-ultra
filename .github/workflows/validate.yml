@@ -29,8 +29,8 @@ jobs:
             node --check "$script"
           done
 
-      - name: Test immersive telemetry calculations
-        run: node --test tests/immersive/telemetry/telemetry-schema.test.mjs tests/immersive/telemetry/performance-summary.test.mjs
+      - name: Test immersive telemetry calculations and status handling
+        run: node --test tests/immersive/telemetry/telemetry-schema.test.mjs tests/immersive/telemetry/performance-summary.test.mjs tests/immersive/telemetry/ip-03c-status.test.mjs
 
       - name: Validate plugin content
         working-directory: website-design-ultra

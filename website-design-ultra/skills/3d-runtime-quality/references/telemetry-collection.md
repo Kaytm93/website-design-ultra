@@ -41,6 +41,20 @@ that path is labelled `surface-snapshot` in the evidence. It still must contain
 exactly the declared sample-window count to produce median and p95. Missing or
 short data is `UNAVAILABLE`, never a pass.
 
+The adapter probes the declared renderer path independently of the surface. It
+records `webgpu`, `webgl2`, and `webgl` context evidence and marks `gpu` as
+`UNAVAILABLE` only when no usable GPU API can be created; a declared path that
+is absent while another usable path exists remains explicit evidence. A present
+global is not GPU evidence. The browser CLI is a separate capability checked
+before capture; an explicit `WDU_PLAYWRIGHT_CLI` path overrides discovery, so a
+missing explicit path cannot silently fall through to another backend.
+
+The summary carries three capability records — `browser`, `gpu`, and
+`telemetry` — each with `AVAILABLE` or `UNAVAILABLE`, a reason when unavailable,
+and the evidence that produced the decision. A missing surface, failed
+collection, missing GPU, or missing browser CLI leaves the summary non-passing
+and records the same distinction in `unavailable`.
+
 ## Meaningful-frame and transfer boundary
 
 The document's `runtime.frame.firstMeaningfulFrame.observed` is a duration from
@@ -59,15 +73,20 @@ arbitrary screenshot timeout may substitute for the marker boundary.
 
 The verifier writes `performance-summary.json` beside the visual artifacts. It
 contains the device profile and budget, observed quantities, the three gate
-comparisons, evidence source, raw renderer context, quality/error/context-loss
-context, and an `unavailable` object with a stable reason for every missing
-field. The summary intentionally contains no `generatedAt`, `timeOrigin`, wall
-clock, process id, output path, or raw request timestamp. Its JSON key order and
-measurement window are stable; observed measurements remain real browser data,
-not synthetic constants.
+comparisons, capability status, evidence source, raw renderer context, quality,
+long-frame/error/context-loss context, a `failureEvidence` block, and an
+`unavailable` object with a stable reason for every missing field. The summary
+intentionally contains no `generatedAt`, `timeOrigin`, wall clock, process id,
+output path, or raw request timestamp. Its JSON key order and measurement window
+are stable; observed measurements remain real browser data, not synthetic
+constants.
 
-The overall result is `PASS` only when all three declared gate comparisons pass,
-`FAIL` when any gate fails, and `UNAVAILABLE` when no gate fails but one or more
-required observations cannot be read. Renderer counters, long-frame count,
-quality, errors, and context loss remain evidence in this PR; they do not become
-additional universal gates.
+`comparison.status` is only the result of the three declared budget gates.
+The top-level `status` is the launch-gate result: it is `PASS` only when all
+three comparisons pass, all browser/GPU/telemetry capabilities are available,
+and no resource-load error, shader-compile error, runtime error, or context-loss
+event is reported. A failed gate or runtime failure is `FAIL`; a missing
+capability or required measurement is `UNAVAILABLE`. Long-frame count is
+explicitly captured in `failureEvidence.longFrames` as context rather than
+inventing a fourth universal budget gate. Neither unavailable capability nor a
+missing summary can be reported as `PASS`.

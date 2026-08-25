@@ -100,5 +100,7 @@ that fixture and negative cases for missing units, missing device profile,
 an fps-derived implicit threshold, and a fourth gate class.
 
 This contract does not measure GPU time, calculate percentiles, or emit
-`performance-summary.json`; those are IP-03B responsibilities. It only makes
-those future observations addressable without adding a hidden threshold.
+`performance-summary.json`; those are verifier responsibilities. The verifier's
+IP-03C status layer consumes the same error/context fields and adds explicit
+browser, GPU, and telemetry capability evidence without changing the three gate
+classes or adding a hidden threshold.

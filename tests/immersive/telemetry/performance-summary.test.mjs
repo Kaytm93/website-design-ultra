@@ -26,6 +26,12 @@ const sampleFixture = JSON.parse(
   ),
 )
 
+const availableCapabilities = {
+  browser: { status: 'AVAILABLE', backend: 'offline-test' },
+  gpu: { status: 'AVAILABLE', renderer: 'webgl2' },
+  telemetry: { status: 'AVAILABLE' },
+}
+
 function completeDocument() {
   const document = structuredClone(fixture)
   const warmGate = document.budget.gates.find(
@@ -92,6 +98,7 @@ test('performance summary recomputes frame statistics and preserves renderer.inf
       render: { calls: 42, triangles: 120000 },
       programs: ['program-a', 'program-b'],
     },
+    capabilities: availableCapabilities,
     evidenceSource: 'window.__WDU_IMMERSIVE_TELEMETRY__',
     transferObservation: {
       observed: { value: 300, unit: 'bytes' },
@@ -120,6 +127,7 @@ test('performance summary recomputes frame statistics and preserves renderer.inf
       render: { calls: 42, triangles: 120000 },
       programs: ['program-a', 'program-b'],
     },
+    capabilities: availableCapabilities,
     evidenceSource: 'window.__WDU_IMMERSIVE_TELEMETRY__',
     transferObservation: {
       observed: { value: 300, unit: 'bytes' },
@@ -152,6 +160,7 @@ test('missing measurements stay explicit and cannot pass the comparison', () => 
   const summary = buildPerformanceSummary({
     document,
     rendererInfo: null,
+    capabilities: availableCapabilities,
     evidenceSource: 'window.__WDU_IMMERSIVE_TELEMETRY__',
   })
 

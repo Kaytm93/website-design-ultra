@@ -67,6 +67,17 @@ node "<plugin-root>/scripts/verify-browser.mjs" \
   --out "$VERIFY_OUT"
 ```
 
+For a telemetry-enabled target, inspect `performance-summary.json` before
+calling the capture complete. Its top-level `status` is the launch-gate result;
+`comparison.status` is only the three declared budget gates. Require browser,
+GPU, and telemetry capabilities to be `AVAILABLE`, and inspect
+`failureEvidence.resourceFailures`, `failureEvidence.shaderCompileErrors`,
+`failureEvidence.longFrames`, and `failureEvidence.contextLoss`. A resource or
+shader failure, runtime error, or context-loss event is `FAIL`; a missing
+capability or required measurement is `UNAVAILABLE`. The adapter exits 1 for
+`FAIL` and 2 for `UNAVAILABLE`, and writes a non-empty summary before reporting
+an unavailable browser or telemetry surface.
+
 The adapter closes sessions even after failures. With a host tool, produce the
 same named artifacts:
 
@@ -100,6 +111,7 @@ VERIFY: PASS | FAIL | UNAVAILABLE
 URL / commit:
 Artifact folder:
 Backend:
+Telemetry summary status:
 
 Desktop:
 Mobile:
@@ -115,10 +127,12 @@ Next concrete fix:
 
 FAIL on an empty canvas/fallback, an obscured primary CTA, mobile overflow, a missing DOM alternative, active nonessential reduced-motion movement, or runtime errors that damage the experience.
 
-`UNAVAILABLE` is permitted only when both the capability-checked adapter and a
-host browser capability are missing, or the target is externally unreachable.
-Document the probe output, URL, expected states, and the manual capture
-assignment. Additionally run build/typecheck and static fallback/DOM/reduced-motion
-checks, but never call them a visual substitute and never report `PASS`. The
-implementation may be handed over as **unverified**; a release/launch gate stays
-open until a real browser run.
+`UNAVAILABLE` is permitted when the executable target lacks the required
+browser, GPU, or telemetry capability, or the target is externally unreachable.
+When the adapter reports an unavailable browser capability but the host provides
+real host browser automation, run the same state matrix with that host tool. For a
+missing GPU or telemetry surface, document the capability evidence and leave the
+launch gate open. Additionally run build/typecheck and static fallback/DOM/
+reduced-motion checks, but never call them a visual or telemetry substitute and
+never report `PASS`. The implementation may be handed over as **unverified**;
+a release/launch gate stays open until real browser and telemetry evidence.

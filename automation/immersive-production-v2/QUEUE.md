@@ -69,7 +69,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Median and p95 are calculated from a fixed declared window; transfer stops at the meaningful-frame marker; `renderer.info` context is preserved; timestamps do not make deterministic artifacts incomparable.
   - **Verify:** Unit fixtures for calculations plus a real fixture capture from IP-02C.
 
-- [ ] `IP-03C` **Harden telemetry failures and capability status** — Capture resource failures, shader errors, context loss, long frames, and missing GPU/browser paths without false passes.
+- [x] `IP-03C` **Harden telemetry failures and capability status** — Capture resource failures, shader errors, context loss, long frames, and missing GPU/browser paths without false passes.
   - **Depends on:** IP-03B
   - **Deliver:** Regression fixtures for PASS, FAIL, and UNAVAILABLE plus command/README updates.
   - **Acceptance:** Missing GPU, missing browser CLI, missing telemetry surface, shader compile failure, and context loss each have distinct evidence; unavailable execution never becomes PASS or an empty summary.
