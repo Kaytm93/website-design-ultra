@@ -140,8 +140,8 @@ scores it by pass rate; --min-pass-rate is the per-case threshold that has to
 be met. The defaults (--repeat 1 --min-pass-rate 1) reproduce the older
 all-or-nothing behaviour, which is only meaningful as a smoke test.
 
-Cost scales with cases x repeats x --max-budget-usd. Six cases at --repeat 5
-and 0.60 is up to 18 USD.`)
+Cost scales with cases x repeats x --max-budget-usd. Seven cases at --repeat 5
+and 0.60 is up to 21 USD.`)
       process.exit(0)
     } else {
       die(`unknown argument "${argument}"`)

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Reference intake poster target fixture">
+  <rect width="1200" height="800" fill="#101820"/>
+  <path d="M240 650 L600 140 L960 650 Z" fill="#89a7b1"/>
+  <rect x="64" y="96" width="280" height="608" fill="none" stroke="#ddb871" stroke-width="8"/>
+</svg>

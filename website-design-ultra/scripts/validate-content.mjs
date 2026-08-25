@@ -1012,6 +1012,32 @@ for (const testCase of forwardCases) {
   }
 }
 
+const referenceIntakeNegativeCase = forwardCases.find(
+  (testCase) => testCase.id === 'named-direction-no-references',
+)
+if (!referenceIntakeNegativeCase) {
+  fail('tests/forward/cases.json: missing text-only named-direction negative case')
+} else {
+  const prompt = referenceIntakeNegativeCase.prompt ?? ''
+  for (const marker of ['text-only', 'named', 'no reference', 'token block']) {
+    if (!prompt.toLowerCase().includes(marker)) {
+      fail(`tests/forward/cases.json: named-direction-no-references prompt must contain "${marker}"`)
+    }
+  }
+  for (const skill of ['immersive-3d', '3d-art-direction', '3d-runtime-quality']) {
+    if (!referenceIntakeNegativeCase.requiredSkills?.includes(skill)) {
+      fail(`tests/forward/cases.json: named-direction-no-references must require ${skill}`)
+    }
+  }
+  if (
+    referenceIntakeNegativeCase.requiredSkills?.includes('reference-intake') ||
+    referenceIntakeNegativeCase.trace?.allowedSkills?.includes('reference-intake') ||
+    !referenceIntakeNegativeCase.trace?.forbiddenFiles?.includes(referenceIntakeSkill)
+  ) {
+    fail('tests/forward/cases.json: text-only named direction must forbid reference-intake')
+  }
+}
+
 for (const testCase of forwardCases) {
   if (testCase.forbiddenTerms === undefined) continue
   const { paths, patterns } = testCase.forbiddenTerms
@@ -1156,7 +1182,7 @@ for (const marker of [
   'two historical Claude traces',
   '`dashboard`',
   '`slop`',
-  'other four cases',
+  'other five cases',
   'Codex behavior',
 ]) {
   if (!evidenceSection.includes(marker)) {

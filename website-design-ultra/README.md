@@ -271,7 +271,10 @@ contract, so `border` is louder than the hairline those interfaces ship.
 
 - Six to ten exported PNG and SVG reference frames plus a written token block →
   `reference-intake` before `3d-art-direction`; it produces the traced contract
-  and poster target before scene code.
+  and poster target before scene code. In a checkout of the same repository
+  commit or tag, `automation/reference-intake/validate-reference-intake.mjs`
+  validates the companion JSON and bytes offline; its fixtures and optional
+  Figma REST helper remain root-only.
 - Every shipped scene → `3d-art-direction` for camera, composition, light, materials, tone mapping, responsive shots, and spatial type.
 - Every shipped scene → `3d-runtime-quality` for Poster/Low/Medium/High, adaptive shadows/LOD/PostFX/particles/DPR, pause, and hysteresis.
 - R3F production scene → `r3f-patterns`.
@@ -483,7 +486,7 @@ prints a `NO-COPY WARNING` naming the skipped files.
 factual copy is legitimately uniform, and gating on it rejected the specific,
 evidence-led writing the skill asks for.
 
-Validate the six forward-test contracts and replay the committed trace fixtures
+Validate the seven forward-test contracts and replay the committed trace fixtures
 without model usage:
 
 ```bash
@@ -501,7 +504,7 @@ manifest still read 1.6.0. Each fixture is bound to its recorded tree digest and
 replays its exact accessed and forbidden files.
 
 Those snapshots exercise the Claude trace parser and document those two attempts
-only. They do not establish current 1.7.0 routing, the other four cases, routing
+only. They do not establish current 1.7.0 routing, the other five cases, routing
 stability, or Codex behavior. `--dry-run` prints this historical inventory before
 the current case contracts so the local evidence boundary stays visible.
 
@@ -555,8 +558,8 @@ acting on. Failures appearing in a single attempt are usually noise, and editing
 rule prose to chase them tends to displace a different requirement rather than
 fix anything.
 
-Cost is cases × repeats × `--max-budget-usd`. Six cases at `--repeat 5` and
-`0.60` is up to 18 USD, so iterate with `--case` and raise `--repeat` only when
+Cost is cases × repeats × `--max-budget-usd`. Seven cases at `--repeat 5` and
+`0.60` is up to 21 USD, so iterate with `--case` and raise `--repeat` only when
 a change is ready to be judged.
 
 The defaults (`--repeat 1 --min-pass-rate 1`) reproduce the older

@@ -248,6 +248,78 @@
     }
   },
   {
+    "id": "named-direction-no-references",
+    "command": "immersive",
+    "prompt": "Plan a text-only 3D product hero using the named art direction Museum Monolith. No reference frames, PNG or SVG exports, written token block, Figma file, or other reference material has been supplied. The verified product facts are a cast-aluminum task light, two hinge positions, and a replaceable shade; no performance, customer, pricing, or sustainability claims are known. Define desktop, portrait, reduced-motion, and GPU-fallback behavior without writing code.",
+    "requiredSkills": [
+      "core-rules",
+      "content-design",
+      "immersive-3d",
+      "3d-art-direction",
+      "3d-runtime-quality",
+      "anti-slop"
+    ],
+    "minimums": {
+      "immersive.qualityTiers": 4,
+      "content.unknowns": 3,
+      "responsive.recomposition": 2
+    },
+    "requiredTerms": [
+      "unknown",
+      "Poster",
+      "Low",
+      "Medium",
+      "High",
+      "portrait"
+    ],
+    "trace": {
+      "allowedSkills": [
+        "core-rules",
+        "content-design",
+        "immersive-3d",
+        "3d-art-direction",
+        "3d-runtime-quality",
+        "anti-slop"
+      ],
+      "allowedReferences": [
+        "skills/core-rules/references/responsive-recomposition.md",
+        "skills/core-rules/references/composition-contract.md",
+        "skills/content-design/references/claims-and-proof.md",
+        "skills/3d-art-direction/references/camera-and-composition.md",
+        "skills/3d-art-direction/references/light-material-and-tone.md",
+        "skills/3d-art-direction/references/spatial-typography.md",
+        "skills/3d-runtime-quality/references/tier-matrix.md",
+        "skills/3d-runtime-quality/references/adaptive-runtime.md",
+        "skills/anti-slop/references/prose-tells.md",
+        "skills/anti-slop/references/operations.md",
+        "skills/anti-slop/references/design-tells.md",
+        "skills/core-rules/references/accessibility.md"
+      ],
+      "requiredFiles": [
+        "skills/core-rules/references/responsive-recomposition.md",
+        "skills/content-design/references/claims-and-proof.md",
+        "skills/3d-art-direction/references/camera-and-composition.md",
+        "skills/3d-runtime-quality/references/tier-matrix.md",
+        "skills/anti-slop/references/prose-tells.md"
+      ],
+      "forbiddenFiles": [
+        "skills/r3f-interaction/references/touch-and-gestures.md",
+        "skills/canvas-first-architecture/SKILL.md",
+        "skills/render-graph/SKILL.md",
+        "skills/loading-choreography/SKILL.md",
+        "skills/spatial-audio/SKILL.md",
+        "skills/color-palettes/references/neutral-product.md",
+        "skills/color-palettes/references/editorial-natural.md",
+        "skills/color-palettes/references/expressive.md",
+        "skills/anti-slop/references/locale-de.md",
+        "skills/core-rules/references/determinism.md",
+        "skills/reference-intake/SKILL.md"
+      ],
+      "maxReferenceFiles": 12,
+      "maxEstimatedPluginTokens": 23045
+    }
+  },
+  {
     "id": "configurator",
     "command": "immersive",
     "prompt": "Plan an accessible 3D backpack configurator with three verified fabric colors, front/back inspection, a material information hotspot, and an Add to shortlist action. It must work with mouse, touch, keyboard, reduced motion, and without WebGL. Define mobile recomposition and interaction cancellation; do not invent stock, price, or sustainability claims.",

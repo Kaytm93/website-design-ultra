@@ -83,7 +83,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Every art-direction field cites a source frame or is `unknown`; the poster target precedes scene code; a named direction with no reference material does not activate the skill.
   - **Verify:** Update exact skill-count and routing bindings, then run content validation and forward dry-run.
 
-- [ ] `IP-04B` **Make reference intake reproducible offline** — Add fixtures and a validator for exported PNG/SVG plus token blocks, with the free Figma REST path as optional acceleration only.
+- [x] `IP-04B` **Make reference intake reproducible offline** — Add fixtures and a validator for exported PNG/SVG plus token blocks, with the free Figma REST path as optional acceleration only.
   - **Depends on:** IP-04A
   - **Deliver:** Valid/invalid intake fixtures, trace validator, and credential-safe REST instructions or script that outputs the required offline artifacts.
   - **Acceptance:** No paid seat, Dev Mode, MCP, browser login, or live Figma session is required. Missing evidence remains unknown. Tokens are never committed and personal-token expiry is documented.
