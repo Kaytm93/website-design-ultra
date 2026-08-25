@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.interaction-checkpoints",
+  "project": "interaction-fixture-sound-present",
+  "modeInput": "WDU_DETERMINISTIC=1",
+  "readyMarker": "html[data-wdu-ready=\"true\"]",
+  "checkpoints": [
+    {
+      "id": "fixture-ready",
+      "interaction": "ready",
+      "url": "?wdu-deterministic=1"
+    },
+    {
+      "id": "audio-locked",
+      "interaction": "audio",
+      "state": "locked",
+      "url": "?wdu-deterministic=1",
+      "waitFor": "html[data-wdu-audio=\"locked\"]"
+    },
+    {
+      "id": "audio-enabled",
+      "interaction": "audio",
+      "state": "enabled",
+      "url": "?wdu-deterministic=1",
+      "waitFor": "html[data-wdu-audio=\"enabled\"]",
+      "unlock": "[data-wdu-audio-unlock]",
+      "voiceLimit": 4,
+      "trigger": "[data-wdu-audio-trigger]",
+      "repeats": 8
+    },
+    {
+      "id": "audio-muted",
+      "interaction": "audio",
+      "state": "muted",
+      "url": "?wdu-deterministic=1",
+      "waitFor": "html[data-wdu-audio=\"muted\"]",
+      "target": "[data-wdu-audio-mute]",
+      "persist": "wdu:audio"
+    },
+    {
+      "id": "audio-returning",
+      "interaction": "audio",
+      "state": "returning",
+      "url": "?wdu-deterministic=1",
+      "waitFor": "html[data-wdu-audio-restored=\"true\"]",
+      "target": "[data-wdu-audio-mute]",
+      "persist": "wdu:audio"
+    }
+  ]
+}

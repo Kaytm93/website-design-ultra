@@ -340,13 +340,20 @@ node scripts/verify-browser.mjs \
 For a project that declares interaction checkpoints, `--checkpoints <manifest>`
 switches the adapter to checkpoint capture mode: it captures every declared
 checkpoint (hover before/during/after, click before/peak/recovered, scroll at
-declared normalized progress, loading, ready, failure) under deterministic
+declared normalized progress, focus before/during/after, keyboard and touch
+before/peak/recovered, loading, ready, failure, and — only when the manifest
+declares them — audio locked/enabled/muted/returning) under deterministic
 mode into `checkpoints/<checkpoint-id>.png`, with timestamp-free metadata in
 `checkpoints.json` and a status summary in `checkpoints-summary.json`. The
 manifest is the project's declaration (`interaction-checkpoints.schema.json`,
 bound by `core-rules/references/determinism.md` §7); the adapter implements
-only generic drivers and exits 1 on any failed checkpoint, 2 when
-deterministic mode is not resolved.
+only generic drivers — pointer move/down/up, Tab and Enter/Space, a held touch
+tap, and the declared audio gesture/control/storage surfaces — and exits 1 on
+any failed checkpoint, 2 when deterministic mode is not resolved. Keyboard and
+touch peaks wait for the same declared outcome state as the click peak, and
+audio entries run only when sound is declared: a silent deliverable captures
+no audio state, and unlock, mute persistence, and the voice limit are recorded
+as evidence when audio checkpoints do run.
 
 For a runnable target with the shared immersive telemetry surface, the same
 output directory also contains `performance-summary.json`: a timestamp-free

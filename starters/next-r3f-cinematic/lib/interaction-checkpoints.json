@@ -92,6 +92,87 @@
       "action": "lose-webgl-context",
       "waitFor": "html[data-wdu-context=\"lost\"]",
       "scrollIntoView": ".scene-frame"
+    },
+    {
+      "id": "hero-focus-before",
+      "interaction": "focus",
+      "group": "hero-focus",
+      "phase": "before",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-ready=\"true\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "hero-focus-during",
+      "interaction": "focus",
+      "group": "hero-focus",
+      "phase": "during",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "[data-wdu-activation-target]:focus-visible",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "hero-focus-after",
+      "interaction": "focus",
+      "group": "hero-focus",
+      "phase": "after",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-focus=\"none\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "hero-keyboard-before",
+      "interaction": "keyboard",
+      "group": "hero-keyboard",
+      "phase": "before",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-ready=\"true\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "hero-keyboard-peak",
+      "interaction": "keyboard",
+      "group": "hero-keyboard",
+      "phase": "peak",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-pointer=\"pressed\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "hero-keyboard-recovered",
+      "interaction": "keyboard",
+      "group": "hero-keyboard",
+      "phase": "recovered",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-pointer=\"idle\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "hero-touch-before",
+      "interaction": "touch",
+      "group": "hero-touch",
+      "phase": "before",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-ready=\"true\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "hero-touch-peak",
+      "interaction": "touch",
+      "group": "hero-touch",
+      "phase": "peak",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-pointer=\"pressed\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "hero-touch-recovered",
+      "interaction": "touch",
+      "group": "hero-touch",
+      "phase": "recovered",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-pointer=\"idle\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
     }
   ]
 }

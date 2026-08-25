@@ -132,6 +132,22 @@ is part of the capture contract, and the ready marker gates the capture.
   own state conditions. The manifest names the project's ready marker and
   requires `WDU_DETERMINISTIC=1`. Nothing in the verifier names a concrete
   checkpoint; the manifest is the declaration.
+- IP-06B input kinds: focus declares before/during/after with the during
+  condition being `:focus-visible` on the declared target, and keyboard and
+  touch declare before/peak/recovered. Keyboard (Tab to the target, then
+  Enter or Space) and touch (a held tap) must reach the same product outcome
+  as the pointer click group: the manifest's peak entries declare the same
+  waitFor state condition as the click peak, and the verifier performs only
+  generic Tab/Enter/touch drivers.
+- IP-06B audio kinds: a project that ships sound declares audio checkpoints
+  with one of the states locked, enabled, muted, or returning. locked
+  captures the pre-gesture state, enabled performs the declared unlock
+  gesture and may observe a declared voice limit, muted operates the declared
+  opt-out control and verifies the declared persistence key, and returning
+  writes the same persistence, reloads, and captures the restored state. A
+  silent deliverable declares no audio checkpoints, so audio tests never run
+  for it. The verifier invents no gesture, control, or storage key; every
+  selector and key is declared in the manifest.
 - Deterministic capture filenames are derived from checkpoint ids
   (`<checkpoint-id>.png`, ids matching `^[a-z0-9][a-z0-9-]*$`). Capture
   metadata is timestamp-free so two runs stay comparable.
@@ -172,6 +188,12 @@ Before calling a dynamic capture deterministic, verify:
 - [ ] Interaction checkpoints come from the project's manifest, their
       filenames derive from checkpoint ids, and two deterministic runs of the
       same commit produce identical stable states.
+- [ ] Focus, keyboard, and touch checkpoints are declared with their own
+      phases and targets; keyboard and touch peaks declare the same outcome
+      state as the pointer click peak.
+- [ ] Audio checkpoints run only when the manifest declares them; a silent
+      deliverable captures no audio state. Unlock, mute persistence, and the
+      voice limit are recorded as evidence, never assumed.
 
 The copyable runtime and byte-identical two-run fixture are separate executable
 tasks. This reference defines their contract and does not claim those later gates

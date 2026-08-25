@@ -22,9 +22,17 @@ export const CHECKPOINT_KINDS = [
   'loading',
   'ready',
   'failure',
+  'focus',
+  'keyboard',
+  'touch',
+  'audio',
 ]
 export const HOVER_PHASES = ['before', 'during', 'after']
 export const CLICK_PHASES = ['before', 'peak', 'recovered']
+export const FOCUS_PHASES = ['before', 'during', 'after']
+export const KEYBOARD_PHASES = ['before', 'peak', 'recovered']
+export const TOUCH_PHASES = ['before', 'peak', 'recovered']
+export const AUDIO_STATES = ['locked', 'enabled', 'muted', 'returning']
 export const CHECKPOINT_ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/
 export const CHECKPOINT_MODE_INPUT = 'WDU_DETERMINISTIC=1'
 export const CHECKPOINT_VIEWPORT = { width: 1440, height: 1000 }
@@ -986,6 +994,11 @@ export function validateCheckpointManifest(input) {
   const hoverGroups = new Map()
   const clickGroups = new Map()
   const targets = new Map()
+  const interactionGroups = new Map([
+    ['focus', new Map()],
+    ['keyboard', new Map()],
+    ['touch', new Map()],
+  ])
 
   for (const item of record.checkpoints) {
     if (!isRecord(item)) throw new Error('checkpoints[] must be an object')
@@ -1084,6 +1097,92 @@ export function validateCheckpointManifest(input) {
       for (const key of Object.keys(item)) {
         if (!known.includes(key)) throw new Error(`checkpoints[] has unknown property ${key}`)
       }
+    } else if (interaction === 'focus' || interaction === 'keyboard' || interaction === 'touch') {
+      if (typeof item.group !== 'string' || item.group.length === 0) {
+        throw new Error(`checkpoints[].group is required for ${interaction} checkpoints`)
+      }
+      const phases = interaction === 'focus' ? FOCUS_PHASES : KEYBOARD_PHASES
+      if (!phases.includes(item.phase)) {
+        throw new Error(`checkpoints[].phase must be one of ${phases.join(', ')}`)
+      }
+      if (typeof item.target !== 'string' || item.target.trim().length === 0) {
+        throw new Error(`checkpoints[].target is required for ${interaction} checkpoints`)
+      }
+      const known = ['id', 'interaction', 'group', 'phase', 'target', 'waitFor', 'url', 'scrollIntoView']
+      for (const key of Object.keys(item)) {
+        if (!known.includes(key)) throw new Error(`checkpoints[] has unknown property ${key}`)
+      }
+      const group = interactionGroups.get(interaction).get(item.group) ?? []
+      group.push(item)
+      interactionGroups.get(interaction).set(item.group, group)
+      const existingTarget = targets.get(`${interaction}:${item.group}`)
+      if (existingTarget !== undefined && existingTarget !== item.target) {
+        throw new Error(
+          `${interaction} group ${item.group} must target one selector across all phases`,
+        )
+      }
+      targets.set(`${interaction}:${item.group}`, item.target)
+    } else if (interaction === 'audio') {
+      if (!AUDIO_STATES.includes(item.state)) {
+        throw new Error(`checkpoints[].state must be one of ${AUDIO_STATES.join(', ')}`)
+      }
+      if (typeof item.waitFor !== 'string' || item.waitFor.trim().length === 0) {
+        throw new Error('checkpoints[].waitFor is required for audio checkpoints')
+      }
+      const known = [
+        'id',
+        'interaction',
+        'state',
+        'waitFor',
+        'unlock',
+        'target',
+        'persist',
+        'voiceLimit',
+        'trigger',
+        'repeats',
+        'url',
+        'scrollIntoView',
+      ]
+      for (const key of Object.keys(item)) {
+        if (!known.includes(key)) throw new Error(`checkpoints[] has unknown property ${key}`)
+      }
+      if (item.state === 'enabled' && (typeof item.unlock !== 'string' || item.unlock.trim().length === 0)) {
+        throw new Error('audio checkpoint state "enabled" requires the declared unlock gesture selector (unlock)')
+      }
+      if (
+        (item.state === 'muted' || item.state === 'returning') &&
+        (typeof item.target !== 'string' || item.target.trim().length === 0)
+      ) {
+        throw new Error(
+          `audio checkpoint state "${item.state}" requires the declared mute control selector (target)`,
+        )
+      }
+      if (
+        (item.state === 'muted' || item.state === 'returning') &&
+        (typeof item.persist !== 'string' || item.persist.trim().length === 0)
+      ) {
+        throw new Error(
+          `audio checkpoint state "${item.state}" requires the declared persistence storage key (persist)`,
+        )
+      }
+      if (item.voiceLimit !== undefined && (typeof item.trigger !== 'string' || item.trigger.trim().length === 0)) {
+        throw new Error('audio checkpoint voiceLimit requires the declared rapid-activation source (trigger)')
+      }
+      if (item.voiceLimit !== undefined && item.state !== 'enabled') {
+        throw new Error('audio checkpoint voiceLimit is observable only on the enabled state')
+      }
+      if (item.repeats !== undefined && item.voiceLimit === undefined) {
+        throw new Error('audio checkpoint repeats is only valid with a declared voiceLimit')
+      }
+      if (item.trigger !== undefined && item.voiceLimit === undefined) {
+        throw new Error('audio checkpoint trigger is only valid with a declared voiceLimit')
+      }
+      if (item.voiceLimit !== undefined && (!Number.isInteger(item.voiceLimit) || item.voiceLimit < 1)) {
+        throw new Error('checkpoints[].voiceLimit must be a positive integer')
+      }
+      if (item.repeats !== undefined && (!Number.isInteger(item.repeats) || item.repeats < 1)) {
+        throw new Error('checkpoints[].repeats must be a positive integer')
+      }
     }
     checkpoints.push({ ...item })
   }
@@ -1108,6 +1207,20 @@ export function validateCheckpointManifest(input) {
       throw new Error(
         `click group ${group} must declare exactly the phases ${CLICK_PHASES.join(', ')}`,
       )
+    }
+  }
+  for (const [kind, groups] of interactionGroups) {
+    const phases = kind === 'focus' ? FOCUS_PHASES : KEYBOARD_PHASES
+    for (const [group, entries] of groups) {
+      const declared = new Set(entries.map((entry) => entry.phase))
+      if (
+        declared.size !== phases.length ||
+        phases.some((phase) => !declared.has(phase))
+      ) {
+        throw new Error(
+          `${kind} group ${group} must declare exactly the phases ${phases.join(', ')}`,
+        )
+      }
     }
   }
 
@@ -1176,9 +1289,11 @@ function parseArguments(argv) {
 in the manifest is captured under deterministic mode into
 <out>/checkpoints/<id>.png, with timestamp-free metadata in checkpoints.json
 and a status summary in checkpoints-summary.json. No checkpoint is hardcoded
-here; the manifest is the project's declaration. The standard
-desktop/mobile/reduced/fallback matrix and telemetry summary are skipped in
-this mode.
+here; the manifest is the project's declaration. Generic drivers cover
+hover/click/scroll/focus/keyboard/touch/loading/ready/failure, plus audio
+locked/enabled/muted/returning only when the manifest declares sound. The
+standard desktop/mobile/reduced/fallback matrix and telemetry summary are
+skipped in this mode.
 
 Exit codes: 0 = capture PASS, 1 = capture FAIL, 2 = browser, GPU, telemetry, or
 deterministic-mode capability UNAVAILABLE. Set WDU_PLAYWRIGHT_CLI to an explicit executable
@@ -1519,6 +1634,173 @@ function main() {
   })
 }`
 
+    // IP-06B generic input drivers. Nothing here names a concrete checkpoint;
+    // every selector comes from the project's manifest.
+
+    // Bounded Tab navigation: reaches the declared focus target by real
+    // keyboard traversal. Deterministic because the deterministic-mode DOM is
+    // frozen; a target that Tab cannot reach is a keyboard-reachability
+    // failure, not a fallback.
+    const focusTargetSnippet = (target) => `async (page) => {
+  for (let i = 0; i < 64; i += 1) {
+    await page.keyboard.press('Tab')
+    const reached = await page.evaluate((selector) => {
+      const active = document.activeElement
+      return active !== null && active !== document.body && active.matches(selector)
+    }, ${quoted(target)})
+    if (reached) return
+  }
+  throw new Error('focus target not reachable by Tab: ' + ${quoted(target)})
+}`
+
+    // Tab away from the focused target (bounded); used by focus-after so the
+    // captured state is what a keyboard user sees after tabbing through.
+    const blurTargetSnippet = (target) => `async (page) => {
+  for (let i = 0; i < 64; i += 1) {
+    await page.keyboard.press('Tab')
+    const stillFocused = await page.evaluate((selector) => {
+      const active = document.activeElement
+      return active !== null && active.matches(selector)
+    }, ${quoted(target)})
+    if (!stillFocused) return
+  }
+  throw new Error('focus target did not blur after Tab: ' + ${quoted(target)})
+}`
+
+    // A held keyboard activation: keydown without keyup keeps the declared
+    // peak state visible until the capture. The key is the platform default
+    // for button activation (Enter); Space would scroll unless every project
+    // prevented it, so the driver stays with Enter.
+    const keyDownSnippet = `async (page) => {
+  await page.keyboard.down('Enter')
+}`
+
+    const keyUpSnippet = `async (page) => {
+  await page.keyboard.up('Enter')
+}`
+
+    // A held touch tap: trusted touch input through the browser's input
+    // pipeline (CDP Input.dispatchTouchEvent), because a Playwright
+    // touchscreen requires a hasTouch context this adapter does not control.
+    // touchStart without touchEnd holds the declared peak state; a host
+    // without the touch input pipeline is UNAVAILABLE, never a weaker
+    // fallback. Coordinates come from the frozen layout, so the tap target is
+    // deterministic.
+    const touchStartSnippet = (target) => `async (page) => {
+  let client
+  try {
+    client = await page.context().newCDPSession(page)
+  } catch (error) {
+    throw new Error('touch input pipeline unavailable (CDP session): ' + String(error?.message ?? error))
+  }
+  const box = await page.locator(${quoted(target)}).boundingBox()
+  if (!box) throw new Error('touch target is not visible: ' + ${quoted(target)})
+  await client.send('Input.dispatchTouchEvent', {
+    type: 'touchStart',
+    touchPoints: [
+      {
+        x: box.x + box.width / 2,
+        y: box.y + box.height / 2,
+        radiusX: 2,
+        radiusY: 2,
+        force: 1,
+        id: 1,
+      },
+    ],
+  })
+  return { method: 'cdp-touch' }
+}`
+
+    const touchEndSnippet = `async (page) => {
+  const client = await page.context().newCDPSession(page)
+  await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+}`
+
+    // Audio state evidence, read from the declared surface the project
+    // records on the document root (the same pattern as data-wdu-pointer).
+    const audioStateEvidenceSnippet = `async (page) => {
+  return await page.evaluate(() => {
+    const root = document.documentElement
+    return {
+      audio: root.getAttribute('data-wdu-audio'),
+      context: root.getAttribute('data-wdu-audio-context'),
+      restored: root.getAttribute('data-wdu-audio-restored'),
+      voices: root.getAttribute('data-wdu-voices'),
+      voiceAttempts: root.getAttribute('data-wdu-voice-attempts'),
+      voiceClamped: root.getAttribute('data-wdu-voice-clamped'),
+    }
+  })
+}`
+
+    // The declared unlock gesture: a real pointer press on the project's
+    // named gesture control.
+    const audioUnlockSnippet = (unlock) => `async (page) => {
+  const box = await page.locator(${quoted(unlock)}).boundingBox()
+  if (!box) throw new Error('audio unlock target is not visible: ' + ${quoted(unlock)})
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+}`
+
+    // The declared mute control: a real pointer press on the opt-out control.
+    const audioPressTargetSnippet = (target) => `async (page) => {
+  const box = await page.locator(${quoted(target)}).boundingBox()
+  if (!box) throw new Error('audio target is not visible: ' + ${quoted(target)})
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+}`
+
+    // The declared persistence key, read back as evidence of the write.
+    const audioStorageEvidenceSnippet = (persist) => `async (page) => {
+  return await page.evaluate((key) => {
+    let value = null
+    try {
+      value = window.localStorage.getItem(key)
+    } catch {
+      value = null
+    }
+    return { key, value }
+  }, ${quoted(persist)})
+}`
+
+    // Voice-limit observation: fire the declared number of rapid activations
+    // on the declared trigger and read the fixture's counters after each one.
+    // The fixture caps concurrent voices at the declared limit, so the
+    // observed maximum and the clamped count are the evidence.
+    const audioVoiceBurstSnippet = (trigger, repeats) => `async (page) => {
+  let maxVoices = 0
+  for (let i = 0; i < ${repeats}; i += 1) {
+    await page.locator(${quoted(trigger)}).click({ noWaitAfter: true })
+    const voices = Number(
+      await page.evaluate(() => Number(document.documentElement.getAttribute('data-wdu-voices') ?? '0')),
+    )
+    if (voices > maxVoices) maxVoices = voices
+  }
+  const counts = await page.evaluate(() => ({
+    voices: Number(document.documentElement.getAttribute('data-wdu-voices') ?? '0'),
+    attempts: Number(document.documentElement.getAttribute('data-wdu-voice-attempts') ?? '0'),
+    clamped: Number(document.documentElement.getAttribute('data-wdu-voice-clamped') ?? '0'),
+  }))
+  return { maxVoices, ...counts }
+}`
+
+    // The returning-session arc, in one session: press the declared mute
+    // control, verify the persistence write, reload, and wait for the
+    // restored state that only storage could have produced.
+    const audioReturningSnippet = (target, persist) => `async (page) => {
+  const box = await page.locator(${quoted(target)}).boundingBox()
+  if (!box) throw new Error('audio target is not visible: ' + ${quoted(target)})
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+  const stored = await page.evaluate((key) => {
+    let value = null
+    try {
+      value = window.localStorage.getItem(key)
+    } catch {
+      value = null
+    }
+    return value
+  }, ${quoted(persist)})
+  await page.reload({ waitUntil: 'domcontentloaded' })
+  return { wrote: stored }
+}`
+
     const entries = []
 
     function recordUnavailable(entry, record, reason) {
@@ -1538,8 +1820,10 @@ function main() {
           file,
         }
         if (entry.phase !== undefined) record.phase = entry.phase
+        if (entry.state !== undefined) record.state = entry.state
         if (entry.progress !== undefined) record.progress = entry.progress
         if (entry.url !== undefined) record.url = entry.url
+        if (entry.waitFor !== undefined) record.waitFor = entry.waitFor
 
         try {
           invoke(session, 'open', `${options.url}${entry.url ?? ''}`)
@@ -1608,6 +1892,115 @@ function main() {
               invoke(session, 'run-code', loseContextSnippet)
             }
             invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+          } else if (entry.interaction === 'focus' && entry.phase !== 'before') {
+            // Focus-visible: reach the declared target by real Tab
+            // traversal, then (for after) tab away. The project records
+            // focus-visible on the document root (data-wdu-focus), and the
+            // during condition is the target's own :focus-visible state.
+            invoke(session, 'run-code', focusTargetSnippet(entry.target))
+            if (entry.phase === 'after') {
+              invoke(session, 'run-code', blurTargetSnippet(entry.target))
+            }
+            if (entry.waitFor !== undefined) {
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+            }
+            invoke(session, 'run-code', waitSelectorSnippet(manifest.readyMarker))
+          } else if (entry.interaction === 'keyboard' && entry.phase !== 'before') {
+            // Keyboard activation: Tab to the declared control, hold Enter
+            // for the peak, release for the recovered state. The peak waits
+            // for the same declared outcome state as the pointer click peak.
+            invoke(session, 'run-code', focusTargetSnippet(entry.target))
+            if (entry.phase === 'peak') {
+              invoke(session, 'run-code', keyDownSnippet)
+            } else if (entry.phase === 'recovered') {
+              invoke(session, 'run-code', keyDownSnippet)
+              invoke(session, 'run-code', keyUpSnippet)
+            }
+            if (entry.waitFor !== undefined) {
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+            }
+            invoke(session, 'run-code', waitSelectorSnippet(manifest.readyMarker))
+          } else if (entry.interaction === 'touch' && entry.phase !== 'before') {
+            // Touch alternative: a held touch tap through the browser's own
+            // touch input pipeline. The peak holds touchStart so the declared
+            // outcome state stays visible until the capture; recovered ends
+            // the touch.
+            let touchMethod
+            try {
+              touchMethod = parseRawJson(
+                invokeRaw(session, 'run-code', touchStartSnippet(entry.target)).stdout,
+              ).method
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error)
+              if (message.includes('touch input pipeline unavailable')) {
+                recordUnavailable(
+                  entry,
+                  record,
+                  'touch input pipeline unavailable (host browser cannot dispatch trusted touch input)',
+                )
+                continue
+              }
+              throw error
+            }
+            record.touch = touchMethod
+            if (entry.phase === 'recovered') {
+              invoke(session, 'run-code', touchEndSnippet)
+            }
+            if (entry.waitFor !== undefined) {
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+            }
+            invoke(session, 'run-code', waitSelectorSnippet(manifest.readyMarker))
+          } else if (entry.interaction === 'audio') {
+            // Conditional audio (IP-06B): audio checkpoints exist only when
+            // the project declares sound. Every gesture, control, and storage
+            // key is declared in the manifest; nothing here is invented.
+            if (entry.state === 'enabled') {
+              invoke(session, 'run-code', audioUnlockSnippet(entry.unlock))
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+              if (entry.voiceLimit !== undefined) {
+                const burst = parseRawJson(
+                  invokeRaw(
+                    session,
+                    'run-code',
+                    audioVoiceBurstSnippet(entry.trigger, entry.repeats ?? 6),
+                  ).stdout,
+                )
+                record.voiceLimit = {
+                  declared: entry.voiceLimit,
+                  repeats: entry.repeats ?? 6,
+                  observedMaxVoices: burst.maxVoices,
+                  attempts: burst.attempts,
+                  clamped: burst.clamped,
+                }
+              }
+            } else if (entry.state === 'locked') {
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+            } else if (entry.state === 'muted') {
+              invoke(session, 'run-code', audioPressTargetSnippet(entry.target))
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+              record.persistence = parseRawJson(
+                invokeRaw(session, 'run-code', audioStorageEvidenceSnippet(entry.persist)).stdout,
+              )
+            } else if (entry.state === 'returning') {
+              // One session proves the returning arc: press the declared
+              // opt-out, verify the persistence write, reload, and wait for
+              // the restored state only storage could have produced.
+              const returning = parseRawJson(
+                invokeRaw(session, 'run-code', audioReturningSnippet(entry.target, entry.persist))
+                  .stdout,
+              )
+              record.persistence = {
+                key: entry.persist,
+                wrote: returning.wrote,
+              }
+              invoke(session, 'run-code', waitSelectorSnippet(manifest.readyMarker))
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+            }
+            const evidence = parseRawJson(
+              invokeRaw(session, 'run-code', audioStateEvidenceSnippet).stdout,
+            )
+            record.audio = evidence
+            invoke(session, 'run-code', waitSelectorSnippet(manifest.readyMarker))
           }
 
           invoke(session, 'screenshot', '--filename', target)

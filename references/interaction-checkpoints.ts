@@ -1,5 +1,5 @@
 /*
- * Copyable interaction-checkpoint manifest reference (IP-06A).
+ * Copyable interaction-checkpoint manifest reference (IP-06A, extended IP-06B).
  *
  * This file has zero runtime dependencies and stays outside the installed
  * website-design-ultra plugin payload. A project copies it next to its
@@ -8,10 +8,15 @@
  * Driving belongs to the verifier workstream.
  *
  * Contract: every checkpoint is declared by the project, never hardcoded in
- * the verifier. Hover is declared with before/during/after phases, click with
- * before/peak/recovered, scroll with normalized progress in [0, 1], and
- * loading, ready, and failure with their own state conditions. Deterministic
- * filenames are derived from checkpoint ids.
+ * the verifier. Hover declares before/during/after, click declares
+ * before/peak/recovered, scroll declares normalized progress in [0, 1], and
+ * loading, ready, and failure declare their own state conditions. IP-06B adds
+ * the input and audio kinds: focus declares before/during/after (focus-visible
+ * is the during state), keyboard and touch declare before/peak/recovered and
+ * must reach the same product outcome as the pointer click group, and audio
+ * declares one of locked/enabled/muted/returning — a silent deliverable
+ * declares no audio checkpoints at all, so audio tests never run for it.
+ * Deterministic filenames are derived from checkpoint ids.
  */
 
 export const CHECKPOINT_SCHEMA_VERSION = 1 as const
@@ -24,16 +29,28 @@ export const CHECKPOINT_KINDS = [
   'loading',
   'ready',
   'failure',
+  'focus',
+  'keyboard',
+  'touch',
+  'audio',
 ] as const
 
 export const HOVER_PHASES = ['before', 'during', 'after'] as const
 export const CLICK_PHASES = ['before', 'peak', 'recovered'] as const
+export const FOCUS_PHASES = ['before', 'during', 'after'] as const
+export const KEYBOARD_PHASES = ['before', 'peak', 'recovered'] as const
+export const TOUCH_PHASES = ['before', 'peak', 'recovered'] as const
+export const AUDIO_STATES = ['locked', 'enabled', 'muted', 'returning'] as const
 
 export const CHECKPOINT_ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/
 
 export type CheckpointKind = (typeof CHECKPOINT_KINDS)[number]
 export type HoverPhase = (typeof HOVER_PHASES)[number]
 export type ClickPhase = (typeof CLICK_PHASES)[number]
+export type FocusPhase = (typeof FOCUS_PHASES)[number]
+export type KeyboardPhase = (typeof KEYBOARD_PHASES)[number]
+export type TouchPhase = (typeof TOUCH_PHASES)[number]
+export type AudioState = (typeof AUDIO_STATES)[number]
 
 export interface PointerCheckpoint {
   readonly interaction: 'hover' | 'click'
@@ -96,6 +113,53 @@ export interface FailureCheckpoint extends CheckpointEntryBase {
   readonly action?: 'lose-webgl-context'
 }
 
+export interface FocusCheckpoint extends CheckpointEntryBase {
+  readonly interaction: 'focus'
+  readonly phase: FocusPhase
+  /** Group id shared by the before/during/after triple of one focus interaction. */
+  readonly group: string
+  /** CSS selector of the focusable control the driver reaches by Tab. */
+  readonly target: string
+}
+
+export interface KeyboardCheckpoint extends CheckpointEntryBase {
+  readonly interaction: 'keyboard'
+  readonly phase: KeyboardPhase
+  /** Group id shared by the before/peak/recovered triple of one keyboard activation. */
+  readonly group: string
+  /** CSS selector of the focusable control the driver activates with Enter or Space. */
+  readonly target: string
+}
+
+export interface TouchCheckpoint extends CheckpointEntryBase {
+  readonly interaction: 'touch'
+  readonly phase: TouchPhase
+  /** Group id shared by the before/peak/recovered triple of one touch activation. */
+  readonly group: string
+  /** CSS selector of the control the driver taps with touch input. */
+  readonly target: string
+}
+
+export interface AudioCheckpoint extends CheckpointEntryBase {
+  readonly interaction: 'audio'
+  /** The declared audio state: locked until the unlock gesture, enabled after it, muted by the opt-out control, or returning after a reload with stored consent. */
+  readonly state: AudioState
+  /** The surface that proves the state (for example html[data-wdu-audio="enabled"]). */
+  readonly waitFor: string
+  /** Declared unlock-gesture control; required for the enabled state. */
+  readonly unlock?: string
+  /** Declared mute (opt-out) control; required for muted and returning. */
+  readonly target?: string
+  /** Declared persistence storage key; required for muted and returning. */
+  readonly persist?: string
+  /** Declared concurrent-voice limit; observable evidence, enabled state only. */
+  readonly voiceLimit?: number
+  /** Declared rapid-activation source for the voice-limit observation; required with voiceLimit. */
+  readonly trigger?: string
+  /** Declared activation count for the voice-limit observation (default 6); only with voiceLimit. */
+  readonly repeats?: number
+}
+
 export type CheckpointEntry =
   | HoverCheckpoint
   | ClickCheckpoint
@@ -103,6 +167,10 @@ export type CheckpointEntry =
   | LoadingCheckpoint
   | ReadyCheckpoint
   | FailureCheckpoint
+  | FocusCheckpoint
+  | KeyboardCheckpoint
+  | TouchCheckpoint
+  | AudioCheckpoint
 
 export interface CheckpointManifest {
   readonly schemaVersion: typeof CHECKPOINT_SCHEMA_VERSION
@@ -174,6 +242,18 @@ function checkpointId(input: unknown, label: string): string {
     )
   }
   return id
+}
+
+function positiveInteger(input: unknown, label: string): number {
+  if (typeof input !== 'number' || !Number.isInteger(input) || input < 1) {
+    throw new Error(`${label} must be a positive integer`)
+  }
+  return input
+}
+
+function optionalPositiveInteger(record: JsonRecord, key: string, label: string): number | undefined {
+  if (!hasOwn(record, key)) return undefined
+  return positiveInteger(record[key], `${label}.${key}`)
 }
 
 function validateHoverEntry(record: JsonRecord): HoverCheckpoint {
@@ -275,11 +355,140 @@ function validateFailureEntry(record: JsonRecord): FailureCheckpoint {
   return entry
 }
 
+function validateFocusEntry(record: JsonRecord): FocusCheckpoint {
+  assertKnownKeys(
+    record,
+    ['id', 'interaction', 'phase', 'group', 'target', 'waitFor', 'url', 'scrollIntoView'],
+    'checkpoints[]',
+  )
+  return {
+    id: checkpointId(required(record, 'id', 'checkpoints[]'), 'checkpoints[].id'),
+    interaction: 'focus',
+    phase: enumValue(
+      required(record, 'phase', 'checkpoints[]'),
+      FOCUS_PHASES,
+      'checkpoints[].phase',
+    ),
+    group: text(required(record, 'group', 'checkpoints[]'), 'checkpoints[].group'),
+    target: text(required(record, 'target', 'checkpoints[]'), 'checkpoints[].target'),
+    waitFor: optionalText(record, 'waitFor', 'checkpoints[]'),
+    url: optionalText(record, 'url', 'checkpoints[]'),
+    scrollIntoView: optionalText(record, 'scrollIntoView', 'checkpoints[]'),
+  }
+}
+
+function validateKeyboardEntry(record: JsonRecord): KeyboardCheckpoint {
+  assertKnownKeys(
+    record,
+    ['id', 'interaction', 'phase', 'group', 'target', 'waitFor', 'url', 'scrollIntoView'],
+    'checkpoints[]',
+  )
+  return {
+    id: checkpointId(required(record, 'id', 'checkpoints[]'), 'checkpoints[].id'),
+    interaction: 'keyboard',
+    phase: enumValue(
+      required(record, 'phase', 'checkpoints[]'),
+      KEYBOARD_PHASES,
+      'checkpoints[].phase',
+    ),
+    group: text(required(record, 'group', 'checkpoints[]'), 'checkpoints[].group'),
+    target: text(required(record, 'target', 'checkpoints[]'), 'checkpoints[].target'),
+    waitFor: optionalText(record, 'waitFor', 'checkpoints[]'),
+    url: optionalText(record, 'url', 'checkpoints[]'),
+    scrollIntoView: optionalText(record, 'scrollIntoView', 'checkpoints[]'),
+  }
+}
+
+function validateTouchEntry(record: JsonRecord): TouchCheckpoint {
+  assertKnownKeys(
+    record,
+    ['id', 'interaction', 'phase', 'group', 'target', 'waitFor', 'url', 'scrollIntoView'],
+    'checkpoints[]',
+  )
+  return {
+    id: checkpointId(required(record, 'id', 'checkpoints[]'), 'checkpoints[].id'),
+    interaction: 'touch',
+    phase: enumValue(
+      required(record, 'phase', 'checkpoints[]'),
+      TOUCH_PHASES,
+      'checkpoints[].phase',
+    ),
+    group: text(required(record, 'group', 'checkpoints[]'), 'checkpoints[].group'),
+    target: text(required(record, 'target', 'checkpoints[]'), 'checkpoints[].target'),
+    waitFor: optionalText(record, 'waitFor', 'checkpoints[]'),
+    url: optionalText(record, 'url', 'checkpoints[]'),
+    scrollIntoView: optionalText(record, 'scrollIntoView', 'checkpoints[]'),
+  }
+}
+
+function validateAudioEntry(record: JsonRecord): AudioCheckpoint {
+  assertKnownKeys(
+    record,
+    [
+      'id',
+      'interaction',
+      'state',
+      'waitFor',
+      'unlock',
+      'target',
+      'persist',
+      'voiceLimit',
+      'trigger',
+      'repeats',
+      'url',
+      'scrollIntoView',
+    ],
+    'checkpoints[]',
+  )
+  const state = enumValue(
+    required(record, 'state', 'checkpoints[]'),
+    AUDIO_STATES,
+    'checkpoints[].state',
+  )
+  const entry: AudioCheckpoint = {
+    id: checkpointId(required(record, 'id', 'checkpoints[]'), 'checkpoints[].id'),
+    interaction: 'audio',
+    state,
+    waitFor: text(required(record, 'waitFor', 'checkpoints[]'), 'checkpoints[].waitFor'),
+    unlock: optionalText(record, 'unlock', 'checkpoints[]'),
+    target: optionalText(record, 'target', 'checkpoints[]'),
+    persist: optionalText(record, 'persist', 'checkpoints[]'),
+    voiceLimit: optionalPositiveInteger(record, 'voiceLimit', 'checkpoints[]'),
+    trigger: optionalText(record, 'trigger', 'checkpoints[]'),
+    repeats: optionalPositiveInteger(record, 'repeats', 'checkpoints[]'),
+    url: optionalText(record, 'url', 'checkpoints[]'),
+    scrollIntoView: optionalText(record, 'scrollIntoView', 'checkpoints[]'),
+  }
+  if (state === 'enabled' && entry.unlock === undefined) {
+    throw new Error('audio checkpoint state "enabled" requires the declared unlock gesture selector (unlock)')
+  }
+  if ((state === 'muted' || state === 'returning') && entry.target === undefined) {
+    throw new Error(`audio checkpoint state "${state}" requires the declared mute control selector (target)`)
+  }
+  if ((state === 'muted' || state === 'returning') && entry.persist === undefined) {
+    throw new Error(`audio checkpoint state "${state}" requires the declared persistence storage key (persist)`)
+  }
+  if (entry.voiceLimit !== undefined && entry.trigger === undefined) {
+    throw new Error('audio checkpoint voiceLimit requires the declared rapid-activation source (trigger)')
+  }
+  if (entry.repeats !== undefined && entry.voiceLimit === undefined) {
+    throw new Error('audio checkpoint repeats is only valid with a declared voiceLimit')
+  }
+  if (entry.trigger !== undefined && entry.voiceLimit === undefined) {
+    throw new Error('audio checkpoint trigger is only valid with a declared voiceLimit')
+  }
+  if (entry.voiceLimit !== undefined && state !== 'enabled') {
+    throw new Error('audio checkpoint voiceLimit is observable only on the enabled state')
+  }
+  return entry
+}
+
 /**
  * Validates and normalizes a checkpoint manifest. Throws with a descriptive
  * message on the first contract violation, including the phase-completeness
- * rules: every hover group declares exactly before/during/after and every
- * click group exactly before/peak/recovered, all targeting one selector.
+ * rules: every hover group declares exactly before/during/after, every click
+ * group exactly before/peak/recovered, and the IP-06B focus, keyboard, and
+ * touch groups follow the same completeness rules, all targeting one selector.
  */
 export function validateCheckpointManifest(input: unknown): CheckpointManifest {
   const record = asRecord(input, 'checkpoint manifest')
@@ -317,6 +526,9 @@ export function validateCheckpointManifest(input: unknown): CheckpointManifest {
   const ids = new Set<string>()
   const hoverGroups = new Map<string, HoverCheckpoint[]>()
   const clickGroups = new Map<string, ClickCheckpoint[]>()
+  const focusGroups = new Map<string, FocusCheckpoint[]>()
+  const keyboardGroups = new Map<string, KeyboardCheckpoint[]>()
+  const touchGroups = new Map<string, TouchCheckpoint[]>()
   const targets = new Map<string, string>()
 
   for (const item of checkpointsInput) {
@@ -362,8 +574,46 @@ export function validateCheckpointManifest(input: unknown): CheckpointManifest {
       entry = validateLoadingEntry(entryRecord)
     } else if (interaction === 'ready') {
       entry = validateReadyEntry(entryRecord)
-    } else {
+    } else if (interaction === 'failure') {
       entry = validateFailureEntry(entryRecord)
+    } else if (interaction === 'focus') {
+      entry = validateFocusEntry(entryRecord)
+      const group = focusGroups.get(entry.group) ?? []
+      group.push(entry)
+      focusGroups.set(entry.group, group)
+      const existingTarget = targets.get(entry.group)
+      if (existingTarget !== undefined && existingTarget !== entry.target) {
+        throw new Error(
+          `focus group ${entry.group} must target one selector across all phases`,
+        )
+      }
+      targets.set(entry.group, entry.target)
+    } else if (interaction === 'keyboard') {
+      entry = validateKeyboardEntry(entryRecord)
+      const group = keyboardGroups.get(entry.group) ?? []
+      group.push(entry)
+      keyboardGroups.set(entry.group, group)
+      const existingTarget = targets.get(entry.group)
+      if (existingTarget !== undefined && existingTarget !== entry.target) {
+        throw new Error(
+          `keyboard group ${entry.group} must target one selector across all phases`,
+        )
+      }
+      targets.set(entry.group, entry.target)
+    } else if (interaction === 'touch') {
+      entry = validateTouchEntry(entryRecord)
+      const group = touchGroups.get(entry.group) ?? []
+      group.push(entry)
+      touchGroups.set(entry.group, group)
+      const existingTarget = targets.get(entry.group)
+      if (existingTarget !== undefined && existingTarget !== entry.target) {
+        throw new Error(
+          `touch group ${entry.group} must target one selector across all phases`,
+        )
+      }
+      targets.set(entry.group, entry.target)
+    } else {
+      entry = validateAudioEntry(entryRecord)
     }
     checkpoints.push(entry)
   }
@@ -387,6 +637,39 @@ export function validateCheckpointManifest(input: unknown): CheckpointManifest {
     ) {
       throw new Error(
         `click group ${group} must declare exactly the phases ${CLICK_PHASES.join(', ')}`,
+      )
+    }
+  }
+  for (const [group, entries] of focusGroups) {
+    const phases = new Set(entries.map((entry) => entry.phase))
+    if (
+      phases.size !== FOCUS_PHASES.length ||
+      FOCUS_PHASES.some((phase) => !phases.has(phase))
+    ) {
+      throw new Error(
+        `focus group ${group} must declare exactly the phases ${FOCUS_PHASES.join(', ')}`,
+      )
+    }
+  }
+  for (const [group, entries] of keyboardGroups) {
+    const phases = new Set(entries.map((entry) => entry.phase))
+    if (
+      phases.size !== KEYBOARD_PHASES.length ||
+      KEYBOARD_PHASES.some((phase) => !phases.has(phase))
+    ) {
+      throw new Error(
+        `keyboard group ${group} must declare exactly the phases ${KEYBOARD_PHASES.join(', ')}`,
+      )
+    }
+  }
+  for (const [group, entries] of touchGroups) {
+    const phases = new Set(entries.map((entry) => entry.phase))
+    if (
+      phases.size !== TOUCH_PHASES.length ||
+      TOUCH_PHASES.some((phase) => !phases.has(phase))
+    ) {
+      throw new Error(
+        `touch group ${group} must declare exactly the phases ${TOUCH_PHASES.join(', ')}`,
       )
     }
   }

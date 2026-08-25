@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "wdu://interaction-checkpoints/v1",
   "title": "Interaction checkpoint manifest",
-  "description": "Project-owned declaration of deterministic interaction checkpoints (IP-06A). Every checkpoint is declared by the project, never hardcoded in the verifier. Hover declares before/during/after, click declares before/peak/recovered, scroll declares normalized progress in [0, 1], and loading, ready, and failure declare their own state conditions. Deterministic filenames are derived from checkpoint ids.",
+  "description": "Project-owned declaration of deterministic interaction checkpoints (IP-06A, extended IP-06B). Every checkpoint is declared by the project, never hardcoded in the verifier. Hover declares before/during/after, click declares before/peak/recovered, scroll declares normalized progress in [0, 1], and loading, ready, and failure declare their own state conditions. IP-06B adds focus (before/during/after, focus-visible is the during state), keyboard and touch (before/peak/recovered, reaching the same product outcome as the pointer click group), and audio (locked/enabled/muted/returning) — a silent deliverable declares no audio checkpoints, so audio tests never run for it. Deterministic filenames are derived from checkpoint ids.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -53,6 +53,18 @@
           },
           {
             "$ref": "#/$defs/failure"
+          },
+          {
+            "$ref": "#/$defs/focus"
+          },
+          {
+            "$ref": "#/$defs/keyboard"
+          },
+          {
+            "$ref": "#/$defs/touch"
+          },
+          {
+            "$ref": "#/$defs/audio"
           }
         ]
       }
@@ -268,6 +280,194 @@
           "enum": [
             "lose-webgl-context"
           ]
+        },
+        "url": {
+          "$ref": "#/$defs/url"
+        },
+        "scrollIntoView": {
+          "$ref": "#/$defs/scrollIntoView"
+        }
+      }
+    },
+    "focus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "interaction",
+        "group",
+        "phase",
+        "target"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "interaction": {
+          "const": "focus"
+        },
+        "group": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase": {
+          "enum": [
+            "before",
+            "during",
+            "after"
+          ]
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "waitFor": {
+          "$ref": "#/$defs/waitFor"
+        },
+        "url": {
+          "$ref": "#/$defs/url"
+        },
+        "scrollIntoView": {
+          "$ref": "#/$defs/scrollIntoView"
+        }
+      }
+    },
+    "keyboard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "interaction",
+        "group",
+        "phase",
+        "target"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "interaction": {
+          "const": "keyboard"
+        },
+        "group": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase": {
+          "enum": [
+            "before",
+            "peak",
+            "recovered"
+          ]
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "waitFor": {
+          "$ref": "#/$defs/waitFor"
+        },
+        "url": {
+          "$ref": "#/$defs/url"
+        },
+        "scrollIntoView": {
+          "$ref": "#/$defs/scrollIntoView"
+        }
+      }
+    },
+    "touch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "interaction",
+        "group",
+        "phase",
+        "target"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "interaction": {
+          "const": "touch"
+        },
+        "group": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase": {
+          "enum": [
+            "before",
+            "peak",
+            "recovered"
+          ]
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "waitFor": {
+          "$ref": "#/$defs/waitFor"
+        },
+        "url": {
+          "$ref": "#/$defs/url"
+        },
+        "scrollIntoView": {
+          "$ref": "#/$defs/scrollIntoView"
+        }
+      }
+    },
+    "audio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "interaction",
+        "state",
+        "waitFor"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "interaction": {
+          "const": "audio"
+        },
+        "state": {
+          "enum": [
+            "locked",
+            "enabled",
+            "muted",
+            "returning"
+          ]
+        },
+        "waitFor": {
+          "$ref": "#/$defs/waitFor"
+        },
+        "unlock": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "persist": {
+          "type": "string",
+          "minLength": 1
+        },
+        "voiceLimit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "trigger": {
+          "type": "string",
+          "minLength": 1
+        },
+        "repeats": {
+          "type": "integer",
+          "minimum": 1
         },
         "url": {
           "$ref": "#/$defs/url"

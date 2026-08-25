@@ -86,6 +86,26 @@ validator: `references/interaction-checkpoints.ts`, copied byte-identical into
   deterministically), ready (the stable-frame marker), and failure (forced
   WebGL context loss through `WEBGL_lose_context`).
 
+### Keyboard, touch, and focus (IP-06B)
+
+The manifest additionally declares focus before/during/after and keyboard and
+touch before/peak/recovered, all targeting the activation control
+(`[data-wdu-activation-target]`, the "Press the hero" button in the DOM
+controls). Keyboard (Tab to the control, Enter to press) and touch (a held
+tap through the browser's touch input pipeline) reach the same product
+outcome as pointer input: the peak entries declare the identical
+`html[data-wdu-pointer="pressed"]` state condition as the click peak, and
+the hero pose that results is the same pressed pose. Focus-visible is
+recorded on the document root (`html[data-wdu-focus]`), and the during
+condition is the control's own `:focus-visible` state.
+
+The starter ships no sound, so it declares no audio checkpoints — audio tests
+never run for this silent deliverable. The interaction fixture suite
+(`tests/immersive/interaction-capture/verify-interaction-fixtures.mjs`) runs
+the verifier against both this manifest and the sound-present fixture, and
+asserts that the silent side captures zero audio entries while the sound side
+observes unlock, mute persistence, and the voice limit.
+
 The pointer interaction is real product behaviour: hovering lifts the hero
 (scale 1.03 plus an emissive lift), pressing compresses it (scale 0.97). The
 state is written synchronously in the pointer handler, readiness is invalidated

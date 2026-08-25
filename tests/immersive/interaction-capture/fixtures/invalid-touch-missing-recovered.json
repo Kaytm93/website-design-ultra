@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.interaction-checkpoints",
+  "project": "fixture",
+  "modeInput": "WDU_DETERMINISTIC=1",
+  "readyMarker": "html[data-wdu-ready=\"true\"]",
+  "checkpoints": [
+    {
+      "id": "touch-before",
+      "interaction": "touch",
+      "group": "fixture-touch",
+      "phase": "before",
+      "target": "[data-activation-target]"
+    },
+    {
+      "id": "touch-peak",
+      "interaction": "touch",
+      "group": "fixture-touch",
+      "phase": "peak",
+      "target": "[data-activation-target]",
+      "waitFor": "html[data-wdu-pointer=\"pressed\"]"
+    }
+  ]
+}

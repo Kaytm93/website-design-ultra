@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.interaction-checkpoints",
+  "project": "fixture",
+  "modeInput": "WDU_DETERMINISTIC=1",
+  "readyMarker": "html[data-wdu-ready=\"true\"]",
+  "checkpoints": [
+    {
+      "id": "audio-muted",
+      "interaction": "audio",
+      "state": "muted",
+      "waitFor": "html[data-wdu-audio=\"muted\"]",
+      "target": "[data-mute-control]"
+    }
+  ]
+}

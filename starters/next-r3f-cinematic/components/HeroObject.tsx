@@ -128,6 +128,23 @@ export function HeroObject() {
     }
   }, [])
 
+  // Keyboard and touch activation bridge (IP-06B). The DOM activation
+  // control dispatches press-start/press-end; both map onto the same pointer
+  // state machine, so keyboard and touch reach the identical product outcome
+  // (the declared pressed pose) as pointer input on the canvas. The handlers
+  // are captured once: setPointer reads only refs, and invalidate is stable.
+  useEffect(() => {
+    const start = () => setPointer('pressed')
+    const end = () => setPointer('idle')
+    window.addEventListener('wdu:press-start', start)
+    window.addEventListener('wdu:press-end', end)
+    return () => {
+      window.removeEventListener('wdu:press-start', start)
+      window.removeEventListener('wdu:press-end', end)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Explicit disposal (IP-05C): the geometry and material are released when
   // the scene unmounts, so repeated mount/unmount cycles (route transitions,
   // restore after context loss) return the renderer's resource counters to

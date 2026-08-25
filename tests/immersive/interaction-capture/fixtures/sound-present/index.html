@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Interaction fixture — sound present</title>
+    <style>
+      :root {
+        --bg: #101216;
+        --surface: #191c23;
+        --text: #e8e6e0;
+        --text-dim: #a8a69e;
+        --accent: #d8c9a3;
+        --line: #2a2c35;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        color: var(--text);
+        background: var(--bg);
+        line-height: 1.6;
+      }
+      main {
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem;
+      }
+      h1 {
+        font-size: 1.6rem;
+        margin: 0 0 0.4rem;
+      }
+      .lede {
+        color: var(--text-dim);
+        margin: 0 0 1.6rem;
+      }
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 1rem;
+      }
+      .state-row {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+      }
+      .state-badge {
+        font-weight: 650;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        color: var(--bg);
+        background: var(--accent);
+        border-radius: 999px;
+        padding: 0.2rem 0.8rem;
+      }
+      .state-badge.muted {
+        background: #b98a8a;
+      }
+      .state-badge.locked {
+        background: #8a93b9;
+      }
+      .counters {
+        font-variant-numeric: tabular-nums;
+        color: var(--text-dim);
+        font-size: 0.9rem;
+        margin: 0.6rem 0 0;
+      }
+      .controls {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      button {
+        font: inherit;
+        font-weight: 600;
+        color: var(--bg);
+        background: var(--accent);
+        border: 1px solid var(--accent);
+        border-radius: 999px;
+        padding: 0.45rem 1.1rem;
+        cursor: pointer;
+      }
+      button:focus-visible {
+        outline: 2px solid var(--text);
+        outline-offset: 2px;
+      }
+      button.secondary {
+        color: var(--text);
+        background: var(--surface);
+        border-color: var(--line);
+      }
+      .note {
+        color: var(--text-dim);
+        font-size: 0.85rem;
+        margin: 0.6rem 0 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Interaction fixture with sound</h1>
+      <p class="lede">
+        A static deliverable that ships sound: it declares the unlock gesture,
+        the opt-out control, storage persistence, and a concurrent-voice
+        limit, and records every state on the document root for the
+        checkpoint drivers.
+      </p>
+
+      <div class="panel">
+        <div class="state-row">
+          <span class="state-badge" id="state-badge" data-state-badge>locked</span>
+          <span id="state-label">Audio is locked until the unlock gesture.</span>
+        </div>
+        <p class="counters" id="counters">
+          voices 0 · attempts 0 · clamped 0 · context state —&nbsp;<span id="context-state">…</span>
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="controls">
+          <button type="button" id="unlock" data-wdu-audio-unlock>Unlock sound</button>
+          <button type="button" id="mute" data-wdu-audio-mute class="secondary">
+            Mute
+          </button>
+          <button type="button" id="trigger" data-wdu-audio-trigger class="secondary">
+            Play voice
+          </button>
+        </div>
+        <p class="note">
+          Unlock resumes the audio context on the first gesture; Mute suspends
+          it and persists the choice under the wdu:audio storage key; Play
+          voice starts a short tone, capped at four concurrent voices.
+        </p>
+      </div>
+
+      <script src="/audio-runtime.js"></script>
+    </main>
+  </body>
+</html>
