@@ -39,9 +39,23 @@ browser capability directly instead of imitating a Codex path.
 
 ## 3. Deterministic capture
 
-- Wait for fonts, critical images/models, and an app-specific ready marker when one exists.
+- For a runnable scene that needs reproducible dynamic capture, read
+  `skills/core-rules/references/determinism.md`. Start a local target with
+  `WDU_DETERMINISTIC=1` passed to its existing start/preview command. For a
+  deployed target, use only its documented capture entry point; do not invent a
+  query switch.
+- Select a declared camera station by id before scene initialization. Do not drag,
+  scroll, or restore browser state to approximate the shot.
+- Wait for fonts and critical images/models. Under the deterministic contract,
+  additionally wait for `html[data-wdu-ready="true"]`; it means the rendered
+  result is the first stable frame.
+- A timeout only bounds the wait. It never makes the target ready. If the marker
+  does not appear during a requested deterministic run, report `FAIL` rather than
+  sleeping and taking an unstable image.
+- For a target outside the deterministic contract, use its real application
+  readiness signals and report the capture as nondeterministic. Do not add an
+  arbitrary stabilization delay.
 - Check the semantic snapshot structure before interacting.
-- Do not wait with arbitrary long sleeps; use ready signals and at most one short stabilization beat.
 - Do not disable animation globally in the desktop shot. Reduced motion is emulated separately.
 - Photograph full page, and for 3D additionally the hero/viewer inside the visible viewport.
 

@@ -34,7 +34,7 @@ website-design-ultra/
 │   └── verify-browser.mjs          # capability-gated browser adapter
 └── skills/
     ├── core-rules/
-    │   └── references/              # composition contract, responsive recomposition
+    │   └── references/              # composition, recomposition, deterministic runtime
     ├── anti-slop/
     │   └── references/              # prose tells, Tier-2 words, design tells,
     │                                # German annex, operations
@@ -109,6 +109,9 @@ exact provider, case, and tree):
 - Claim/CTA rewrite → `content-design/SKILL.md` plus only claims or microcopy.
 - Localized editorial page → content localization plus typography licensing, not every type reference.
 - Full-page responsive work → `core-rules` plus `references/responsive-recomposition.md`.
+- Reproducible dynamic capture, a visual baseline, a poster/checkpoint frame, or
+  scene bug reproduction → `core-rules/references/determinism.md`; ordinary 2D
+  work and an ordinary 3D hero do not load it.
 - Form component → `component-patterns/SKILL.md` plus `references/navigation-forms-overlays.md`.
 - R3F in Next.js → `r3f-patterns/SKILL.md` plus `references/nextjs.md`.
 - 3D camera/light brief → `3d-art-direction/SKILL.md` plus only the relevant shot, light, or type reference.

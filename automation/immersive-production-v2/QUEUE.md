@@ -35,7 +35,7 @@ splits that proposal into implementation-sized units.
 
 ## PR 2 — Determinism contract and reference implementation
 
-- [ ] `IP-02A` **Define the deterministic runtime contract** — Make `WDU_DETERMINISTIC`, injectable time, stable seeds, named camera stations, and `data-wdu-ready` normative and routable.
+- [x] `IP-02A` **Define the deterministic runtime contract** — Make `WDU_DETERMINISTIC`, injectable time, stable seeds, named camera stations, and `data-wdu-ready` normative and routable.
   - **Depends on:** IP-01B
   - **Read first:** `TODO.md` T0.1; `website-design-ultra/skills/core-rules/SKILL.md`; `website-design-ultra/skills/canvas-first-architecture/references/scene-state-and-clock.md`; `website-design-ultra/commands/verify.md`.
   - **Deliver:** `website-design-ultra/skills/core-rules/references/determinism.md`, minimal routing updates, and validator bindings.

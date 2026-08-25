@@ -319,6 +319,57 @@ for (const [file, markers] of hardeningContracts) {
   }
 }
 
+/**
+ * Comparable scene captures require one contract to bind time, random streams,
+ * camera position, and readiness. Keep its activation narrow: normal design and
+ * 3D planning do not need this leaf unless reproducible runtime evidence is in
+ * scope.
+ */
+const determinismContracts = [
+  [
+    'skills/core-rules/references/determinism.md',
+    [
+      'WDU_DETERMINISTIC=1',
+      'performance.now()',
+      'Math.random()',
+      'seed-name',
+      'camera-stations',
+      'data-wdu-ready="true"',
+      'first stable frame',
+    ],
+  ],
+  [
+    'skills/core-rules/SKILL.md',
+    ['determinism.md', 'reproducible dynamic capture'],
+  ],
+  [
+    'skills/canvas-first-architecture/references/scene-state-and-clock.md',
+    ['core-rules/references/determinism.md'],
+  ],
+  [
+    'commands/verify.md',
+    ['WDU_DETERMINISTIC=1', 'data-wdu-ready="true"', 'first stable frame'],
+  ],
+  [
+    'README.md',
+    ['core-rules/references/determinism.md', 'reproducible dynamic capture'],
+  ],
+]
+
+for (const [file, markers] of determinismContracts) {
+  const fullPath = path.join(pluginRoot, file)
+  if (!fs.existsSync(fullPath)) {
+    fail(`${file}: missing determinism contract artifact`)
+    continue
+  }
+  const content = read(fullPath).toLowerCase()
+  for (const marker of markers) {
+    if (!content.includes(marker.toLowerCase())) {
+      fail(`${file}: missing determinism marker "${marker}"`)
+    }
+  }
+}
+
 const antiSlopContracts = [
   [
     'skills/anti-slop/SKILL.md',
@@ -820,6 +871,15 @@ for (const testCase of forwardCases) {
     !Number.isInteger(testCase.trace.maxEstimatedPluginTokens)
   ) {
     fail(`tests/forward/cases.json: ${testCase.id} missing complete trace budget`)
+  }
+}
+
+const determinismReference = 'skills/core-rules/references/determinism.md'
+for (const testCase of forwardCases) {
+  if (!testCase.trace?.forbiddenFiles?.includes(determinismReference)) {
+    fail(
+      `tests/forward/cases.json: ${testCase.id} must forbid determinism.md when reproducible runtime evidence is not requested`,
+    )
   }
 }
 

@@ -49,9 +49,15 @@ poster frame has to reproduce. Interpolated visuals do not need one.
 ## Determinism
 
 A poster frame, a verification screenshot, and a bug report all need the same
-scene to produce the same image. Seed any per-frame randomness from a named
-generator rather than `Math.random`, and derive noise from `clock.elapsed`
-instead of from a call counter. Systems that skip a frame then still agree.
+scene to produce the same image. When reproducible dynamic capture is in scope,
+read `core-rules/references/determinism.md` before implementing this clock or any
+random source. Its injected-time, named-seed, camera-station, and stable-frame
+rules are the capture contract; the `tick(now)` example above is not permission
+for scene code to call a wall clock directly.
+
+Seed any per-frame randomness from a named generator rather than `Math.random`,
+and derive noise from `clock.elapsed` instead of from a call counter. Systems that
+skip a frame then still agree.
 
 ## The state machine
 
