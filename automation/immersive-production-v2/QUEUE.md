@@ -91,25 +91,25 @@ splits that proposal into implementation-sized units.
 
 ## PR 5 — next-r3f-cinematic and quality controller
 
-- [ ] `IP-05A` **Scaffold the single Next/R3F cinematic starter** — Add the root-only TypeScript starter with a pinned React/R3F/Three matrix and a server-rendered page around a client-only Canvas leaf.
+- [x] `IP-05A` **Scaffold the single Next/R3F cinematic starter** — Add the root-only TypeScript starter with a pinned React/R3F/Three matrix and a server-rendered page around a client-only Canvas leaf.
   - **Depends on:** IP-04B
   - **Deliver:** `starters/next-r3f-cinematic/` with real semantic DOM copy, exact lockfile, one camera owner, one clock, one asset manifest, and wired determinism.
   - **Acceptance:** A fresh checkout installs and builds; the page is not made wholly client-rendered; no Vite starter or particle template is introduced.
   - **Verify:** Clean install, typecheck, tests, production build, and strict root/plugin validation.
 
-- [ ] `IP-05B` **Implement the copied quality controller** — Add one heavily commented zero-runtime-dependency file owning Poster/Low/Medium/High transitions, DPR steps, hysteresis, offscreen pause, and thermal backoff.
+- [x] `IP-05B` **Implement the copied quality controller** — Add one heavily commented zero-runtime-dependency file owning Poster/Low/Medium/High transitions, DPR steps, hysteresis, offscreen pause, and thermal backoff.
   - **Depends on:** IP-05A
   - **Deliver:** Copyable controller plus tests and starter integration; values remain owned by `3d-runtime-quality`.
   - **Acceptance:** The controller exposes the IP-03 telemetry surface, has one transition owner, avoids per-frame React state, and does not become an npm package.
   - **Verify:** Unit tests cover hysteresis, cooldown, visibility, thermal downgrade, recovery, and deterministic mode.
 
-- [ ] `IP-05C` **Complete starter fallback and lifecycle contracts** — Add art-directed poster, reduced motion, context-loss recovery, portrait composition, disposal, and route-transition checks.
+- [x] `IP-05C` **Complete starter fallback and lifecycle contracts** — Add art-directed poster, reduced motion, context-loss recovery, portrait composition, disposal, and route-transition checks.
   - **Depends on:** IP-05B
   - **Deliver:** Visible motion control where needed and semantic content/controls outside Canvas.
   - **Acceptance:** Fallback is composed rather than blank; reduced motion remains useful; context loss reveals the poster and DOM action; repeated mount/unmount does not grow GPU resources.
   - **Verify:** Build, keyboard test, portrait capture, reduced-motion pair, forced context-loss capture, and lifecycle resource assertions.
 
-- [ ] `IP-05D` **Extend self-lint to executable root surfaces** — Lint starter and future lab copy without treating `NO-COPY` as success.
+- [x] `IP-05D` **Extend self-lint to executable root surfaces** — Lint starter and future lab copy without treating `NO-COPY` as success.
   - **Depends on:** IP-05C
   - **Deliver:** `validate-content.mjs` root-surface discovery, one starter copy fixture, and explicit exclusions for generated/vendor output.
   - **Acceptance:** Real starter copy is linted; placeholder copy fails; a lab route with deliberately no copy is declared structurally rather than hidden behind exit code 2.

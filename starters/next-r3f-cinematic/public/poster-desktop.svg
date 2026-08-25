@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675">
+  <!-- Art-directed desktop poster fallback (IP-05C). Composed from the live
+       scene: matte torus knot on a pedestal, the same palette (bg #0e0f13,
+       surface #191a21, accent #d8c9a3, pedestal #23262e) and the same warm
+       accent light (#ffb86b). Purely decorative: no text, no controls. -->
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#191a21"/>
+      <stop offset="70%" stop-color="#0e0f13"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffb86b" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#ffb86b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="knot" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ecdfbc"/>
+      <stop offset="55%" stop-color="#d8c9a3"/>
+      <stop offset="100%" stop-color="#b7a67f"/>
+    </linearGradient>
+    <linearGradient id="pedestal" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2b2e37"/>
+      <stop offset="100%" stop-color="#1a1c22"/>
+    </linearGradient>
+    <linearGradient id="pedestal-top" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#343843"/>
+      <stop offset="100%" stop-color="#23262e"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#bg)"/>
+
+  <!-- Warm accent light from the lower left, matching the scene's point light. -->
+  <circle cx="420" cy="430" r="330" fill="url(#glow)"/>
+
+  <!-- Floor shadow under the pedestal. -->
+  <ellipse cx="600" cy="668" rx="270" ry="24" fill="#000000" opacity="0.4"/>
+
+  <!-- Pedestal. -->
+  <path d="M 372 590 L 350 640 A 250 40 0 0 1 850 640 L 828 590 A 228 36 0 0 1 372 590 Z" fill="url(#pedestal)"/>
+  <ellipse cx="600" cy="588" rx="228" ry="36" fill="url(#pedestal-top)"/>
+  <ellipse cx="600" cy="586" rx="228" ry="36" fill="none" stroke="#3a3f4b" stroke-opacity="0.6"/>
+
+  <!-- Shadow cast by the knot onto the pedestal. -->
+  <ellipse cx="600" cy="520" rx="160" ry="24" fill="#000000" opacity="0.42"/>
+
+  <!-- The knot: three interlocking rings with holes, in the matte accent tone. -->
+  <g transform="translate(600 392)">
+    <g transform="rotate(-30)">
+      <ellipse cx="0" cy="0" rx="172" ry="98" fill="url(#knot)"/>
+      <ellipse cx="0" cy="0" rx="100" ry="56" fill="#12141a"/>
+    </g>
+    <g transform="rotate(90)">
+      <ellipse cx="0" cy="0" rx="172" ry="98" fill="url(#knot)"/>
+      <ellipse cx="0" cy="0" rx="100" ry="56" fill="#12141a"/>
+    </g>
+    <g transform="rotate(210)">
+      <ellipse cx="0" cy="0" rx="172" ry="98" fill="url(#knot)"/>
+      <ellipse cx="0" cy="0" rx="100" ry="56" fill="#12141a"/>
+    </g>
+  </g>
+
+  <!-- Soft top-left sheen across the subject. -->
+  <ellipse cx="520" cy="330" rx="150" ry="70" transform="rotate(-24 520 330)" fill="#ffffff" opacity="0.07"/>
+</svg>

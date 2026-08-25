@@ -442,8 +442,13 @@ then checks hourly. Logs are written to
 - Test all code examples and internal links before release.
 
 Run the deterministic content check. It validates structure and contrast, binds
-the linter's rules to their references, replays the copy fixtures, and lints the
-plugin's own prose:
+the linter's rules to their references, replays the copy fixtures, and lints
+the plugin's own prose plus the executable root surfaces that ADR-011 keeps
+outside the installed tree: every starter's discovered copy surfaces
+(`app/`, `components/`, `README.md`, and the other conventional locations)
+must lint clean with real copy, placeholder copy fails, generated and vendor
+output stays excluded, and a `lab/` surface is declared copy-free by design
+rather than reported as `NO-COPY` with exit code 2:
 
 ```bash
 node scripts/validate-content.mjs
