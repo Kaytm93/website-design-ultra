@@ -61,7 +61,9 @@ jobs:
         run: node --test tests/immersive/deterministic-capture/capture-comparator.test.mjs
 
       - name: Install pinned Chromium
-        run: npx --yes --package playwright@1.62.1 playwright install --with-deps chromium
+        run: |
+          npx --yes --package playwright@1.62.1 playwright install --with-deps chromium
+          npx --yes --package @playwright/cli@0.1.17 playwright-cli install-browser --with-deps chromium
 
       - name: Compare two clean deterministic captures
         env:
@@ -78,7 +80,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: deterministic-capture
-          path: ${{ runner.temp }}/wdu-deterministic-capture
+          path: |
+            ${{ runner.temp }}/wdu-deterministic-capture
+            ${{ runner.temp }}/wdu-ip-03b-capture
           if-no-files-found: error
           retention-days: 14
 
