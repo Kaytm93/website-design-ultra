@@ -252,10 +252,16 @@ export function SceneRuntime({
   // priority, negative first), so every priority-0 consumer — camera, quality
   // sample, hero pose — reads this frame's time.
   //
+  // Deterministic freeze (IP-05C): once the stable frame is reached, the clock
+  // itself stops ticking. Extra renders can still be scheduled by React
+  // invalidations after data-wdu-ready is set, but they now draw the same
+  // frozen pose, so captures stay byte-identical regardless of flush timing.
+  //
   // NOTE: no useFrame in this starter may use a positive priority. R3F treats
   // a subscriber with priority > 0 as a manual render owner and disables its
   // automatic gl.render call, which leaves the canvas blank.
   useFrame(() => {
+    if (mode === 'deterministic' && stableFrameReachedRef.current) return
     frameCountRef.current += 1
     bootstrapRef.current?.clock.tick()
   }, -1)

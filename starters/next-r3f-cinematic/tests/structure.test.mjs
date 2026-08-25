@@ -229,6 +229,10 @@ test('fallback and lifecycle contracts are wired (IP-05C)', () => {
   assert.ok(runtime.includes('invalidateReady'))
   assert.ok(runtime.includes('stableFrameReached'))
   assert.ok(runtime.includes('delete (globalThis'), 'the handle is removed on unmount')
+  assert.ok(
+    runtime.includes("if (mode === 'deterministic' && stableFrameReachedRef.current) return"),
+    'the injected clock stops ticking once the stable frame is reached',
+  )
 
   const qualityRuntime = read('components/QualityRuntime.tsx')
   assert.ok(qualityRuntime.includes("setFrameloop('never')"), 'the capture freeze exists')

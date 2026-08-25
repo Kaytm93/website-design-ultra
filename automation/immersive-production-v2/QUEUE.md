@@ -103,7 +103,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** The controller exposes the IP-03 telemetry surface, has one transition owner, avoids per-frame React state, and does not become an npm package.
   - **Verify:** Unit tests cover hysteresis, cooldown, visibility, thermal downgrade, recovery, and deterministic mode.
 
-- [ ] `IP-05C` **Complete starter fallback and lifecycle contracts** — Add art-directed poster, reduced motion, context-loss recovery, portrait composition, disposal, and route-transition checks.
+- [x] `IP-05C` **Complete starter fallback and lifecycle contracts** — Add art-directed poster, reduced motion, context-loss recovery, portrait composition, disposal, and route-transition checks.
   - **Depends on:** IP-05B
   - **Deliver:** Visible motion control where needed and semantic content/controls outside Canvas.
   - **Acceptance:** Fallback is composed rather than blank; reduced motion remains useful; context loss reveals the poster and DOM action; repeated mount/unmount does not grow GPU resources.
