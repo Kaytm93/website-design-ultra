@@ -35,12 +35,17 @@ test('every declared asset carries the contract fields and exists on disk', () =
   }
 })
 
-test('the header brand mark is the only declared runtime asset', () => {
+test('the header mark and the two poster variants are the declared runtime assets', () => {
   assert.deepEqual(
     manifest.assets.map((asset) => asset.id).sort(),
-    ['brand-mark'],
+    ['brand-mark', 'poster-desktop', 'poster-portrait'],
     'changing the declared asset set is an intentional manifest change',
   )
   const page = readFileSync(join(root, 'app', 'page.tsx'), 'utf8')
   assert.ok(page.includes('/brand-mark.svg'), 'the page must reference the declared asset')
+  const poster = readFileSync(join(root, 'components', 'Poster.tsx'), 'utf8')
+  assert.ok(
+    poster.includes('poster-desktop') && poster.includes('poster-portrait'),
+    'the poster component must reference the declared poster ids',
+  )
 })

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useSceneRuntime } from './SceneRuntime.tsx'
 
@@ -24,33 +24,51 @@ import { useSceneRuntime } from './SceneRuntime.tsx'
  *   it.
  * - It attaches the controller's own IntersectionObserver/visibilitychange
  *   wiring to the canvas element and detaches it on unmount.
+ * - Deterministic freeze (IP-05C): once readiness has fired, this component
+ *   stops the loop, so the canvas keeps presenting exactly the stable frame
+ *   and captures are byte-identical. The freeze survives quality-driven
+ *   apply() calls (visibility toggles cannot resume a frozen capture).
  *
  * React state is deliberately not touched per frame: subscription callbacks
  * fire only when the tier or DPR actually changes.
  */
 export function QualityRuntime() {
-  const { quality, clock } = useSceneRuntime()
+  const { quality, clock, mode, stableFrameReached } = useSceneRuntime()
   const gl = useThree((state) => state.gl)
   const setFrameloop = useThree((state) => state.setFrameloop)
   const size = useThree((state) => state.size)
   const canvas = gl.domElement
+  const stablePausedRef = useRef(false)
 
   // Feed one frame-time sample per rendered frame, after the clock tick
-  // (SceneRuntime registered its priority-0 tick before this component).
+  // (SceneRuntime's priority -1 tick runs before every priority-0 subscriber).
   useFrame(() => {
     quality.recordFrameTime(clock.delta * 1000)
   }, 0)
+
+  // Deterministic freeze: this subscriber (priority -1, registered before
+  // SceneRuntime's own -1 hooks) runs before the tick and the marker check of
+  // the same frame; once the previous frame's marker reported the stable
+  // frame, stop the loop for good. Live mode never pauses here.
+  useFrame(() => {
+    if (mode !== 'deterministic') return
+    if (!stableFrameReached()) return
+    if (stablePausedRef.current) return
+    stablePausedRef.current = true
+    setFrameloop('never')
+  }, -1)
 
   // Apply controller decisions: DPR and render-loop pause. Fires only on
   // change, never per frame.
   useEffect(() => {
     const apply = () => {
       gl.setPixelRatio(quality.qualityState().dpr.value)
-      setFrameloop(quality.snapshot().paused ? 'never' : 'always')
+      const frozen = mode === 'deterministic' && stablePausedRef.current
+      setFrameloop(quality.snapshot().paused || frozen ? 'never' : 'always')
     }
     apply()
     return quality.onChange(apply)
-  }, [gl, setFrameloop, quality])
+  }, [gl, setFrameloop, quality, mode])
 
   // A resize invalidates the measurement window: samples collected at the old
   // size must not decide the new one (adaptive-runtime.md, discard list).

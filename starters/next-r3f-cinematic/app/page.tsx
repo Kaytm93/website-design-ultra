@@ -4,16 +4,17 @@ import { CAMERA_STATIONS } from '../lib/camera-stations'
 import { resolveRuntimeMode } from '../lib/runtime-config'
 
 /**
- * The capture entry point. This page resolves WDU_DETERMINISTIC and
- * WDU_STATION per request at the application boundary and injects the resolved
- * mode and station into the scene runtime. It is force-dynamic so the mode is
- * never baked into a static page at build time; the copy below is still
- * server-rendered into the initial HTML on every request.
+ * The capture entry point. This page resolves WDU_DETERMINISTIC,
+ * WDU_STATION, and WDU_REDUCED_MOTION per request at the application boundary
+ * and injects the resolved mode, station, and motion into the scene runtime.
+ * It is force-dynamic so the mode is never baked into a static page at build
+ * time; the copy below is still server-rendered into the initial HTML on
+ * every request.
  */
 export const dynamic = 'force-dynamic'
 
 export default function Page() {
-  const { mode, stationId } = resolveRuntimeMode()
+  const { mode, stationId, motion } = resolveRuntimeMode()
   // Fail explicitly before scene initialization when the requested station id
   // is unknown. Never fall back to the first station.
   getCameraStation(CAMERA_STATIONS, stationId)
@@ -21,6 +22,9 @@ export default function Page() {
   return (
     <main>
       <header className="site-header">
+        <a className="skip-link" href="#scene-heading">
+          Skip to the scene
+        </a>
         <img
           src="/brand-mark.svg"
           alt=""
@@ -48,8 +52,9 @@ export default function Page() {
           <div>
             <dt>Server-rendered page</dt>
             <dd>
-              This copy, the station control, and the status note ship in the
-              initial HTML. The canvas mounts only in the browser.
+              This copy, the station control, the motion control, and the
+              status notes ship in the initial HTML. The canvas mounts only in
+              the browser.
             </dd>
           </div>
           <div>
@@ -70,8 +75,8 @@ export default function Page() {
           <div>
             <dt>One asset manifest</dt>
             <dd>
-              lib/asset-manifest.json lists every runtime asset. The header
-              mark is the only declared asset.
+              lib/asset-manifest.json lists every runtime asset: the header
+              mark and the two poster variants.
             </dd>
           </div>
           <div>
@@ -79,7 +84,51 @@ export default function Page() {
             <dd>
               WDU_DETERMINISTIC=1 freezes the clock, seeds every named random
               stream, applies the requested camera station, and sets
-              html[data-wdu-ready="true"] only after the stable frame renders.
+              html[data-wdu-ready="true"] only after the stable frame renders,
+              then freezes the loop so captures are byte-identical.
+            </dd>
+          </div>
+          <div>
+            <dt>Art-directed poster</dt>
+            <dd>
+              Two composed SVG variants, desktop and portrait, mirror the live
+              composition: the matte torus knot on its pedestal, the same
+              palette, the same accent light. The poster is the fallback behind
+              loading, the poster quality tier, and context loss — never a
+              blank frame.
+            </dd>
+          </div>
+          <div>
+            <dt>Reduced motion</dt>
+            <dd>
+              The motion control in the DOM switches between the full rotation
+              and the seeded static pose. WDU_REDUCED_MOTION=1 locks the same
+              state for capture; the static shot keeps the subject, the
+              controls, and the quality layer usable.
+            </dd>
+          </div>
+          <div>
+            <dt>Context-loss recovery</dt>
+            <dd>
+              When the WebGL context is lost, the poster and a restore action
+              appear over the frame; the action mounts a fresh canvas. html
+              data-wdu-context records the state for verification.
+            </dd>
+          </div>
+          <div>
+            <dt>Portrait composition</dt>
+            <dd>
+              A named hero-portrait station reframes the subject for tall
+              viewports. Live mode selects it by orientation; deterministic
+              capture requests it by id (WDU_STATION=hero-portrait).
+            </dd>
+          </div>
+          <div>
+            <dt>Disposal</dt>
+            <dd>
+              Unmounting disposes the geometry, material, quality observers,
+              and ready marker. Repeated mount and unmount cycles return the
+              renderer's resource counters to the same baseline.
             </dd>
           </div>
         </dl>
@@ -89,11 +138,11 @@ export default function Page() {
         <h2 id="scene-heading">The scene</h2>
         <p>
           The subject is a matte torus knot on a pedestal. Its rotation phase
-          comes from the seeded hero-motion stream and its speed reads the
-          injected clock, so the same commit, seed, and station capture
-          identical frames.
+          comes from the seeded hero-motion stream; reduced motion holds that
+          static pose while full motion advances it from the injected clock, so
+          the same commit, seed, station, and motion capture identical frames.
         </p>
-        <SceneClient mode={mode} stationId={stationId} />
+        <SceneClient mode={mode} stationId={stationId} motion={motion} />
       </section>
 
       <section aria-labelledby="run-heading">
@@ -107,11 +156,21 @@ export default function Page() {
           </li>
           <li>
             <code>
-              npm run build && WDU_DETERMINISTIC=1 WDU_STATION=hero-wide npm
-              run start
+              npm run build &amp;&amp; WDU_DETERMINISTIC=1 WDU_STATION=hero-wide
+              npm run start
             </code>{' '}
             — the capture entry point: fixed clock, seeded streams, named
             station.
+          </li>
+          <li>
+            <code>WDU_REDUCED_MOTION=1</code> on top of the same command — the
+            reduced-motion pair: the hero holds its static pose and the capture
+            state is locked.
+          </li>
+          <li>
+            <code>npm run verify:ip05c</code> — build, keyboard, portrait
+            capture, reduced-motion pair, forced context loss, and lifecycle
+            resource assertions.
           </li>
         </ol>
       </section>

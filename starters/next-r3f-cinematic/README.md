@@ -51,12 +51,19 @@ WDU_DETERMINISTIC=1 WDU_STATION=hero-wide npm run start
   Unset and every other value select live mode.
 - `WDU_STATION` names the camera station applied before the stable-frame
   sequence. Unknown ids fail explicitly; there is no fallback to the first
-  station.
+  station. `hero-portrait` is the named portrait composition.
+- `WDU_REDUCED_MOTION=1` is the only value that selects the reduced-motion
+  capture state (IP-05C): the hero holds its seeded static pose, the motion
+  control is locked, and the capture state is recorded as
+  `html[data-wdu-motion="reduced"]`.
 - The resolved mode is recorded on the document root as
   `html[data-wdu-mode="deterministic"]`.
 - Readiness is `html[data-wdu-ready="true"]`, set only after the stable frame
   (frame 12) renders with the station applied, the manifest resolved, and the
-  named streams initialized. It is removed on station change and on unmount.
+  named streams initialized. In deterministic mode the render loop then
+  freezes, so the canvas keeps presenting exactly the stable frame and
+  captures are byte-identical. Readiness is removed on station change, on
+  context loss, and on unmount.
 
 The page is `force-dynamic` so the mode is never baked into a static page at
 build time; the copy is still server-rendered into the initial HTML on every
@@ -113,11 +120,17 @@ camera during the stable-frame sequence.
 
 ## Scope of this scaffold
 
-This is the IP-05A/IP-05B scaffold. The quality controller (Poster/Low/
-Medium/High, IP-05B) is implemented and wired as the single quality owner.
-Still to land as separate queue items in the same PR group: the art-directed
-poster, reduced-motion handling, context-loss recovery, portrait composition,
-and disposal and route-transition checks (IP-05C). Those extend this tree.
+This is the IP-05A/IP-05B/IP-05C scaffold. The quality controller
+(Poster/Low/Medium/High, IP-05B) is implemented and wired as the single
+quality owner. The fallback and lifecycle contracts (IP-05C) are implemented
+in this tree: the art-directed desktop and portrait posters, the visible
+motion control with WDU_REDUCED_MOTION capture state, context-loss recovery
+through a DOM restore action, the named hero-portrait station, and disposal
+wiring with a diagnostic handle (`globalThis.__WDU_CINEMATIC__`) for
+lifecycle resource assertions. The automated IP-05C verification driver
+(`scripts/verify-ip05c.mjs`) is the next queue item's work; until it lands,
+the browser evidence for these contracts is the manual matrix documented in
+the queue item.
 
 ## License
 

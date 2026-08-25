@@ -4,10 +4,19 @@
  * WDU_DETERMINISTIC=1 is the only value that enables deterministic mode; an
  * unset variable and every other value select live mode (determinism contract,
  * section 1). WDU_STATION names the camera station applied before the first
- * stable frame. The server page and layout resolve these values per request;
- * scene systems never read process environment and receive the resolved mode
- * and station as props instead.
+ * stable frame. WDU_REDUCED_MOTION=1 selects the reduced-motion capture state
+ * (IP-05C); unset and every other value select full motion. The server page
+ * and layout resolve these values per request; scene systems never read
+ * process environment and receive the resolved mode, station, and motion as
+ * props instead.
  */
+
+import {
+  resolveMotionPreference,
+  type MotionPreference,
+} from './motion-preference.ts'
+
+export type { MotionPreference } from './motion-preference.ts'
 
 export type RuntimeMode = 'deterministic' | 'live'
 
@@ -21,9 +30,14 @@ export function resolveStationId(raw: string | undefined): string {
   return raw !== undefined && raw.trim().length > 0 ? raw.trim() : DEFAULT_STATION_ID
 }
 
-export function resolveRuntimeMode(): { mode: RuntimeMode; stationId: string } {
+export function resolveRuntimeMode(): {
+  mode: RuntimeMode
+  stationId: string
+  motion: MotionPreference
+} {
   return {
     mode: resolveMode(process.env.WDU_DETERMINISTIC),
     stationId: resolveStationId(process.env.WDU_STATION),
+    motion: resolveMotionPreference(process.env.WDU_REDUCED_MOTION),
   }
 }

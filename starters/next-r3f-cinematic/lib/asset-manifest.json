@@ -9,6 +9,20 @@
       "url": "/brand-mark.svg",
       "bucket": "critical",
       "purpose": "Header brand mark, rendered in the server HTML."
+    },
+    {
+      "id": "poster-desktop",
+      "kind": "image",
+      "url": "/poster-desktop.svg",
+      "bucket": "critical",
+      "purpose": "Art-directed desktop poster fallback (16:9), composed from the live scene's palette, subject, and accent light (IP-05C)."
+    },
+    {
+      "id": "poster-portrait",
+      "kind": "image",
+      "url": "/poster-portrait.svg",
+      "bucket": "critical",
+      "purpose": "Art-directed portrait poster fallback (9:16) for tall viewports, per 3d-art-direction's separate-portrait-poster rule (IP-05C)."
     }
   ]
 }

@@ -162,10 +162,17 @@ test('the quality controller is created at exactly one site and owns every trans
   assert.ok(qualityRuntime.includes('recordFrameTime'))
   assert.ok(qualityRuntime.includes('attachVisibility'))
 
-  // The only two R3F store readers: CameraRig (the camera owner) and
-  // QualityRuntime (gl + setFrameloop). No other component touches the store.
+  // The only R3F store readers: CameraRig (the camera owner), QualityRuntime
+  // (gl + setFrameloop), SceneRuntime (renderer info for the diagnostic
+  // handle), and ContextLossGate (the context-loss observer). No other
+  // component touches the store.
   const storeReaders = SOURCES.filter((file) => read(file).includes('useThree'))
-  assert.deepEqual(storeReaders, ['components/CameraRig.tsx', 'components/QualityRuntime.tsx'])
+  assert.deepEqual(storeReaders, [
+    'components/CameraRig.tsx',
+    'components/ContextLossGate.tsx',
+    'components/QualityRuntime.tsx',
+    'components/SceneRuntime.tsx',
+  ])
 
   const runtime = read('components/SceneRuntime.tsx')
   assert.ok(runtime.includes('createQualityController'))
@@ -177,4 +184,69 @@ test('the quality controller and its config read no wall clock', () => {
   for (const file of ['lib/quality-controller.ts', 'lib/quality-config.ts']) {
     assert.ok(!wallClock.test(read(file)), `${file} must not read a wall clock`)
   }
+})
+
+test('fallback and lifecycle contracts are wired (IP-05C)', () => {
+  // Visible motion control and poster live in the DOM outside the canvas.
+  const client = read('components/SceneClient.tsx')
+  assert.ok(client.includes('MotionControl'))
+  assert.ok(client.includes('<Poster'))
+  assert.ok(client.includes("variant={portrait ? 'portrait' : 'desktop'}"))
+  assert.ok(client.includes('wdu:remount-scene'), 'the remount surface exists')
+  assert.ok(client.includes("data-wdu-station"))
+  assert.ok(client.includes("data-wdu-motion"))
+  assert.ok(client.includes("data-wdu-context"))
+  assert.ok(client.includes('hero-portrait'), 'portrait composition is wired')
+  assert.ok(client.includes('restore-button'), 'the DOM action exists')
+
+  const motionControl = read('components/MotionControl.tsx')
+  assert.ok(motionControl.includes('aria-pressed'), 'the control is a pressed-state button group')
+  assert.ok(motionControl.includes('disabled={locked}'), 'deterministic mode locks the control')
+
+  const poster = read('components/Poster.tsx')
+  assert.ok(poster.includes('poster-desktop'))
+  assert.ok(poster.includes('poster-portrait'))
+  assert.ok(poster.includes('aria-hidden="true"'), 'the poster is decorative')
+
+  // Context loss: observe, record the failure on the quality controller, and
+  // reveal the poster plus the DOM action.
+  const gate = read('components/ContextLossGate.tsx')
+  assert.ok(gate.includes('webglcontextlost'))
+  assert.ok(gate.includes('addEventListener'))
+  assert.ok(gate.includes('removeEventListener'))
+  assert.ok(gate.includes("forcePoster('context lost')"))
+  assert.ok(gate.includes('preventDefault'))
+
+  // Disposal: the subject releases its geometry and material on unmount.
+  const hero = read('components/HeroObject.tsx')
+  assert.ok(hero.includes('.dispose()'))
+  assert.ok(hero.includes('heroRotationY'))
+
+  // The runtime exposes readiness invalidation, the stable-frame freeze, and
+  // the diagnostic handle the lifecycle assertions read.
+  const runtime = read('components/SceneRuntime.tsx')
+  assert.ok(runtime.includes('__WDU_CINEMATIC__'))
+  assert.ok(runtime.includes('invalidateReady'))
+  assert.ok(runtime.includes('stableFrameReached'))
+  assert.ok(runtime.includes('delete (globalThis'), 'the handle is removed on unmount')
+
+  const qualityRuntime = read('components/QualityRuntime.tsx')
+  assert.ok(qualityRuntime.includes("setFrameloop('never')"), 'the capture freeze exists')
+
+  // R3F treats a useFrame subscriber with priority > 0 as a manual render
+  // owner and disables its automatic gl.render call, leaving the canvas
+  // blank. No subscriber in this starter may use a positive priority.
+  const positivePrioritySites = SOURCES.filter((file) =>
+    /useFrame\s*\([\s\S]{0,200}?,\s*[1-9]\d*\s*\)/.test(read(file)),
+  )
+  assert.deepEqual(
+    positivePrioritySites,
+    [],
+    'a positive useFrame priority would silently disable automatic rendering',
+  )
+
+  // The boundary resolves the reduced-motion flag; scene code never does.
+  const config = read('lib/runtime-config.ts')
+  assert.ok(config.includes('WDU_REDUCED_MOTION'))
+  assert.ok(config.includes('resolveMotionPreference'))
 })

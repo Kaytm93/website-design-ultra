@@ -5,10 +5,11 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   type ReactNode,
 } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import {
   createClock,
   createRandomStreams,
@@ -22,9 +23,13 @@ import {
   type QualityTelemetryState,
 } from '../lib/quality-controller.ts'
 import { QUALITY_CONFIG } from '../lib/quality-config.ts'
+import {
+  DEFAULT_STATION_ID,
+  type MotionPreference,
+  type RuntimeMode,
+} from '../lib/runtime-config.ts'
 import { ROOT_SEED, STABLE_FRAME, STEP_SECONDS } from '../lib/scene-config.ts'
 import assetManifest from '../lib/asset-manifest.json'
-import type { RuntimeMode } from '../lib/runtime-config.ts'
 
 if (assetManifest.schema !== 1) {
   throw new Error(
@@ -35,6 +40,10 @@ if (assetManifest.schema !== 1) {
 interface SceneRuntimeProps {
   mode: RuntimeMode
   stationId: string
+  /** Resolved at the application boundary; scene code never reads matchMedia. */
+  motion: MotionPreference
+  /** DOM-side subscription to tier/DPR changes (the poster overlay reacts to the poster tier). */
+  onQualityChange?: (state: QualityTelemetryState) => void
   children: ReactNode
 }
 
@@ -54,6 +63,17 @@ interface SceneRuntimeValue {
   quality: QualityController
   /** Change subscription for React surfaces that display the quality state. */
   onQualityChange: (listener: (state: QualityTelemetryState) => void) => () => void
+  /** The resolved motion preference (IP-05C); scene code reads this, never the media query. */
+  motion: MotionPreference
+  /** The resolved runtime mode; the capture freeze and control locks read it. */
+  mode: RuntimeMode
+  /**
+   * Context-loss recording (IP-05C): removes readiness and forces the camera
+   * to re-apply before the next ready. Recovery is the DOM remount.
+   */
+  invalidateReady: () => void
+  /** True only after the deterministic stable frame rendered (drives the capture freeze). */
+  stableFrameReached: () => boolean
 }
 
 interface SceneBootstrap {
@@ -114,11 +134,24 @@ function createBootstrap(mode: RuntimeMode): SceneBootstrap {
 
 /**
  * Scene bootstrap and the single clock, stream root, and ready marker owner.
- * Renders no pixels itself; it ticks the clock before render (priority 0) and
- * evaluates the stable-frame marker after the visible render (priority -1),
- * per the determinism contract.
+ * Renders no pixels itself; it ticks the clock first in the pre-render
+ * subscriber pass (priority -1) and evaluates the stable-frame marker in the
+ * same pass, per the determinism contract. In deterministic mode a reached
+ * stable frame freezes the render loop, so captures are byte-identical.
+ *
+ * IP-05C additions: the resolved motion preference is exposed to scene code,
+ * context loss can invalidate readiness, and a diagnostic capture handle
+ * (`globalThis.__WDU_CINEMATIC__`) exposes capture metadata plus the
+ * renderer's resource counters for the lifecycle assertions. The handle is
+ * deleted on unmount so it never points at a dead renderer.
  */
-export function SceneRuntime({ mode, stationId, children }: SceneRuntimeProps) {
+export function SceneRuntime({
+  mode,
+  stationId,
+  motion,
+  onQualityChange,
+  children,
+}: SceneRuntimeProps) {
   const bootstrapRef = useRef<SceneBootstrap | null>(null)
   let bootstrap = bootstrapRef.current
   if (bootstrap === null) {
@@ -127,22 +160,49 @@ export function SceneRuntime({ mode, stationId, children }: SceneRuntimeProps) {
   }
 
   const cameraAppliedRef = useRef(false)
+  const cameraApplyCountRef = useRef(0)
+  const stableFrameReachedRef = useRef(false)
+  const frameCountRef = useRef(0)
+  const markerTraceRef = useRef<Array<{ frame: number; cam: boolean; reached: boolean }>>([])
+  const camWritesRef = useRef<Array<string>>([])
+  const gl = useThree((state) => state.gl)
 
   const onCameraApplied = useCallback(() => {
     cameraAppliedRef.current = true
+    cameraApplyCountRef.current += 1
+    camWritesRef.current.push(`apply@${frameCountRef.current}`)
+  }, [])
+
+  const invalidateReady = useCallback(() => {
+    stableFrameReachedRef.current = false
+    cameraAppliedRef.current = false
+    camWritesRef.current.push(`invalidate@${frameCountRef.current}`)
+    bootstrapRef.current?.marker.invalidate()
   }, [])
 
   // A station change invalidates readiness before the new shot applies; the
   // marker is set again only after the next stable frame renders.
-  useEffect(() => {
+  //
+  // This must be a layout effect: a passive effect can flush after the first
+  // rAF frame (the R3F loop starts during commit), which would reset
+  // cameraAppliedRef after CameraRig already applied — and the rig never
+  // re-applies an unchanged station, so readiness would never recover.
+  useLayoutEffect(() => {
     cameraAppliedRef.current = false
+    stableFrameReachedRef.current = false
+    camWritesRef.current.push(`station-effect@${frameCountRef.current}`)
     bootstrapRef.current?.marker.invalidate()
   }, [stationId])
 
   // Dispose the quality controller's DOM observers with the scene. The
   // controller itself is garbage-collected with the bootstrap; nothing leaks
   // a visibility listener past unmount.
-  useEffect(() => {
+  //
+  // This is a layout effect so the ready attribute is removed synchronously
+  // at unmount, before a successor mount can render its first frame: a
+  // passive cleanup could otherwise delete the successor's freshly set
+  // data-wdu-ready attribute after the deterministic loop already froze.
+  useLayoutEffect(() => {
     const boot = bootstrapRef.current
     return () => {
       boot?.marker.invalidate()
@@ -150,23 +210,77 @@ export function SceneRuntime({ mode, stationId, children }: SceneRuntimeProps) {
     }
   }, [])
 
-  // Advance the injected clock exactly once per rendered frame, before the
-  // render. Consumers that read clock values run at priority 1 or later.
-  useFrame(() => {
-    bootstrapRef.current?.clock.tick()
-  }, 0)
+  // Report the initial quality state to the DOM side and subscribe to tier or
+  // DPR transitions. The poster overlay reacts to the poster tier; firing
+  // only on change keeps this off the per-frame path.
+  useEffect(() => {
+    if (!onQualityChange) return
+    onQualityChange(bootstrap.quality.qualityState())
+    return bootstrap.quality.onChange(onQualityChange)
+  }, [onQualityChange])
 
-  // Priority -1 subscribers run after the visible render: this is the render
-  // owner's stable-frame check.
+  // The diagnostic capture handle. resourceCounts reads the renderer's own
+  // counters, so repeated mount/unmount cycles (route transitions, restore
+  // after context loss) can be asserted not to grow GPU resources (IP-05C).
+  useEffect(() => {
+    const readAttribute = (name: string): string | null =>
+      document.documentElement.getAttribute(name)
+    const handle = {
+      mode: () => readAttribute('data-wdu-mode') ?? 'live',
+      motion: () => readAttribute('data-wdu-motion') ?? 'full',
+      stationId: () => readAttribute('data-wdu-station') ?? DEFAULT_STATION_ID,
+      context: () => readAttribute('data-wdu-context') ?? 'ok',
+      ready: () => readAttribute('data-wdu-ready') === 'true',
+      frame: () => frameCountRef.current,
+      cameraAppliedCount: () => cameraApplyCountRef.current,
+      camWrites: () => camWritesRef.current.slice(-16),
+      markerTrace: () => markerTraceRef.current.slice(-12),
+      resourceCounts: () => ({
+        geometries: gl.info.memory.geometries,
+        textures: gl.info.memory.textures,
+        programs: gl.info.programs?.length ?? 0,
+      }),
+    }
+    ;(globalThis as Record<string, unknown>).__WDU_CINEMATIC__ = handle
+    return () => {
+      delete (globalThis as Record<string, unknown>).__WDU_CINEMATIC__
+    }
+  }, [gl])
+
+  // Advance the injected clock exactly once per rendered frame. Priority -1
+  // runs first in the pre-render subscriber pass (R3F orders subscribers by
+  // priority, negative first), so every priority-0 consumer — camera, quality
+  // sample, hero pose — reads this frame's time.
+  //
+  // NOTE: no useFrame in this starter may use a positive priority. R3F treats
+  // a subscriber with priority > 0 as a manual render owner and disables its
+  // automatic gl.render call, which leaves the canvas blank.
+  useFrame(() => {
+    frameCountRef.current += 1
+    bootstrapRef.current?.clock.tick()
+  }, -1)
+
+  // The stable-frame check also runs at priority -1, registered after the
+  // tick, so it sees the freshly ticked frame number. In deterministic mode a
+  // reached stable frame freezes the loop (QualityRuntime), so the canvas
+  // keeps presenting exactly the stable frame and captures are byte-identical.
   useFrame(() => {
     const boot = bootstrapRef.current
     if (!boot) return
-    boot.marker.afterVisibleRender({
+    const reached = boot.marker.afterVisibleRender({
       frame: boot.clock.frame,
       assetsReady: boot.assetsReady,
       cameraStationApplied: cameraAppliedRef.current,
       streamsInitialized: boot.streamsInitialized,
     })
+    markerTraceRef.current.push({
+      frame: boot.clock.frame,
+      cam: cameraAppliedRef.current,
+      reached,
+    })
+    if (markerTraceRef.current.length > 64) markerTraceRef.current.shift()
+    if (reached && mode === 'deterministic') stableFrameReachedRef.current = true
+    else if (!reached) stableFrameReachedRef.current = false
   }, -1)
 
   const value: SceneRuntimeValue = {
@@ -176,6 +290,10 @@ export function SceneRuntime({ mode, stationId, children }: SceneRuntimeProps) {
     onCameraApplied,
     quality: bootstrap.quality,
     onQualityChange: bootstrap.quality.onChange,
+    motion,
+    mode,
+    invalidateReady,
+    stableFrameReached: () => stableFrameReachedRef.current,
   }
 
   return (
