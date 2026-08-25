@@ -608,11 +608,15 @@ function joinPieces(pieces) {
  * Reduce a source file to the text a visitor actually reads. Best effort for
  * JSX and HTML: it favours missing a string over inventing a finding.
  *
+ * Exported so the root-surface self-lint in validate-content.mjs can scan the
+ * same extracted surface for placeholder markers instead of reading raw
+ * source, where code fences, JSX props, and comments would be judged as copy.
+ *
  * Headings, list items and labels carry their source offset for the same reason
  * the body does: they are reported as findings, and a finding without a line is
  * a finding nobody can open.
  */
-function extract(content, extension) {
+export function extract(content, extension) {
   const headings = []
   let body = content
 

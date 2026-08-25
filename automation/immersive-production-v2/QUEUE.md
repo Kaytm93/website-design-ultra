@@ -109,7 +109,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Fallback is composed rather than blank; reduced motion remains useful; context loss reveals the poster and DOM action; repeated mount/unmount does not grow GPU resources.
   - **Verify:** Build, keyboard test, portrait capture, reduced-motion pair, forced context-loss capture, and lifecycle resource assertions.
 
-- [ ] `IP-05D` **Extend self-lint to executable root surfaces** — Lint starter and future lab copy without treating `NO-COPY` as success.
+- [x] `IP-05D` **Extend self-lint to executable root surfaces** — Lint starter and future lab copy without treating `NO-COPY` as success.
   - **Depends on:** IP-05C
   - **Deliver:** `validate-content.mjs` root-surface discovery, one starter copy fixture, and explicit exclusions for generated/vendor output.
   - **Acceptance:** Real starter copy is linted; placeholder copy fails; a lab route with deliberately no copy is declared structurally rather than hidden behind exit code 2.

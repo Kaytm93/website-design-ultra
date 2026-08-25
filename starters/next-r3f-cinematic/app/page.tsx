@@ -42,7 +42,8 @@ export default function Page() {
           This starter scaffolds a cinematic 3D hero for website-design-ultra.
           Next.js renders the copy below as HTML; a client-only canvas leaf runs
           the three.js scene. The scene is procedural geometry with no network
-          assets, so a fresh checkout installs, builds, and renders offline.
+          assets, so a fresh checkout installs and builds offline, and the page
+          renders without further fetches.
         </p>
       </section>
 
@@ -149,26 +150,26 @@ export default function Page() {
         <h2 id="run-heading">Run it</h2>
         <ol className="run-steps">
           <li>
-            <code>npm ci</code> — install the exact locked dependency set.
+            <code>npm ci</code> installs the exact locked dependency set.
           </li>
           <li>
-            <code>npm run dev</code> — live mode with the wall clock.
+            <code>npm run dev</code> starts live mode with the wall clock.
           </li>
           <li>
             <code>
               npm run build &amp;&amp; WDU_DETERMINISTIC=1 WDU_STATION=hero-wide
               npm run start
             </code>{' '}
-            — the capture entry point: fixed clock, seeded streams, named
+            is the capture entry point: fixed clock, seeded streams, named
             station.
           </li>
           <li>
-            <code>WDU_REDUCED_MOTION=1</code> on top of the same command — the
-            reduced-motion pair: the hero holds its static pose and the capture
-            state is locked.
+            <code>WDU_REDUCED_MOTION=1</code> on top of the same command
+            produces the reduced-motion pair: the hero holds its static pose
+            and the capture state is locked.
           </li>
           <li>
-            <code>npm run verify:ip05c</code> — build, keyboard, portrait
+            <code>npm run verify:ip05c</code> runs build, keyboard, portrait
             capture, reduced-motion pair, forced context loss, and lifecycle
             resource assertions.
           </li>

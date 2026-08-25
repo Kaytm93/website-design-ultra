@@ -5,7 +5,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { PROFILES, TIER1, TIER2 } from './lint-copy.mjs'
+import { PROFILES, TIER1, TIER2, extract } from './lint-copy.mjs'
 import { strictObjectSchemaFailures } from './forward-schema.mjs'
 
 const pluginRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -972,6 +972,258 @@ if (!selfLint) {
   fail(
     `scripts/lint-copy.mjs --self reports ${selfLint.status} on the plugin's own prose (tier1 ${selfLint.tier1}, tier3 ${selfLint.tier3})`,
   )
+}
+
+/**
+ * IP-05D — executable root surfaces. ADR-011 keeps starters, the lab, and
+ * implementation fixtures outside the installed plugin tree, so the plugin's
+ * self-lint never saw them. A plugin whose central claim is a deterministic
+ * copy linter cannot ship starters whose copy was never linted. This block
+ * discovers the root surfaces from the repository root, lints each starter's
+ * declared copy surfaces with the real linter, rejects placeholder copy that
+ * the linter is not built to judge, and declares the lab copy-free by design
+ * instead of hiding it behind exit code 2.
+ */
+const repoRoot = path.resolve(pluginRoot, '..')
+
+/**
+ * Generated and vendor output is declared, not discovered. Reading
+ * `next-env.d.ts` or a lockfile reports a NO-COPY warning for text that was
+ * never written as copy, and build output holds whole copies of the
+ * repository. The linter's own walk already skips dot-directories and the
+ * build-output directory set; this list is the explicit contract the
+ * root-surface discovery asserts: none of these paths may ever appear in a
+ * starter's lint report.
+ */
+const GENERATED_VENDOR_DIRECTORIES = new Set([
+  'node_modules',
+  'dist',
+  'build',
+  'out',
+  'output',
+  'coverage',
+  'vendor',
+])
+const GENERATED_VENDOR_FILES = new Set([
+  'next-env.d.ts',
+  'package-lock.json',
+  'npm-shrinkwrap.json',
+  'yarn.lock',
+  'pnpm-lock.yaml',
+])
+
+function isGeneratedVendorPath(file) {
+  const normalized = String(file).replaceAll('\\', '/')
+  const segments = normalized.split('/')
+  const base = segments[segments.length - 1]
+  if (GENERATED_VENDOR_FILES.has(base) || base.endsWith('.tsbuildinfo')) return true
+  // Dot-directories are skipped by the linter's own walk. `.` and `..` are
+  // cwd-relative path artifacts, not walked directories, so they never count.
+  return segments.some(
+    (segment) =>
+      (segment.startsWith('.') && segment !== '.' && segment !== '..') ||
+      GENERATED_VENDOR_DIRECTORIES.has(segment),
+  )
+}
+
+/**
+ * The copy a visitor reads, reduced to the same extracted surface the linter
+ * judges. The markers are deliberately narrow: `content-design` permits
+ * explicit placeholders where a fact is unknown, so this gate must name the
+ * starter failure mode — shipped page copy that was never written — not the
+ * word "placeholder" itself.
+ */
+const PLACEHOLDER_COPY_PATTERNS = [
+  /\blorem\s+ipsum\b/gi,
+  /\byour\s+(?:headline|title|subtitle|hero|brand|company|business|name|logo|text|copy|content|tagline|slogan|message|product|service|project|image|photo|picture)\s+(?:goes\s+)?here\b/gi,
+  /\[(?:your|insert|add)\s+[^\]]{2,80}\]/gi,
+  /\b(?:insert|add)\s+your\s+(?:text|copy|headline|content|title)\s+(?:here|below)\b/gi,
+]
+
+function discoverRootSurfaces(root) {
+  const surfaces = []
+  const startersDirectory = path.join(root, 'starters')
+  if (fs.existsSync(startersDirectory)) {
+    for (const entry of fs.readdirSync(startersDirectory, { withFileTypes: true })) {
+      if (!entry.isDirectory() || entry.name.startsWith('.')) continue
+      surfaces.push({
+        kind: 'starter',
+        name: entry.name,
+        root: path.join(startersDirectory, entry.name),
+      })
+    }
+  }
+  const labDirectory = path.join(root, 'lab')
+  if (fs.existsSync(labDirectory)) {
+    surfaces.push({ kind: 'lab', name: 'lab', root: labDirectory })
+  }
+  return surfaces
+}
+
+/**
+ * Conventional shipped-copy surfaces inside a starter. Everything else in the
+ * tree — lib/, tests/, public/, lockfiles, generated files — is excluded by
+ * construction: it is source or output, not copy. A starter with none of
+ * these surfaces is structurally broken and fails before a lint runs.
+ */
+function starterCopySurfacePaths(starterRoot) {
+  const candidates = [
+    'app',
+    'components',
+    'pages',
+    'content',
+    'src/app',
+    'src/components',
+  ]
+  const surfaces = candidates
+    .map((name) => path.join(starterRoot, name))
+    .filter((candidate) => fs.existsSync(candidate))
+  const readme = path.join(starterRoot, 'README.md')
+  if (fs.existsSync(readme)) surfaces.push(readme)
+  return surfaces
+}
+
+function lintStarterCopy(surface) {
+  const surfacePaths = starterCopySurfacePaths(surface.root)
+  if (!surfacePaths.length) return { surfacePaths, report: null, placeholders: [], excludedSeen: [] }
+  const report = runLinter(surfacePaths.flatMap((surfacePath) => ['--path', surfacePath]))
+  const placeholders = []
+  const excludedSeen = []
+  if (!report) return { surfacePaths, report: null, placeholders, excludedSeen }
+  for (const file of new Set([
+    ...Object.keys(report.measurements ?? {}),
+    ...(report.filesWithoutCopy ?? []),
+  ])) {
+    if (isGeneratedVendorPath(file)) excludedSeen.push(file)
+  }
+  for (const file of Object.keys(report.measurements ?? {})) {
+    const absolute = path.resolve(file)
+    if (!fs.existsSync(absolute)) continue
+    const body = extract(read(absolute), path.extname(absolute).toLowerCase()).body
+    for (const pattern of PLACEHOLDER_COPY_PATTERNS) {
+      for (const match of body.matchAll(pattern)) {
+        placeholders.push({
+          file,
+          quote: match[0].replace(/\s+/g, ' ').trim().slice(0, 120),
+        })
+      }
+    }
+  }
+  return { surfacePaths, report, placeholders, excludedSeen }
+}
+
+function checkStarterSurface(surface, options = {}) {
+  const { surfacePaths, report, placeholders, excludedSeen } = lintStarterCopy(surface)
+  const label = `starters/${surface.name}`
+  if (!surfacePaths.length) {
+    fail(
+      `${label}: no copy surface (app/, components/, pages/, content/, src/app/, src/components/, README.md)`,
+    )
+    return { surfacePaths, report, placeholders, excludedSeen }
+  }
+  if (!report) {
+    fail(`${label}: linter produced no report`)
+    return { surfacePaths, report, placeholders, excludedSeen }
+  }
+  if (report.status !== 'PASS') {
+    fail(
+      `${label}: copy lint reports ${report.status} (tier1 ${report.tier1}, tier3 ${report.tier3}); NO-COPY is not a pass on an executable surface`,
+    )
+  }
+  for (const file of excludedSeen) {
+    fail(`${label}: generated/vendor output ${file} entered the copy lint; it must stay excluded`)
+  }
+  if (options.expectPlaceholders) {
+    if (!placeholders.length) {
+      fail(`${label}: fixture must fail the placeholder gate, but no placeholder copy was found`)
+    }
+  } else {
+    for (const placeholder of placeholders) {
+      fail(`${label}: placeholder copy in ${placeholder.file}: "${placeholder.quote}"`)
+    }
+  }
+  return { surfacePaths, report, placeholders, excludedSeen }
+}
+
+/** Count the lab's own source files without descending into generated output. */
+function countLabSources(labRoot) {
+  let count = 0
+  const walk = (directory) => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const target = path.join(directory, entry.name)
+      if (entry.isDirectory()) {
+        if (isGeneratedVendorPath(target)) continue
+        walk(target)
+      } else if (entry.isFile() && !isGeneratedVendorPath(target)) {
+        count += 1
+      }
+    }
+  }
+  walk(labRoot)
+  return count
+}
+
+const starterSurfaceSummaries = []
+const labSurfaceSummaries = []
+for (const surface of discoverRootSurfaces(repoRoot)) {
+  if (surface.kind === 'lab') {
+    labSurfaceSummaries.push(`lab (${countLabSources(surface.root)} source file(s))`)
+    continue
+  }
+  const result = checkStarterSurface(surface)
+  starterSurfaceSummaries.push(
+    `${surface.name} (${result.surfacePaths.length} surface(s), ${result.report?.files ?? 0} file(s))`,
+  )
+}
+
+/**
+ * The regression fixture proves the discovery semantics, not just the linter
+ * rules. The polished starter must pass exactly like a live starter. The
+ * placeholder starter must fail the placeholder gate while the linter alone
+ * still passes it, so the gate is the mechanism under test; if the linter
+ * ever grows a placeholder rule, this fixture expectation moves to FAIL. The
+ * lab fixture must be declared structurally with its routes, never linted
+ * into a NO-COPY verdict. The polished fixture's `dist/` and `next-env.d.ts`
+ * carry bait copy: reading them would flip the verdict, so the exclusions
+ * stay proven.
+ */
+const rootSurfaceFixture = path.join(
+  pluginRoot,
+  'tests/copy/fixtures/root-surfaces',
+)
+if (fs.existsSync(rootSurfaceFixture)) {
+  let fixtureStarterCount = 0
+  let fixtureLabCount = 0
+  for (const surface of discoverRootSurfaces(rootSurfaceFixture)) {
+    if (surface.kind === 'lab') {
+      fixtureLabCount += 1
+      if (countLabSources(surface.root) === 0) {
+        fail('tests/copy/fixtures/root-surfaces: lab fixture must carry routes with deliberately no copy')
+      }
+      continue
+    }
+    fixtureStarterCount += 1
+    checkStarterSurface(surface, {
+      expectPlaceholders: surface.name === 'placeholder',
+    })
+  }
+  if (fixtureStarterCount !== 2) {
+    fail('tests/copy/fixtures/root-surfaces: expected the polished and placeholder starter fixtures')
+  }
+  if (fixtureLabCount !== 1) {
+    fail('tests/copy/fixtures/root-surfaces: expected one lab fixture surface')
+  }
+} else {
+  fail('tests/copy/fixtures/root-surfaces: missing root-surface regression fixture')
+}
+
+if (starterSurfaceSummaries.length) {
+  notes.push(`root starter copy: ${starterSurfaceSummaries.join(', ')}`)
+} else {
+  notes.push('root starter copy: no starters discovered outside the plugin tree')
+}
+if (labSurfaceSummaries.length) {
+  notes.push(`root lab surfaces declared copy-free: ${labSurfaceSummaries.join(', ')}`)
 }
 
 const forwardCases = JSON.parse(read(path.join(pluginRoot, 'tests/forward/cases.json')))
