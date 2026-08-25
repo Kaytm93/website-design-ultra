@@ -3,6 +3,917 @@
 import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+export const TELEMETRY_SURFACE_GLOBAL = '__WDU_IMMERSIVE_TELEMETRY__'
+export const TELEMETRY_SURFACE_GLOBAL_ALIASES = [
+  TELEMETRY_SURFACE_GLOBAL,
+  '__WDU_TELEMETRY__',
+]
+export const PERFORMANCE_SUMMARY_SCHEMA_VERSION = 1
+
+const TELEMETRY_GATE_CLASSES = [
+  'warm-gpu-frame-time',
+  'first-meaningful-frame',
+  'transfer-before-first-meaningful-frame',
+]
+const TELEMETRY_SURFACE_ID = 'wdu.immersive-telemetry'
+
+function isRecord(value) {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function cloneJson(value) {
+  if (value === undefined) return null
+  return JSON.parse(JSON.stringify(value))
+}
+
+function normalizeCapability(input, fallbackReason) {
+  const available = isRecord(input) && input.status === 'AVAILABLE'
+  const result = {
+    status: available ? 'AVAILABLE' : 'UNAVAILABLE',
+    reason: available
+      ? null
+      : isRecord(input) && typeof input.reason === 'string' && input.reason.length > 0
+        ? input.reason
+        : fallbackReason,
+  }
+  if (isRecord(input)) {
+    for (const [key, value] of Object.entries(input)) {
+      if (key === 'status' || key === 'reason') continue
+      result[key] = cloneJson(value)
+    }
+  }
+  return result
+}
+
+function normalizeCapabilities(input, surfaceAvailable, surfaceReason) {
+  const capabilities = isRecord(input) ? input : {}
+  const browser = normalizeCapability(
+    capabilities.browser,
+    'browser CLI capability result is not available',
+  )
+  const gpu = normalizeCapability(
+    capabilities.gpu,
+    'GPU capability result is not available',
+  )
+  let telemetry = normalizeCapability(
+    capabilities.telemetry,
+    surfaceAvailable
+      ? 'telemetry capability result is not available'
+      : surfaceReason ?? 'telemetry surface is not available',
+  )
+  if (!surfaceAvailable) {
+    telemetry = {
+      ...telemetry,
+      status: 'UNAVAILABLE',
+      reason: surfaceReason ?? telemetry.reason,
+    }
+  }
+  return { browser, gpu, telemetry }
+}
+
+function metric(value, unit) {
+  return { value: value === null ? null : value, unit }
+}
+
+function metricFrom(value, unit) {
+  if (value === null || value === undefined) return metric(null, unit)
+  if (typeof value === 'number' && Number.isFinite(value)) return metric(value, unit)
+  if (
+    isRecord(value) &&
+    typeof value.value === 'number' &&
+    Number.isFinite(value.value) &&
+    value.unit === unit
+  ) {
+    return metric(value.value, unit)
+  }
+  return metric(null, unit)
+}
+
+function numericSamples(values) {
+  if (!Array.isArray(values)) throw new Error('frame samples must be an array')
+  return values.map((sample, index) => {
+    if (isRecord(sample) && sample.unit !== 'ms') {
+      throw new Error(`frame sample ${index} must use the ms unit`)
+    }
+    const value = typeof sample === 'number' ? sample : sample?.value
+    if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
+      throw new Error(`frame sample ${index} must be a positive finite number`)
+    }
+    return value
+  })
+}
+
+export function calculateMedian(values) {
+  const sorted = numericSamples(values).sort((left, right) => left - right)
+  if (sorted.length === 0) throw new Error('median requires at least one sample')
+  const middle = Math.floor(sorted.length / 2)
+  return sorted.length % 2 === 0
+    ? (sorted[middle - 1] + sorted[middle]) / 2
+    : sorted[middle]
+}
+
+export function calculateP95(values) {
+  const sorted = numericSamples(values).sort((left, right) => left - right)
+  if (sorted.length === 0) throw new Error('p95 requires at least one sample')
+  const nearestRank = Math.max(1, Math.ceil(sorted.length * 0.95))
+  return sorted[nearestRank - 1]
+}
+
+export function collectFixedFrameWindow(samples, declaredWindow) {
+  if (!Number.isSafeInteger(declaredWindow) || declaredWindow <= 0) {
+    throw new Error('declared frame window must be a positive safe integer')
+  }
+  const values = numericSamples(samples)
+  if (values.length !== declaredWindow) {
+    throw new Error(
+      `frame sample window requires exactly ${declaredWindow} frame samples; received ${values.length}`,
+    )
+  }
+  return values
+}
+
+export function sumTransferBeforeMeaningfulFrame(entries, meaningfulFrameAtMs) {
+  if (!Array.isArray(entries)) throw new Error('resource entries must be an array')
+  if (
+    typeof meaningfulFrameAtMs !== 'number' ||
+    !Number.isFinite(meaningfulFrameAtMs) ||
+    meaningfulFrameAtMs < 0
+  ) {
+    return null
+  }
+  return entries.reduce((total, entry) => {
+    if (!isRecord(entry)) return total
+    const responseEnd = entry.responseEnd
+    if (
+      typeof responseEnd !== 'number' ||
+      !Number.isFinite(responseEnd) ||
+      responseEnd <= 0 ||
+      responseEnd > meaningfulFrameAtMs
+    ) {
+      return total
+    }
+    const transferSize =
+      typeof entry.transferSize === 'number' &&
+      Number.isFinite(entry.transferSize) &&
+      entry.transferSize >= 0
+        ? entry.transferSize
+        : typeof entry.encodedBodySize === 'number' &&
+            Number.isFinite(entry.encodedBodySize) &&
+            entry.encodedBodySize >= 0
+          ? entry.encodedBodySize
+          : 0
+    return total + Math.round(transferSize)
+  }, 0)
+}
+
+function gateFor(document, gateClass) {
+  return document?.budget?.gates?.find((gate) => gate.class === gateClass) ?? null
+}
+
+function unavailableReason(unavailable, key, reason) {
+  if (unavailable[key] === null) unavailable[key] = reason
+  return reason
+}
+
+function compareQuantity(observed, target, reason) {
+  if (!observed || observed.value === null) {
+    return {
+      status: 'UNAVAILABLE',
+      unavailableReason: reason,
+    }
+  }
+  if (!target || typeof target.value !== 'number') {
+    return {
+      status: 'UNAVAILABLE',
+      unavailableReason: 'declared comparison target is unavailable',
+    }
+  }
+  return {
+    status: observed.value <= target.value ? 'PASS' : 'FAIL',
+    unavailableReason: null,
+  }
+}
+
+function aggregateStatus(gates) {
+  const statuses = Object.values(gates).map((gate) => gate.status)
+  if (statuses.includes('FAIL')) return 'FAIL'
+  if (statuses.includes('UNAVAILABLE')) return 'UNAVAILABLE'
+  return 'PASS'
+}
+
+function aggregateVerificationStatus(
+  comparisonStatus,
+  capabilities,
+  hasRuntimeFailure,
+  hasUnavailableEvidence,
+) {
+  if (
+    Object.values(capabilities).some(
+      (capability) => capability.status === 'UNAVAILABLE',
+    ) ||
+    hasUnavailableEvidence
+  ) {
+    return 'UNAVAILABLE'
+  }
+  if (hasRuntimeFailure) return 'FAIL'
+  return comparisonStatus
+}
+
+function validQuantity(
+  value,
+  unit,
+  { integer = false, positive = false, minimum = null } = {},
+) {
+  return (
+    isRecord(value) &&
+    typeof value.value === 'number' &&
+    Number.isFinite(value.value) &&
+    value.unit === unit &&
+    (!integer || Number.isSafeInteger(value.value)) &&
+    (!positive || value.value > 0) &&
+    (minimum === null || value.value >= minimum)
+  )
+}
+
+function validNullableQuantity(value, unit, options = {}) {
+  return value === null || validQuantity(value, unit, options)
+}
+
+function validRuntimeTelemetry(runtime) {
+  if (!isRecord(runtime)) return false
+  const frame = runtime.frame
+  const warmGpu = frame?.warmGpu
+  const firstMeaningfulFrame = frame?.firstMeaningfulFrame
+  const transfer = frame?.transfer
+  if (
+    !isRecord(frame) ||
+    !isRecord(warmGpu) ||
+    !Array.isArray(warmGpu.samples) ||
+    !warmGpu.samples.every((sample) => validQuantity(sample, 'ms', { positive: true })) ||
+    !validNullableQuantity(warmGpu.median, 'ms', { positive: true }) ||
+    !validNullableQuantity(warmGpu.p95, 'ms', { positive: true }) ||
+    !isRecord(firstMeaningfulFrame) ||
+    typeof firstMeaningfulFrame.marker !== 'string' ||
+    firstMeaningfulFrame.marker.length === 0 ||
+    !validNullableQuantity(firstMeaningfulFrame.observed, 'ms', { positive: true }) ||
+    !isRecord(transfer) ||
+    transfer.boundary !== 'first-meaningful-frame' ||
+    !validNullableQuantity(transfer.observed, 'bytes', {
+      integer: true,
+      minimum: 0,
+    }) ||
+    !validQuantity(frame.longFrameCount, 'count', {
+      integer: true,
+      minimum: 0,
+    })
+  ) {
+    return false
+  }
+
+  const renderer = runtime.renderer
+  const counters = renderer?.counters
+  const counterNames = ['drawCalls', 'visibleTriangles', 'textures', 'geometries', 'programs']
+  if (
+    !isRecord(renderer) ||
+    typeof renderer.api !== 'string' ||
+    renderer.api.length === 0 ||
+    !isRecord(counters) ||
+    !counterNames.every((name) =>
+      validQuantity(counters[name], 'count', { integer: true, minimum: 0 }),
+    )
+  ) {
+    return false
+  }
+
+  const quality = runtime.quality
+  if (
+    !isRecord(quality) ||
+    !['poster', 'low', 'medium', 'high'].includes(quality.tier) ||
+    !validQuantity(quality.dpr, 'ratio', { positive: true })
+  ) {
+    return false
+  }
+
+  if (
+    !Array.isArray(runtime.errors) ||
+    !runtime.errors.every((error) =>
+      isRecord(error) &&
+      ['resource-load', 'shader-compile', 'runtime'].includes(error.kind) &&
+      typeof error.message === 'string' &&
+      error.message.length > 0 &&
+      (error.resource === undefined ||
+        (typeof error.resource === 'string' && error.resource.length > 0)),
+    )
+  ) {
+    return false
+  }
+
+  const contextLoss = runtime.contextLoss
+  return (
+    isRecord(contextLoss) &&
+    validQuantity(contextLoss.count, 'count', { integer: true, minimum: 0 }) &&
+    Array.isArray(contextLoss.events) &&
+    contextLoss.events.every(
+      (event) =>
+        isRecord(event) &&
+        typeof event.reason === 'string' &&
+        event.reason.length > 0 &&
+        typeof event.recovered === 'boolean',
+    )
+  )
+}
+
+function validTelemetryDocument(document) {
+  if (
+    !isRecord(document) ||
+    document.schemaVersion !== 1 ||
+    document.surface !== TELEMETRY_SURFACE_ID
+  ) {
+    return false
+  }
+  const profile = document.deviceProfile
+  if (
+    !isRecord(profile) ||
+    typeof profile.id !== 'string' ||
+    profile.id.length === 0 ||
+    !['desktop', 'mobile'].includes(profile.class) ||
+    typeof profile.browser !== 'string' ||
+    profile.browser.length === 0 ||
+    typeof profile.browserVersion !== 'string' ||
+    profile.browserVersion.length === 0 ||
+    !['webgl', 'webgl2', 'webgpu'].includes(profile.renderer) ||
+    !['offline', 'online', 'throttled'].includes(profile.network) ||
+    !isRecord(profile.viewport) ||
+    !validQuantity(profile.viewport.width, 'css-px', { integer: true, positive: true }) ||
+    !validQuantity(profile.viewport.height, 'css-px', { integer: true, positive: true }) ||
+    !validQuantity(profile.deviceScaleFactor, 'ratio', { positive: true })
+  ) {
+    return false
+  }
+  const budget = document.budget
+  if (!isRecord(budget) || !isRecord(budget.frameTarget)) return false
+  if (
+    !validQuantity(budget.frameTarget.rate, 'fps', { positive: true }) ||
+    !validQuantity(budget.frameTarget.frameTime, 'ms', { positive: true }) ||
+    typeof budget.frameTarget.justification !== 'string' ||
+    budget.frameTarget.justification.length === 0 ||
+    !Array.isArray(budget.gates) ||
+    budget.gates.length !== TELEMETRY_GATE_CLASSES.length
+  ) {
+    return false
+  }
+  const classes = new Set(budget.gates.map((gate) => gate?.class))
+  if (
+    classes.size !== TELEMETRY_GATE_CLASSES.length ||
+    TELEMETRY_GATE_CLASSES.some((gateClass) => !classes.has(gateClass))
+  ) {
+    return false
+  }
+  for (const gate of budget.gates) {
+    if (
+      !isRecord(gate) ||
+      gate.comparison !== 'less-than-or-equal' ||
+      typeof gate.justification !== 'string' ||
+      gate.justification.length === 0
+    ) {
+      return false
+    }
+    if (gate.class === 'warm-gpu-frame-time') {
+      if (
+        !isRecord(gate.targets) ||
+        !validQuantity(gate.targets.median, 'ms', { positive: true }) ||
+        !validQuantity(gate.targets.p95, 'ms', { positive: true }) ||
+        !validQuantity(gate.warmup, 'frames', {
+          integer: true,
+          minimum: 0,
+        }) ||
+        !validQuantity(gate.sampleWindow, 'frames', {
+          integer: true,
+          positive: true,
+        })
+      ) {
+        return false
+      }
+    } else if (gate.class === 'first-meaningful-frame') {
+      if (
+        typeof gate.marker !== 'string' ||
+        gate.marker.length === 0 ||
+        !validQuantity(gate.target, 'ms', { positive: true })
+      ) {
+        return false
+      }
+    } else if (
+      gate.class === 'transfer-before-first-meaningful-frame' &&
+      (gate.boundary !== 'first-meaningful-frame' ||
+        !validQuantity(gate.target, 'bytes', { integer: true, minimum: 0 }))
+    ) {
+      return false
+    }
+  }
+  return validRuntimeTelemetry(document.runtime)
+}
+
+export function buildPerformanceSummary({
+  document = null,
+  rendererInfo = null,
+  evidenceSource = `window.${TELEMETRY_SURFACE_GLOBAL}`,
+  transferObservation = null,
+  collection = null,
+  capabilities = null,
+  unavailableSurfaceReason = null,
+} = {}) {
+  const unavailable = {
+    browser: null,
+    gpu: null,
+    telemetry: null,
+    surface: null,
+    budget: null,
+    warmGpuFrameTime: null,
+    firstMeaningfulFrame: null,
+    transferBeforeFirstMeaningfulFrame: null,
+    rendererInfo: null,
+    renderer: null,
+    quality: null,
+    longFrameCount: null,
+    errors: null,
+    contextLoss: null,
+  }
+  const surfaceAvailable = validTelemetryDocument(document)
+  const surfaceReason =
+    unavailableSurfaceReason ??
+    (surfaceAvailable
+      ? null
+      : isRecord(document) && document.schemaVersion === 1
+        ? 'invalid telemetry document'
+        : 'telemetry surface is not available')
+  if (!surfaceAvailable) unavailable.surface = surfaceReason
+
+  const normalizedCapabilities = normalizeCapabilities(
+    capabilities,
+    surfaceAvailable,
+    surfaceReason,
+  )
+  for (const capabilityName of ['browser', 'gpu', 'telemetry']) {
+    const capability = normalizedCapabilities[capabilityName]
+    if (capability.status === 'UNAVAILABLE') {
+      unavailable[capabilityName] = capability.reason
+    }
+  }
+  if (unavailable.surface === null && normalizedCapabilities.telemetry.status === 'UNAVAILABLE') {
+    unavailable.surface = normalizedCapabilities.telemetry.reason
+  }
+
+  const deviceProfile = surfaceAvailable ? cloneJson(document.deviceProfile) : null
+  const budget = surfaceAvailable ? cloneJson(document.budget) : null
+  if (!budget) unavailableReason(unavailable, 'budget', 'declared budget is not available')
+
+  const runtime = surfaceAvailable && isRecord(document.runtime) ? document.runtime : null
+  if (!runtime) {
+    const runtimeReason = surfaceReason ?? 'runtime telemetry is not available'
+    unavailableReason(unavailable, 'warmGpuFrameTime', runtimeReason)
+    unavailableReason(unavailable, 'firstMeaningfulFrame', runtimeReason)
+    unavailableReason(unavailable, 'transferBeforeFirstMeaningfulFrame', runtimeReason)
+    unavailableReason(unavailable, 'rendererInfo', runtimeReason)
+    unavailableReason(unavailable, 'renderer', runtimeReason)
+    unavailableReason(unavailable, 'quality', runtimeReason)
+    unavailableReason(unavailable, 'longFrameCount', runtimeReason)
+    unavailableReason(unavailable, 'errors', runtimeReason)
+    unavailableReason(unavailable, 'contextLoss', runtimeReason)
+  }
+
+  const warmGate = gateFor(document, 'warm-gpu-frame-time')
+  const firstGate = gateFor(document, 'first-meaningful-frame')
+  const transferGate = gateFor(
+    document,
+    'transfer-before-first-meaningful-frame',
+  )
+  const declaredWindow = warmGate?.sampleWindow?.value
+  const declaredWarmup = warmGate?.warmup ?? null
+  const rawSamples = runtime?.frame?.warmGpu?.samples
+  let samples = []
+  let median = metric(null, 'ms')
+  let p95 = metric(null, 'ms')
+  let sampleReason =
+    collection?.method === 'surface-collection-failed'
+      ? 'telemetry collection did not complete'
+      : surfaceReason
+  if (!sampleReason && Number.isSafeInteger(declaredWindow) && declaredWindow > 0) {
+    try {
+      samples = collectFixedFrameWindow(rawSamples, declaredWindow)
+      median = metric(calculateMedian(samples), 'ms')
+      p95 = metric(calculateP95(samples), 'ms')
+      sampleReason = null
+    } catch (error) {
+      sampleReason = error instanceof Error ? error.message : 'frame samples are unavailable'
+    }
+  } else if (!surfaceReason) {
+    sampleReason = 'declared warm GPU sample window is unavailable'
+  }
+  if (sampleReason) unavailableReason(unavailable, 'warmGpuFrameTime', sampleReason)
+
+  const firstObserved = metricFrom(
+    runtime?.frame?.firstMeaningfulFrame?.observed,
+    'ms',
+  )
+  const firstMarker =
+    runtime?.frame?.firstMeaningfulFrame?.marker ?? firstGate?.marker ?? null
+  const firstReason =
+    firstObserved.value === null
+      ? surfaceReason ?? 'first meaningful frame measurement is not available'
+      : null
+  if (firstReason) unavailableReason(unavailable, 'firstMeaningfulFrame', firstReason)
+
+  const documentTransfer = metricFrom(runtime?.frame?.transfer?.observed, 'bytes')
+  const transferObserved = transferObservation?.observed
+    ? metricFrom(transferObservation.observed, 'bytes')
+    : documentTransfer
+  const transferReason =
+    transferObservation?.unavailableReason ??
+    (transferObserved.value === null
+      ? surfaceReason ?? 'transfer before the meaningful frame is not available'
+      : null)
+  if (transferReason) {
+    unavailableReason(
+      unavailable,
+      'transferBeforeFirstMeaningfulFrame',
+      transferObservation?.unavailableReason ?? transferReason,
+    )
+  }
+
+  const renderer = runtime?.renderer ? cloneJson(runtime.renderer) : null
+  const quality = runtime?.quality ? cloneJson(runtime.quality) : null
+  const longFrameCount = metricFrom(runtime?.frame?.longFrameCount, 'count')
+  const errors = Array.isArray(runtime?.errors) ? cloneJson(runtime.errors) : null
+  const contextLoss = runtime?.contextLoss ? cloneJson(runtime.contextLoss) : null
+  if (!renderer) unavailableReason(unavailable, 'renderer', 'renderer telemetry is not available')
+  if (!quality) unavailableReason(unavailable, 'quality', 'quality telemetry is not available')
+  if (longFrameCount.value === null) {
+    unavailableReason(unavailable, 'longFrameCount', 'long-frame count is not available')
+  }
+  if (errors === null) unavailableReason(unavailable, 'errors', 'runtime error telemetry is not available')
+  if (!contextLoss) unavailableReason(unavailable, 'contextLoss', 'context-loss telemetry is not available')
+  if (rendererInfo === null || rendererInfo === undefined) {
+    unavailableReason(unavailable, 'rendererInfo', 'renderer.info is not available')
+  }
+
+  const resourceFailures = errors === null
+    ? null
+    : errors.filter((error) => error.kind === 'resource-load')
+  const shaderCompileErrors = errors === null
+    ? null
+    : errors.filter((error) => error.kind === 'shader-compile')
+  const runtimeErrors = errors === null
+    ? null
+    : errors.filter((error) => error.kind === 'runtime')
+  const failureEvidence = {
+    resourceFailures,
+    shaderCompileErrors,
+    runtimeErrors,
+    longFrames: {
+      count: longFrameCount,
+      detected: longFrameCount.value === null ? null : longFrameCount.value > 0,
+    },
+    contextLoss,
+  }
+  const hasRuntimeFailure = Boolean(
+    (resourceFailures?.length ?? 0) > 0 ||
+      (shaderCompileErrors?.length ?? 0) > 0 ||
+      (runtimeErrors?.length ?? 0) > 0 ||
+      (contextLoss?.count?.value ?? 0) > 0 ||
+      (contextLoss?.events?.length ?? 0) > 0,
+  )
+  const hasUnavailableEvidence = [
+    'warmGpuFrameTime',
+    'firstMeaningfulFrame',
+    'transferBeforeFirstMeaningfulFrame',
+    'renderer',
+    'quality',
+    'longFrameCount',
+    'errors',
+    'contextLoss',
+  ].some((key) => unavailable[key] !== null)
+
+  const observed = {
+    warmGpuFrameTime: {
+      warmup: cloneJson(declaredWarmup),
+      sampleWindow: cloneJson(warmGate?.sampleWindow ?? null),
+      collected: metric(samples.length, 'frames'),
+      samples: samples.map((value) => metric(value, 'ms')),
+      median,
+      p95,
+    },
+    firstMeaningfulFrame: {
+      marker: firstMarker,
+      observed: firstObserved,
+    },
+    transferBeforeFirstMeaningfulFrame: {
+      boundary: 'first-meaningful-frame',
+      observed: transferObserved,
+    },
+  }
+
+  const comparisonGates = {
+    'warm-gpu-frame-time': {
+      class: 'warm-gpu-frame-time',
+      comparison: warmGate?.comparison ?? 'less-than-or-equal',
+      budget: cloneJson(warmGate),
+      observed: { median, p95 },
+      ...(() => {
+        if (median.value === null || p95.value === null) {
+          return {
+            status: 'UNAVAILABLE',
+            unavailableReason: unavailable.warmGpuFrameTime,
+          }
+        }
+        const medianResult = compareQuantity(
+          median,
+          warmGate?.targets?.median,
+          unavailable.warmGpuFrameTime,
+        )
+        const p95Result = compareQuantity(
+          p95,
+          warmGate?.targets?.p95,
+          unavailable.warmGpuFrameTime,
+        )
+        return {
+          status:
+            medianResult.status === 'FAIL' || p95Result.status === 'FAIL'
+              ? 'FAIL'
+              : medianResult.status === 'UNAVAILABLE' ||
+                  p95Result.status === 'UNAVAILABLE'
+                ? 'UNAVAILABLE'
+                : 'PASS',
+          unavailableReason:
+            medianResult.unavailableReason ?? p95Result.unavailableReason,
+        }
+      })(),
+    },
+    'first-meaningful-frame': {
+      class: 'first-meaningful-frame',
+      comparison: firstGate?.comparison ?? 'less-than-or-equal',
+      budget: cloneJson(firstGate),
+      observed: firstObserved,
+      ...compareQuantity(firstObserved, firstGate?.target, firstReason),
+    },
+    'transfer-before-first-meaningful-frame': {
+      class: 'transfer-before-first-meaningful-frame',
+      comparison: transferGate?.comparison ?? 'less-than-or-equal',
+      budget: cloneJson(transferGate),
+      observed: transferObserved,
+      ...compareQuantity(
+        transferObserved,
+        transferGate?.target,
+        transferReason,
+      ),
+    },
+  }
+
+  const comparisonStatus = aggregateStatus(comparisonGates)
+  const status = aggregateVerificationStatus(
+    comparisonStatus,
+    normalizedCapabilities,
+    hasRuntimeFailure,
+    hasUnavailableEvidence,
+  )
+  return {
+    schemaVersion: PERFORMANCE_SUMMARY_SCHEMA_VERSION,
+    status,
+    capabilities: normalizedCapabilities,
+    failureEvidence,
+    evidenceSource,
+    deviceProfile,
+    budget,
+    observed,
+    comparison: {
+      status: comparisonStatus,
+      gates: comparisonGates,
+    },
+    evidence: {
+      source: evidenceSource,
+      collection: {
+        method: collection?.method ?? null,
+        warmupFrames: collection?.warmupFrames ?? null,
+        sampleWindow: collection?.sampleWindow ?? null,
+      },
+      rendererInfo: rendererInfo === undefined ? null : cloneJson(rendererInfo),
+      renderer,
+      quality,
+      longFrameCount,
+      errors,
+      contextLoss,
+      transfer: {
+        boundary: 'first-meaningful-frame',
+        markerAt: transferObservation?.markerAt
+          ? metricFrom(transferObservation.markerAt, 'ms')
+          : firstObserved,
+        resourcesConsidered: transferObservation?.resourcesConsidered ?? null,
+        resourcesIgnoredAfterMarker:
+          transferObservation?.resourcesIgnoredAfterMarker ?? null,
+      },
+    },
+    unavailable,
+  }
+}
+
+export function parseRawJson(stdout) {
+  const text = String(stdout ?? '').trim()
+  if (!text) throw new Error('browser returned no JSON telemetry')
+  const parsed = JSON.parse(text)
+  return typeof parsed === 'string' ? JSON.parse(parsed) : parsed
+}
+
+export function createTelemetryCollectionScript() {
+  return `async (page) => await page.evaluate(async (globalNames) => {
+    const clone = (value) => {
+      if (value === undefined) return null
+      try {
+        return JSON.parse(JSON.stringify(value))
+      } catch {
+        return null
+      }
+    }
+    const readDocument = async (surface) => {
+      if (surface && typeof surface.read === 'function') {
+        const result = await surface.read()
+        return result && result.document ? result.document : result
+      }
+      if (surface && surface.document && typeof surface.document === 'object') {
+        return surface.document
+      }
+      return surface
+    }
+    const probeGpu = async (declaredRenderer = null) => {
+      const probeContext = (type) => {
+        try {
+          const canvas = document.createElement('canvas')
+          return Boolean(canvas.getContext(type))
+        } catch {
+          return false
+        }
+      }
+      let webgpu = false
+      try {
+        webgpu = Boolean(
+          navigator.gpu &&
+            typeof navigator.gpu.requestAdapter === 'function' &&
+            (await navigator.gpu.requestAdapter()),
+        )
+      } catch {}
+      const evidence = {
+        webgpu,
+        webgl2: probeContext('webgl2'),
+        webgl: probeContext('webgl'),
+      }
+      const declaredApi = Object.hasOwn(evidence, declaredRenderer)
+        ? declaredRenderer
+        : null
+      const available = Object.values(evidence).some(Boolean)
+      return {
+        status: available ? 'AVAILABLE' : 'UNAVAILABLE',
+        reason: available
+          ? null
+          : declaredApi
+            ? 'declared ' + declaredApi + ' context is missing'
+            : 'no WebGPU or WebGL context is available',
+        renderer: declaredRenderer,
+        evidence,
+      }
+    }
+    const surfaceName = globalNames.find((name) => globalThis[name] != null) ?? null
+    if (!surfaceName) {
+      const gpu = await probeGpu()
+      return {
+        document: null,
+        rendererInfo: null,
+        evidenceSource: null,
+        capabilities: {
+          gpu,
+          telemetry: {
+            status: 'UNAVAILABLE',
+            reason: 'telemetry surface is not available',
+            evidence: { globalNames },
+          },
+        },
+        collection: {
+          method: 'no-surface',
+          warmupFrames: null,
+          sampleWindow: null,
+          status: 'UNAVAILABLE',
+          reason: 'telemetry surface is not available',
+        },
+        transferObservation: null,
+      }
+    }
+    const surface = globalThis[surfaceName]
+    const initialDocument = await readDocument(surface)
+    const warmGate = initialDocument?.budget?.gates?.find(
+      (gate) => gate.class === 'warm-gpu-frame-time',
+    )
+    const warmupFrames = warmGate?.warmup?.value ?? null
+    const sampleWindow = warmGate?.sampleWindow?.value ?? null
+    let method = 'surface-snapshot'
+    let collectionFailed = false
+    let collectedDocument = null
+    let collectedRendererInfo = null
+    try {
+      if (surface && typeof surface.collect === 'function') {
+        const collected = await surface.collect({
+          warmupFrames,
+          sampleWindow,
+        })
+        if (collected && typeof collected === 'object') {
+          collectedDocument = collected.document ?? collected
+          collectedRendererInfo = collected.rendererInfo ?? null
+        }
+        method = 'surface.collect'
+      } else {
+        if (surface && typeof surface.warmUp === 'function') {
+          await surface.warmUp({ frames: warmupFrames })
+          method = 'surface.warmUp-and-sample'
+        }
+        if (surface && typeof surface.sample === 'function') {
+          await surface.sample({ frames: sampleWindow })
+          method = 'surface.sample'
+        }
+      }
+    } catch {
+      collectionFailed = true
+      method = 'surface-collection-failed'
+    }
+    const telemetryDocument = collectedDocument ?? await readDocument(surface)
+    const gpu = await probeGpu(telemetryDocument?.deviceProfile?.renderer ?? null)
+    const telemetryCapability = {
+      status: collectionFailed
+        ? 'UNAVAILABLE'
+        : telemetryDocument
+          ? 'AVAILABLE'
+          : 'UNAVAILABLE',
+      reason: collectionFailed
+        ? 'telemetry collection did not complete'
+        : telemetryDocument
+          ? null
+          : 'telemetry surface did not return a document',
+      evidence: {
+        global: surfaceName,
+        collectionMethod: method,
+      },
+    }
+    const meaningfulFrameAtMs = telemetryDocument?.runtime?.frame?.firstMeaningfulFrame?.observed?.value
+    const resources = performance.getEntriesByType('resource').map((entry) => ({
+      name: entry.name,
+      responseEnd: entry.responseEnd,
+      transferSize: entry.transferSize,
+      encodedBodySize: entry.encodedBodySize,
+    }))
+    let transferObservation = null
+    if (typeof meaningfulFrameAtMs === 'number' && Number.isFinite(meaningfulFrameAtMs) && resources.length > 0) {
+      let observed = 0
+      let resourcesConsidered = 0
+      let resourcesIgnoredAfterMarker = 0
+      for (const entry of resources) {
+        if (typeof entry.responseEnd !== 'number' || !Number.isFinite(entry.responseEnd) || entry.responseEnd <= 0) continue
+        if (entry.responseEnd > meaningfulFrameAtMs) {
+          resourcesIgnoredAfterMarker += 1
+          continue
+        }
+        resourcesConsidered += 1
+        const size = typeof entry.transferSize === 'number' && Number.isFinite(entry.transferSize) && entry.transferSize >= 0
+          ? entry.transferSize
+          : typeof entry.encodedBodySize === 'number' && Number.isFinite(entry.encodedBodySize) && entry.encodedBodySize >= 0
+            ? entry.encodedBodySize
+            : 0
+        observed += Math.round(size)
+      }
+      transferObservation = {
+        observed: { value: observed, unit: 'bytes' },
+        markerAt: { value: meaningfulFrameAtMs, unit: 'ms' },
+        resourcesConsidered,
+        resourcesIgnoredAfterMarker,
+        unavailableReason: collectionFailed ? 'surface collection did not complete' : null,
+      }
+    }
+    const rendererInfo = collectedRendererInfo ?? surface?.rendererInfo ?? surface?.renderer?.info ?? globalThis.__WDU_RENDERER__?.info ?? null
+    return {
+      document: clone(telemetryDocument),
+      rendererInfo: clone(rendererInfo),
+      evidenceSource: 'window.' + surfaceName,
+      capabilities: {
+        gpu,
+        telemetry: telemetryCapability,
+      },
+      collection: {
+        method,
+        warmupFrames,
+        sampleWindow,
+        status: telemetryCapability.status,
+        reason: telemetryCapability.reason,
+      },
+      transferObservation,
+    }
+  }, ${JSON.stringify(TELEMETRY_SURFACE_GLOBAL_ALIASES)})`
+}
 
 function fail(message, exitCode = 1) {
   console.error(`VERIFY_RUNTIME: ${exitCode === 2 ? 'UNAVAILABLE' : 'FAIL'} ${message}`)
@@ -40,8 +951,7 @@ function parseArguments(argv) {
                                   [--skip-fallback]
                                   [--timeout-ms 120000]
 
-Exit codes: 0 = capture complete, 1 = capture failed, 2 = compatible
-browser automation unavailable. Set WDU_PLAYWRIGHT_CLI to an explicit executable
+Exit codes: 0 = capture and telemetry PASS, 1 = capture or telemetry FAIL, 2 = browser, GPU, or telemetry capability UNAVAILABLE. Set WDU_PLAYWRIGHT_CLI to an explicit executable
 to override discovery.`)
       process.exit(0)
     } else {
@@ -66,10 +976,12 @@ function commandOnPath(command) {
 }
 
 function candidates() {
-  const result = []
   const explicit = process.env.WDU_PLAYWRIGHT_CLI
-  if (explicit) result.push({ name: 'explicit', command: explicit, prefix: [] })
+  if (explicit) {
+    return [{ name: 'explicit', command: explicit, prefix: [] }]
+  }
 
+  const result = []
   const codexHome = process.env.CODEX_HOME
   if (codexHome) {
     result.push({
@@ -137,23 +1049,81 @@ function quoted(value) {
   return JSON.stringify(value)
 }
 
-function main() {
-  const options = parseArguments(process.argv.slice(2))
-  const resolved = resolveBackend(options.timeoutMs)
-  if (!resolved.candidate) {
-    fail(`no compatible CLI; ${resolved.attempts.join('; ')}`, 2)
-  }
-
-  const backend = resolved.candidate
-  if (options.probe) {
-    console.log(`VERIFY_RUNTIME: READY backend=${backend.name}`)
-    return
-  }
-
+function outputDirectoryFor(options) {
   const outputDirectory =
     options.out ??
     path.resolve(process.cwd(), 'output', 'playwright', 'verify', timestamp())
   fs.mkdirSync(outputDirectory, { recursive: true })
+  return outputDirectory
+}
+
+function writeBrowserUnavailableArtifacts(options, attempts) {
+  const outputDirectory = outputDirectoryFor(options)
+  const reason = 'no compatible browser CLI'
+  const summary = buildPerformanceSummary({
+    evidenceSource: 'browser-cli-probe',
+    unavailableSurfaceReason: 'browser CLI is unavailable',
+    capabilities: {
+      browser: {
+        status: 'UNAVAILABLE',
+        reason,
+        evidence: { attempts },
+      },
+      gpu: {
+        status: 'UNAVAILABLE',
+        reason: 'browser CLI is unavailable',
+      },
+      telemetry: {
+        status: 'UNAVAILABLE',
+        reason: 'browser CLI is unavailable',
+      },
+    },
+  })
+  fs.writeFileSync(
+    path.join(outputDirectory, 'performance-summary.json'),
+    `${JSON.stringify(summary, null, 2)}\n`,
+  )
+  fs.writeFileSync(
+    path.join(outputDirectory, 'capture.json'),
+    `${JSON.stringify(
+      {
+        status: 'UNAVAILABLE',
+        capability: 'browser-cli',
+        url: options.url,
+        outputDirectory,
+        attempts,
+      },
+      null,
+      2,
+    )}\n`,
+  )
+  return outputDirectory
+}
+
+function main() {
+  const options = parseArguments(process.argv.slice(2))
+  const resolved = resolveBackend(options.timeoutMs)
+  if (!resolved.candidate) {
+    if (options.probe) {
+      fail(`browser CLI unavailable; ${resolved.attempts.join('; ')}`, 2)
+    }
+    const outputDirectory = writeBrowserUnavailableArtifacts(
+      options,
+      resolved.attempts,
+    )
+    fail(
+      `browser CLI unavailable; partial artifacts: ${outputDirectory}`,
+      2,
+    )
+  }
+
+  const backend = resolved.candidate
+  if (options.probe) {
+    console.log(`VERIFY_RUNTIME: READY capability=browser-cli backend=${backend.name}`)
+    return
+  }
+
+  const outputDirectory = outputDirectoryFor(options)
   const sessions = new Set()
   const commands = []
 
@@ -173,6 +1143,10 @@ function main() {
       )
     }
     return result
+  }
+
+  function invokeRaw(session, action, ...args) {
+    return invoke(session, action, ...args, '--raw')
   }
 
   const settle = `async (page) => {
@@ -201,10 +1175,70 @@ function main() {
     )
   }
 
+  let performanceSummary = null
+  let captureFailure = null
   try {
     invoke('wdu-desktop', 'open', options.url)
     invoke('wdu-desktop', 'resize', '1440', '1000')
     invoke('wdu-desktop', 'run-code', settle)
+
+    try {
+      const telemetryResult = invokeRaw(
+        'wdu-desktop',
+        'run-code',
+        createTelemetryCollectionScript(),
+      )
+      const telemetryObservation = parseRawJson(telemetryResult.stdout)
+      performanceSummary = buildPerformanceSummary({
+        document: telemetryObservation?.document ?? null,
+        rendererInfo: telemetryObservation?.rendererInfo ?? null,
+        evidenceSource:
+          telemetryObservation?.evidenceSource ??
+          `window.${TELEMETRY_SURFACE_GLOBAL}`,
+        transferObservation: telemetryObservation?.transferObservation ?? null,
+        collection: telemetryObservation?.collection ?? null,
+        capabilities: {
+          browser: {
+            status: 'AVAILABLE',
+            backend: backend.name,
+            evidence: 'capability-checked browser CLI',
+          },
+          gpu: telemetryObservation?.capabilities?.gpu ?? {
+            status: 'UNAVAILABLE',
+            reason: 'GPU capability probe did not return',
+          },
+          telemetry: telemetryObservation?.capabilities?.telemetry ?? {
+            status: 'UNAVAILABLE',
+            reason: 'telemetry capability probe did not return',
+          },
+        },
+      })
+    } catch {
+      performanceSummary = buildPerformanceSummary({
+        evidenceSource: 'browser-telemetry-collection',
+        unavailableSurfaceReason: 'telemetry collection command failed',
+        capabilities: {
+          browser: {
+            status: 'AVAILABLE',
+            backend: backend.name,
+            evidence: 'capability-checked browser CLI',
+          },
+          gpu: {
+            status: 'UNAVAILABLE',
+            reason: 'GPU capability probe did not complete',
+          },
+          telemetry: {
+            status: 'UNAVAILABLE',
+            reason: 'telemetry collection command failed',
+          },
+        },
+      })
+    }
+    fs.writeFileSync(
+      path.join(outputDirectory, 'performance-summary.json'),
+      `${JSON.stringify(performanceSummary, null, 2)}\n`,
+    )
+
     const snapshot = invoke('wdu-desktop', 'snapshot')
     fs.writeFileSync(path.join(outputDirectory, 'desktop-snapshot.txt'), snapshot.stdout)
     invoke(
@@ -296,7 +1330,11 @@ function main() {
       path.join(outputDirectory, 'capture.json'),
       `${JSON.stringify(
         {
-          status: 'captured-not-yet-inspected',
+          status:
+            performanceSummary.status === 'PASS'
+              ? 'captured-not-yet-inspected'
+              : performanceSummary.status,
+          verificationStatus: performanceSummary.status,
           generatedAt: new Date().toISOString(),
           url: options.url,
           backend: backend.name,
@@ -311,18 +1349,43 @@ function main() {
   } catch (error) {
     fs.writeFileSync(
       path.join(outputDirectory, 'capture-error.json'),
-      `${JSON.stringify({ status: 'failed', error: error.message, commands }, null, 2)}\n`,
+      `${JSON.stringify({
+        status: 'FAIL',
+        error: error instanceof Error ? error.message : String(error),
+        commands,
+      }, null, 2)}\n`,
     )
-    fail(`${error.message}; partial artifacts: ${outputDirectory}`)
+    captureFailure = error
   } finally {
     for (const session of sessions) {
       run(backend, [`-s=${session}`, 'close'], Math.min(options.timeoutMs, 30000))
     }
   }
 
+  if (captureFailure) {
+    const message = captureFailure instanceof Error
+      ? captureFailure.message
+      : String(captureFailure)
+    fail(`${message}; partial artifacts: ${outputDirectory}`)
+  }
+  if (!performanceSummary) {
+    fail(`no performance summary was produced; partial artifacts: ${outputDirectory}`)
+  }
+  if (performanceSummary.status === 'UNAVAILABLE') {
+    fail(
+      `telemetry verification UNAVAILABLE; partial artifacts: ${outputDirectory}`,
+      2,
+    )
+  }
+  if (performanceSummary.status === 'FAIL') {
+    fail(`telemetry verification FAIL; partial artifacts: ${outputDirectory}`)
+  }
+
   console.log(
-    `VERIFY_RUNTIME: CAPTURED backend=${backend.name} artifacts=${outputDirectory}`,
+    `VERIFY_RUNTIME: PASS backend=${backend.name} artifacts=${outputDirectory}`,
   )
 }
 
-main()
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main()
+}

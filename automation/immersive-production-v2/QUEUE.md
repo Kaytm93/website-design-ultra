@@ -56,20 +56,20 @@ splits that proposal into implementation-sized units.
 
 ## PR 3 — Frame telemetry in the verifier
 
-- [ ] `IP-03A` **Define one budget and telemetry surface** — Specify the project-declared budget shape and the runtime surface shared by renderer, quality controller, and verifier.
+- [x] `IP-03A` **Define one budget and telemetry surface** — Specify the project-declared budget shape and the runtime surface shared by renderer, quality controller, and verifier.
   - **Depends on:** IP-02C
   - **Read first:** `TODO.md` T0.2; `website-design-ultra/skills/immersive-3d/SKILL.md` §3; `website-design-ultra/skills/3d-runtime-quality/`.
   - **Deliver:** A versioned schema/reference for device profile, frame target, first meaningful frame, transfer boundary, renderer counters, quality tier, DPR, errors, and context loss.
   - **Acceptance:** The schema has exactly three gate classes—warm GPU frame median/p95, first meaningful frame, and transfer before that frame. Context counters remain evidence, not new universal gates.
   - **Verify:** Schema fixtures accept a justified 30fps/33ms budget and reject missing units, missing device profile, or an invented implicit threshold.
 
-- [ ] `IP-03B` **Collect telemetry and emit performance-summary.json** — Extend `verify-browser.mjs` to warm up, sample, read the shared surface, and compare observations with the declared project budget.
+- [x] `IP-03B` **Collect telemetry and emit performance-summary.json** — Extend `verify-browser.mjs` to warm up, sample, read the shared surface, and compare observations with the declared project budget.
   - **Depends on:** IP-03A
   - **Deliver:** Deterministic JSON output with observed values, budget values, comparison result, evidence source, and explicit unavailable fields.
   - **Acceptance:** Median and p95 are calculated from a fixed declared window; transfer stops at the meaningful-frame marker; `renderer.info` context is preserved; timestamps do not make deterministic artifacts incomparable.
   - **Verify:** Unit fixtures for calculations plus a real fixture capture from IP-02C.
 
-- [ ] `IP-03C` **Harden telemetry failures and capability status** — Capture resource failures, shader errors, context loss, long frames, and missing GPU/browser paths without false passes.
+- [x] `IP-03C` **Harden telemetry failures and capability status** — Capture resource failures, shader errors, context loss, long frames, and missing GPU/browser paths without false passes.
   - **Depends on:** IP-03B
   - **Deliver:** Regression fixtures for PASS, FAIL, and UNAVAILABLE plus command/README updates.
   - **Acceptance:** Missing GPU, missing browser CLI, missing telemetry surface, shader compile failure, and context loss each have distinct evidence; unavailable execution never becomes PASS or an empty summary.

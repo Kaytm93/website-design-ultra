@@ -29,6 +29,9 @@ jobs:
             node --check "$script"
           done
 
+      - name: Test immersive telemetry calculations and status handling
+        run: node --test tests/immersive/telemetry/telemetry-schema.test.mjs tests/immersive/telemetry/performance-summary.test.mjs tests/immersive/telemetry/ip-03c-status.test.mjs
+
       - name: Validate plugin content
         working-directory: website-design-ultra
         run: node scripts/validate-content.mjs
@@ -58,19 +61,28 @@ jobs:
         run: node --test tests/immersive/deterministic-capture/capture-comparator.test.mjs
 
       - name: Install pinned Chromium
-        run: npx --yes --package playwright@1.62.1 playwright install --with-deps chromium
+        run: |
+          npx --yes --package playwright@1.62.1 playwright install --with-deps chromium
+          npx --yes --package @playwright/cli@0.1.17 playwright-cli install-browser --with-deps chromium
 
       - name: Compare two clean deterministic captures
         env:
           NODE_NO_WARNINGS: 1
         run: node tests/immersive/deterministic-capture/compare-captures.mjs --out "${{ runner.temp }}/wdu-deterministic-capture"
 
+      - name: Capture IP-02C performance summary
+        env:
+          NODE_NO_WARNINGS: 1
+        run: node tests/immersive/telemetry/capture-ip-02c.mjs --out "${{ runner.temp }}/wdu-ip-03b-capture"
+
       - name: Archive deterministic capture evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: deterministic-capture
-          path: ${{ runner.temp }}/wdu-deterministic-capture
+          path: |
+            ${{ runner.temp }}/wdu-deterministic-capture
+            ${{ runner.temp }}/wdu-ip-03b-capture
           if-no-files-found: error
           retention-days: 14
 

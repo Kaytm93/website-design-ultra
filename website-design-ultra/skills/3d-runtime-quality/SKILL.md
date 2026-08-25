@@ -10,6 +10,12 @@ Preserve the visual statement from `3d-art-direction` within the budget from `im
 ## Runtime contract
 
 Define before implementation. The block below is the schema, not the values.
+The versioned project budget and shared renderer/controller/verifier evidence
+surface live in [references/telemetry-contract.md](references/telemetry-contract.md),
+[references/telemetry-schema.json](references/telemetry-schema.json), and the
+verifier protocol in [references/telemetry-collection.md](references/telemetry-collection.md).
+Copy the repository-root `references/immersive-telemetry.ts` reference into a project; do not infer a
+frame-time threshold from fps or promote context counters into universal gates.
 `initial-tier` and the window lengths are one filled example; the concrete
 Poster, Low, Medium, and High profiles live in
 [references/tier-matrix.md](references/tier-matrix.md), and `immersive-3d` §3
@@ -47,10 +53,11 @@ Answering the step from this file alone leaves it unfilled.
    matrix. A slash command or a Codex path is not a prerequisite.
 
 With a runnable target, the mandatory step ends in `PASS`, `FAIL`, or
-`UNAVAILABLE`. `UNAVAILABLE` applies only after a failed adapter probe and a
-missing host browser capability: run build/typecheck plus static poster, DOM,
-and reduced-motion checks, hand over the experience explicitly as **unverified**,
-and leave the launch gate open. These checks do not replace visual verification.
+`UNAVAILABLE`. `UNAVAILABLE` applies when the required browser, GPU, or telemetry
+capability is missing, or the target cannot be reached. Run build/typecheck plus
+static poster, DOM, and reduced-motion checks, hand over the experience explicitly
+as **unverified**, and leave the launch gate open. These checks do not replace
+visual or telemetry verification.
 For a pure plan/contract without a runnable target, use `NOT_APPLICABLE
 (plan-only)` plus the planned capture matrix; as soon as an implementation runs,
 the check becomes the launch gate.

@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.immersive-telemetry",
+  "deviceProfile": {
+    "id": "mid-range-desktop-chromium-webgl2",
+    "class": "desktop",
+    "browser": "chromium",
+    "browserVersion": "fixture-1",
+    "renderer": "webgl2",
+    "viewport": {
+      "width": {
+        "value": 1440,
+        "unit": "css-px"
+      },
+      "height": {
+        "value": 1000,
+        "unit": "css-px"
+      }
+    },
+    "deviceScaleFactor": {
+      "value": 1,
+      "unit": "ratio"
+    },
+    "network": "offline"
+  },
+  "budget": {
+    "frameTarget": {
+      "rate": {
+        "value": 30,
+        "unit": "fps"
+      },
+      "frameTime": {
+        "value": 33,
+        "unit": "ms"
+      },
+      "justification": "The declared mid-range desktop target is 30 fps; 33 ms is an explicit project ceiling for this fixture rather than a threshold inferred from the rate."
+    },
+    "gates": [
+      {
+        "class": "warm-gpu-frame-time",
+        "comparison": "less-than-or-equal",
+        "targets": {
+          "median": {
+            "value": 33,
+            "unit": "ms"
+          },
+          "p95": {
+            "value": 33,
+            "unit": "ms"
+          }
+        },
+        "warmup": {
+          "value": 120,
+          "unit": "frames"
+        },
+        "sampleWindow": {
+          "value": 300,
+          "unit": "frames"
+        },
+        "justification": "The warm GPU window excludes the declared 120-frame shader and asset warm-up and evaluates 300 measured frames."
+      },
+      {
+        "class": "first-meaningful-frame",
+        "comparison": "less-than-or-equal",
+        "marker": "html[data-wdu-ready=\"true\"]",
+        "target": {
+          "value": 1500,
+          "unit": "ms"
+        },
+        "justification": "The project declares the stable-frame marker as the first meaningful frame and budgets its arrival at 1.5 seconds."
+      },
+      {
+        "class": "transfer-before-first-meaningful-frame",
+        "comparison": "less-than-or-equal",
+        "boundary": "first-meaningful-frame",
+        "target": {
+          "value": 524288,
+          "unit": "bytes"
+        },
+        "justification": "Only bytes completed before the first meaningful-frame marker belong to this boundary."
+      }
+    ]
+  },
+  "runtime": {
+    "frame": {
+      "warmGpu": {
+        "samples": [
+          {
+            "value": 31,
+            "unit": "ms"
+          },
+          {
+            "value": 33,
+            "unit": "ms"
+          },
+          {
+            "value": 32,
+            "unit": "ms"
+          }
+        ],
+        "median": {
+          "value": 32,
+          "unit": "ms"
+        },
+        "p95": {
+          "value": 33,
+          "unit": "ms"
+        }
+      },
+      "firstMeaningfulFrame": {
+        "marker": "html[data-wdu-ready=\"true\"]",
+        "observed": {
+          "value": 1180,
+          "unit": "ms"
+        }
+      },
+      "transfer": {
+        "boundary": "first-meaningful-frame",
+        "observed": {
+          "value": 412000,
+          "unit": "bytes"
+        }
+      },
+      "longFrameCount": {
+        "value": 1,
+        "unit": "count"
+      }
+    },
+    "renderer": {
+      "api": "three.renderer.info",
+      "counters": {
+        "drawCalls": {
+          "value": 42,
+          "unit": "count"
+        },
+        "visibleTriangles": {
+          "value": 120000,
+          "unit": "count"
+        },
+        "textures": {
+          "value": 4,
+          "unit": "count"
+        },
+        "geometries": {
+          "value": 8,
+          "unit": "count"
+        },
+        "programs": {
+          "value": 5,
+          "unit": "count"
+        }
+      }
+    },
+    "quality": {
+      "tier": "medium",
+      "dpr": {
+        "value": 1.25,
+        "unit": "ratio"
+      }
+    },
+    "errors": [],
+    "contextLoss": {
+      "count": {
+        "value": 0,
+        "unit": "count"
+      },
+      "events": []
+    }
+  }
+}
