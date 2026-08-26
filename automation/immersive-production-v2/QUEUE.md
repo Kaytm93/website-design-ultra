@@ -137,7 +137,7 @@ splits that proposal into implementation-sized units.
 
 ## PR 7 — First buildable implementation evaluation and CI
 
-- [ ] `IP-07A` **Build the R3F product-hero evaluation fixture** — Exercise one optimized model, semantic DOM, portrait reframe, poster, reduced motion, and the shared quality/telemetry surfaces.
+- [x] `IP-07A` **Build the R3F product-hero evaluation fixture** — Exercise one optimized model, semantic DOM, portrait reframe, poster, reduced motion, and the shared quality/telemetry surfaces.
   - **Depends on:** IP-06C
   - **Deliver:** Root-only `tests/immersive/` fixture independent from the forward routing suite.
   - **Acceptance:** Clean install/build/load succeeds without reconstructing architecture or fetching undeclared assets at runtime.

@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "acceptance": "ip-07a-optimized-model",
+  "product": "Orbit One portable speaker",
+  "pipeline": "inspect -> validate -> optimize (--compress meshopt) -> inspect -> validate",
+  "cli": "gltf-transform",
+  "raw": {
+    "bytes": 100828,
+    "meshes": 5,
+    "materials": 5,
+    "textures": 0,
+    "textureInfo": [],
+    "triangles": 3168,
+    "drawCalls": 5
+  },
+  "optimized": {
+    "bytes": 19816,
+    "meshes": 2,
+    "materials": 2,
+    "textures": 2,
+    "textureInfo": [
+      {
+        "name": "PaletteBaseColor",
+        "width": 32,
+        "height": 4,
+        "mimeType": "image/png",
+        "bytes": 122
+      },
+      {
+        "name": "PaletteMetallicRoughness",
+        "width": 32,
+        "height": 4,
+        "mimeType": "image/png",
+        "bytes": 117
+      }
+    ],
+    "triangles": 3122,
+    "drawCalls": 2
+  },
+  "compression": {
+    "codec": "EXT_meshopt_compression",
+    "decoder": "three bundled JS decoder (inlined, no runtime fetch)",
+    "reason": "primitive-scale geometry; Draco would commit ~1.5 MB of WASM decoder to save a few dozen kilobytes"
+  },
+  "palette": {
+    "note": "the optimize pipeline's palette transform merged the 5 authored materials into 2 with tiny 32x4 px palette textures; every texture stays far below the 2048 px cap"
+  },
+  "budget": {
+    "drawCallsDesktop": 100,
+    "trianglesDesktop": 500000,
+    "withinBudget": true
+  },
+  "validate": {
+    "pre": "PASS",
+    "post": "PASS"
+  }
+}

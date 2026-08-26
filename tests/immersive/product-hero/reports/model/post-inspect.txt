@@ -1,0 +1,82 @@
+OVERVIEW
+ ────────────────────────────────────────────
+┌────────────────────┬─────────────────────────────────────────────────────────────────────────────────┐
+│ key                │ value                                                                           │
+├────────────────────┼─────────────────────────────────────────────────────────────────────────────────┤
+│ version            │ 2.0                                                                             │
+├────────────────────┼─────────────────────────────────────────────────────────────────────────────────┤
+│ generator          │ glTF-Transform v4.4.2                                                           │
+├────────────────────┼─────────────────────────────────────────────────────────────────────────────────┤
+│ extensionsUsed     │ EXT_meshopt_compression, KHR_materials_emissive_strength, KHR_mesh_quantization │
+├────────────────────┼─────────────────────────────────────────────────────────────────────────────────┤
+│ extensionsRequired │ EXT_meshopt_compression, KHR_mesh_quantization                                  │
+└────────────────────┴─────────────────────────────────────────────────────────────────────────────────┘
+
+
+
+ SCENES
+ ────────────────────────────────────────────
+┌───┬──────────┬───────────────┬───────────────────────────┬─────────────────────────┬────────────────────┬───────────────────┬────────────────────────┐
+│ # │ name     │ rootName      │ bboxMin                   │ bboxMax                 │ renderVertexCount¹ │ uploadVertexCount │ uploadNaiveVertexCount │
+├───┼──────────┼───────────────┼───────────────────────────┼─────────────────────────┼────────────────────┼───────────────────┼────────────────────────┤
+│ 0 │ AuxScene │ OrbitOne.Body │ -0.36003, -0.49, -0.36003 │ 0.36003, 0.471, 0.36003 │ 9,366              │ 2,033             │ 2,033                  │
+└───┴──────────┴───────────────┴───────────────────────────┴─────────────────────────┴────────────────────┴───────────────────┴────────────────────────┘
+
+¹ Expected number of vertices processed by the vertex shader for one render
+  pass, without considering the vertex cache.
+
+² Expected number of vertices uploaded to GPU, assuming each Accessor
+  is uploaded only once. Actual number uploaded may be higher, 
+  dependent on the implementation and vertex buffer layout.
+
+³ Expected number of vertices uploaded to GPU, assuming each Primitive
+  is uploaded once, duplicating vertex attributes shared among Primitives.
+
+
+
+ MESHES
+ ────────────────────────────────────────────
+┌───┬──────┬───────────┬────────────────┬──────────────┬──────────┬─────────┬────────────────────────────────────────────────────────┬───────────┬──────────┐
+│ # │ name │ mode      │ meshPrimitives │ glPrimitives │ vertices │ indices │ attributes                                             │ instances │ size¹    │
+├───┼──────┼───────────┼────────────────┼──────────────┼──────────┼─────────┼────────────────────────────────────────────────────────┼───────────┼──────────┤
+│ 0 │      │ TRIANGLES │ 1              │ 3,026        │ 1,931    │ u16     │ NORMAL:i8_norm, POSITION:i16_norm, TEXCOORD_0:u16_norm │ 1         │ 43.26 KB │
+├───┼──────┼───────────┼────────────────┼──────────────┼──────────┼─────────┼────────────────────────────────────────────────────────┼───────────┼──────────┤
+│ 1 │      │ TRIANGLES │ 1              │ 96           │ 102      │ u16     │ NORMAL:i8_norm, POSITION:i16_norm, TEXCOORD_0:u16_norm │ 1         │ 1.9 KB   │
+└───┴──────┴───────────┴────────────────┴──────────────┴──────────┴─────────┴────────────────────────────────────────────────────────┴───────────┴──────────┘
+
+⁴ size estimates GPU memory required by a mesh, in isolation. If accessors are
+  shared by other mesh primitives, but the meshes themselves are not reused, then
+  the sum of all mesh sizes will overestimate the asset's total size. See "dedup".
+
+
+
+ MATERIALS
+ ────────────────────────────────────────────
+┌───┬────────────────────┬───────────┬────────────────────────────────────────────┬───────────┬─────────────┐
+│ # │ name               │ instances │ textures                                   │ alphaMode │ doubleSided │
+├───┼────────────────────┼───────────┼────────────────────────────────────────────┼───────────┼─────────────┤
+│ 0 │ PaletteMaterial001 │ 1         │ baseColorTexture, metallicRoughnessTexture │ OPAQUE    │             │
+├───┼────────────────────┼───────────┼────────────────────────────────────────────┼───────────┼─────────────┤
+│ 1 │ PaletteMaterial002 │ 1         │ baseColorTexture, metallicRoughnessTexture │ OPAQUE    │             │
+└───┴────────────────────┴───────────┴────────────────────────────────────────────┴───────────┴─────────────┘
+
+
+
+ TEXTURES
+ ────────────────────────────────────────────
+┌───┬──────────────────────────┬─────┬──────────────────────────┬───────────┬───────────┬─────────────┬────────────┬───────────┬───────────┐
+│ # │ name                     │ uri │ slots                    │ instances │ mimeType  │ compression │ resolution │ size      │ gpuSize⁵  │
+├───┼──────────────────────────┼─────┼──────────────────────────┼───────────┼───────────┼─────────────┼────────────┼───────────┼───────────┤
+│ 0 │ PaletteBaseColor         │     │ baseColorTexture         │ 2         │ image/png │             │ 32x4       │ 122 Bytes │ 700 Bytes │
+├───┼──────────────────────────┼─────┼──────────────────────────┼───────────┼───────────┼─────────────┼────────────┼───────────┼───────────┤
+│ 1 │ PaletteMetallicRoughness │     │ metallicRoughnessTexture │ 2         │ image/png │             │ 32x4       │ 117 Bytes │ 700 Bytes │
+└───┴──────────────────────────┴─────┴──────────────────────────┴───────────┴───────────┴─────────────┴────────────┴───────────┴───────────┘
+
+⁵ gpuSize estimates minimum VRAM memory allocation. Older devices may require
+  additional memory for GPU compression formats.
+
+
+
+ ANIMATIONS
+ ────────────────────────────────────────────
+No animations found.
