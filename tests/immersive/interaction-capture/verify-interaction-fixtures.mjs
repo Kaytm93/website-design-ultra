@@ -158,7 +158,8 @@ function startStaticServer() {
         const root = ${JSON.stringify(SOUND_FIXTURE_DIRECTORY)}
         const types = ${JSON.stringify(contentTypes)}
         http.createServer((req, res) => {
-          const name = req.url === '/' ? 'index.html' : req.url.replace(/^\\//, '')
+          const pathname = new URL(req.url ?? '/', 'http://127.0.0.1').pathname
+          const name = pathname === '/' ? 'index.html' : pathname.replace(/^\\//, '')
           const file = path.join(root, name)
           if (!file.startsWith(root) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
             res.writeHead(404)
