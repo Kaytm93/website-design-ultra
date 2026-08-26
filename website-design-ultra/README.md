@@ -75,11 +75,13 @@ website-design-ultra/
     │   └── references/          # pass catalogue, buffers and precision
     ├── loading-choreography/        # on demand: staged first frame
     │   └── references/          # manifest/buckets, warm-up and first frame
-    └── spatial-audio/               # on demand: the deliverable plays sound
-        └── references/          # graph and mixing, event sound design
+    ├── spatial-audio/               # on demand: the deliverable plays sound
+    │   └── references/          # graph and mixing, event sound design
+    └── gpu-particle-systems/        # on demand: thousands of GPU particles with persistent state
+        └── references/          # state textures, pointer field, click impulse
 ```
 
-The last four are add-ons behind an already-loaded 3D stack. Each description
+The last five are add-ons behind an already-loaded 3D stack. Each description
 names one activating condition and closes by naming what does not activate it,
 and `validate-content.mjs` fails the build when either sentence is missing.
 
@@ -133,8 +135,7 @@ exact provider, case, and tree):
 - WebGPU feature → `shaders-tsl/SKILL.md` plus `references/webgpu-feature-matrix.md`.
 - Simple CSS hover → `motion-system/SKILL.md`; no GSAP or Motion reference.
 - 3D hero on a normal page → the three mandatory 3D skills only. The
-  canvas-first, render-graph, loading, and audio add-ons stay unread, and both
-  3D forward cases forbid all four files.
+  canvas-first, render-graph, loading, audio, and gpu-particle add-ons stay unread, and the ordinary 3D forward cases forbid all five files.
 - The canvas owns the page → `canvas-first-architecture/SKILL.md` plus
   `references/parallel-dom-layer.md`; a hero above a DOM page never reaches it.
 - One bloom → `r3f-patterns`; a chain whose passes read each other →
@@ -291,7 +292,7 @@ contract, so `border` is louder than the hairline those interfaces ship.
 - Scroll storytelling → `scroll-immersion`.
 - Blender/Spline/glTF/KTX2 → `3d-asset-pipeline`.
 
-Four further layers exist and stay unloaded until the brief names their
+Five further layers exist and stay unloaded until the brief names their
 condition. Needing one says nothing about the others:
 
 - The canvas is the page, sections are scene states, no DOM page behind it →
@@ -301,6 +302,7 @@ condition. Needing one says nothing about the others:
   frame → `render-graph`.
 - The first meaningful frame depends on staged assets → `loading-choreography`.
 - The deliverable plays sound → `spatial-audio`.
+- Thousands of particles with persistent texture state, spatial fields, trails, or volume morphing → `gpu-particle-systems`; decorative dust, sparkle, small instanced particles, a short burst, or a single click shockwave stays in `r3f-patterns` and does not activate it.
 
 WebGLRenderer is the mature default. WebGPURenderer is selected for a concrete TSL/WebGPU benefit and uses renderer-compatible postprocessing.
 

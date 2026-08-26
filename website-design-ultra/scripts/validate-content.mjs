@@ -127,8 +127,8 @@ const skillDirectories = fs
   .readdirSync(skillsRoot, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
 
-if (skillDirectories.length !== 22) {
-  fail(`expected 22 skills, found ${skillDirectories.length}`)
+if (skillDirectories.length !== 23) {
+  fail(`expected 23 skills, found ${skillDirectories.length}`)
 }
 
 for (const directory of skillDirectories) {
@@ -719,6 +719,7 @@ for (const [file, markers] of canvasFirstContracts) {
  */
 const negativeGatedSkills = [
   'canvas-first-architecture',
+  'gpu-particle-systems',
   'loading-choreography',
   'reference-intake',
   'render-graph',
@@ -749,6 +750,24 @@ for (const name of negativeGatedSkills) {
     ]) {
       if (!description.toLowerCase().includes(marker)) {
         fail(`skills/reference-intake: description must contain "${marker}"`)
+      }
+    }
+  }
+  if (name === 'gpu-particle-systems') {
+    for (const marker of [
+      'thousands',
+      'persistent',
+      'spatial field',
+      'trails',
+      'volume morphing',
+      'decorative dust',
+      'sparkle',
+      'small instanced',
+      'short burst',
+      'single click shockwave',
+    ]) {
+      if (!description.toLowerCase().includes(marker)) {
+        fail(`skills/gpu-particle-systems: description must contain "${marker}"`)
       }
     }
   }
