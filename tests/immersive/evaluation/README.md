@@ -122,6 +122,64 @@ failure propagation, per-gate evidence rules, telemetry mapping, and
 expectation matching (a deliberate failing fixture that passes is a
 mismatch, and UNAVAILABLE is never met).
 
+## CI wiring (IP-07C)
+
+`.github/workflows/validate.yml` runs this suite live in the
+`immersive-evaluation` job on `ubuntu-latest` and archives its evidence.
+The job never silently skips: browser or GPU unavailability marks the suite
+UNAVAILABLE, prints the exact reason, and blocks release readiness by
+failing the workflow run.
+
+### Capability probe and status handling
+
+Before any capture, the job runs the plugin verifier's capability probe
+(`website-design-ultra/scripts/verify-browser.mjs --probe`) and fails with an
+explicit message when it reports unavailable. The probe decides the suite
+status up front — a missing browser CLI cannot become a pass further down the
+job. This is the ADR-010 contract: browser or GPU unavailability is
+`UNAVAILABLE`, never `PASS`, never a silent skip, and it prevents release
+readiness because the job fails the run (exit code 2 from the runner is
+handled identically).
+
+### Caching
+
+The job caches what its installs and downloads need:
+
+- npm's shared cache (`~/.npm`) for the fixture's exact-lockfile install;
+- the Playwright CLI package and its browser binaries under the Linux cache
+  directory (`~/.cache/ms-playwright`), keyed on the runner OS plus the exact
+  browser version strings pinned in the workflow env block. When a version
+  changes, the key misses and fresh binaries install.
+
+### Artifacts
+
+Every run archives the full evidence set under one artifact named
+`immersive-evaluation`, retention 30 days, with `if-no-files-found: error`
+so an empty set can never pass silently:
+
+- `<out>/<fixture>/capture-standard/` — the desktop/mobile/reduced/fallback
+  matrix plus `performance-summary.json` and `console-errors.txt`;
+- `<out>/<fixture>/checkpoints/` — the interaction checkpoint captures;
+- `<out>/<fixture>/gates/build.log` — the exact-lockfile install/build log;
+- `<out>/<fixture>/evaluation.json` — the structured per-fixture result;
+- `<out>/evaluation.json` — the top-level suite summary (status,
+  per-fixture gate map, durationMs, externalServices).
+
+The archived live artifact set is the release-readiness evidence manual
+release gate 6 asks to inspect before merging ("declared unavailable
+capabilities"), and gate 2 names it for Tier 1: 1.11 is cut only after PR 7
+is merged with every T1.1–T1.4 acceptance gate evidenced.
+
+### Reproducing locally
+
+```bash
+node tests/immersive/evaluation/run-implementation-evaluation.mjs \
+  --fixture all --out /tmp/wdu-evaluation
+```
+
+The same command produces the same evidence shape locally and in CI; the
+runner requires a clean source state before and after the run.
+
 ## Browser unavailability
 
 Browser or GPU unavailability is `UNAVAILABLE`, never `PASS` (ADR-010), and
