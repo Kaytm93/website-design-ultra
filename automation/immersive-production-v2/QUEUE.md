@@ -123,7 +123,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Hover has before/during/after; click has before/peak/recovered; scroll uses declared normalized progress; no checkpoint is hardcoded in the verifier.
   - **Verify:** Capture all declared starter checkpoints twice under deterministic mode and compare stable states.
 
-- [ ] `IP-06B` **Exercise keyboard, touch, focus, and optional audio states** — Extend dynamic verification to focus-visible, keyboard activation, touch alternatives, and conditional sound behavior.
+- [x] `IP-06B` **Exercise keyboard, touch, focus, and optional audio states** — Extend dynamic verification to focus-visible, keyboard activation, touch alternatives, and conditional sound behavior.
   - **Depends on:** IP-06A
   - **Deliver:** Input drivers and state evidence for loading/ready/failure plus audio locked/enabled/muted/returning only when sound is declared.
   - **Acceptance:** Keyboard and touch reach the same product outcome as pointer input; audio tests do not run for silent deliverables; unlock, mute persistence, and voice limit are observable when they do run.
