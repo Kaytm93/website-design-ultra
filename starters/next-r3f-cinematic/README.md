@@ -121,7 +121,14 @@ node ../../tests/immersive/interaction-capture/compare-checkpoints.mjs \
   --out /tmp/wdu-ip06a-comparison
 ```
 
-or, once built, `npm run verify:ip06a`. The comparator starts the server with
+or, once built, with an explicit empty output directory:
+
+```bash
+npm run verify:ip06a -- --out /tmp/wdu-ip06a-comparison
+```
+
+The npm script passes arguments through to the comparator; `--out` is required
+so a run never overwrites evidence from an earlier capture. The comparator starts the server with
 `WDU_DETERMINISTIC=1`, runs the plugin verifier twice with
 `--checkpoints lib/interaction-checkpoints.json`, and requires byte-identical
 PNGs per checkpoint id plus identical timestamp-free metadata
@@ -179,8 +186,8 @@ camera during the stable-frame sequence.
 
 ## Scope of this scaffold
 
-This is the IP-05A/IP-05B/IP-05C scaffold plus the IP-06A interaction-capture
-layer. The quality controller
+This is the IP-05A/IP-05B/IP-05C scaffold plus the IP-06A/IP-06B/IP-06C
+interaction-capture and comparison layers. The quality controller
 (Poster/Low/Medium/High, IP-05B) is implemented and wired as the single
 quality owner. The fallback and lifecycle contracts (IP-05C) are implemented
 in this tree: the art-directed desktop and portrait posters, the visible
@@ -190,6 +197,12 @@ wiring with a diagnostic handle (`globalThis.__WDU_CINEMATIC__`) for
 lifecycle resource assertions. The interaction checkpoints (IP-06A) are
 declared in `lib/interaction-checkpoints.json` with real pointer behaviour on
 the hero and a two-run byte-identical comparison through the plugin verifier.
+IP-06B adds generic keyboard, touch, and focus-visible drivers plus a
+sound-present fixture that records unlock, mute persistence, and voice-limit
+evidence while the silent starter declares no audio checkpoints. IP-06C adds
+an optional baseline comparator with structural, perceptual, expected-dynamic,
+and nondeterministic-content classes; it never renders a score as an aesthetic
+verdict.
 The automated IP-05C verification driver
 (`scripts/verify-ip05c.mjs`) is a later queue item's work; until it lands,
 the browser evidence for those contracts is the manual matrix documented in
