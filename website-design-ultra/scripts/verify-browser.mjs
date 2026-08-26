@@ -1361,6 +1361,10 @@ function run(candidate, args, timeoutMs) {
   })
 }
 
+export function hasBrowserCliError(output) {
+  return /(?:^|\n)### Error\b/.test(String(output ?? ''))
+}
+
 function resolveBackend(timeoutMs) {
   const attempts = []
   for (const candidate of candidates()) {
@@ -1485,9 +1489,10 @@ function main() {
       stdout: result.stdout?.trim(),
       stderr: result.stderr?.trim(),
     })
-    if (result.error || result.status !== 0) {
+    const cliOutput = `${result.stdout ?? ''}\n${result.stderr ?? ''}`.trim()
+    if (result.error || result.status !== 0 || hasBrowserCliError(cliOutput)) {
       throw new Error(
-        `${session}/${action}: ${result.error?.message ?? result.stderr ?? result.stdout ?? result.status}`,
+        `${session}/${action}: ${result.error?.message ?? (cliOutput || result.status)}`,
       )
     }
     return result
