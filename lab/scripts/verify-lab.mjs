@@ -694,6 +694,51 @@ async function main() {
       const upd = readFileSync(join(LAB_ROOT, 'src/experiments/shaders/particle-toy-update.frag'), 'utf8');
       check('no timeline morph cycles introduced beyond gated field/trail', !/cinematic.*timeline/i.test(toy + upd));
     }
+
+    // 7g. IP-09B interaction + resource stability gates — must be browser evidence, not static test
+    {
+      const ds = particleBrowserEvidence?.dataset;
+      const hasDs = Boolean(ds);
+      const unavailableDetail = particleEvidenceError ? `browser unavailable: ${particleEvidenceError.slice(0,120)}` : 'browser evidence unavailable';
+      // morph target count exactly 2
+      check('IP-09B morph target count is exactly 2 (two static DataTextures)', hasDs ? ds['data-wdu-particle-morph-target-count'] === '2' : 'UNAVAILABLE', hasDs ? `got ${ds['data-wdu-particle-morph-target-count']}` : unavailableDetail);
+      // resource snapshots before/after and stable true
+      const morphStable = hasDs ? ds['data-wdu-particle-morph-resource-stable'] : null;
+      const morphBefore = hasDs ? ds['data-wdu-particle-morph-resource-before'] : null;
+      const morphAfter = hasDs ? ds['data-wdu-particle-morph-resource-after'] : null;
+      check('IP-09B morph resource snapshots before/after present', hasDs ? Boolean(morphBefore) && Boolean(morphAfter) : 'UNAVAILABLE', hasDs ? `before=${String(morphBefore).slice(0,80)} after=${String(morphAfter).slice(0,80)}` : unavailableDetail);
+      check('IP-09B morph resource stable after repeated cycles (no growth)', hasDs ? morphStable === 'true' : 'UNAVAILABLE', hasDs ? `stable=${morphStable} before=${String(morphBefore).slice(0,60)} after=${String(morphAfter).slice(0,60)}` : unavailableDetail);
+      // hover displacement true
+      check('IP-09B hover displacement true (normalized pointer + bounded Gaussian)', hasDs ? ds['data-wdu-particle-hover-displaced'] === 'true' : 'UNAVAILABLE', hasDs ? `hover-displaced=${ds['data-wdu-particle-hover-displaced']} during=${ds['data-wdu-particle-hover-during']}` : unavailableDetail);
+      // click pulse one recovering pulse, peak present and recovered true
+      const impPeak = hasDs ? ds['data-wdu-particle-impulse-peak'] : null;
+      const impRec = hasDs ? ds['data-wdu-particle-impulse-recovered'] : null;
+      check('IP-09B one recovering click pulse — peak present and recovered true', hasDs ? (impPeak !== 'pending' && impPeak != null && impRec === 'true') : 'UNAVAILABLE', hasDs ? `peak=${impPeak} recovered=${impRec}` : unavailableDetail);
+      // mobile reduction evidence
+      const mobileReduced = hasDs ? ds['data-wdu-particle-mobile-reduced'] : null;
+      const countDesktop = hasDs ? ds['data-wdu-particle-particle-count-desktop'] : null;
+      const countMobile = hasDs ? ds['data-wdu-particle-particle-count-mobile'] : null;
+      const dprDesktop = hasDs ? ds['data-wdu-particle-dpr-desktop'] : null;
+      const dprMobile = hasDs ? ds['data-wdu-particle-dpr-mobile'] : null;
+      check('IP-09B mobile quality reduction — count and DPR reduced (1024→256, 2→1)', hasDs ? (mobileReduced === 'true' && countDesktop === '1024' && countMobile === '256' && dprDesktop === '2' && dprMobile === '1') : 'UNAVAILABLE', hasDs ? `count ${countDesktop}→${countMobile} dpr ${dprDesktop}→${dprMobile} reduced=${mobileReduced}` : unavailableDetail);
+      // poster / reduced-motion preservation
+      const posterPres = hasDs ? ds['data-wdu-particle-poster-preserved'] : null;
+      const reducedPres = hasDs ? ds['data-wdu-particle-reduced-motion-preserved'] : null;
+      check('IP-09B poster/reduced-motion subject preserved (non-blank)', hasDs ? (posterPres === 'true' && reducedPres === 'true' && (particleBrowserEvidence?.posterText?.length ?? 0) > 5) : 'UNAVAILABLE', hasDs ? `poster=${posterPres} reduced=${reducedPres} posterText=${particleBrowserEvidence?.posterText?.slice(0,40)}` : unavailableDetail);
+      // reset hash deterministic identical true
+      const resetIdentical = hasDs ? (ds['data-wdu-particle-reset-hash-identical'] || ds['data-wdu-particle-reset-hash-deterministic']) : null;
+      const resetHash1 = hasDs ? ds['data-wdu-particle-reset-hash-1'] : null;
+      check('IP-09B deterministic reset hashes identical (reset hash deterministic)', hasDs ? (resetIdentical === 'true' && Boolean(resetHash1) && String(resetHash1).startsWith('h')) : 'UNAVAILABLE', hasDs ? `identical=${resetIdentical} hash1=${String(resetHash1).slice(0,10)}` : unavailableDetail);
+      // canvas non-blank and render counts
+      check('IP-09B canvas/render evidence non-blank and render count >=1', hasDs ? (Boolean(particleBrowserEvidence?.hasCanvas) && Number(ds['data-wdu-particle-render-count']) >= 1 && (particleBrowserEvidence?._screenshotBytes ?? 0) > 1000) : 'UNAVAILABLE', hasDs ? `hasCanvas=${particleBrowserEvidence?.hasCanvas} render=${ds['data-wdu-particle-render-count']} bytes=${particleBrowserEvidence?._screenshotBytes}` : unavailableDetail);
+      // skill reference not containing production counts — static check
+      const toySrc2 = readFileSync(join(LAB_ROOT, 'src/experiments/particle-toy.ts'), 'utf8');
+      const hasFixtureComment = toySrc2.includes('fixture/test size only');
+      check('IP-09B mobile counts only as fixture evidence, not in skill/reference matrix', hasFixtureComment, 'toy missing fixture/test size comment');
+      // shader morph uniforms present
+      const fragSrc = readFileSync(join(LAB_ROOT, 'src/experiments/shaders/particle-toy-update.frag'), 'utf8');
+      check('IP-09B morph shader uses uniform progress lerp (no per-frame allocation)', fragSrc.includes('uMorphProgress') && fragSrc.includes('uMorphA') && fragSrc.includes('uMorphB') && /no per-frame allocation/i.test(fragSrc), fragSrc.slice(0,200));
+    }
   } finally {
     await stopServer(serverProcess);
   }

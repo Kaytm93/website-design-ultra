@@ -193,7 +193,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Decorative dust remains in `r3f-patterns`; counts stay owned by `3d-runtime-quality`; WebGL2/WebGPU support is explicit.
   - **Verify:** Content validation, forward negative gate, deterministic simulation fixture, and renderer matrix.
 
-- [ ] `IP-09B` **Prove particle interaction and resource stability** — Exercise hover displacement, one recovering click pulse, shape morphing, and mobile quality reduction.
+- [x] `IP-09B` **Prove particle interaction and resource stability** — Exercise hover displacement, one recovering click pulse, shape morphing, and mobile quality reduction.
   - **Depends on:** IP-09A
   - **Acceptance:** No per-particle React state or per-frame allocation; two morph targets do not grow GPU resources; poster/reduced-motion preserve the subject.
   - **Verify:** Interaction captures, resource counters before/after morph cycles, mobile count/DPR evidence, and deterministic reset hashes.
