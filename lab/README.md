@@ -17,7 +17,7 @@ npm run dev
 Then open one experiment at a time:
 
 - `/?e=shader-fullscreen` — fullscreen GLSL shader with live raw-source HMR and uniform controls;
-- `/?e=particle-toy` — seeded point-particle experiment with a particle-count control;
+- `/?e=particle-toy` — GPU particle ping-pong simulation (RGBA16F HalfFloat, NearestFilter, NoColorSpace, no depth/stencil, one owner swap, deterministic `particles/spawn`, normalized pointer field with capped Gaussian falloff, one recovering click impulse, reduced-motion/poster/capability fallback);
 - `/?e=compile-error` — deliberate undeclared-uniform failure with source/line diagnostics;
 - `/?e=deterministic-capture&WDU_DETERMINISTIC=1` — seeded, stable-frame capture fixture;
 - `/?e=foundational-shaders` — noise, Fresnel, iridescence, dissolve (IP-08B);
@@ -26,6 +26,7 @@ Then open one experiment at a time:
 - `/?e=media-post-deterministic&WDU_DETERMINISTIC=1` — seeded capture for media/post;
 - `/?e=media-post-failure` — failure/fallback states with compile-error fixture (non-blank);
 - `/?e=media-post-reduced-motion` — reduced-motion freeze: paused video, zero grain, static fallback.
+- `/?e=gpu-particles-deterministic&WDU_DETERMINISTIC=1` — deterministic GPU particle spawn/reset, pointer normalization, capped falloff, one-shot impulse (IP-09A, `particles/spawn`).
 
 ## Verification
 

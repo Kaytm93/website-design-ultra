@@ -187,7 +187,7 @@ splits that proposal into implementation-sized units.
 
 ## PR 12 — GPU particles and cinematic timeline
 
-- [ ] `IP-09A` **Add the negatively gated GPU-particle-systems skill** — Activate only for thousands of particles, persistent simulation, fields, trails, or volume morphing.
+- [x] `IP-09A` **Add the negatively gated GPU-particle-systems skill** — Activate only for thousands of particles, persistent simulation, fields, trails, or volume morphing.
   - **Depends on:** IP-08D
   - **Deliver:** Skill/reference contract plus one lab experiment for ping-pong state textures, stable spawn/reset, normalized pointer field, and click impulse.
   - **Acceptance:** Decorative dust remains in `r3f-patterns`; counts stay owned by `3d-runtime-quality`; WebGL2/WebGPU support is explicit.

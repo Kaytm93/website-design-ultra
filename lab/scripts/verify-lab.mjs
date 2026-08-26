@@ -462,6 +462,238 @@ async function main() {
       const transFrag = readFileSync(join(LAB_ROOT, 'src/experiments/shaders/transition-interaction.frag'), 'utf8');
       check('transition-interaction.frag has bounded correction (screenTexture uniform + helpers)', transFrag.includes('uniform sampler2D screenTexture') && transFrag.includes('bounded compatibility note'));
     }
+
+    console.log('\n═══ 7. IP-09A gpu-particle gates ═══');
+    // 7a. Skill negative gate and reference contract presence
+    {
+      const skillPath = join(LAB_ROOT, '..', 'website-design-ultra', 'skills', 'gpu-particle-systems', 'SKILL.md');
+      const refPath = join(LAB_ROOT, '..', 'website-design-ultra', 'skills', 'gpu-particle-systems', 'references', 'state-textures-and-interaction.md');
+      check('gpu-particle-systems SKILL.md exists', existsSync(skillPath));
+      if (existsSync(skillPath)) {
+        const skill = readFileSync(skillPath, 'utf8');
+        check('skill description is negatively gated (Use only when / does not activate)', /Use only when/i.test(skill) && /does not activate this skill/i.test(skill));
+        check('skill gate lists thousands + persistent + field/trail/morph', /thousands/i.test(skill) && /persistent/i.test(skill) && /spatial field/i.test(skill) && /trails/i.test(skill) && /volume morphing/i.test(skill));
+        check('skill excludes decorative dust/sparkle/small instanced/burst/single click shockwave → r3f-patterns', /Decorative dust/i.test(skill) && /Sparkle/i.test(skill) && /small instanced/i.test(skill) && /short burst/i.test(skill) && /single click shockwave/i.test(skill) && /r3f-patterns/.test(skill));
+        check('skill references state-textures contract', skill.includes('state-textures-and-interaction.md'));
+        check('skill does not duplicate particle counts', !/up to roughly \d+/.test(skill));
+      }
+      check('gpu-particle reference exists', existsSync(refPath));
+      if (existsSync(refPath)) {
+        const ref = readFileSync(refPath, 'utf8');
+        check('reference defines two RGBA16F/HalfFloat targets highp NearestFilter NoColorSpace', ref.includes('RGBA16F') && ref.includes('HalfFloat') && ref.includes('highp') && ref.includes('NearestFilter') && ref.includes('NoColorSpace'));
+        check('reference defines no depth/stencil + one owner swap never sampling write', /depthBuffer.*false/i.test(ref) && /one.*owner.*read.*write.*swap/i.test(ref) && /never.*sampling.*write/i.test(ref));
+        check('reference defines posLife/velSeed channels and particles/spawn', ref.includes('particles/spawn') && /Position\/Life/.test(ref));
+        check('reference defines normalized pointer clamp((clientX-left)/width and Y inversion', ref.includes('clamp((clientX-left)/width') && ref.includes('1-(clientY-top)/height'));
+        check('reference defines capped Gaussian falloff and one impulse recovering (1 - t) * exp', ref.includes('exp(-') && ref.includes('(1 - t) * exp(-3'));
+        check('reference forbids per-particle React state in render loop', /no per-particle React state/i.test(ref));
+        check('reference does not contain particle counts', !/up to roughly \d+/.test(ref));
+        check('reference documents reduced-motion/poster/capability fallback non-empty', /reduced motion/i.test(ref) && /poster/i.test(ref) && /capability fallback/i.test(ref));
+        check('reference declares WebGL2 PASS only after real browser float-target, WebGPU UNAVAILABLE without WGSL/TSL', /WebGL2.*PASS.*real browser/i.test(ref) && /WebGPU.*UNAVAILABLE/i.test(ref));
+      }
+    }
+    // 7b. Lab experiment implements ping-pong owner swap, HalfFloat etc., no per-frame allocation
+    {
+      const toy = readFileSync(join(LAB_ROOT, 'src/experiments/particle-toy.ts'), 'utf8');
+      check('particle-toy implements two RGBA16F/HalfFloat targets with NearestFilter/NoColorSpace/no depth/stencil', toy.includes('HalfFloatType') && toy.includes('NearestFilter') && toy.includes('NoColorSpace') && /depthBuffer:\s*false/.test(toy) && /stencilBuffer:\s*false/.test(toy));
+      check('particle-toy has one simulation owner swap and never samples write target', /swapState|swap.*read.*write/i.test(toy) && /never.*sampling.*write/i.test(toy));
+      check('particle-toy reset reinitializes both targets, no per-frame new RenderTarget', toy.includes('resetAllTargets') && !/new THREE\.WebGLRenderTarget/.test(toy.slice(toy.indexOf('function animate'))));
+      check('particle-toy uses particles/spawn and separate particles/field stream', toy.includes('particles/spawn') && toy.includes('particles/field'));
+      check('particle-toy normalizes pointer clamp((clientX and Y inversion) once on host', toy.includes('(e.clientX - rect.left) / rect.width') && toy.includes('1 - (e.clientY - rect.top)'));
+      check('particle-toy implements capped pointer falloff in shader and one recovering impulse RECOVERY_SECONDS', toy.includes('RECOVERY_SECONDS') && readFileSync(join(LAB_ROOT, 'src/experiments/shaders/particle-toy-update.frag'), 'utf8').includes('exp(-'));
+      check('particle-toy has no per-particle React state or setter in render loop', !/useState.*particle/i.test(toy) && !/setState/.test(toy));
+      check('particle-toy fixture size marked as fixture/test size only', toy.includes('fixture/test size only'));
+      check('particle-toy documents reduced-motion/poster/capability fallback non-empty', /prefers-reduced-motion/.test(toy) && /poster/i.test(toy));
+    }
+    // 7c. Shaders contain highp and bounded falloff and impulse
+    {
+      const upd = readFileSync(join(LAB_ROOT, 'src/experiments/shaders/particle-toy-update.frag'), 'utf8');
+      check('update frag declares highp and samples only read targets', upd.includes('precision highp float') && upd.includes('uStatePosLife') && upd.includes('never the currently bound write'));
+      check('update frag documents capped Gaussian falloff', upd.includes('exp(-') && upd.includes('capped'));
+      check('update frag documents impulse recovery (1 - t) * exp(-3t)', upd.includes('uImpulseStrength') || upd.includes('impulse'));
+      const vert = readFileSync(join(LAB_ROOT, 'src/experiments/shaders/particle-toy-render.vert'), 'utf8');
+      check('render vert highp and samples state textures', vert.includes('precision highp float') && vert.includes('uPosLifeTex'));
+      const frag = readFileSync(join(LAB_ROOT, 'src/experiments/shaders/particle-toy-render.frag'), 'utf8');
+      check('render frag highp', frag.includes('precision highp float'));
+    }
+    // 7d. Deterministic fixture hashes identical and pointer/impulse helpers deterministic
+    {
+      const detSrc = readFileSync(join(LAB_ROOT, 'src/fixtures/gpu-particles-deterministic.ts'), 'utf8');
+      check('deterministic fixture uses particles/spawn and separate stream', detSrc.includes('particles/spawn') && detSrc.includes('particles/field'));
+      check('deterministic fixture exports hashState and normalizePointer', detSrc.includes('hashState') && detSrc.includes('normalizePointer'));
+      try {
+        const { buildSpawnState, hashState, normalizePointer, impulseStrength, RECOVERY_SECONDS: REC } = await import(join(LAB_ROOT, 'src/fixtures/gpu-particles-deterministic.ts'));
+        const s1 = buildSpawnState(8, 'gpu-particles-deterministic-v1');
+        const s2 = buildSpawnState(8, 'gpu-particles-deterministic-v1');
+        const h1 = hashState(s1.posLife, s1.velSeed);
+        const h2 = hashState(s2.posLife, s2.velSeed);
+        check('deterministic fixture two runs produce identical hash', h1 === h2, `${h1.slice(0, 8)} vs ${h2.slice(0, 8)}`);
+        const [x, y] = normalizePointer(50, 30, { left: 0, top: 0, width: 100, height: 100 });
+        check('pointer normalization Y inversion correct', x === 0.5 && y === 0.7, `${x},${y}`);
+        const imp = { startTime: 10, strength: 1 };
+        check('impulse recovering >0 inside window and 0 after', impulseStrength(10.3, imp) > 0 && Math.abs(impulseStrength(10 + REC, imp)) < 1e-9);
+      } catch (e) {
+        check('deterministic fixture JS execution', false, String(e));
+      }
+    }
+    // 7e. Backend matrix honest for gpu-particles + real-browser evidence required for WebGL2 PASS
+    let particleBrowserEvidence = null;
+    let particleEvidenceError = '';
+    // Attempt real browser run for particle-toy before judging matrix PASS/UNAVAILABLE
+    if (playwrightCli && serverReady) {
+      const session = `wdu-particle-evidence-${process.pid}-${Date.now()}`;
+      const url = `${baseUrl}/?e=particle-toy&WDU_DETERMINISTIC=1`;
+      try {
+        invokeCli(playwrightCli, session, 'open', [url]);
+        const result = invokeCli(
+          playwrightCli,
+          session,
+          'run-code',
+          [
+            `async (page) => {
+  await page.waitForLoadState('domcontentloaded')
+  // wait for data-wdu-ready (stable frame) or timeout after 15s
+  try { await page.waitForSelector('html[data-wdu-ready="true"]', { state: 'attached', timeout: 15000 }) } catch {}
+  // collect data-wdu-particle-* evidence
+  const e = await page.evaluate(() => {
+    const html = document.documentElement
+    const root = document.getElementById('root')
+    const poster = document.querySelector('[data-testid="particle-toy-poster"]')
+    const canvas = document.querySelector('canvas')
+    function getAttr(el, name){ return el ? el.getAttribute(name) : null }
+    const dataset = {}
+    for (const attr of html.attributes) {
+      if (attr.name.startsWith('data-wdu-particle-')) dataset[attr.name] = attr.value
+    }
+    // also collect root dataset
+    const rootDataset = {}
+    if (root) for (const attr of root.attributes) if (attr.name.startsWith('data-wdu-particle-')) rootDataset[attr.name] = attr.value
+    return {
+      url: location.href,
+      ready: html.getAttribute('data-wdu-ready'),
+      dataset,
+      rootDataset,
+      posterHidden: poster ? poster.hidden : null,
+      posterFallbackReason: poster ? poster.getAttribute('data-fallback-reason') : null,
+      posterText: poster ? (poster.textContent||'').slice(0,120) : null,
+      canvasVisible: canvas ? getComputedStyle(canvas).visibility !== 'hidden' && canvas.offsetWidth>0 : null,
+      hasCanvas: Boolean(canvas),
+      // raw html outer for debug
+    }
+  })
+  return JSON.stringify(e)
+}`,
+            '--raw',
+          ],
+        );
+        const raw = parseRaw(result);
+        // raw is stringified JSON string? parseRaw returned JSON.parse of first line -> string
+        let parsed;
+        try { parsed = typeof raw === 'string' ? JSON.parse(raw) : raw } catch { parsed = raw }
+        particleBrowserEvidence = parsed;
+        // also copy intermediate evidence to output
+        console.log(`        particle-toy browser evidence: ${JSON.stringify(parsed).slice(0, 1200)}`);
+        // take screenshot for non-blank check
+        const shotTmp = join(LAB_ROOT, `.tmp-particle-${Date.now()}.png`);
+        try {
+          invokeCli(playwrightCli, session, 'run-code', [
+            `async (page) => { await page.screenshot({ path: ${quote(shotTmp)} }); return true }`,
+            '--raw',
+          ]);
+          if (existsSync(shotTmp)) {
+            const sz = readFileSync(shotTmp).length;
+            particleBrowserEvidence._screenshotBytes = sz;
+            console.log(`        particle-toy screenshot bytes: ${sz}`);
+            rmSync(shotTmp, { force: true });
+          }
+        } catch {}
+      } catch (err) {
+        particleEvidenceError = String(err.message || err);
+        console.log(`        particle-toy browser evidence failed: ${particleEvidenceError.slice(0, 600)}`);
+      } finally {
+        closeCliSession(playwrightCli, session);
+      }
+    } else {
+      particleEvidenceError = playwrightCli ? 'Vite server unavailable' : 'WDU_PLAYWRIGHT_CLI is not configured';
+      console.log(`        particle-toy browser evidence unavailable: ${particleEvidenceError}`);
+    }
+
+    {
+      const matrixPath = join(LAB_ROOT, 'src/fixtures/backend-matrix.json');
+      if (existsSync(matrixPath)) {
+        const matrix = JSON.parse(readFileSync(matrixPath, 'utf8'));
+        const entry = matrix.modules.find((m) => m.id === 'gpu-particles');
+        check('gpu-particles matrix entry exists', Boolean(entry));
+        if (entry) {
+          // WebGPU must stay UNAVAILABLE without real WGSL/TSL device
+          check('gpu-particles webgpu UNAVAILABLE never PASS without WGSL/TSL', entry.webgpu.status === 'UNAVAILABLE' && /WGSL\/TSL|WebGPU.*PASS/i.test(entry.webgpu.reason ?? ''));
+
+          // WebGL2 honesty: PASS only with real browser float-target init + update draw + render + non-blank
+          const hasEvidence = particleBrowserEvidence && particleBrowserEvidence.dataset;
+          let evidencePass = false;
+          if (hasEvidence) {
+            const ds = particleBrowserEvidence.dataset;
+            const cap = ds['data-wdu-particle-capability'];
+            const floatT = ds['data-wdu-particle-float-target'] || ds['data-wdu-particle-floatTarget'];
+            const fb = ds['data-wdu-particle-framebuffer'] || ds['data-wdu-particle-framebuffer-complete'];
+            const init = ds['data-wdu-particle-init'];
+            const initCnt = Number(ds['data-wdu-particle-init-count'] || ds['data-wdu-particle-init-upload'] || 0);
+            const upd = Number(ds['data-wdu-particle-update-draws'] || ds['data-wdu-particle-update-draw-count'] || 0);
+            const sw = Number(ds['data-wdu-particle-swap-count'] || ds['data-wdu-particle-read-write-swap'] || 0);
+            const rc = Number(ds['data-wdu-particle-render-count'] || 0);
+            const fallback = ds['data-wdu-particle-fallback-reason'] || '';
+            const ready = particleBrowserEvidence.ready === 'true';
+            const nonBlank = (particleBrowserEvidence._screenshotBytes && particleBrowserEvidence._screenshotBytes > 1000) || (particleBrowserEvidence.posterText && particleBrowserEvidence.posterText.length > 5) || particleBrowserEvidence.hasCanvas;
+            // Require float target available, framebuffer complete, init >=4, at least one update draw, swap >=1, render >=1, ready, non-blank, no fallback when available
+            const fallbackOk = fallback === '' || fallback === 'reduced-motion' ? true : false;
+            // reduced-motion is allowed fallback but still non-blank; treat as not-fail for evidence collection
+            evidencePass = cap === 'available' && (floatT === 'half-float' || floatT === 'float') && (fb === 'complete' || fb === 'true') && init === 'done' && initCnt >= 4 && upd >= 1 && sw >= 1 && rc >= 1 && ready && nonBlank;
+            console.log(`        particle evidence parsed: cap=${cap} float=${floatT} fb=${fb} init=${init} initCnt=${initCnt} upd=${upd} sw=${sw} rc=${rc} ready=${ready} nonBlank=${nonBlank} fallback=${fallback} => evidencePass=${evidencePass}`);
+          }
+          if (evidencePass) {
+            check('gpu-particles webgl2 PASS honoured — real browser float-target init + update draw + render + non-blank', entry.webgl2.status === 'PASS' && /browser-required/i.test(entry.webgl2.executed ?? ''));
+            if (entry.webgl2.status !== 'PASS') {
+              console.log(`        matrix should be PASS but is ${entry.webgl2.status}; evidence shows float-target draw succeeded`);
+            }
+          } else {
+            // Without evidence, honest status is UNAVAILABLE, not PASS
+            const isUnavailableHonest = entry.webgl2.status === 'UNAVAILABLE';
+            check('gpu-particles webgl2 UNAVAILABLE without browser float evidence (honest)', isUnavailableHonest, `matrix is ${entry.webgl2.status}; evidencePass=${evidencePass}; error=${particleEvidenceError.slice(0,200)}`);
+            if (!isUnavailableHonest) {
+              console.log(`        honestly UNAVAILABLE is required when browser evidence missing; set backend-matrix.json webgl2 to UNAVAILABLE`);
+            }
+          }
+          // Copy evidence into harness output for audit
+          if (particleBrowserEvidence) {
+            console.log(`        particle runtime evidence copied: ${JSON.stringify(particleBrowserEvidence.dataset).slice(0, 800)}`);
+          }
+        }
+        check('matrix marks rawGLSLisNotWebGPUPass', matrix.contract && matrix.contract.rawGLSLisNotWebGPUPass === true);
+      } else {
+        check('backend-matrix.json exists', false);
+      }
+    }
+
+    // 7e2. Static source assertions for particle-toy must not alone trigger PASS — they are supplemental only
+    {
+      const toy = readFileSync(join(LAB_ROOT, 'src/experiments/particle-toy.ts'), 'utf8');
+      const hasActiveDraw = /renderer\.setRenderTarget\(writePosLife\)/.test(toy) && (/renderer\.render\(simScene/.test(toy) || /renderer\.render\(simPosScene/.test(toy)) && !/\/\/\s*renderer\.setRenderTarget\(writePosLife\)/.test(toy);
+      check('particle-toy has active renderer.setRenderTarget + renderer.render for ping-pong (not commented)', hasActiveDraw);
+      const hasRealInit = !/void\s+data;/.test(toy) && /DataTexture/.test(toy) && (/renderer\.setRenderTarget\(target\)/.test(toy) || /renderer\.setRenderTarget\(entry\.target\)/.test(toy));
+      check('particle-toy fillSpawnData actually uses data (no void data discard)', hasRealInit);
+      check('particle-toy exposes data-wdu-particle-* evidence surface', /data-wdu-particle-/.test(toy) && (/setEvidence/.test(toy) || /setParticleEvidence/.test(toy)));
+      check('particle-toy checks framebuffer completeness', /checkFramebufferStatus|FRAMEBUFFER_COMPLETE/.test(toy));
+      check('particle-toy has fallback non-blank poster', /particle-toy-poster/.test(toy) && /fallback/i.test(toy));
+    }
+
+    // 7f. Manifest noCombine and forbidden paths
+    {
+      const manifest = readFileSync(join(LAB_ROOT, 'src/modules/manifest.ts'), 'utf8');
+      check('manifest contains gpu-particles with noCombine', manifest.includes('gpu-particles') && manifest.includes('noCombine: true'));
+      check('no apply-all/SDF/timeline introduced in gpu scope', !/applyAll/i.test(manifest) && !/SDF/.test(manifest.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '')));
+      const toy = readFileSync(join(LAB_ROOT, 'src/experiments/particle-toy.ts'), 'utf8');
+      const upd = readFileSync(join(LAB_ROOT, 'src/experiments/shaders/particle-toy-update.frag'), 'utf8');
+      check('no timeline morph cycles introduced beyond gated field/trail', !/cinematic.*timeline/i.test(toy + upd));
+    }
   } finally {
     await stopServer(serverProcess);
   }

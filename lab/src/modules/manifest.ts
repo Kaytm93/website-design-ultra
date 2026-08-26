@@ -153,6 +153,16 @@ export const foundationalShaderManifest: ShaderModuleManifestEntry[] = [
     fixture: 'lab/src/experiments/shaders/media-post.frag',
     noCombine: true,
   },
+  {
+    id: 'gpu-particles',
+    name: 'GPU particle systems (ping-pong state)',
+    rendererSupport: ['webgl2', 'webgpu'],
+    costClass: 'high',
+    reducedMotion: 'Simulation frozen at t=0; static Points composition preserved. No animation when prefers-reduced-motion is set.',
+    colorSpace: 'Linear data texture (NoColorSpace, NearestFilter); render targets RGBA16F HalfFloat highp, no depth/stencil. Not display color.',
+    fixture: 'lab/src/experiments/particle-toy.ts',
+    noCombine: true,
+  },
 ];
 
 export const mediaPostManifest: ShaderModuleManifestEntry[] = foundationalShaderManifest.filter((entry) =>
