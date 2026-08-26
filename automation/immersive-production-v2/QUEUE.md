@@ -143,7 +143,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Clean install/build/load succeeds without reconstructing architecture or fetching undeclared assets at runtime.
   - **Verify:** Exact-lockfile install, build, runtime smoke, model validation, and static capture.
 
-- [ ] `IP-07B` **Implement the immersive evaluation runner** — Assert build, runtime, keyboard, mobile, reduced motion, fallback, interaction checkpoints, and all three telemetry gates.
+- [x] `IP-07B` **Implement the immersive evaluation runner** — Assert build, runtime, keyboard, mobile, reduced motion, fallback, interaction checkpoints, and all three telemetry gates.
   - **Depends on:** IP-07A
   - **Deliver:** Runner with structured result and stated time/cost, kept separate from `run-forward-tests.mjs`.
   - **Acceptance:** Every assertion links evidence; a missing capture cannot be replaced by a build pass; failed resources and console/shader errors fail the applicable case.
