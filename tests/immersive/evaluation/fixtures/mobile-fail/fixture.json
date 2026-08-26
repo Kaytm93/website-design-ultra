@@ -6,5 +6,8 @@
   "expect": {
     "status": "FAIL",
     "gates": ["mobile"]
+  },
+  "declared": {
+    "heroCapture": true
   }
 }
