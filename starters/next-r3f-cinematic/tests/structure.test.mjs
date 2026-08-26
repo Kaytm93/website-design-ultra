@@ -72,13 +72,15 @@ test('exactly one clock is created and no wall-clock path exists in scene code',
 test('exactly one camera owner exists', () => {
   // The invariant is camera *writes*: position, lookAt, or field of view.
   // (QualityRuntime legitimately reads the R3F store for gl and setFrameloop,
-  // never the camera.)
+  // never the camera.) IP-09C adds the cinematic timeline as the coordinated
+  // owner for the interpolated hero Z; the manifest validator ensures no two
+  // writers share one property (one-owner-per-axis, made executable).
   const cameraWriters = SOURCES.filter(
     (file) =>
       file.startsWith('components/') &&
       /camera\.position|camera\.lookAt|camera\.fov/.test(read(file)),
   )
-  assert.deepEqual(cameraWriters, ['components/CameraRig.tsx'])
+  assert.deepEqual(cameraWriters, ['components/CameraRig.tsx', 'components/CinematicTimeline.tsx'])
 
   const stationLookups = SOURCES.filter((file) => /getCameraStation\b/.test(read(file)))
   // Definition in the runtime, server-side validation in the page, and the
@@ -162,14 +164,15 @@ test('the quality controller is created at exactly one site and owns every trans
   assert.ok(qualityRuntime.includes('recordFrameTime'))
   assert.ok(qualityRuntime.includes('attachVisibility'))
 
-  // The only R3F store readers: CameraRig (the camera owner), QualityRuntime
-  // (gl + setFrameloop), SceneRuntime (renderer info for the diagnostic
-  // handle), ContextLossGate (the context-loss observer), and HeroObject
-  // (camera + invalidate for the pointer-interaction capture, IP-06A). No
-  // other component touches the store.
+  // The only R3F store readers: CameraRig (the camera owner), CinematicTimeline
+  // (the IP-09C coordinated 6-track timeline), QualityRuntime (gl + setFrameloop),
+  // SceneRuntime (renderer info for the diagnostic handle), ContextLossGate
+  // (the context-loss observer), and HeroObject (camera + invalidate for the
+  // pointer-interaction capture, IP-06A). No other component touches the store.
   const storeReaders = SOURCES.filter((file) => read(file).includes('useThree'))
   assert.deepEqual(storeReaders, [
     'components/CameraRig.tsx',
+    'components/CinematicTimeline.tsx',
     'components/ContextLossGate.tsx',
     'components/HeroObject.tsx',
     'components/QualityRuntime.tsx',
