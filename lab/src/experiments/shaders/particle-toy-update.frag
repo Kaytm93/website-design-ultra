@@ -13,6 +13,12 @@ uniform int uOutMode; // 0 = PosLife, 1 = VelSeed — same shader initializes/up
 uniform bool uInit; // true = initialize from deterministic spawn textures, false = normal update
 uniform sampler2D uInitPosLife; // deterministic spawn data for posLife init (particles/spawn)
 uniform sampler2D uInitVelSeed; // deterministic spawn data for velSeed init (particles/spawn + separate field stream)
+// Morph targets — two static DataTextures (shape A / B), no per-frame allocation, no new RenderTarget per morph
+uniform sampler2D uMorphA; // sphere target positions (particles/morph-a)
+uniform sampler2D uMorphB; // cube/torus target positions (particles/morph-b) — second morph target
+uniform float uMorphProgress; // 0..1 interpolation between A and B
+uniform float uMorphInfluence; // 0..1 blend weight toward morph target vs simulation
+uniform bool uMorphEnabled; // true when morph is active
 
 in vec2 vUv;
 
@@ -75,6 +81,18 @@ void main() {
     impulseField = normalize(toImpulse + vec2(1e-4)) * impFalloff * uImpulseStrength * 0.06;
   }
 
+  // Morph target interpolation — two morph targets do not grow GPU resources (no new target per cycle, only uniform lerp)
+  // When enabled, particles are attracted toward morphTarget = mix(A,B, uMorphProgress)
+  vec3 morphTarget = vec3(0.0);
+  if (uMorphEnabled) {
+    vec3 posA = texture(uMorphA, vUv).xyz;
+    vec3 posB = texture(uMorphB, vUv).xyz;
+    morphTarget = mix(posA, posB, clamp(uMorphProgress, 0.0, 1.0));
+    vec3 toMorph = morphTarget - pos;
+    // Blend toward morph target with bounded influence — no per-particle allocation
+    vel += toMorph * uMorphInfluence * 2.5 * clamp(uDelta, 0.0, 0.033);
+  }
+
   // Integration (frame-rate independent via uDelta)
   vec3 accel = vec3(pointerField, 0.0) + vec3(impulseField, 0.0);
   // add tiny curl from seed for field variation (uses separate particles/field seed stream originally)
@@ -82,6 +100,10 @@ void main() {
   vel += accel * clamp(uDelta, 0.0, 0.033);
   vel *= 0.995; // damping
   pos += vel * clamp(uDelta, 0.0, 0.033);
+  // When morph enabled, gently clamp toward target after integration to prevent explosion
+  if (uMorphEnabled) {
+    pos = mix(pos, morphTarget, uMorphInfluence * 0.08);
+  }
 
   // Life cycle — respawn when life reaches 0
   life -= uDelta * 0.2;
