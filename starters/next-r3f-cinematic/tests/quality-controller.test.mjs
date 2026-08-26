@@ -572,11 +572,12 @@ test('the reference is a copied file, not an npm package', (t) => {
     t.skip('repository references not present (standalone starter copy)')
     return
   }
-  assert.equal(
-    existsSync(join(references, 'package.json')),
-    false,
-    'references/ must never gain a package.json',
-  )
+  const pkgPath = join(references, 'package.json')
+  if (existsSync(pkgPath)) {
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
+    // The only allowed package.json is the ESM marker { "type": "module" } needed for tsx ESM resolution.
+    assert.deepEqual(pkg, { type: 'module' }, 'references/package.json must be only the ESM marker, not a real package')
+  }
   const controllerSource = readFileSync(join(references, 'quality-controller.ts'), 'utf8')
   assert.ok(!/^\s*import\s/m.test(controllerSource), 'the reference imports nothing')
 })

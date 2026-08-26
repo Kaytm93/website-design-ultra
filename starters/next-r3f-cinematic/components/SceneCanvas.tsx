@@ -2,6 +2,7 @@
 
 import { Canvas } from '@react-three/fiber'
 import { CameraRig } from './CameraRig.tsx'
+import { CinematicTimeline } from './CinematicTimeline.tsx'
 import { ContextLossGate } from './ContextLossGate.tsx'
 import { HeroObject } from './HeroObject.tsx'
 import { QualityRuntime } from './QualityRuntime.tsx'
@@ -61,6 +62,7 @@ export function SceneCanvas({
         onQualityChange={onQualityChange}
       >
         <CameraRig stations={CAMERA_STATIONS} stationId={stationId} />
+        <CinematicTimeline />
         <QualityRuntime />
         <HeroObject />
         <ContextLossGate onContextLost={onContextLost ?? NOOP} />

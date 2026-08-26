@@ -27,6 +27,8 @@ Then open one experiment at a time:
 - `/?e=media-post-failure` — failure/fallback states with compile-error fixture (non-blank);
 - `/?e=media-post-reduced-motion` — reduced-motion freeze: paused video, zero grain, static fallback.
 - `/?e=gpu-particles-deterministic&WDU_DETERMINISTIC=1` — deterministic GPU particle spawn/reset, pointer normalization, capped falloff, one-shot impulse (IP-09A, `particles/spawn`).
+- `/?e=cinematic-timeline` — one normalized timeline coordinating DOM, camera, scene, material, sound, and loading tracks without a second clock (IP-09C).
+- `/?e=cinematic-timeline-deterministic&WDU_DETERMINISTIC=1&wdu-timeline=timeline-50` — seeded capture for the timeline checkpoint `timeline-50` with portrait choreography and deterministic filenames, feeding PR-6 capture directly.
 
 ## Verification
 

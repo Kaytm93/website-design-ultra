@@ -198,7 +198,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** No per-particle React state or per-frame allocation; two morph targets do not grow GPU resources; poster/reduced-motion preserve the subject.
   - **Verify:** Interaction captures, resource counters before/after morph cycles, mobile count/DPR evidence, and deterministic reset hashes.
 
-- [ ] `IP-09C` **Implement and validate one cinematic timeline** — Coordinate DOM, camera, scene, material, sound, and loading tracks without a second clock.
+- [x] `IP-09C` **Implement and validate one cinematic timeline** — Coordinate DOM, camera, scene, material, sound, and loading tracks without a second clock.
   - **Depends on:** IP-09B
   - **Deliver:** Normalized schema, property-owner validator, portrait choreography, checkpoint ids, and starter/lab integration.
   - **Acceptance:** Two writers for one property are rejected; every track has one owner; declared checkpoint ids feed PR 6 capture directly.
