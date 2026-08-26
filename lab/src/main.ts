@@ -74,6 +74,8 @@ const EXPERIMENTS: Record<string, () => Promise<ExperimentModule>> = {
   'particle-toy': () => import('./experiments/particle-toy.js'),
   'compile-error': () => import('./fixtures/compile-error.js'),
   'deterministic-capture': () => import('./fixtures/deterministic-capture.js'),
+  'foundational-shaders': () => import('./experiments/shaders/foundational-shaders.js'),
+  'foundational-shaders-deterministic': () => import('./fixtures/foundational-shaders-deterministic.js'),
 };
 
 async function loadExperiment(name: string): Promise<void> {

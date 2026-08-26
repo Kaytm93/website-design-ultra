@@ -165,7 +165,7 @@ splits that proposal into implementation-sized units.
 
 ## PR 9 — Foundational shader module group
 
-- [ ] `IP-08B` **Add foundational shader modules** — Implement simplex/value/curl noise, Fresnel, iridescence, and dissolve.
+- [x] `IP-08B` **Add foundational shader modules** — Implement simplex/value/curl noise, Fresnel, iridescence, and dissolve.
   - **Depends on:** IP-08A
   - **Deliver:** Modules plus manifest entries for renderer support, cost class, reduced-motion behavior, color space, and visual fixture.
   - **Acceptance:** Overdraw and dissolve edge width are bounded; seeds are stable; there is no combined “apply all effects” export.
