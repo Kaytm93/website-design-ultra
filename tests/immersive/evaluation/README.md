@@ -146,10 +146,13 @@ handled identically).
 The job caches what its installs and downloads need:
 
 - npm's shared cache (`~/.npm`) for the fixture's exact-lockfile install;
-- the Playwright CLI package and its browser binaries under the Linux cache
-  directory (`~/.cache/ms-playwright`), keyed on the runner OS plus the exact
-  browser version strings pinned in the workflow env block. When a version
-  changes, the key misses and fresh binaries install.
+- the pinned Playwright CLI package is installed once under the runner temp
+  directory and exported as `WDU_PLAYWRIGHT_CLI`, so each verifier action
+  reuses the same executable instead of spawning `npx` again;
+- the Playwright browser binaries under the Linux cache directory
+  (`~/.cache/ms-playwright`), keyed on the runner OS plus the exact browser
+  version strings pinned in the workflow env block. When a version changes,
+  the key misses and fresh binaries install.
 
 ### Artifacts
 

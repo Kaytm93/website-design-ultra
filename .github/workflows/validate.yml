@@ -126,6 +126,15 @@ jobs:
             ${{ runner.os }}-immersive-evaluation-cli-${{ env.WDU_PLAYWRIGHT_CLI_VERSION }}-
             ${{ runner.os }}-immersive-evaluation-cli-
 
+      # Install the CLI once outside the repository. The verifier then uses
+      # this executable for every browser action instead of starting npx for
+      # each command, which keeps the all-fixture evaluation within the job
+      # timeout while preserving the pinned version.
+      - name: Install pinned Playwright CLI package
+        run: |
+          npm install --prefix "${{ runner.temp }}/wdu-playwright-cli" --no-save --no-package-lock --ignore-scripts @playwright/cli@${{ env.WDU_PLAYWRIGHT_CLI_VERSION }}
+          echo "WDU_PLAYWRIGHT_CLI=${{ runner.temp }}/wdu-playwright-cli/node_modules/.bin/playwright-cli" >> "$GITHUB_ENV"
+
       # ADR-010 status semantics up front: an unavailable browser capability
       # fails this step with the probe's own reason instead of letting the
       # suite silently skip its live cases.
@@ -136,7 +145,7 @@ jobs:
       - name: Install pinned Chromium for the Playwright CLI
         run: |
           npx --yes --package playwright@1.62.1 playwright install --with-deps chromium
-          npx --yes --package @playwright/cli@${{ env.WDU_PLAYWRIGHT_CLI_VERSION }} playwright-cli install-browser --with-deps chromium
+          "$WDU_PLAYWRIGHT_CLI" install-browser --with-deps chromium
 
       - name: Run offline evaluation unit tests
         run: node --test tests/immersive/evaluation/evaluation.test.mjs
