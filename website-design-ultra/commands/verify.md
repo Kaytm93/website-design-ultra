@@ -98,6 +98,28 @@ resolved. The standard matrix and telemetry summary are skipped in this mode.
 The manifest is the project's declaration: do not add, rename, or invent
 checkpoints in the script.
 
+When a committed baseline capture set exists, compare the new run offline
+instead of judging pixels by eye. Read `core-rules/references/determinism.md`
+section 8 and `core-rules/references/baseline-comparison.schema.json`, then
+run the root-only comparator with the two capture-set directories:
+
+```bash
+node tests/immersive/interaction-capture/compare-baselines.mjs \
+  --baseline "$BASELINE_RUN" \
+  --candidate "$VERIFY_OUT" \
+  --declaration "$PROJECT/baseline-comparison.json" \
+  --out "$COMPARE_OUT"
+```
+
+The comparator classifies every difference into structural regression,
+perceptual difference, expected dynamic variation, or nondeterministic
+content; a deterministic mismatch outside every declared mask stays a
+perceptual difference. It refuses to run (exit 2) when either side lacks
+deterministic capture metadata, and its `comparison.json` names every
+mask/tolerance and its source and labels every score as evidence, never an
+aesthetic verdict, taste, or approval. A score is never approval: report it
+as evidence and decide on the product outcome separately.
+
 The adapter closes sessions even after failures. With a host tool, produce the
 same named artifacts:
 

@@ -119,6 +119,10 @@ exact provider, case, and tree):
   `core-rules/references/interaction-checkpoints.schema.json` plus
   `core-rules/references/determinism.md` §7; the manifest is the project's
   declaration, never a verifier hardcode.
+- Comparing a committed baseline capture set against a candidate run →
+  `core-rules/references/baseline-comparison.schema.json` plus
+  `core-rules/references/determinism.md` §8; a diff score is evidence,
+  never an aesthetic verdict.
 - Form component → `component-patterns/SKILL.md` plus `references/navigation-forms-overlays.md`.
 - R3F in Next.js → `r3f-patterns/SKILL.md` plus `references/nextjs.md`.
 - Six to ten exported PNG and SVG frames plus a written token block for a 3D
@@ -354,6 +358,20 @@ touch peaks wait for the same declared outcome state as the click peak, and
 audio entries run only when sound is declared: a silent deliverable captures
 no audio state, and unlock, mute persistence, and the voice limit are recorded
 as evidence when audio checkpoints do run.
+
+Two capture sets are comparable offline with the root-only comparator
+(`tests/immersive/interaction-capture/compare-baselines.mjs`): pass a
+committed baseline directory and a candidate run directory with
+`--baseline`/`--candidate`, optionally a comparison declaration
+(`baseline-comparison.schema.json`, `--declaration`) that names pixel masks
+and tolerances, and an `--out` directory. It classifies every difference
+into structural regression, perceptual difference, expected dynamic
+variation, or nondeterministic content; a deterministic mismatch outside
+every declared mask stays a perceptual difference and is never routed into a
+dynamic bucket. The comparison refuses to run (exit 2, `UNAVAILABLE`) when
+either side lacks deterministic capture metadata, and writes diff PNGs plus
+`comparison.json`, whose statement labels every score as evidence, never an
+aesthetic verdict, taste, or approval.
 
 For a runnable target with the shared immersive telemetry surface, the same
 output directory also contains `performance-summary.json`: a timestamp-free

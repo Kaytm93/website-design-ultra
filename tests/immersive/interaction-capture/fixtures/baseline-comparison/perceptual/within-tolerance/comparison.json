@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.baseline-comparison",
+  "project": "ip-06c-fixture",
+  "masks": [],
+  "tolerance": {
+    "id": "fixture-noise",
+    "maxChannelDelta": 8,
+    "maxChangedFraction": 0.1,
+    "maxMeanAbsDifference": 0.05,
+    "source": "ip-06c within-tolerance fixture: declared in comparison.json"
+  }
+}

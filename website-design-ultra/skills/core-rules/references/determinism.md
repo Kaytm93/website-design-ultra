@@ -174,7 +174,45 @@ is part of the capture contract, and the ready marker gates the capture.
   the entry declares its own surface condition. Its timeout bounds the wait
   and reports failure; it never counts as ready.
 
-## 8. Evidence checklist
+## 8. Baseline comparison
+
+An optional baseline comparison is offline and never an aesthetic verdict.
+It compares two capture sets — a committed baseline and a candidate run —
+produced under this contract and classifies every difference into exactly one
+of four buckets:
+
+- `structural-regression`: the capture surface changed shape — a checkpoint id
+  appeared or disappeared, the viewport or project differs, a capture PNG is
+  missing, or a PNG cannot be decoded.
+- `perceptual-difference`: both sides are deterministic and pixels differ
+  outside every declared mask. The score is evidence of change, never taste
+  or approval, and the report says so in its own output.
+- `expected-dynamic-variation`: differences inside a mask the project declared
+  as varying (for example a live meter the project deliberately keeps out of
+  the frozen frame).
+- `nondeterministic-content`: differences the capture metadata itself records
+  as not deterministically resolved, or inside a mask declared
+  nondeterministic (for example embedded third-party content).
+
+A deterministic mismatch is never routed into a dynamic bucket: without a
+declared mask it is a perceptual difference, with one it is that mask's
+declared class. The comparison refuses to run — and reports `UNAVAILABLE` —
+when either side lacks deterministic capture metadata: no `checkpoints.json`,
+a wrong schema version or surface, or a mode input other than
+`WDU_DETERMINISTIC=1`. Nothing falls into a catch-all bucket.
+
+Masks are pixel rectangles in capture-viewport coordinates; tolerances bound
+the channel delta, changed fraction, and mean absolute difference. Both are
+declared by the project in a comparison declaration
+(`core-rules/references/baseline-comparison.schema.json`), and every mask and
+tolerance names its source — the report repeats that source, and names the
+built-in strict default when a comparison runs without a declaration. The
+executable comparator is the root-only
+`tests/immersive/interaction-capture/compare-baselines.mjs`; it writes diff
+PNGs and a timestamp-free `comparison.json` whose statement labels every
+score as evidence, never an aesthetic verdict, taste, or approval.
+
+## 9. Evidence checklist
 
 Before calling a dynamic capture deterministic, verify:
 
@@ -194,6 +232,9 @@ Before calling a dynamic capture deterministic, verify:
 - [ ] Audio checkpoints run only when the manifest declares them; a silent
       deliverable captures no audio state. Unlock, mute persistence, and the
       voice limit are recorded as evidence, never assumed.
+- [ ] A baseline comparison classified every difference into the four buckets
+      and named every mask/tolerance and its source; a deterministic mismatch
+      outside declared masks stayed a perceptual difference.
 
 The copyable runtime and byte-identical two-run fixture are separate executable
 tasks. This reference defines their contract and does not claim those later gates

@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "wdu://baseline-comparison/v1",
+  "title": "Baseline comparison declaration",
+  "description": "Project-owned declaration for the optional offline baseline comparison (IP-06C). It compares two capture sets produced under the deterministic contract and classifies each difference into exactly one of structural-regression, perceptual-difference, expected-dynamic-variation, or nondeterministic-content. Masks are pixel rectangles in capture-viewport coordinates whose differences are classified as the mask declares; the tolerance block bounds what counts as an acceptable perceptual difference. Every mask and the tolerance must name their source, and the comparison report repeats that source. A difference score is evidence of change, never an aesthetic verdict, taste, or approval.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "surface",
+    "project",
+    "masks"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "surface": {
+      "const": "wdu.baseline-comparison"
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "masks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/mask"
+      }
+    },
+    "tolerance": {
+      "$ref": "#/$defs/tolerance"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "properties": {
+        "x": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "mask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "class",
+        "rect",
+        "source"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "class": {
+          "enum": [
+            "expected-dynamic-variation",
+            "nondeterministic-content"
+          ]
+        },
+        "rect": {
+          "$ref": "#/$defs/rect"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        }
+      }
+    },
+    "tolerance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "maxChannelDelta",
+        "maxChangedFraction",
+        "maxMeanAbsDifference",
+        "source"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "maxChannelDelta": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "maxChangedFraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maxMeanAbsDifference": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        }
+      }
+    }
+  }
+}

@@ -129,7 +129,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Keyboard and touch reach the same product outcome as pointer input; audio tests do not run for silent deliverables; unlock, mute persistence, and voice limit are observable when they do run.
   - **Verify:** Interaction fixture suite with sound both absent and present.
 
-- [ ] `IP-06C` **Add optional baseline comparison without aesthetic verdicts** — Classify structural regression, perceptual difference, expected dynamic variation, and nondeterministic content.
+- [x] `IP-06C` **Add optional baseline comparison without aesthetic verdicts** — Classify structural regression, perceptual difference, expected dynamic variation, and nondeterministic content.
   - **Depends on:** IP-06B
   - **Deliver:** Diff artifacts and a report that labels its score as evidence, never taste or approval.
   - **Acceptance:** Deterministic mismatch is not routed into the dynamic bucket; unsupported comparison is unavailable; the report names masks/tolerances and their source.

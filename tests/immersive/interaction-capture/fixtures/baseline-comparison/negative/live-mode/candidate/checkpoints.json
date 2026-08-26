@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.interaction-checkpoints",
+  "project": "ip-06c-fixture",
+  "modeInput": "WDU_DETERMINISTIC=",
+  "readyMarker": "html[data-wdu-ready=\"true\"]",
+  "viewport": {
+    "width": 8,
+    "height": 8
+  },
+  "entries": []
+}

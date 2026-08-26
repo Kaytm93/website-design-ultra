@@ -338,6 +338,8 @@ const determinismContracts = [
       'first stable frame',
       'interaction checkpoints',
       'interaction-checkpoints.schema.json',
+      'baseline comparison',
+      'baseline-comparison.schema.json',
     ],
   ],
   [
@@ -350,6 +352,17 @@ const determinismContracts = [
     ],
   ],
   [
+    'skills/core-rules/references/baseline-comparison.schema.json',
+    [
+      'wdu://baseline-comparison/v1',
+      'structural-regression',
+      'perceptual-difference',
+      'expected-dynamic-variation',
+      'nondeterministic-content',
+      'never an aesthetic verdict',
+    ],
+  ],
+  [
     'skills/core-rules/SKILL.md',
     ['determinism.md', 'reproducible dynamic capture'],
   ],
@@ -359,7 +372,13 @@ const determinismContracts = [
   ],
   [
     'commands/verify.md',
-    ['WDU_DETERMINISTIC=1', 'data-wdu-ready="true"', 'first stable frame', '--checkpoints'],
+    [
+      'WDU_DETERMINISTIC=1',
+      'data-wdu-ready="true"',
+      'first stable frame',
+      '--checkpoints',
+      'compare-baselines.mjs',
+    ],
   ],
   [
     'README.md',
@@ -367,6 +386,7 @@ const determinismContracts = [
       'core-rules/references/determinism.md',
       'reproducible dynamic capture',
       'interaction-checkpoints.schema.json',
+      'baseline-comparison.schema.json',
     ],
   ],
 ]

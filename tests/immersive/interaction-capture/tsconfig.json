@@ -11,5 +11,8 @@
     "strict": true,
     "target": "ES2022"
   },
-  "include": ["../../../references/interaction-checkpoints.ts"]
+  "include": [
+    "../../../references/interaction-checkpoints.ts",
+    "../../../references/baseline-comparison.ts"
+  ]
 }

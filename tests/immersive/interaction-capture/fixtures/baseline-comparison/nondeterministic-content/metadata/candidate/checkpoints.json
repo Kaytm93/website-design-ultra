@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.interaction-checkpoints",
+  "project": "ip-06c-fixture",
+  "modeInput": "WDU_DETERMINISTIC=1",
+  "readyMarker": "html[data-wdu-ready=\"true\"]",
+  "viewport": {
+    "width": 8,
+    "height": 8
+  },
+  "entries": [
+    {
+      "id": "fixture-ready",
+      "interaction": "ready",
+      "file": "fixture-ready.png",
+      "status": "UNAVAILABLE",
+      "reason": "deterministic mode not resolved (html[data-wdu-mode] is not \"deterministic\")"
+    }
+  ]
+}

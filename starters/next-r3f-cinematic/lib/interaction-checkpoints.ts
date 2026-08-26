@@ -262,6 +262,9 @@ function validateHoverEntry(record: JsonRecord): HoverCheckpoint {
     ['id', 'interaction', 'phase', 'group', 'target', 'waitFor', 'url', 'scrollIntoView'],
     'checkpoints[]',
   )
+  const waitFor = optionalText(record, 'waitFor', 'checkpoints[]')
+  const url = optionalText(record, 'url', 'checkpoints[]')
+  const scrollIntoView = optionalText(record, 'scrollIntoView', 'checkpoints[]')
   const entry: HoverCheckpoint = {
     id: checkpointId(required(record, 'id', 'checkpoints[]'), 'checkpoints[].id'),
     interaction: 'hover',
@@ -272,9 +275,9 @@ function validateHoverEntry(record: JsonRecord): HoverCheckpoint {
     ),
     group: text(required(record, 'group', 'checkpoints[]'), 'checkpoints[].group'),
     target: text(required(record, 'target', 'checkpoints[]'), 'checkpoints[].target'),
-    waitFor: optionalText(record, 'waitFor', 'checkpoints[]'),
-    url: optionalText(record, 'url', 'checkpoints[]'),
-    scrollIntoView: optionalText(record, 'scrollIntoView', 'checkpoints[]'),
+    ...(waitFor !== undefined ? { waitFor } : {}),
+    ...(url !== undefined ? { url } : {}),
+    ...(scrollIntoView !== undefined ? { scrollIntoView } : {}),
   }
   return entry
 }
@@ -285,6 +288,9 @@ function validateClickEntry(record: JsonRecord): ClickCheckpoint {
     ['id', 'interaction', 'phase', 'group', 'target', 'waitFor', 'url', 'scrollIntoView'],
     'checkpoints[]',
   )
+  const waitFor = optionalText(record, 'waitFor', 'checkpoints[]')
+  const url = optionalText(record, 'url', 'checkpoints[]')
+  const scrollIntoView = optionalText(record, 'scrollIntoView', 'checkpoints[]')
   return {
     id: checkpointId(required(record, 'id', 'checkpoints[]'), 'checkpoints[].id'),
     interaction: 'click',
@@ -295,9 +301,9 @@ function validateClickEntry(record: JsonRecord): ClickCheckpoint {
     ),
     group: text(required(record, 'group', 'checkpoints[]'), 'checkpoints[].group'),
     target: text(required(record, 'target', 'checkpoints[]'), 'checkpoints[].target'),
-    waitFor: optionalText(record, 'waitFor', 'checkpoints[]'),
-    url: optionalText(record, 'url', 'checkpoints[]'),
-    scrollIntoView: optionalText(record, 'scrollIntoView', 'checkpoints[]'),
+    ...(waitFor !== undefined ? { waitFor } : {}),
+    ...(url !== undefined ? { url } : {}),
+    ...(scrollIntoView !== undefined ? { scrollIntoView } : {}),
   }
 }
 
@@ -307,32 +313,37 @@ function validateScrollEntry(record: JsonRecord): ScrollCheckpoint {
   if (typeof progress !== 'number' || !Number.isFinite(progress) || progress < 0 || progress > 1) {
     throw new Error('checkpoints[].progress must be a normalized number in [0, 1]')
   }
+  const url = optionalText(record, 'url', 'checkpoints[]')
   return {
     id: checkpointId(required(record, 'id', 'checkpoints[]'), 'checkpoints[].id'),
     interaction: 'scroll',
     progress,
-    url: optionalText(record, 'url', 'checkpoints[]'),
+    ...(url !== undefined ? { url } : {}),
   }
 }
 
 function validateLoadingEntry(record: JsonRecord): LoadingCheckpoint {
   assertKnownKeys(record, ['id', 'interaction', 'waitFor', 'url', 'scrollIntoView'], 'checkpoints[]')
+  const url = optionalText(record, 'url', 'checkpoints[]')
+  const scrollIntoView = optionalText(record, 'scrollIntoView', 'checkpoints[]')
   return {
     id: checkpointId(required(record, 'id', 'checkpoints[]'), 'checkpoints[].id'),
     interaction: 'loading',
     waitFor: text(required(record, 'waitFor', 'checkpoints[]'), 'checkpoints[].waitFor'),
-    url: optionalText(record, 'url', 'checkpoints[]'),
-    scrollIntoView: optionalText(record, 'scrollIntoView', 'checkpoints[]'),
+    ...(url !== undefined ? { url } : {}),
+    ...(scrollIntoView !== undefined ? { scrollIntoView } : {}),
   }
 }
 
 function validateReadyEntry(record: JsonRecord): ReadyCheckpoint {
   assertKnownKeys(record, ['id', 'interaction', 'url', 'scrollIntoView'], 'checkpoints[]')
+  const url = optionalText(record, 'url', 'checkpoints[]')
+  const scrollIntoView = optionalText(record, 'scrollIntoView', 'checkpoints[]')
   return {
     id: checkpointId(required(record, 'id', 'checkpoints[]'), 'checkpoints[].id'),
     interaction: 'ready',
-    url: optionalText(record, 'url', 'checkpoints[]'),
-    scrollIntoView: optionalText(record, 'scrollIntoView', 'checkpoints[]'),
+    ...(url !== undefined ? { url } : {}),
+    ...(scrollIntoView !== undefined ? { scrollIntoView } : {}),
   }
 }
 
@@ -342,15 +353,16 @@ function validateFailureEntry(record: JsonRecord): FailureCheckpoint {
     ['id', 'interaction', 'waitFor', 'action', 'url', 'scrollIntoView'],
     'checkpoints[]',
   )
+  const action = hasOwn(record, 'action') ? enumValue(record.action, ['lose-webgl-context'], 'checkpoints[].action') : undefined
+  const url = optionalText(record, 'url', 'checkpoints[]')
+  const scrollIntoView = optionalText(record, 'scrollIntoView', 'checkpoints[]')
   const entry: FailureCheckpoint = {
     id: checkpointId(required(record, 'id', 'checkpoints[]'), 'checkpoints[].id'),
     interaction: 'failure',
     waitFor: text(required(record, 'waitFor', 'checkpoints[]'), 'checkpoints[].waitFor'),
-    action: hasOwn(record, 'action')
-      ? enumValue(record.action, ['lose-webgl-context'], 'checkpoints[].action')
-      : undefined,
-    url: optionalText(record, 'url', 'checkpoints[]'),
-    scrollIntoView: optionalText(record, 'scrollIntoView', 'checkpoints[]'),
+    ...(action !== undefined ? { action } : {}),
+    ...(url !== undefined ? { url } : {}),
+    ...(scrollIntoView !== undefined ? { scrollIntoView } : {}),
   }
   return entry
 }
@@ -361,6 +373,9 @@ function validateFocusEntry(record: JsonRecord): FocusCheckpoint {
     ['id', 'interaction', 'phase', 'group', 'target', 'waitFor', 'url', 'scrollIntoView'],
     'checkpoints[]',
   )
+  const waitFor = optionalText(record, 'waitFor', 'checkpoints[]')
+  const url = optionalText(record, 'url', 'checkpoints[]')
+  const scrollIntoView = optionalText(record, 'scrollIntoView', 'checkpoints[]')
   return {
     id: checkpointId(required(record, 'id', 'checkpoints[]'), 'checkpoints[].id'),
     interaction: 'focus',
@@ -371,9 +386,9 @@ function validateFocusEntry(record: JsonRecord): FocusCheckpoint {
     ),
     group: text(required(record, 'group', 'checkpoints[]'), 'checkpoints[].group'),
     target: text(required(record, 'target', 'checkpoints[]'), 'checkpoints[].target'),
-    waitFor: optionalText(record, 'waitFor', 'checkpoints[]'),
-    url: optionalText(record, 'url', 'checkpoints[]'),
-    scrollIntoView: optionalText(record, 'scrollIntoView', 'checkpoints[]'),
+    ...(waitFor !== undefined ? { waitFor } : {}),
+    ...(url !== undefined ? { url } : {}),
+    ...(scrollIntoView !== undefined ? { scrollIntoView } : {}),
   }
 }
 
@@ -383,6 +398,9 @@ function validateKeyboardEntry(record: JsonRecord): KeyboardCheckpoint {
     ['id', 'interaction', 'phase', 'group', 'target', 'waitFor', 'url', 'scrollIntoView'],
     'checkpoints[]',
   )
+  const waitFor = optionalText(record, 'waitFor', 'checkpoints[]')
+  const url = optionalText(record, 'url', 'checkpoints[]')
+  const scrollIntoView = optionalText(record, 'scrollIntoView', 'checkpoints[]')
   return {
     id: checkpointId(required(record, 'id', 'checkpoints[]'), 'checkpoints[].id'),
     interaction: 'keyboard',
@@ -393,9 +411,9 @@ function validateKeyboardEntry(record: JsonRecord): KeyboardCheckpoint {
     ),
     group: text(required(record, 'group', 'checkpoints[]'), 'checkpoints[].group'),
     target: text(required(record, 'target', 'checkpoints[]'), 'checkpoints[].target'),
-    waitFor: optionalText(record, 'waitFor', 'checkpoints[]'),
-    url: optionalText(record, 'url', 'checkpoints[]'),
-    scrollIntoView: optionalText(record, 'scrollIntoView', 'checkpoints[]'),
+    ...(waitFor !== undefined ? { waitFor } : {}),
+    ...(url !== undefined ? { url } : {}),
+    ...(scrollIntoView !== undefined ? { scrollIntoView } : {}),
   }
 }
 
@@ -405,6 +423,9 @@ function validateTouchEntry(record: JsonRecord): TouchCheckpoint {
     ['id', 'interaction', 'phase', 'group', 'target', 'waitFor', 'url', 'scrollIntoView'],
     'checkpoints[]',
   )
+  const waitFor = optionalText(record, 'waitFor', 'checkpoints[]')
+  const url = optionalText(record, 'url', 'checkpoints[]')
+  const scrollIntoView = optionalText(record, 'scrollIntoView', 'checkpoints[]')
   return {
     id: checkpointId(required(record, 'id', 'checkpoints[]'), 'checkpoints[].id'),
     interaction: 'touch',
@@ -415,9 +436,9 @@ function validateTouchEntry(record: JsonRecord): TouchCheckpoint {
     ),
     group: text(required(record, 'group', 'checkpoints[]'), 'checkpoints[].group'),
     target: text(required(record, 'target', 'checkpoints[]'), 'checkpoints[].target'),
-    waitFor: optionalText(record, 'waitFor', 'checkpoints[]'),
-    url: optionalText(record, 'url', 'checkpoints[]'),
-    scrollIntoView: optionalText(record, 'scrollIntoView', 'checkpoints[]'),
+    ...(waitFor !== undefined ? { waitFor } : {}),
+    ...(url !== undefined ? { url } : {}),
+    ...(scrollIntoView !== undefined ? { scrollIntoView } : {}),
   }
 }
 
@@ -445,19 +466,27 @@ function validateAudioEntry(record: JsonRecord): AudioCheckpoint {
     AUDIO_STATES,
     'checkpoints[].state',
   )
+  const unlock = optionalText(record, 'unlock', 'checkpoints[]')
+  const target = optionalText(record, 'target', 'checkpoints[]')
+  const persist = optionalText(record, 'persist', 'checkpoints[]')
+  const voiceLimit = optionalPositiveInteger(record, 'voiceLimit', 'checkpoints[]')
+  const trigger = optionalText(record, 'trigger', 'checkpoints[]')
+  const repeats = optionalPositiveInteger(record, 'repeats', 'checkpoints[]')
+  const url = optionalText(record, 'url', 'checkpoints[]')
+  const scrollIntoView = optionalText(record, 'scrollIntoView', 'checkpoints[]')
   const entry: AudioCheckpoint = {
     id: checkpointId(required(record, 'id', 'checkpoints[]'), 'checkpoints[].id'),
     interaction: 'audio',
     state,
     waitFor: text(required(record, 'waitFor', 'checkpoints[]'), 'checkpoints[].waitFor'),
-    unlock: optionalText(record, 'unlock', 'checkpoints[]'),
-    target: optionalText(record, 'target', 'checkpoints[]'),
-    persist: optionalText(record, 'persist', 'checkpoints[]'),
-    voiceLimit: optionalPositiveInteger(record, 'voiceLimit', 'checkpoints[]'),
-    trigger: optionalText(record, 'trigger', 'checkpoints[]'),
-    repeats: optionalPositiveInteger(record, 'repeats', 'checkpoints[]'),
-    url: optionalText(record, 'url', 'checkpoints[]'),
-    scrollIntoView: optionalText(record, 'scrollIntoView', 'checkpoints[]'),
+    ...(unlock !== undefined ? { unlock } : {}),
+    ...(target !== undefined ? { target } : {}),
+    ...(persist !== undefined ? { persist } : {}),
+    ...(voiceLimit !== undefined ? { voiceLimit } : {}),
+    ...(trigger !== undefined ? { trigger } : {}),
+    ...(repeats !== undefined ? { repeats } : {}),
+    ...(url !== undefined ? { url } : {}),
+    ...(scrollIntoView !== undefined ? { scrollIntoView } : {}),
   }
   if (state === 'enabled' && entry.unlock === undefined) {
     throw new Error('audio checkpoint state "enabled" requires the declared unlock gesture selector (unlock)')
