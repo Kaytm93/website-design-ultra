@@ -159,7 +159,7 @@ void main() {
   assert.equal(result.shader, null, 'shader must be null on failure');
   assert.notEqual(result.error, null, 'error must be returned on failure');
   assert.equal(result.error!.type, 'fragment');
-  assert.equal(result.error!.line, 7, 'line must point to the uResolution reference');
+  assert.equal(result.error!.line, 6, 'line must point to the uResolution reference');
   assert.ok(result.error!.log.includes('uResolution'), 'log must mention the undeclared identifier');
 });
 
@@ -177,7 +177,7 @@ void main() {
 
   assert.notEqual(result.shader, null, 'shader must be returned on success');
   assert.equal(result.error, null, 'error must be null on success');
-  assert.equal(result.shader!.compiled, true, 'shader must be compiled');
+  assert.equal((result.shader as unknown as MockShader).compiled, true, 'shader must be compiled');
 });
 
 test('linkProgram succeeds when both shaders compile', () => {

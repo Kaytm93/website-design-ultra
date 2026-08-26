@@ -157,7 +157,7 @@ splits that proposal into implementation-sized units.
 
 ## PR 8 — Lab harness
 
-- [ ] `IP-08A` **Create the root-only shader/particle lab harness** — Use one route per experiment with no application router, layout, or marketing copy.
+- [x] `IP-08A` **Create the root-only shader/particle lab harness** — Use one route per experiment with no application router, layout, or marketing copy.
   - **Depends on:** IP-07C
   - **Deliver:** `lab/` with sub-second shader hot reload, uniform controls, deterministic capture, and textual compile errors.
   - **Acceptance:** A syntax error returns source/line diagnostics instead of a blank canvas; lab dependencies and lockfile stay outside the plugin tree.

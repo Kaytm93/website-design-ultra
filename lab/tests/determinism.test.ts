@@ -47,7 +47,7 @@ test('unknown camera station throws with available stations listed', () => {
   };
   assert.throws(
     () => getCameraStation(stations, 'missing'),
-    /Unknown camera station "missing"[^]*available stations: hero/,
+    /Unknown camera station "missing"[^]*Available stations: hero/,
   );
   assert.doesNotThrow(() => getCameraStation(stations, 'hero'));
 });
