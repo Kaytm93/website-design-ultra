@@ -179,9 +179,13 @@ Enforced by `tests/structure.test.mjs`, part of the fixture contract:
 
 This is the IP-07A deliverable: the buildable fixture plus its install,
 build, model-validation, runtime-smoke, and static-capture evidence. The
-assertion runner (keyboard, mobile quality, interaction checkpoints,
-deliberate failure fixtures) is the next queue item, IP-07B, and stays out of
-this tree.
+assertion runner (build, runtime, keyboard, mobile, reduced motion,
+fallback, interaction checkpoints, and the three telemetry gates, plus the
+deliberate failing fixtures that prove each gate is not vacuous) is
+IP-07B and lives outside this tree, under `tests/immersive/evaluation/`;
+this directory contributes the fixture declaration (`fixture.json`) and
+the interaction checkpoint manifest (`lib/interaction-checkpoints.json`)
+that the runner asserts against.
 
 ## License
 

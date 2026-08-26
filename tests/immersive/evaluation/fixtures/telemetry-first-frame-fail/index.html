@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en" data-wdu-mode="deterministic" data-wdu-ready="true">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="data:," />
+    <title>telemetry-first-frame-fail — deliberate failing fixture</title>
+    <script src="/common/telemetry-surface.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Deliberate failing fixture: first meaningful frame over budget</h1>
+      <p>
+        The telemetry surface reports a 9000 ms first meaningful frame
+        against the declared 5000 ms budget, so the first-meaningful-frame
+        gate must fail while the other two telemetry gates stay green.
+      </p>
+      <div class="scene-frame">
+        <canvas id="scene" width="800" height="450"></canvas>
+      </div>
+    </main>
+    <script>
+      window.__WDU_TELEMETRY_OVERRIDES__ = {
+        firstFrameMs: 9000,
+      }
+    </script>
+  </body>
+</html>

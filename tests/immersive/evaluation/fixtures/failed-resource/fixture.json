@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "failed-resource",
+  "kind": "static",
+  "port": 3214,
+  "expect": {
+    "status": "FAIL",
+    "gates": ["runtime"]
+  }
+}

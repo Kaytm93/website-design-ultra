@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "build-fail",
+  "kind": "next-app",
+  "port": 3224,
+  "expect": {
+    "status": "FAIL",
+    "gates": ["build"]
+  },
+  "declared": {
+    "buildEvidence": ".next/BUILD_ID"
+  }
+}

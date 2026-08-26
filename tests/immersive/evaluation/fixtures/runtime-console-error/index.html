@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en" data-wdu-mode="deterministic" data-wdu-ready="true">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="data:," />
+    <title>runtime-console-error — deliberate failing fixture</title>
+    <script src="/common/telemetry-surface.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Deliberate failing fixture: a console error on load</h1>
+      <p>
+        The page logs one runtime error to the browser console as it boots.
+        The evaluation runner's runtime gate requires a clean console, so
+        this fixture exists to prove that console evidence fails the
+        applicable case.
+      </p>
+      <div class="scene-frame">
+        <canvas id="scene" width="800" height="450"></canvas>
+      </div>
+    </main>
+    <script>
+      console.error('deliberate runtime error from the evaluation fixture')
+    </script>
+  </body>
+</html>

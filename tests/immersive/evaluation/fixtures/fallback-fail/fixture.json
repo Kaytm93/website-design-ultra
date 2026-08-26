@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "fallback-fail",
+  "kind": "static",
+  "port": 3220,
+  "expect": {
+    "status": "FAIL",
+    "gates": ["fallback"]
+  },
+  "declared": {
+    "fallbackPosters": ["/poster.svg"]
+  }
+}

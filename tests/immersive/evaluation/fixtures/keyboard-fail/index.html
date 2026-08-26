@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en" data-wdu-mode="deterministic" data-wdu-ready="true">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="data:," />
+    <title>keyboard-fail — deliberate failing fixture</title>
+    <script src="/common/telemetry-surface.js"></script>
+    <script src="/common/interaction-surface.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Deliberate failing fixture: keyboard cannot reach the target</h1>
+      <p>
+        The declared keyboard group targets an element no Tab traversal can
+        reach, so the keyboard gate must fail while every other interaction
+        group still captures.
+      </p>
+      <div id="never-focusable">
+        This element is not focusable and no Tab traversal can reach it.
+      </div>
+      <div class="scene-frame">
+        <canvas id="scene" width="800" height="450"></canvas>
+      </div>
+      <button
+        type="button"
+        data-wdu-activation-target
+        onpointerdown="window.dispatchEvent(new CustomEvent('wdu:press-start'))"
+        onpointerup="window.dispatchEvent(new CustomEvent('wdu:press-end'))"
+        onpointercancel="window.dispatchEvent(new CustomEvent('wdu:press-end'))"
+        onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.dispatchEvent(new CustomEvent('wdu:press-start')) }"
+        onkeyup="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.dispatchEvent(new CustomEvent('wdu:press-end')) }"
+      >
+        Press the hero
+      </button>
+    </main>
+  </body>
+</html>

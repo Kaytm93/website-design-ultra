@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en" data-wdu-mode="deterministic" data-wdu-ready="true">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="data:," />
+    <title>fallback-fail — deliberate failing fixture</title>
+    <script src="/common/telemetry-surface.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Deliberate failing fixture: the declared poster fallback is not served</h1>
+      <p>
+        The fixture declares /poster.svg as its composed fallback asset, but
+        no such file exists on the server, so the fallback gate must fail on
+        the missing composition evidence.
+      </p>
+      <div class="scene-frame">
+        <canvas id="scene" width="800" height="450"></canvas>
+      </div>
+    </main>
+  </body>
+</html>

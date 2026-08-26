@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "telemetry-warm-gpu-fail",
+  "kind": "static",
+  "port": 3221,
+  "expect": {
+    "status": "FAIL",
+    "gates": ["telemetry-warm-gpu-frame-time"]
+  }
+}

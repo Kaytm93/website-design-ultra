@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" data-wdu-mode="deterministic" data-wdu-ready="true">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="data:," />
+    <title>shader-error — deliberate failing fixture</title>
+    <script src="/common/telemetry-surface.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Deliberate failing fixture: a shader that cannot compile</h1>
+      <p>
+        The page compiles a fragment shader that calls a function that does
+        not exist. The compile fails, the browser logs the shader info log,
+        and the surface records a shader-compile error, so the evaluation
+        runner's runtime gate must fail on shader errors.
+      </p>
+      <div class="scene-frame">
+        <canvas id="scene" width="800" height="450"></canvas>
+      </div>
+    </main>
+    <script>
+      window.__WDU_TELEMETRY_OVERRIDES__ = {
+        errors: [
+          {
+            kind: 'shader-compile',
+            message: "deliberate shader compile failure: 'missingFunction' : no matching overloaded function found",
+            resource: 'deliberate-fragment-shader',
+          },
+        ],
+      }
+    </script>
+    <script>
+      const canvas = document.getElementById('scene')
+      const gl = canvas.getContext('webgl2') || canvas.getContext('webgl')
+      if (gl) {
+        const shader = gl.createShader(gl.FRAGMENT_SHADER)
+        gl.shaderSource(shader, 'void main() { missingFunction(); }')
+        gl.compileShader(shader)
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          const info = gl.getShaderInfoLog(shader) || 'unknown compile error'
+          console.error('deliberate shader compile failure: ' + info)
+        }
+      }
+    </script>
+  </body>
+</html>

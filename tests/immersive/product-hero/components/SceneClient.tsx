@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { ActivationControl } from './ActivationControl.tsx'
 import { MotionControl } from './MotionControl.tsx'
 import { Poster } from './Poster.tsx'
 import { SceneErrorBoundary } from './SceneErrorBoundary.tsx'
@@ -94,6 +95,11 @@ export function SceneClient({ mode, stationId: initialStationId, motion: initial
   const [contextLost, setContextLost] = useState(false)
   const [mountKey, setMountKey] = useState(0)
   const [everReady, setEverReady] = useState(false)
+  // The declared pointer capture state (IP-06B): the scene frame is the
+  // pointer surface, and the activation control routes keyboard and touch
+  // into the same pressed state, so every input kind reaches the one
+  // declared outcome.
+  const [pointerState, setPointerState] = useState<'idle' | 'hover' | 'pressed'>('idle')
   // Resolved after mount: the server render cannot know the browser's WebGL
   // capability, and the initial HTML must not diverge from the first client
   // render (hydration). The poster covers the frame until the canvas mounts.
@@ -184,6 +190,49 @@ export function SceneClient({ mode, stationId: initialStationId, motion: initial
     else root.removeAttribute('data-wdu-context')
   }, [stationId, motion, contextLost, webglAvailable])
 
+  // The declared pointer state on the document root (IP-06B). Initialized on
+  // mount so the boot snapshot always sees a resolved value, never a missing
+  // attribute.
+  useEffect(() => {
+    const root = document.documentElement
+    root.setAttribute('data-wdu-pointer', pointerState)
+  }, [pointerState])
+
+  // The activation control routes keyboard and touch into the same pressed
+  // state as a pointer press on the scene frame.
+  useEffect(() => {
+    const start = () => setPointerState('pressed')
+    const end = () => setPointerState('idle')
+    window.addEventListener('wdu:press-start', start)
+    window.addEventListener('wdu:press-end', end)
+    return () => {
+      window.removeEventListener('wdu:press-start', start)
+      window.removeEventListener('wdu:press-end', end)
+    }
+  }, [])
+
+  // Focus-visible capture metadata (IP-06B): the resolved focus-visible
+  // state is recorded on the document root (html[data-wdu-focus]) the same
+  // way the pointer state is, so the focus checkpoints can wait for a
+  // declared state condition. Focus changes never move the scene, so they do
+  // not invalidate readiness.
+  useEffect(() => {
+    const root = document.documentElement
+    const update = () => {
+      const active = document.activeElement
+      const visible =
+        active !== null && active !== document.body && active.matches(':focus-visible')
+      root.setAttribute('data-wdu-focus', visible ? 'visible' : 'none')
+    }
+    document.addEventListener('focusin', update)
+    document.addEventListener('focusout', update)
+    update()
+    return () => {
+      document.removeEventListener('focusin', update)
+      document.removeEventListener('focusout', update)
+    }
+  }, [])
+
   // The composed fallback: the poster covers the frame while the canvas has
   // not rendered its stable frame, while quality is at the poster tier, while
   // WebGL is unavailable, and while the context is lost. Everything else —
@@ -194,12 +243,20 @@ export function SceneClient({ mode, stationId: initialStationId, motion: initial
   return (
     <div className="scene-client">
       <div className="scene-controls">
+        <ActivationControl />
         <MotionControl mode={mode} motion={motion} onChange={changeMotion} />
         <p className="station-note">
           Station: <code data-wdu-station-label>{stationId}</code>
         </p>
       </div>
-      <div className="scene-frame">
+      <div
+        className="scene-frame"
+        onPointerEnter={() => setPointerState('hover')}
+        onPointerLeave={() => setPointerState('idle')}
+        onPointerDown={() => setPointerState('pressed')}
+        onPointerUp={() => setPointerState('hover')}
+        onPointerCancel={() => setPointerState('idle')}
+      >
         <Poster variant={portrait ? 'portrait' : 'desktop'} visible={posterVisible} />
         {webglAvailable ? (
           <SceneErrorBoundary onError={() => {}}>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en" data-wdu-mode="deterministic" data-wdu-ready="true">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="data:," />
+    <title>interaction-fail — deliberate failing fixture</title>
+    <script src="/common/telemetry-surface.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Deliberate failing fixture: the hover contract never reports hover</h1>
+      <p>
+        Entering the scene frame reports the pressed state instead of the
+        declared hover state, so the declared hover-during checkpoint can
+        never be reached while every other interaction group still captures.
+      </p>
+      <div class="scene-frame">
+        <canvas id="scene" width="800" height="450"></canvas>
+      </div>
+      <button
+        type="button"
+        data-wdu-activation-target
+        onpointerdown="window.dispatchEvent(new CustomEvent('wdu:press-start'))"
+        onpointerup="window.dispatchEvent(new CustomEvent('wdu:press-end'))"
+        onpointercancel="window.dispatchEvent(new CustomEvent('wdu:press-end'))"
+        onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.dispatchEvent(new CustomEvent('wdu:press-start')) }"
+        onkeyup="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.dispatchEvent(new CustomEvent('wdu:press-end')) }"
+      >
+        Press the hero
+      </button>
+    </main>
+    <script>
+      // The broken hover contract: pointerenter reports "pressed", never
+      // "hover", so html[data-wdu-pointer="hover"] is unreachable. All other
+      // declared states behave normally.
+      const root = document.documentElement
+      root.setAttribute('data-wdu-pointer', 'idle')
+      const frame = document.querySelector('.scene-frame')
+      frame.addEventListener('pointerenter', () => {
+        root.setAttribute('data-wdu-pointer', 'pressed')
+      })
+      frame.addEventListener('pointerleave', () => {
+        root.setAttribute('data-wdu-pointer', 'idle')
+      })
+      frame.addEventListener('pointerdown', () => {
+        root.setAttribute('data-wdu-pointer', 'pressed')
+      })
+      frame.addEventListener('pointerup', () => {
+        root.setAttribute('data-wdu-pointer', 'hover')
+      })
+      frame.addEventListener('pointercancel', () => {
+        root.setAttribute('data-wdu-pointer', 'idle')
+      })
+      window.addEventListener('wdu:press-start', () => {
+        root.setAttribute('data-wdu-pointer', 'pressed')
+      })
+      window.addEventListener('wdu:press-end', () => {
+        root.setAttribute('data-wdu-pointer', 'idle')
+      })
+      const updateFocus = () => {
+        const active = document.activeElement
+        const visible =
+          active !== null && active !== document.body && active.matches(':focus-visible')
+        root.setAttribute('data-wdu-focus', visible ? 'visible' : 'none')
+      }
+      document.addEventListener('focusin', updateFocus)
+      document.addEventListener('focusout', updateFocus)
+      updateFocus()
+      const canvas = frame.querySelector('canvas')
+      canvas.addEventListener('webglcontextlost', (event) => {
+        event.preventDefault()
+        root.setAttribute('data-wdu-context', 'lost')
+      })
+    </script>
+  </body>
+</html>

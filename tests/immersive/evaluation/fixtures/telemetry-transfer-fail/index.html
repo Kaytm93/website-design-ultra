@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en" data-wdu-mode="deterministic" data-wdu-ready="true">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="data:," />
+    <title>telemetry-transfer-fail — deliberate failing fixture</title>
+    <script src="/common/telemetry-surface.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Deliberate failing fixture: transfer before the first frame over budget</h1>
+      <p>
+        The fixture declares a 1024-byte transfer budget; the page's own
+        document and scripts already transfer more than that before the
+        first meaningful frame, so the transfer gate must fail while the
+        other two telemetry gates stay green.
+      </p>
+      <div class="scene-frame">
+        <canvas id="scene" width="800" height="450"></canvas>
+      </div>
+    </main>
+    <script>
+      window.__WDU_TELEMETRY_OVERRIDES__ = {
+        transferBudgetBytes: 1024,
+      }
+    </script>
+  </body>
+</html>

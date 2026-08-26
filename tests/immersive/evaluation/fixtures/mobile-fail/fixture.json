@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "mobile-fail",
+  "kind": "static",
+  "port": 3218,
+  "expect": {
+    "status": "FAIL",
+    "gates": ["mobile"]
+  }
+}

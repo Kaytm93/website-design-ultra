@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "reduced-motion-fail",
+  "kind": "static",
+  "port": 3219,
+  "expect": {
+    "status": "FAIL",
+    "gates": ["reduced-motion"]
+  },
+  "declared": {
+    "reducedMotionStaticPair": true
+  }
+}

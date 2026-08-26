@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en" data-wdu-mode="deterministic" data-wdu-ready="true">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="data:," />
+    <title>reduced-motion-fail — deliberate failing fixture</title>
+    <script src="/common/telemetry-surface.js"></script>
+    <style>
+      .spinner {
+        width: 220px;
+        height: 220px;
+        background: #c0392b;
+        border-radius: 50%;
+        animation: spin 0.2s linear infinite;
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Deliberate failing fixture: motion that ignores prefers-reduced-motion</h1>
+      <p>
+        The spinner keeps animating while the browser declares reduced
+        motion, so the reduced-motion capture pair differs and the
+        reduced-motion gate must fail.
+      </p>
+      <div class="spinner" aria-hidden="true"></div>
+    </main>
+  </body>
+</html>
