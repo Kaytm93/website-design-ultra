@@ -38,9 +38,19 @@ test('foundational shader module files export the required functions', () => {
   assert.match(dissolve, /export const dissolveStable = /);
 });
 
-test('the lab router exposes the new foundational experiment routes', () => {
+test('transition/interaction shader modules export the required functions', () => {
+  const transition = readModule('transition-interaction');
+  assert.match(transition, /export const frostedTransitionMask = /);
+  assert.match(transition, /export const chromaticOffset = /);
+  assert.match(transition, /export const clickShockwave = /);
+  assert.match(transition, /export const flowFieldDeformation = /);
+});
+
+test('the lab router exposes the new shader module experiment routes', () => {
   assert.match(MAIN_SOURCE, /'foundational-shaders'/);
   assert.match(MAIN_SOURCE, /'foundational-shaders-deterministic'/);
+  assert.match(MAIN_SOURCE, /'transition-interaction'/);
+  assert.match(MAIN_SOURCE, /'transition-interaction-deterministic'/);
 });
 
 test('the iridescence manifest limits spectral samples to a bounded count', () => {
@@ -52,6 +62,33 @@ test('the iridescence manifest limits spectral samples to a bounded count', () =
 test('dissolve edge width is bounded by a seed-derived clamp', () => {
   const dissolve = readModule('dissolve');
   assert.match(dissolve, /clamp\(0\.02 \+ seed \* 0\.001, 0\.01, 0\.06\)/);
+});
+
+test('frosted transition strength is hard-capped', () => {
+  const transition = readModule('transition-interaction');
+  assert.match(transition, /float cappedStrength = clamp\(strength, 0\.0, 0\.25\)/);
+});
+
+test('chromatic offset amplitude is hard-capped', () => {
+  const transition = readModule('transition-interaction');
+  assert.match(transition, /float cappedAmplitude = clamp\(amplitude, 0\.0, 0\.08\)/);
+});
+
+test('click shockwave radius and strength are hard-capped', () => {
+  const transition = readModule('transition-interaction');
+  assert.match(transition, /float cappedMaxRadius = clamp\(maxRadius, 0\.0, 1\.0\)/);
+  assert.match(transition, /float cappedStrength = clamp\(strength, 0\.0, 0\.5\)/);
+});
+
+test('flow-field deformation strength is hard-capped', () => {
+  const transition = readModule('transition-interaction');
+  assert.match(transition, /float cappedStrength = clamp\(strength, 0\.0, 0\.3\)/);
+});
+
+test('transition/interaction fragment preserves a deterministic capture fixture', () => {
+  const fixture = readFileSync(resolve(ROOT, 'src/fixtures/transition-interaction-deterministic.ts'), 'utf8');
+  assert.match(fixture, /transition-interaction/);
+  assert.match(fixture, /export function mount\(ctx: ExperimentContext\)/);
 });
 
 test('the WebGL2 visual fixture uses raw shaders so #version remains first', () => {
