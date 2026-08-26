@@ -1,0 +1,29 @@
+{
+  "name": "wdu-lab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "website-design-ultra root-only shader/particle lab harness (IP-08A): one route per experiment, sub-second shader hot reload, uniform controls, deterministic capture, and textual compile errors. Lives outside the installed plugin tree per ADR-011.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"tests/*.test.mjs\"",
+    "verify": "npm run typecheck && npm test && npm run build",
+    "verify:harness": "node scripts/verify-lab.mjs"
+  },
+  "dependencies": {
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "@types/three": "0.185.1",
+    "typescript": "5.9.3",
+    "vite": "6.3.5"
+  }
+}

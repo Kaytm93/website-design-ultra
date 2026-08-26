@@ -13,6 +13,7 @@ project-vault/
 website-design-ultra/.playwright-cli/
 website-design-ultra/output/
 node_modules/
+lab/dist/
 *.log
 
 # macOS
