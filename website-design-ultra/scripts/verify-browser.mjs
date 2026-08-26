@@ -1692,11 +1692,14 @@ function main() {
     // fallback. Coordinates come from the frozen layout, so the tap target is
     // deterministic.
     const touchStartSnippet = (target) => `async (page) => {
-  let client
-  try {
-    client = await page.context().newCDPSession(page)
-  } catch (error) {
-    throw new Error('touch input pipeline unavailable (CDP session): ' + String(error?.message ?? error))
+  let client = page.__wduTouchClient
+  if (!client) {
+    try {
+      client = await page.context().newCDPSession(page)
+      page.__wduTouchClient = client
+    } catch (error) {
+      throw new Error('touch input pipeline unavailable (CDP session): ' + String(error?.message ?? error))
+    }
   }
   const box = await page.locator(${quoted(target)}).boundingBox()
   if (!box) throw new Error('touch target is not visible: ' + ${quoted(target)})
@@ -1717,8 +1720,11 @@ function main() {
 }`
 
     const touchEndSnippet = `async (page) => {
-  const client = await page.context().newCDPSession(page)
+  const client = page.__wduTouchClient
+  if (!client) throw new Error('touch input pipeline unavailable (no active CDP touch session)')
   await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+  await client.detach().catch(() => {})
+  page.__wduTouchClient = null
 }`
 
     // Audio state evidence, read from the declared surface the project
