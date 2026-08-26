@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "telemetry-transfer-fail",
+  "kind": "static",
+  "port": 3223,
+  "expect": {
+    "status": "FAIL",
+    "gates": ["telemetry-transfer-before-first-meaningful-frame"]
+  }
+}

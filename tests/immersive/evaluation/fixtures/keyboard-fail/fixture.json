@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "keyboard-fail",
+  "kind": "static",
+  "port": 3216,
+  "expect": {
+    "status": "FAIL",
+    "gates": ["keyboard"]
+  },
+  "declared": {
+    "checkpointsManifest": "interaction-checkpoints.json"
+  }
+}

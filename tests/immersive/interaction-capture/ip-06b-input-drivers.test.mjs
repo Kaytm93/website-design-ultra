@@ -116,6 +116,8 @@ test('the verifier implements generic input drivers and never hardcodes a fixtur
     assert.ok(source.includes(marker), `the verifier must implement ${marker}`)
   }
 
+  assert.ok(source.includes('__wduTouchClient'), 'touch phases reuse one CDP session')
+
   // The drivers are input-generic: they must not name a concrete fixture
   // selector, state value, or checkpoint id.
   for (const concrete of [

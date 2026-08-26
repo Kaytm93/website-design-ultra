@@ -137,19 +137,19 @@ splits that proposal into implementation-sized units.
 
 ## PR 7 — First buildable implementation evaluation and CI
 
-- [ ] `IP-07A` **Build the R3F product-hero evaluation fixture** — Exercise one optimized model, semantic DOM, portrait reframe, poster, reduced motion, and the shared quality/telemetry surfaces.
+- [x] `IP-07A` **Build the R3F product-hero evaluation fixture** — Exercise one optimized model, semantic DOM, portrait reframe, poster, reduced motion, and the shared quality/telemetry surfaces.
   - **Depends on:** IP-06C
   - **Deliver:** Root-only `tests/immersive/` fixture independent from the forward routing suite.
   - **Acceptance:** Clean install/build/load succeeds without reconstructing architecture or fetching undeclared assets at runtime.
   - **Verify:** Exact-lockfile install, build, runtime smoke, model validation, and static capture.
 
-- [ ] `IP-07B` **Implement the immersive evaluation runner** — Assert build, runtime, keyboard, mobile, reduced motion, fallback, interaction checkpoints, and all three telemetry gates.
+- [x] `IP-07B` **Implement the immersive evaluation runner** — Assert build, runtime, keyboard, mobile, reduced motion, fallback, interaction checkpoints, and all three telemetry gates.
   - **Depends on:** IP-07A
   - **Deliver:** Runner with structured result and stated time/cost, kept separate from `run-forward-tests.mjs`.
   - **Acceptance:** Every assertion links evidence; a missing capture cannot be replaced by a build pass; failed resources and console/shader errors fail the applicable case.
   - **Verify:** One deliberate failing fixture per gate plus the green product hero.
 
-- [ ] `IP-07C` **Wire immersive evaluation into CI without silent skips** — Cache dependencies/browser binaries while preserving ADR-010 status semantics.
+- [x] `IP-07C` **Wire immersive evaluation into CI without silent skips** — Cache dependencies/browser binaries while preserving ADR-010 status semantics.
   - **Depends on:** IP-07B
   - **Deliver:** CI job, artifacts, retention, and explicit GPU/browser capability result.
   - **Acceptance:** Browser or GPU unavailability marks the suite unverified and prevents release readiness; runner output states duration and any external cost.

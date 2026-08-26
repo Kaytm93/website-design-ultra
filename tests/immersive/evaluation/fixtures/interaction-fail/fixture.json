@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "interaction-fail",
+  "kind": "static",
+  "port": 3217,
+  "expect": {
+    "status": "FAIL",
+    "gates": ["interaction-checkpoints"]
+  },
+  "declared": {
+    "checkpointsManifest": "interaction-checkpoints.json"
+  }
+}

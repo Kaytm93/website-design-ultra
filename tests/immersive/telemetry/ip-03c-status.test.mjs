@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url'
 import {
   buildPerformanceSummary,
   createTelemetryCollectionScript,
+  hasBrowserCliError,
 } from '../../../website-design-ultra/scripts/verify-browser.mjs'
 
 const TEST_DIRECTORY = path.dirname(fileURLToPath(import.meta.url))
@@ -209,6 +210,12 @@ test('malformed runtime evidence is unavailable even when budget gates pass', ()
 
   assert.equal(summary.status, 'UNAVAILABLE')
   assert.match(summary.unavailable.surface, /invalid telemetry document/i)
+})
+
+test('Playwright CLI error markers are not treated as successful commands', () => {
+  assert.equal(hasBrowserCliError('### Error\nTimeoutError: waitForSelector'), true)
+  assert.equal(hasBrowserCliError('### Ran Playwright code\n{}'), false)
+  assert.equal(hasBrowserCliError('prefix\n### Error\nboom'), true)
 })
 
 test('an unavailable browser capture writes a non-empty non-pass summary', () => {

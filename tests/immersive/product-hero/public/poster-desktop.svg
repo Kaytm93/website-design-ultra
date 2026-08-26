@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1c2027"/>
+      <stop offset="1" stop-color="#121419"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.28" cy="0.22" r="0.55">
+      <stop offset="0" stop-color="#ffb86b" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#ffb86b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#23262e"/>
+      <stop offset="0.5" stop-color="#2f333d"/>
+      <stop offset="1" stop-color="#20232a"/>
+    </linearGradient>
+    <linearGradient id="grille" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#14161b"/>
+      <stop offset="0.5" stop-color="#1b1e24"/>
+      <stop offset="1" stop-color="#12141a"/>
+    </linearGradient>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#101216"/>
+      <stop offset="0.5" stop-color="#181b21"/>
+      <stop offset="1" stop-color="#0e1014"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect width="1280" height="720" fill="url(#glow)"/>
+  <ellipse cx="640" cy="618" rx="190" ry="26" fill="#000000" opacity="0.35"/>
+  <rect x="472" y="596" width="336" height="34" rx="16" fill="url(#base)"/>
+  <path d="M506 150 Q506 118 538 118 L742 118 Q774 118 774 150 L774 596 L506 596 Z" fill="url(#body)"/>
+  <rect x="522" y="300" width="236" height="240" rx="18" fill="url(#grille)"/>
+  <g stroke="#2a2e37" stroke-width="10" opacity="0.9">
+    <line x1="522" y1="340" x2="758" y2="340"/>
+    <line x1="522" y1="380" x2="758" y2="380"/>
+    <line x1="522" y1="420" x2="758" y2="420"/>
+    <line x1="522" y1="460" x2="758" y2="460"/>
+    <line x1="522" y1="500" x2="758" y2="500"/>
+  </g>
+  <ellipse cx="640" cy="196" rx="112" ry="26" fill="none" stroke="#c8764a" stroke-width="12"/>
+  <circle cx="640" cy="196" r="10" fill="#ffb86b"/>
+  <circle cx="640" cy="196" r="22" fill="#ffb86b" opacity="0.25"/>
+</svg>

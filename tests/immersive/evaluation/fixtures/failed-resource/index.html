@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" data-wdu-mode="deterministic" data-wdu-ready="true">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="data:," />
+    <title>failed-resource — deliberate failing fixture</title>
+    <script src="/common/telemetry-surface.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Deliberate failing fixture: a resource that cannot load</h1>
+      <p>
+        The page references a script that does not exist on the fixture
+        server. The browser reports the failed request, and the surface
+        records a resource-load error, so the evaluation runner's runtime
+        gate must fail on failed resources.
+      </p>
+      <div class="scene-frame">
+        <canvas id="scene" width="800" height="450"></canvas>
+      </div>
+    </main>
+    <script>
+      window.__WDU_TELEMETRY_OVERRIDES__ = {
+        errors: [
+          {
+            kind: 'resource-load',
+            message: 'failed to load resource',
+            resource: '/missing-asset.js',
+          },
+        ],
+      }
+    </script>
+    <script src="/missing-asset.js"></script>
+  </body>
+</html>

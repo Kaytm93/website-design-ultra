@@ -94,6 +94,113 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  immersive-evaluation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      WDU_PLAYWRIGHT_CLI_VERSION: 0.1.17
+      WDU_CHROMIUM_REVISION: '1234'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22
+
+      # Cache npm's shared download cache (the fixture install is a clean
+      # exact-lockfile `npm ci`) plus the Playwright CLI package and browser
+      # binaries, so a warm run reuses them instead of re-downloading. The
+      # browser key embeds the versions pinned in this job's env block: a
+      # version bump misses the key and installs fresh binaries.
+      - name: Cache npm downloads and Playwright browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.npm
+            ~/.cache/ms-playwright
+          key: >-
+            ${{ runner.os }}-immersive-evaluation-cli-${{
+            env.WDU_PLAYWRIGHT_CLI_VERSION }}-chromium-${{
+            env.WDU_CHROMIUM_REVISION }}
+          restore-keys: |
+            ${{ runner.os }}-immersive-evaluation-cli-${{ env.WDU_PLAYWRIGHT_CLI_VERSION }}-
+            ${{ runner.os }}-immersive-evaluation-cli-
+
+      # Install the CLI once outside the repository. The verifier then uses
+      # this executable for every browser action instead of starting npx for
+      # each command, which keeps the all-fixture evaluation within the job
+      # timeout while preserving the pinned version.
+      - name: Install pinned Playwright CLI package
+        run: |
+          npm install --prefix "${{ runner.temp }}/wdu-playwright-cli" --no-save --no-package-lock --ignore-scripts @playwright/cli@${{ env.WDU_PLAYWRIGHT_CLI_VERSION }}
+          echo "WDU_PLAYWRIGHT_CLI=${{ runner.temp }}/wdu-playwright-cli/node_modules/.bin/playwright-cli" >> "$GITHUB_ENV"
+
+      # ADR-010 status semantics up front: an unavailable browser capability
+      # fails this step with the probe's own reason instead of letting the
+      # suite silently skip its live cases.
+      - name: Probe browser CLI capability
+        working-directory: website-design-ultra
+        run: node scripts/verify-browser.mjs --probe
+
+      - name: Install pinned Chromium for the Playwright CLI
+        run: |
+          npx --yes --package playwright@1.62.1 playwright install --with-deps chromium
+          "$WDU_PLAYWRIGHT_CLI" install-browser --with-deps chromium
+
+      - name: Run offline evaluation unit tests
+        run: node --test tests/immersive/evaluation/evaluation.test.mjs
+
+      # Live evidence run: green product hero plus every deliberate failing
+      # fixture. Output states duration per phase and external cost; exit 2
+      # means an applicable gate was UNAVAILABLE.
+      - name: Run live immersive implementation evaluation
+        id: evaluation
+        run: |
+          set +e
+          node tests/immersive/evaluation/run-implementation-evaluation.mjs \
+            --fixture all \
+            --out "${{ runner.temp }}/wdu-immersive-evaluation"
+          code=$?
+          set -e
+          echo "exit-code=$code" >> "$GITHUB_OUTPUT"
+          echo "IMPLEMENTATION_EVALUATION exited with code=$code (0=PASS 1=mismatch 2=UNAVAILABLE)"
+          exit "$code"
+
+      # Exit 2 above lands here on purpose: the failure is re-stated as the
+      # explicit release-readiness result instead of being swallowed. Browser
+      # or GPU unavailability marks the suite unverified — it never becomes a
+      # pass, and a red or unverified evaluation blocks release readiness.
+      - name: Report GPU/browser capability result
+        if: failure()
+        run: |
+          echo "::error::Immersive evaluation not verified: exit-code=${{ steps.evaluation.outputs.exit-code }}."
+          if [ "${{ steps.evaluation.outputs.exit-code }}" = "2" ]; then
+            echo "::error::Browser or GPU capability UNAVAILABLE — the immersive evaluation suite is unverified. This blocks release readiness (ADR-010: unavailable execution is never PASS)."
+          else
+            echo "::error::An evaluation gate failed unexpectedly — inspect the archived artifacts."
+          fi
+          exit 1
+
+      - name: Summarize duration and external cost
+        if: always()
+        run: |
+          summary="${{ runner.temp }}/wdu-immersive-evaluation/evaluation.json"
+          if [ ! -f "$summary" ]; then
+            echo "No suite summary was produced; see earlier steps for the failure."
+            exit 1
+          fi
+          jq -r '"status=\(.status) fixtures=\(.fixtures | length) durationMs=\(.durationMs) externalServices=\(.externalServices)"' "$summary"
+          jq -r '.fixtures[] | "  \(.fixture): status=\(.status) expectationMet=\(.expectationMet) durationMs=\(.durationMs) gates=\(.gates | to_entries | map("\(.key)=\(.value)") | join(" "))"' "$summary"
+
+      - name: Archive immersive evaluation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: immersive-evaluation
+          path: ${{ runner.temp }}/wdu-immersive-evaluation
+          if-no-files-found: error
+          retention-days: 30
+
   release-provenance:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "product-hero",
+  "kind": "next-app",
+  "port": 3212,
+  "expect": {
+    "status": "PASS"
+  },
+  "declared": {
+    "buildEvidence": ".next/BUILD_ID",
+    "readyMarker": "html[data-wdu-ready=\"true\"]",
+    "stationId": "hero-wide",
+    "heroCapture": true,
+    "checkpointsManifest": "lib/interaction-checkpoints.json",
+    "portraitStation": "hero-portrait",
+    "reducedMotionStaticPair": true,
+    "fallbackPosters": [
+      "/poster-desktop.svg",
+      "/poster-portrait.svg"
+    ],
+    "fallbackHeroAbsent": true
+  }
+}
