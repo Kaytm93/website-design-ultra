@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.baseline-comparison",
+  "project": "ip-06c-fixture",
+  "masks": [
+    {
+      "id": "fixture-live-region",
+      "class": "expected-dynamic-variation",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 4,
+        "height": 4
+      },
+      "source": "ip-06c fixture: declared in comparison.json, region 0,0..3,3 varies by design"
+    }
+  ],
+  "tolerance": {
+    "id": "fixture-tolerance",
+    "maxChannelDelta": 0,
+    "maxChangedFraction": 0,
+    "maxMeanAbsDifference": 0,
+    "source": "ip-06c fixture: declared in comparison.json"
+  }
+}

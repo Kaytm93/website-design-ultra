@@ -42,6 +42,8 @@ interface SceneRuntimeProps {
   stationId: string
   /** Resolved at the application boundary; scene code never reads matchMedia. */
   motion: MotionPreference
+  /** Declared loading capture state (IP-06A): holds asset readiness so the loading surface stays visible. */
+  loadingHold?: boolean
   /** DOM-side subscription to tier/DPR changes (the poster overlay reacts to the poster tier). */
   onQualityChange?: (state: QualityTelemetryState) => void
   children: ReactNode
@@ -72,6 +74,14 @@ interface SceneRuntimeValue {
    * to re-apply before the next ready. Recovery is the DOM remount.
    */
   invalidateReady: () => void
+  /**
+   * Capture-state invalidation (IP-06A): removes readiness when a declared
+   * interaction state (pointer hover/press) changes, without touching the
+   * camera contract or resuming the frozen clock. The marker re-sets on the
+   * next rendered frame, so interaction captures are byte-identical across
+   * runs regardless of input timing.
+   */
+  invalidateCaptureState: () => void
   /** True only after the deterministic stable frame rendered (drives the capture freeze). */
   stableFrameReached: () => boolean
 }
@@ -96,7 +106,7 @@ export function useSceneRuntime(): SceneRuntimeValue {
   return value
 }
 
-function createBootstrap(mode: RuntimeMode): SceneBootstrap {
+function createBootstrap(mode: RuntimeMode, loadingHold: boolean): SceneBootstrap {
   // One clock: the deterministic adapter advances the declared fixed step per
   // rendered frame; the live adapter reads the wall clock only here, at its
   // outer boundary. No scene system reads a wall clock or a library ticker.
@@ -127,8 +137,10 @@ function createBootstrap(mode: RuntimeMode): SceneBootstrap {
     marker,
     streamsInitialized: true,
     // The manifest is bundled and schema-checked above; nothing loads over the
-    // network, so asset readiness is a resolved constant.
-    assetsReady: true,
+    // network, so asset readiness is a resolved constant. The declared loading
+    // capture state (?wdu-loading=1, IP-06A) holds readiness so the composed
+    // loading surface stays visible deterministically.
+    assetsReady: !loadingHold,
   }
 }
 
@@ -149,13 +161,14 @@ export function SceneRuntime({
   mode,
   stationId,
   motion,
+  loadingHold = false,
   onQualityChange,
   children,
 }: SceneRuntimeProps) {
   const bootstrapRef = useRef<SceneBootstrap | null>(null)
   let bootstrap = bootstrapRef.current
   if (bootstrap === null) {
-    bootstrap = createBootstrap(mode)
+    bootstrap = createBootstrap(mode, loadingHold)
     bootstrapRef.current = bootstrap
   }
 
@@ -177,6 +190,16 @@ export function SceneRuntime({
     stableFrameReachedRef.current = false
     cameraAppliedRef.current = false
     camWritesRef.current.push(`invalidate@${frameCountRef.current}`)
+    bootstrapRef.current?.marker.invalidate()
+  }, [])
+
+  // Capture-state invalidation (IP-06A): a declared interaction state change
+  // removes readiness without resuming the frozen clock or touching the
+  // camera contract. The marker re-sets on the next rendered frame, so the
+  // captured pose is a pure function of the frozen clock and the declared
+  // state — never of the frame the pointer event happened to land on.
+  const invalidateCaptureState = useCallback(() => {
+    camWritesRef.current.push(`capture-state@${frameCountRef.current}`)
     bootstrapRef.current?.marker.invalidate()
   }, [])
 
@@ -299,6 +322,7 @@ export function SceneRuntime({
     motion,
     mode,
     invalidateReady,
+    invalidateCaptureState,
     stableFrameReached: () => stableFrameReachedRef.current,
   }
 

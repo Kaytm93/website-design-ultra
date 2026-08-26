@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -12,6 +13,30 @@ export const TELEMETRY_SURFACE_GLOBAL_ALIASES = [
 ]
 export const PERFORMANCE_SUMMARY_SCHEMA_VERSION = 1
 
+export const CHECKPOINT_SCHEMA_VERSION = 1
+export const CHECKPOINT_SURFACE_ID = 'wdu.interaction-checkpoints'
+export const CHECKPOINT_KINDS = [
+  'hover',
+  'click',
+  'scroll',
+  'loading',
+  'ready',
+  'failure',
+  'focus',
+  'keyboard',
+  'touch',
+  'audio',
+]
+export const HOVER_PHASES = ['before', 'during', 'after']
+export const CLICK_PHASES = ['before', 'peak', 'recovered']
+export const FOCUS_PHASES = ['before', 'during', 'after']
+export const KEYBOARD_PHASES = ['before', 'peak', 'recovered']
+export const TOUCH_PHASES = ['before', 'peak', 'recovered']
+export const AUDIO_STATES = ['locked', 'enabled', 'muted', 'returning']
+export const CHECKPOINT_ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/
+export const CHECKPOINT_MODE_INPUT = 'WDU_DETERMINISTIC=1'
+export const CHECKPOINT_VIEWPORT = { width: 1440, height: 1000 }
+
 const TELEMETRY_GATE_CLASSES = [
   'warm-gpu-frame-time',
   'first-meaningful-frame',
@@ -21,6 +46,10 @@ const TELEMETRY_SURFACE_ID = 'wdu.immersive-telemetry'
 
 function isRecord(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function sha256Hex(bytes) {
+  return createHash('sha256').update(bytes).digest('hex')
 }
 
 function cloneJson(value) {
@@ -915,6 +944,304 @@ export function createTelemetryCollectionScript() {
   }, ${JSON.stringify(TELEMETRY_SURFACE_GLOBAL_ALIASES)})`
 }
 
+/**
+ * Compact checkpoint-manifest validator (IP-06A). This is the verifier's own
+ * copy of the contract implemented by the root reference
+ * `references/interaction-checkpoints.ts`; the shared fixture suite binds the
+ * two to the same accept/reject behaviour. Every checkpoint is declared by
+ * the project — ids, targets, phases, progress, and state conditions — and
+ * nothing here names a concrete checkpoint.
+ */
+export function validateCheckpointManifest(input) {
+  const record = isRecord(input) ? input : null
+  if (!record) throw new Error('checkpoint manifest must be an object')
+  const allowed = [
+    'schemaVersion',
+    'surface',
+    'project',
+    'modeInput',
+    'readyMarker',
+    'checkpoints',
+  ]
+  for (const key of Object.keys(record)) {
+    if (!allowed.includes(key)) {
+      throw new Error(`checkpoint manifest has unknown property ${key}`)
+    }
+  }
+  if (record.schemaVersion !== CHECKPOINT_SCHEMA_VERSION) {
+    throw new Error(`checkpoint manifest schemaVersion must be ${CHECKPOINT_SCHEMA_VERSION}`)
+  }
+  if (record.surface !== CHECKPOINT_SURFACE_ID) {
+    throw new Error(`checkpoint manifest surface must be ${CHECKPOINT_SURFACE_ID}`)
+  }
+  if (typeof record.project !== 'string' || record.project.trim().length === 0) {
+    throw new Error('checkpoint manifest.project must be a non-empty string')
+  }
+  if (record.modeInput !== CHECKPOINT_MODE_INPUT) {
+    throw new Error(
+      'checkpoint manifest modeInput must be WDU_DETERMINISTIC=1; interaction captures are only deterministic evidence in deterministic mode',
+    )
+  }
+  if (typeof record.readyMarker !== 'string' || record.readyMarker.trim().length === 0) {
+    throw new Error('checkpoint manifest.readyMarker must be a non-empty string')
+  }
+  if (!Array.isArray(record.checkpoints) || record.checkpoints.length === 0) {
+    throw new Error('checkpoint manifest checkpoints must be a non-empty array')
+  }
+
+  const checkpoints = []
+  const ids = new Set()
+  const hoverGroups = new Map()
+  const clickGroups = new Map()
+  const targets = new Map()
+  const interactionGroups = new Map([
+    ['focus', new Map()],
+    ['keyboard', new Map()],
+    ['touch', new Map()],
+  ])
+
+  for (const item of record.checkpoints) {
+    if (!isRecord(item)) throw new Error('checkpoints[] must be an object')
+    const id = item.id
+    if (typeof id !== 'string' || !CHECKPOINT_ID_PATTERN.test(id)) {
+      throw new Error(
+        `checkpoints[].id must match ${String(CHECKPOINT_ID_PATTERN)} (deterministic filenames are derived from ids)`,
+      )
+    }
+    if (ids.has(id)) throw new Error(`checkpoint id ${id} is declared more than once`)
+    ids.add(id)
+    if (item.url !== undefined && (typeof item.url !== 'string' || item.url.length === 0)) {
+      throw new Error(`checkpoints[].url must be a non-empty string`)
+    }
+
+    const interaction = item.interaction
+    if (!CHECKPOINT_KINDS.includes(interaction)) {
+      throw new Error(`checkpoints[].interaction must be one of ${CHECKPOINT_KINDS.join(', ')}`)
+    }
+
+    if (interaction === 'hover') {
+      if (typeof item.group !== 'string' || item.group.length === 0) {
+        throw new Error('checkpoints[].group is required for hover checkpoints')
+      }
+      if (!HOVER_PHASES.includes(item.phase)) {
+        throw new Error(`checkpoints[].phase must be one of ${HOVER_PHASES.join(', ')}`)
+      }
+      if (typeof item.target !== 'string' || item.target.trim().length === 0) {
+        throw new Error('checkpoints[].target is required for hover checkpoints')
+      }
+      const known = ['id', 'interaction', 'group', 'phase', 'target', 'waitFor', 'url', 'scrollIntoView']
+      for (const key of Object.keys(item)) {
+        if (!known.includes(key)) throw new Error(`checkpoints[] has unknown property ${key}`)
+      }
+      const group = hoverGroups.get(item.group) ?? []
+      group.push(item)
+      hoverGroups.set(item.group, group)
+      const existingTarget = targets.get(item.group)
+      if (existingTarget !== undefined && existingTarget !== item.target) {
+        throw new Error(`hover group ${item.group} must target one selector across all phases`)
+      }
+      targets.set(item.group, item.target)
+    } else if (interaction === 'click') {
+      if (typeof item.group !== 'string' || item.group.length === 0) {
+        throw new Error('checkpoints[].group is required for click checkpoints')
+      }
+      if (!CLICK_PHASES.includes(item.phase)) {
+        throw new Error(`checkpoints[].phase must be one of ${CLICK_PHASES.join(', ')}`)
+      }
+      if (typeof item.target !== 'string' || item.target.trim().length === 0) {
+        throw new Error('checkpoints[].target is required for click checkpoints')
+      }
+      const known = ['id', 'interaction', 'group', 'phase', 'target', 'waitFor', 'url', 'scrollIntoView']
+      for (const key of Object.keys(item)) {
+        if (!known.includes(key)) throw new Error(`checkpoints[] has unknown property ${key}`)
+      }
+      const group = clickGroups.get(item.group) ?? []
+      group.push(item)
+      clickGroups.set(item.group, group)
+      const existingTarget = targets.get(item.group)
+      if (existingTarget !== undefined && existingTarget !== item.target) {
+        throw new Error(`click group ${item.group} must target one selector across all phases`)
+      }
+      targets.set(item.group, item.target)
+    } else if (interaction === 'scroll') {
+      const progress = item.progress
+      if (
+        typeof progress !== 'number' ||
+        !Number.isFinite(progress) ||
+        progress < 0 ||
+        progress > 1
+      ) {
+        throw new Error('checkpoints[].progress must be a normalized number in [0, 1]')
+      }
+      const known = ['id', 'interaction', 'progress', 'url']
+      for (const key of Object.keys(item)) {
+        if (!known.includes(key)) throw new Error(`checkpoints[] has unknown property ${key}`)
+      }
+    } else if (interaction === 'loading' || interaction === 'failure') {
+      if (typeof item.waitFor !== 'string' || item.waitFor.trim().length === 0) {
+        throw new Error(`checkpoints[].waitFor is required for ${interaction} checkpoints`)
+      }
+      const known = ['id', 'interaction', 'waitFor', 'url', 'action', 'scrollIntoView']
+      for (const key of Object.keys(item)) {
+        if (!known.includes(key)) throw new Error(`checkpoints[] has unknown property ${key}`)
+      }
+      if (
+        interaction === 'failure' &&
+        item.action !== undefined &&
+        item.action !== 'lose-webgl-context'
+      ) {
+        throw new Error("checkpoints[].action must be 'lose-webgl-context'")
+      }
+    } else if (interaction === 'ready') {
+      const known = ['id', 'interaction', 'url', 'scrollIntoView']
+      for (const key of Object.keys(item)) {
+        if (!known.includes(key)) throw new Error(`checkpoints[] has unknown property ${key}`)
+      }
+    } else if (interaction === 'focus' || interaction === 'keyboard' || interaction === 'touch') {
+      if (typeof item.group !== 'string' || item.group.length === 0) {
+        throw new Error(`checkpoints[].group is required for ${interaction} checkpoints`)
+      }
+      const phases = interaction === 'focus' ? FOCUS_PHASES : KEYBOARD_PHASES
+      if (!phases.includes(item.phase)) {
+        throw new Error(`checkpoints[].phase must be one of ${phases.join(', ')}`)
+      }
+      if (typeof item.target !== 'string' || item.target.trim().length === 0) {
+        throw new Error(`checkpoints[].target is required for ${interaction} checkpoints`)
+      }
+      const known = ['id', 'interaction', 'group', 'phase', 'target', 'waitFor', 'url', 'scrollIntoView']
+      for (const key of Object.keys(item)) {
+        if (!known.includes(key)) throw new Error(`checkpoints[] has unknown property ${key}`)
+      }
+      const group = interactionGroups.get(interaction).get(item.group) ?? []
+      group.push(item)
+      interactionGroups.get(interaction).set(item.group, group)
+      const existingTarget = targets.get(`${interaction}:${item.group}`)
+      if (existingTarget !== undefined && existingTarget !== item.target) {
+        throw new Error(
+          `${interaction} group ${item.group} must target one selector across all phases`,
+        )
+      }
+      targets.set(`${interaction}:${item.group}`, item.target)
+    } else if (interaction === 'audio') {
+      if (!AUDIO_STATES.includes(item.state)) {
+        throw new Error(`checkpoints[].state must be one of ${AUDIO_STATES.join(', ')}`)
+      }
+      if (typeof item.waitFor !== 'string' || item.waitFor.trim().length === 0) {
+        throw new Error('checkpoints[].waitFor is required for audio checkpoints')
+      }
+      const known = [
+        'id',
+        'interaction',
+        'state',
+        'waitFor',
+        'unlock',
+        'target',
+        'persist',
+        'voiceLimit',
+        'trigger',
+        'repeats',
+        'url',
+        'scrollIntoView',
+      ]
+      for (const key of Object.keys(item)) {
+        if (!known.includes(key)) throw new Error(`checkpoints[] has unknown property ${key}`)
+      }
+      if (item.state === 'enabled' && (typeof item.unlock !== 'string' || item.unlock.trim().length === 0)) {
+        throw new Error('audio checkpoint state "enabled" requires the declared unlock gesture selector (unlock)')
+      }
+      if (
+        (item.state === 'muted' || item.state === 'returning') &&
+        (typeof item.target !== 'string' || item.target.trim().length === 0)
+      ) {
+        throw new Error(
+          `audio checkpoint state "${item.state}" requires the declared mute control selector (target)`,
+        )
+      }
+      if (
+        (item.state === 'muted' || item.state === 'returning') &&
+        (typeof item.persist !== 'string' || item.persist.trim().length === 0)
+      ) {
+        throw new Error(
+          `audio checkpoint state "${item.state}" requires the declared persistence storage key (persist)`,
+        )
+      }
+      if (item.voiceLimit !== undefined && (typeof item.trigger !== 'string' || item.trigger.trim().length === 0)) {
+        throw new Error('audio checkpoint voiceLimit requires the declared rapid-activation source (trigger)')
+      }
+      if (item.voiceLimit !== undefined && item.state !== 'enabled') {
+        throw new Error('audio checkpoint voiceLimit is observable only on the enabled state')
+      }
+      if (item.repeats !== undefined && item.voiceLimit === undefined) {
+        throw new Error('audio checkpoint repeats is only valid with a declared voiceLimit')
+      }
+      if (item.trigger !== undefined && item.voiceLimit === undefined) {
+        throw new Error('audio checkpoint trigger is only valid with a declared voiceLimit')
+      }
+      if (item.voiceLimit !== undefined && (!Number.isInteger(item.voiceLimit) || item.voiceLimit < 1)) {
+        throw new Error('checkpoints[].voiceLimit must be a positive integer')
+      }
+      if (item.repeats !== undefined && (!Number.isInteger(item.repeats) || item.repeats < 1)) {
+        throw new Error('checkpoints[].repeats must be a positive integer')
+      }
+    }
+    checkpoints.push({ ...item })
+  }
+
+  for (const [group, entries] of hoverGroups) {
+    const phases = new Set(entries.map((entry) => entry.phase))
+    if (
+      phases.size !== HOVER_PHASES.length ||
+      HOVER_PHASES.some((phase) => !phases.has(phase))
+    ) {
+      throw new Error(
+        `hover group ${group} must declare exactly the phases ${HOVER_PHASES.join(', ')}`,
+      )
+    }
+  }
+  for (const [group, entries] of clickGroups) {
+    const phases = new Set(entries.map((entry) => entry.phase))
+    if (
+      phases.size !== CLICK_PHASES.length ||
+      CLICK_PHASES.some((phase) => !phases.has(phase))
+    ) {
+      throw new Error(
+        `click group ${group} must declare exactly the phases ${CLICK_PHASES.join(', ')}`,
+      )
+    }
+  }
+  for (const [kind, groups] of interactionGroups) {
+    const phases = kind === 'focus' ? FOCUS_PHASES : KEYBOARD_PHASES
+    for (const [group, entries] of groups) {
+      const declared = new Set(entries.map((entry) => entry.phase))
+      if (
+        declared.size !== phases.length ||
+        phases.some((phase) => !declared.has(phase))
+      ) {
+        throw new Error(
+          `${kind} group ${group} must declare exactly the phases ${phases.join(', ')}`,
+        )
+      }
+    }
+  }
+
+  return {
+    schemaVersion: CHECKPOINT_SCHEMA_VERSION,
+    surface: CHECKPOINT_SURFACE_ID,
+    project: record.project,
+    modeInput: record.modeInput,
+    readyMarker: record.readyMarker,
+    checkpoints,
+  }
+}
+
+/** Deterministic capture filename for a checkpoint id (IP-06A deliverable). */
+export function checkpointFileName(id) {
+  if (typeof id !== 'string' || !CHECKPOINT_ID_PATTERN.test(id)) {
+    throw new Error(`checkpoint id ${String(id)} cannot name a deterministic file`)
+  }
+  return `${id}.png`
+}
+
 function fail(message, exitCode = 1) {
   console.error(`VERIFY_RUNTIME: ${exitCode === 2 ? 'UNAVAILABLE' : 'FAIL'} ${message}`)
   process.exit(exitCode)
@@ -927,6 +1254,7 @@ function parseArguments(argv) {
     probe: false,
     includeFallback: true,
     timeoutMs: 120000,
+    checkpoints: null,
   }
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index]
@@ -940,6 +1268,9 @@ function parseArguments(argv) {
       options.probe = true
     } else if (argument === '--skip-fallback') {
       options.includeFallback = false
+    } else if (argument === '--checkpoints') {
+      options.checkpoints = path.resolve(argv[index + 1])
+      index += 1
     } else if (argument === '--timeout-ms') {
       options.timeoutMs = Number.parseInt(argv[index + 1], 10)
       index += 1
@@ -950,8 +1281,22 @@ function parseArguments(argv) {
                                   [--out /absolute/output/directory]
                                   [--skip-fallback]
                                   [--timeout-ms 120000]
+  node scripts/verify-browser.mjs --url http://127.0.0.1:3000
+                                  --checkpoints /absolute/path/interaction-checkpoints.json
+                                  [--out /absolute/output/directory]
 
-Exit codes: 0 = capture and telemetry PASS, 1 = capture or telemetry FAIL, 2 = browser, GPU, or telemetry capability UNAVAILABLE. Set WDU_PLAYWRIGHT_CLI to an explicit executable
+--checkpoints switches to checkpoint capture mode: every checkpoint declared
+in the manifest is captured under deterministic mode into
+<out>/checkpoints/<id>.png, with timestamp-free metadata in checkpoints.json
+and a status summary in checkpoints-summary.json. No checkpoint is hardcoded
+here; the manifest is the project's declaration. Generic drivers cover
+hover/click/scroll/focus/keyboard/touch/loading/ready/failure, plus audio
+locked/enabled/muted/returning only when the manifest declares sound. The
+standard desktop/mobile/reduced/fallback matrix and telemetry summary are
+skipped in this mode.
+
+Exit codes: 0 = capture PASS, 1 = capture FAIL, 2 = browser, GPU, telemetry, or
+deterministic-mode capability UNAVAILABLE. Set WDU_PLAYWRIGHT_CLI to an explicit executable
 to override discovery.`)
       process.exit(0)
     } else {
@@ -964,6 +1309,9 @@ to override discovery.`)
   if (!options.probe && !options.url) fail('--url is required unless --probe is used')
   if (options.url && !/^https?:\/\//.test(options.url)) {
     fail('--url must start with http:// or https://')
+  }
+  if (options.checkpoints && !fs.existsSync(options.checkpoints)) {
+    fail(`--checkpoints manifest does not exist: ${options.checkpoints}`)
   }
   return options
 }
@@ -1173,6 +1521,582 @@ function main() {
         if (await target.count()) await target.screenshot({ path: ${quoted(target)} })
       }`,
     )
+  }
+
+  // ---------------------------------------------------------------------
+  // Checkpoint capture mode (IP-06A). Every checkpoint is declared by the
+  // project's manifest; this verifier implements only generic drivers
+  // (hover/click/scroll/loading/ready/failure) and derives deterministic
+  // filenames from checkpoint ids. Nothing here names a concrete checkpoint.
+  // ---------------------------------------------------------------------
+  function runCheckpointCapture() {
+    let manifest
+    try {
+      manifest = validateCheckpointManifest(
+        JSON.parse(fs.readFileSync(options.checkpoints, 'utf8')),
+      )
+    } catch (error) {
+      fail(
+        `invalid checkpoint manifest ${options.checkpoints}: ${error instanceof Error ? error.message : String(error)}`,
+      )
+    }
+
+    const checkpointDirectory = path.join(outputDirectory, 'checkpoints')
+    fs.mkdirSync(checkpointDirectory, { recursive: true })
+
+    const bootSnippet = (selector) => `async (page) => {
+  await page.waitForSelector(${quoted(selector)}, { timeout: 30000 })
+  await page.waitForLoadState('domcontentloaded')
+  await page.evaluate(async () => {
+    if (document.fonts && document.fonts.ready) await document.fonts.ready
+    await Promise.all([...document.images].filter((image) => !image.complete).map(
+      (image) => new Promise((resolve) => {
+        image.addEventListener('load', resolve, { once: true })
+        image.addEventListener('error', resolve, { once: true })
+      }),
+    ))
+  })
+  await page.waitForTimeout(150)
+  return await page.evaluate(() => {
+    const root = document.documentElement
+    return {
+      mode: root.getAttribute('data-wdu-mode'),
+      pointer: root.getAttribute('data-wdu-pointer'),
+      ready: root.getAttribute('data-wdu-ready'),
+    }
+  })
+}`
+
+    const waitSelectorSnippet = (selector) => `async (page) => {
+  await page.waitForSelector(${quoted(selector)}, { timeout: 30000 })
+}`
+
+    const waitPointerChangeSnippet = (initial) => `async (page) => {
+  await page.waitForFunction(
+    (initial) => document.documentElement.getAttribute('data-wdu-pointer') !== initial,
+    ${quoted(initial)},
+    { timeout: 30000 },
+  )
+}`
+
+    const moveToTargetSnippet = (target) => `async (page) => {
+  const box = await page.locator(${quoted(target)}).boundingBox()
+  if (!box) throw new Error('checkpoint target is not visible: ' + ${quoted(target)})
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+}`
+
+    const parkPointerSnippet = `async (page) => {
+  await page.mouse.move(4, 4)
+}`
+
+    const mouseDownSnippet = `async (page) => {
+  await page.mouse.down()
+}`
+
+    const mouseUpSnippet = `async (page) => {
+  await page.mouse.up()
+}`
+
+    const scrollSnippet = (progress) => `async (page) => {
+  await page.evaluate((progress) => {
+    const max = document.documentElement.scrollHeight - window.innerHeight
+    window.scrollTo(0, Math.round(progress * max))
+  }, ${progress})
+  await page.waitForFunction(
+    (progress) => {
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      return Math.abs(window.scrollY - Math.round(progress * max)) < 1
+    },
+    ${progress},
+    { timeout: 10000 },
+  )
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => resolve())))
+}`
+
+    const scrollIntoViewSnippet = (selector) => `async (page) => {
+  await page.evaluate((selector) => {
+    const element = document.querySelector(selector)
+    if (!element) throw new Error('scroll-into-view target not found: ' + selector)
+    element.scrollIntoView({ block: 'center', behavior: 'instant' })
+  }, ${quoted(selector)})
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => resolve())))
+}`
+
+    const loseContextSnippet = `async (page) => {
+  await page.evaluate(() => {
+    const canvas = document.querySelector('.scene-frame canvas')
+    if (!canvas) throw new Error('lose-webgl-context: no scene canvas found')
+    const context = canvas.getContext('webgl2') ?? canvas.getContext('webgl')
+    if (!context) throw new Error('lose-webgl-context: no WebGL context found')
+    const extension = context.getExtension('WEBGL_lose_context')
+    if (!extension) throw new Error('lose-webgl-context: WEBGL_lose_context is unavailable')
+    extension.loseContext()
+  })
+}`
+
+    // IP-06B generic input drivers. Nothing here names a concrete checkpoint;
+    // every selector comes from the project's manifest.
+
+    // Bounded Tab navigation: reaches the declared focus target by real
+    // keyboard traversal. Deterministic because the deterministic-mode DOM is
+    // frozen; a target that Tab cannot reach is a keyboard-reachability
+    // failure, not a fallback.
+    const focusTargetSnippet = (target) => `async (page) => {
+  for (let i = 0; i < 64; i += 1) {
+    await page.keyboard.press('Tab')
+    const reached = await page.evaluate((selector) => {
+      const active = document.activeElement
+      return active !== null && active !== document.body && active.matches(selector)
+    }, ${quoted(target)})
+    if (reached) return
+  }
+  throw new Error('focus target not reachable by Tab: ' + ${quoted(target)})
+}`
+
+    // Tab away from the focused target (bounded); used by focus-after so the
+    // captured state is what a keyboard user sees after tabbing through.
+    const blurTargetSnippet = (target) => `async (page) => {
+  for (let i = 0; i < 64; i += 1) {
+    await page.keyboard.press('Tab')
+    const stillFocused = await page.evaluate((selector) => {
+      const active = document.activeElement
+      return active !== null && active.matches(selector)
+    }, ${quoted(target)})
+    if (!stillFocused) return
+  }
+  throw new Error('focus target did not blur after Tab: ' + ${quoted(target)})
+}`
+
+    // A held keyboard activation: keydown without keyup keeps the declared
+    // peak state visible until the capture. The key is the platform default
+    // for button activation (Enter); Space would scroll unless every project
+    // prevented it, so the driver stays with Enter.
+    const keyDownSnippet = `async (page) => {
+  await page.keyboard.down('Enter')
+}`
+
+    const keyUpSnippet = `async (page) => {
+  await page.keyboard.up('Enter')
+}`
+
+    // A held touch tap: trusted touch input through the browser's input
+    // pipeline (CDP Input.dispatchTouchEvent), because a Playwright
+    // touchscreen requires a hasTouch context this adapter does not control.
+    // touchStart without touchEnd holds the declared peak state; a host
+    // without the touch input pipeline is UNAVAILABLE, never a weaker
+    // fallback. Coordinates come from the frozen layout, so the tap target is
+    // deterministic.
+    const touchStartSnippet = (target) => `async (page) => {
+  let client
+  try {
+    client = await page.context().newCDPSession(page)
+  } catch (error) {
+    throw new Error('touch input pipeline unavailable (CDP session): ' + String(error?.message ?? error))
+  }
+  const box = await page.locator(${quoted(target)}).boundingBox()
+  if (!box) throw new Error('touch target is not visible: ' + ${quoted(target)})
+  await client.send('Input.dispatchTouchEvent', {
+    type: 'touchStart',
+    touchPoints: [
+      {
+        x: box.x + box.width / 2,
+        y: box.y + box.height / 2,
+        radiusX: 2,
+        radiusY: 2,
+        force: 1,
+        id: 1,
+      },
+    ],
+  })
+  return { method: 'cdp-touch' }
+}`
+
+    const touchEndSnippet = `async (page) => {
+  const client = await page.context().newCDPSession(page)
+  await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+}`
+
+    // Audio state evidence, read from the declared surface the project
+    // records on the document root (the same pattern as data-wdu-pointer).
+    const audioStateEvidenceSnippet = `async (page) => {
+  return await page.evaluate(() => {
+    const root = document.documentElement
+    return {
+      audio: root.getAttribute('data-wdu-audio'),
+      context: root.getAttribute('data-wdu-audio-context'),
+      restored: root.getAttribute('data-wdu-audio-restored'),
+      voices: root.getAttribute('data-wdu-voices'),
+      voiceAttempts: root.getAttribute('data-wdu-voice-attempts'),
+      voiceClamped: root.getAttribute('data-wdu-voice-clamped'),
+    }
+  })
+}`
+
+    // The declared unlock gesture: a real pointer press on the project's
+    // named gesture control.
+    const audioUnlockSnippet = (unlock) => `async (page) => {
+  const box = await page.locator(${quoted(unlock)}).boundingBox()
+  if (!box) throw new Error('audio unlock target is not visible: ' + ${quoted(unlock)})
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+}`
+
+    // The declared mute control: a real pointer press on the opt-out control.
+    const audioPressTargetSnippet = (target) => `async (page) => {
+  const box = await page.locator(${quoted(target)}).boundingBox()
+  if (!box) throw new Error('audio target is not visible: ' + ${quoted(target)})
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+}`
+
+    // The declared persistence key, read back as evidence of the write.
+    const audioStorageEvidenceSnippet = (persist) => `async (page) => {
+  return await page.evaluate((key) => {
+    let value = null
+    try {
+      value = window.localStorage.getItem(key)
+    } catch {
+      value = null
+    }
+    return { key, value }
+  }, ${quoted(persist)})
+}`
+
+    // Voice-limit observation: fire the declared number of rapid activations
+    // on the declared trigger and read the fixture's counters after each one.
+    // The fixture caps concurrent voices at the declared limit, so the
+    // observed maximum and the clamped count are the evidence.
+    const audioVoiceBurstSnippet = (trigger, repeats) => `async (page) => {
+  let maxVoices = 0
+  for (let i = 0; i < ${repeats}; i += 1) {
+    await page.locator(${quoted(trigger)}).click({ noWaitAfter: true })
+    const voices = Number(
+      await page.evaluate(() => Number(document.documentElement.getAttribute('data-wdu-voices') ?? '0')),
+    )
+    if (voices > maxVoices) maxVoices = voices
+  }
+  const counts = await page.evaluate(() => ({
+    voices: Number(document.documentElement.getAttribute('data-wdu-voices') ?? '0'),
+    attempts: Number(document.documentElement.getAttribute('data-wdu-voice-attempts') ?? '0'),
+    clamped: Number(document.documentElement.getAttribute('data-wdu-voice-clamped') ?? '0'),
+  }))
+  return { maxVoices, ...counts }
+}`
+
+    // The returning-session arc, in one session: press the declared mute
+    // control, verify the persistence write, reload, and wait for the
+    // restored state that only storage could have produced.
+    const audioReturningSnippet = (target, persist) => `async (page) => {
+  const box = await page.locator(${quoted(target)}).boundingBox()
+  if (!box) throw new Error('audio target is not visible: ' + ${quoted(target)})
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+  const stored = await page.evaluate((key) => {
+    let value = null
+    try {
+      value = window.localStorage.getItem(key)
+    } catch {
+      value = null
+    }
+    return value
+  }, ${quoted(persist)})
+  await page.reload({ waitUntil: 'domcontentloaded' })
+  return { wrote: stored }
+}`
+
+    const entries = []
+
+    function recordUnavailable(entry, record, reason) {
+      record.status = 'UNAVAILABLE'
+      record.reason = reason
+      entries.push(record)
+    }
+
+    try {
+      for (const entry of manifest.checkpoints) {
+        const session = `wdu-checkpoint-${entry.id}`
+        const file = checkpointFileName(entry.id)
+        const target = path.join(checkpointDirectory, file)
+        const record = {
+          id: entry.id,
+          interaction: entry.interaction,
+          file,
+        }
+        if (entry.phase !== undefined) record.phase = entry.phase
+        if (entry.state !== undefined) record.state = entry.state
+        if (entry.progress !== undefined) record.progress = entry.progress
+        if (entry.url !== undefined) record.url = entry.url
+        if (entry.waitFor !== undefined) record.waitFor = entry.waitFor
+
+        try {
+          invoke(session, 'open', `${options.url}${entry.url ?? ''}`)
+          invoke(
+            session,
+            'resize',
+            String(CHECKPOINT_VIEWPORT.width),
+            String(CHECKPOINT_VIEWPORT.height),
+          )
+
+          const initialSelector =
+            entry.interaction === 'loading' ? entry.waitFor : manifest.readyMarker
+          const boot = parseRawJson(
+            invokeRaw(session, 'run-code', bootSnippet(initialSelector)).stdout,
+          )
+          record.modeResolved = boot.mode
+          if (entry.interaction === 'loading') {
+            record.readyAtCapture = boot.ready === 'true'
+          }
+          if (boot.mode !== 'deterministic') {
+            recordUnavailable(
+              entry,
+              record,
+              'deterministic mode not resolved (html[data-wdu-mode] is not "deterministic")',
+            )
+            continue
+          }
+
+          // Declared capture region: the entry names what must be visible
+          // before the pointer moves or the capture happens. Scroll entries
+          // define their own scroll position and never declare this.
+          if (entry.scrollIntoView !== undefined) {
+            invoke(session, 'run-code', scrollIntoViewSnippet(entry.scrollIntoView))
+          }
+
+          if (entry.interaction === 'hover' && entry.phase !== 'before') {
+            invoke(session, 'run-code', moveToTargetSnippet(entry.target))
+            invoke(session, 'run-code', waitPointerChangeSnippet(boot.pointer))
+            if (entry.phase === 'after') {
+              invoke(session, 'run-code', parkPointerSnippet)
+            }
+            if (entry.waitFor !== undefined) {
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+            }
+            // Re-ready: the capture-state change removed the marker; the
+            // capture must wait for the frozen re-ready frame.
+            invoke(session, 'run-code', waitSelectorSnippet(manifest.readyMarker))
+          } else if (entry.interaction === 'click' && entry.phase !== 'before') {
+            invoke(session, 'run-code', moveToTargetSnippet(entry.target))
+            invoke(session, 'run-code', waitPointerChangeSnippet(boot.pointer))
+            if (entry.phase === 'peak') {
+              invoke(session, 'run-code', mouseDownSnippet)
+            } else if (entry.phase === 'recovered') {
+              invoke(session, 'run-code', mouseDownSnippet)
+              invoke(session, 'run-code', mouseUpSnippet)
+              invoke(session, 'run-code', parkPointerSnippet)
+            }
+            if (entry.waitFor !== undefined) {
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+            }
+            invoke(session, 'run-code', waitSelectorSnippet(manifest.readyMarker))
+          } else if (entry.interaction === 'scroll') {
+            invoke(session, 'run-code', scrollSnippet(entry.progress))
+          } else if (entry.interaction === 'failure') {
+            if (entry.action === 'lose-webgl-context') {
+              invoke(session, 'run-code', loseContextSnippet)
+            }
+            invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+          } else if (entry.interaction === 'focus' && entry.phase !== 'before') {
+            // Focus-visible: reach the declared target by real Tab
+            // traversal, then (for after) tab away. The project records
+            // focus-visible on the document root (data-wdu-focus), and the
+            // during condition is the target's own :focus-visible state.
+            invoke(session, 'run-code', focusTargetSnippet(entry.target))
+            if (entry.phase === 'after') {
+              invoke(session, 'run-code', blurTargetSnippet(entry.target))
+            }
+            if (entry.waitFor !== undefined) {
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+            }
+            invoke(session, 'run-code', waitSelectorSnippet(manifest.readyMarker))
+          } else if (entry.interaction === 'keyboard' && entry.phase !== 'before') {
+            // Keyboard activation: Tab to the declared control, hold Enter
+            // for the peak, release for the recovered state. The peak waits
+            // for the same declared outcome state as the pointer click peak.
+            invoke(session, 'run-code', focusTargetSnippet(entry.target))
+            if (entry.phase === 'peak') {
+              invoke(session, 'run-code', keyDownSnippet)
+            } else if (entry.phase === 'recovered') {
+              invoke(session, 'run-code', keyDownSnippet)
+              invoke(session, 'run-code', keyUpSnippet)
+            }
+            if (entry.waitFor !== undefined) {
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+            }
+            invoke(session, 'run-code', waitSelectorSnippet(manifest.readyMarker))
+          } else if (entry.interaction === 'touch' && entry.phase !== 'before') {
+            // Touch alternative: a held touch tap through the browser's own
+            // touch input pipeline. The peak holds touchStart so the declared
+            // outcome state stays visible until the capture; recovered ends
+            // the touch.
+            let touchMethod
+            try {
+              touchMethod = parseRawJson(
+                invokeRaw(session, 'run-code', touchStartSnippet(entry.target)).stdout,
+              ).method
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error)
+              if (message.includes('touch input pipeline unavailable')) {
+                recordUnavailable(
+                  entry,
+                  record,
+                  'touch input pipeline unavailable (host browser cannot dispatch trusted touch input)',
+                )
+                continue
+              }
+              throw error
+            }
+            record.touch = touchMethod
+            if (entry.phase === 'recovered') {
+              invoke(session, 'run-code', touchEndSnippet)
+            }
+            if (entry.waitFor !== undefined) {
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+            }
+            invoke(session, 'run-code', waitSelectorSnippet(manifest.readyMarker))
+          } else if (entry.interaction === 'audio') {
+            // Conditional audio (IP-06B): audio checkpoints exist only when
+            // the project declares sound. Every gesture, control, and storage
+            // key is declared in the manifest; nothing here is invented.
+            if (entry.state === 'enabled') {
+              invoke(session, 'run-code', audioUnlockSnippet(entry.unlock))
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+              if (entry.voiceLimit !== undefined) {
+                const burst = parseRawJson(
+                  invokeRaw(
+                    session,
+                    'run-code',
+                    audioVoiceBurstSnippet(entry.trigger, entry.repeats ?? 6),
+                  ).stdout,
+                )
+                record.voiceLimit = {
+                  declared: entry.voiceLimit,
+                  repeats: entry.repeats ?? 6,
+                  observedMaxVoices: burst.maxVoices,
+                  attempts: burst.attempts,
+                  clamped: burst.clamped,
+                }
+              }
+            } else if (entry.state === 'locked') {
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+            } else if (entry.state === 'muted') {
+              invoke(session, 'run-code', audioPressTargetSnippet(entry.target))
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+              record.persistence = parseRawJson(
+                invokeRaw(session, 'run-code', audioStorageEvidenceSnippet(entry.persist)).stdout,
+              )
+            } else if (entry.state === 'returning') {
+              // One session proves the returning arc: press the declared
+              // opt-out, verify the persistence write, reload, and wait for
+              // the restored state only storage could have produced.
+              const returning = parseRawJson(
+                invokeRaw(session, 'run-code', audioReturningSnippet(entry.target, entry.persist))
+                  .stdout,
+              )
+              record.persistence = {
+                key: entry.persist,
+                wrote: returning.wrote,
+              }
+              invoke(session, 'run-code', waitSelectorSnippet(manifest.readyMarker))
+              invoke(session, 'run-code', waitSelectorSnippet(entry.waitFor))
+            }
+            const evidence = parseRawJson(
+              invokeRaw(session, 'run-code', audioStateEvidenceSnippet).stdout,
+            )
+            record.audio = evidence
+            invoke(session, 'run-code', waitSelectorSnippet(manifest.readyMarker))
+          }
+
+          invoke(session, 'screenshot', '--filename', target)
+          const png = fs.readFileSync(target)
+          record.sha256 = sha256Hex(png)
+          record.bytes = png.length
+          record.status = 'CAPTURED'
+          entries.push(record)
+        } catch (error) {
+          record.status = 'FAIL'
+          record.reason = error instanceof Error ? error.message : String(error)
+          entries.push(record)
+        }
+      }
+    } finally {
+      for (const session of sessions) {
+        if (session.startsWith('wdu-checkpoint-')) {
+          run(backend, [`-s=${session}`, 'close'], Math.min(options.timeoutMs, 30000))
+        }
+      }
+    }
+
+    const counts = { captured: 0, failed: 0, unavailable: 0 }
+    for (const entry of entries) {
+      if (entry.status === 'CAPTURED') counts.captured += 1
+      else if (entry.status === 'UNAVAILABLE') counts.unavailable += 1
+      else counts.failed += 1
+    }
+    const status = counts.failed > 0 ? 'FAIL' : counts.unavailable > 0 ? 'UNAVAILABLE' : 'PASS'
+
+    fs.writeFileSync(
+      path.join(outputDirectory, 'checkpoints.json'),
+      `${JSON.stringify(
+        {
+          schemaVersion: CHECKPOINT_SCHEMA_VERSION,
+          surface: CHECKPOINT_SURFACE_ID,
+          project: manifest.project,
+          modeInput: manifest.modeInput,
+          readyMarker: manifest.readyMarker,
+          viewport: CHECKPOINT_VIEWPORT,
+          entries,
+        },
+        null,
+        2,
+      )}\n`,
+    )
+    fs.writeFileSync(
+      path.join(outputDirectory, 'checkpoints-summary.json'),
+      `${JSON.stringify(
+        {
+          schemaVersion: CHECKPOINT_SCHEMA_VERSION,
+          status,
+          counts,
+          entries: entries.map((entry) => ({
+            id: entry.id,
+            status: entry.status,
+            reason: entry.reason ?? null,
+          })),
+        },
+        null,
+        2,
+      )}\n`,
+    )
+    fs.writeFileSync(
+      path.join(outputDirectory, 'capture.json'),
+      `${JSON.stringify(
+        {
+          status,
+          verificationStatus: status,
+          mode: 'checkpoint',
+          url: options.url,
+          backend: backend.name,
+          checkpointManifest: options.checkpoints,
+          outputDirectory,
+          commands,
+        },
+        null,
+        2,
+      )}\n`,
+    )
+
+    return { status, counts, entries }
+  }
+
+  if (options.checkpoints) {
+    const checkpointResult = runCheckpointCapture()
+    if (checkpointResult.status === 'FAIL') {
+      fail(`checkpoint capture FAIL; artifacts: ${outputDirectory}`)
+    }
+    if (checkpointResult.status === 'UNAVAILABLE') {
+      fail(`checkpoint capture UNAVAILABLE; artifacts: ${outputDirectory}`, 2)
+    }
+    console.log(
+      `VERIFY_RUNTIME: PASS checkpoint-mode captured=${checkpointResult.counts.captured} artifacts=${outputDirectory}`,
+    )
+    return
   }
 
   let performanceSummary = null

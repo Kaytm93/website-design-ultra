@@ -117,19 +117,19 @@ splits that proposal into implementation-sized units.
 
 ## PR 6 — Interaction capture and comparison
 
-- [ ] `IP-06A` **Declare and capture interaction checkpoints** — Add a project-owned checkpoint manifest for normalized scroll, hover, click, loading, ready, and failure states.
+- [x] `IP-06A` **Declare and capture interaction checkpoints** — Add a project-owned checkpoint manifest for normalized scroll, hover, click, loading, ready, and failure states.
   - **Depends on:** IP-05D
   - **Deliver:** Schema, starter declaration, verifier support, and deterministic filenames tied to checkpoint ids.
   - **Acceptance:** Hover has before/during/after; click has before/peak/recovered; scroll uses declared normalized progress; no checkpoint is hardcoded in the verifier.
   - **Verify:** Capture all declared starter checkpoints twice under deterministic mode and compare stable states.
 
-- [ ] `IP-06B` **Exercise keyboard, touch, focus, and optional audio states** — Extend dynamic verification to focus-visible, keyboard activation, touch alternatives, and conditional sound behavior.
+- [x] `IP-06B` **Exercise keyboard, touch, focus, and optional audio states** — Extend dynamic verification to focus-visible, keyboard activation, touch alternatives, and conditional sound behavior.
   - **Depends on:** IP-06A
   - **Deliver:** Input drivers and state evidence for loading/ready/failure plus audio locked/enabled/muted/returning only when sound is declared.
   - **Acceptance:** Keyboard and touch reach the same product outcome as pointer input; audio tests do not run for silent deliverables; unlock, mute persistence, and voice limit are observable when they do run.
   - **Verify:** Interaction fixture suite with sound both absent and present.
 
-- [ ] `IP-06C` **Add optional baseline comparison without aesthetic verdicts** — Classify structural regression, perceptual difference, expected dynamic variation, and nondeterministic content.
+- [x] `IP-06C` **Add optional baseline comparison without aesthetic verdicts** — Classify structural regression, perceptual difference, expected dynamic variation, and nondeterministic content.
   - **Depends on:** IP-06B
   - **Deliver:** Diff artifacts and a report that labels its score as evidence, never taste or approval.
   - **Acceptance:** Deterministic mismatch is not routed into the dynamic bucket; unsupported comparison is unavailable; the report names masks/tolerances and their source.

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.interaction-checkpoints",
+  "project": "fixture",
+  "modeInput": "WDU_DETERMINISTIC=1",
+  "readyMarker": "html[data-wdu-ready=\"true\"]",
+  "checkpoints": [
+    {
+      "id": "audio-enabled",
+      "interaction": "audio",
+      "state": "enabled",
+      "waitFor": "html[data-wdu-audio=\"enabled\"]",
+      "unlock": "[data-unlock-control]",
+      "voiceLimit": 4
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.interaction-checkpoints",
+  "project": "ip-06c-fixture",
+  "modeInput": "WDU_DETERMINISTIC=1",
+  "readyMarker": "html[data-wdu-ready=\"true\"]",
+  "viewport": {
+    "width": 8,
+    "height": 8
+  },
+  "entries": [
+    {
+      "id": "fixture-ready",
+      "interaction": "ready",
+      "file": "fixture-ready.png",
+      "modeResolved": "deterministic",
+      "sha256": "9244b64757c399ad9221a761ea8162045c91b8f3a355dfe32fd23167b83fd3e3",
+      "bytes": 83,
+      "status": "CAPTURED"
+    }
+  ]
+}

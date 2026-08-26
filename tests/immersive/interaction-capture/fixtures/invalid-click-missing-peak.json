@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.interaction-checkpoints",
+  "project": "fixture",
+  "modeInput": "WDU_DETERMINISTIC=1",
+  "readyMarker": "html[data-wdu-ready=\"true\"]",
+  "checkpoints": [
+    {
+      "id": "fixture-click-before",
+      "interaction": "click",
+      "group": "fixture-click",
+      "phase": "before",
+      "target": ".fixture-target"
+    },
+    {
+      "id": "fixture-click-recovered",
+      "interaction": "click",
+      "group": "fixture-click",
+      "phase": "recovered",
+      "target": ".fixture-target"
+    }
+  ]
+}

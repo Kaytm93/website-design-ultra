@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.interaction-checkpoints",
+  "project": "fixture",
+  "modeInput": "WDU_DETERMINISTIC=1",
+  "readyMarker": "html[data-wdu-ready=\"true\"]",
+  "checkpoints": [
+    {
+      "id": "Fixture-Bad-Case",
+      "interaction": "ready"
+    }
+  ]
+}

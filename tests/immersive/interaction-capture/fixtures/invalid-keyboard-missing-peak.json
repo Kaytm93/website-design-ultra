@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.interaction-checkpoints",
+  "project": "fixture",
+  "modeInput": "WDU_DETERMINISTIC=1",
+  "readyMarker": "html[data-wdu-ready=\"true\"]",
+  "checkpoints": [
+    {
+      "id": "keyboard-before",
+      "interaction": "keyboard",
+      "group": "fixture-keyboard",
+      "phase": "before",
+      "target": "[data-activation-target]"
+    },
+    {
+      "id": "keyboard-recovered",
+      "interaction": "keyboard",
+      "group": "fixture-keyboard",
+      "phase": "recovered",
+      "target": "[data-activation-target]",
+      "waitFor": "html[data-wdu-pointer=\"idle\"]"
+    }
+  ]
+}

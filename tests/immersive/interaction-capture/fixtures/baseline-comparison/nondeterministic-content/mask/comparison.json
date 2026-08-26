@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.baseline-comparison",
+  "project": "ip-06c-fixture",
+  "masks": [
+    {
+      "id": "fixture-third-party-region",
+      "class": "nondeterministic-content",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 8,
+        "height": 8
+      },
+      "source": "ip-06c fixture: declared in comparison.json, region embeds third-party content"
+    }
+  ],
+  "tolerance": {
+    "id": "fixture-tolerance",
+    "maxChannelDelta": 0,
+    "maxChangedFraction": 0,
+    "maxMeanAbsDifference": 0,
+    "source": "ip-06c fixture: declared in comparison.json"
+  }
+}

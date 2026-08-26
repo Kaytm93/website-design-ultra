@@ -336,6 +336,30 @@ const determinismContracts = [
       'camera-stations',
       'data-wdu-ready="true"',
       'first stable frame',
+      'interaction checkpoints',
+      'interaction-checkpoints.schema.json',
+      'baseline comparison',
+      'baseline-comparison.schema.json',
+    ],
+  ],
+  [
+    'skills/core-rules/references/interaction-checkpoints.schema.json',
+    [
+      'wdu://interaction-checkpoints/v1',
+      'WDU_DETERMINISTIC=1',
+      'lose-webgl-context',
+      'readyMarker',
+    ],
+  ],
+  [
+    'skills/core-rules/references/baseline-comparison.schema.json',
+    [
+      'wdu://baseline-comparison/v1',
+      'structural-regression',
+      'perceptual-difference',
+      'expected-dynamic-variation',
+      'nondeterministic-content',
+      'never an aesthetic verdict',
     ],
   ],
   [
@@ -348,11 +372,22 @@ const determinismContracts = [
   ],
   [
     'commands/verify.md',
-    ['WDU_DETERMINISTIC=1', 'data-wdu-ready="true"', 'first stable frame'],
+    [
+      'WDU_DETERMINISTIC=1',
+      'data-wdu-ready="true"',
+      'first stable frame',
+      '--checkpoints',
+      'compare-baselines.mjs',
+    ],
   ],
   [
     'README.md',
-    ['core-rules/references/determinism.md', 'reproducible dynamic capture'],
+    [
+      'core-rules/references/determinism.md',
+      'reproducible dynamic capture',
+      'interaction-checkpoints.schema.json',
+      'baseline-comparison.schema.json',
+    ],
   ],
 ]
 

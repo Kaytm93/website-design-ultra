@@ -178,6 +178,39 @@ h2 {
   margin-bottom: 1rem;
 }
 
+.activation-control {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.9rem 1.1rem 1rem;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.activation-control button {
+  font: inherit;
+  font-weight: 600;
+  color: var(--bg);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 0.45rem 1.1rem;
+  cursor: pointer;
+}
+
+.activation-control button:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.activation-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  max-width: 24rem;
+}
+
 .motion-control {
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -311,6 +344,18 @@ h2 {
   position: relative;
   z-index: 4;
   pointer-events: none;
+}
+
+/* Deterministic pointer-target capture anchor (IP-06A): an invisible 2x2 px
+   surface the verifier addresses with [data-wdu-pointer-target]. It never
+   intercepts input and never renders. */
+.pointer-target-anchor {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
 }
 
 .run-steps li {

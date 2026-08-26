@@ -115,6 +115,14 @@ exact provider, case, and tree):
 - Reproducible dynamic capture, a visual baseline, a poster/checkpoint frame, or
   scene bug reproduction → `core-rules/references/determinism.md`; ordinary 2D
   work and an ordinary 3D hero do not load it.
+- Declared interaction checkpoints under deterministic capture →
+  `core-rules/references/interaction-checkpoints.schema.json` plus
+  `core-rules/references/determinism.md` §7; the manifest is the project's
+  declaration, never a verifier hardcode.
+- Comparing a committed baseline capture set against a candidate run →
+  `core-rules/references/baseline-comparison.schema.json` plus
+  `core-rules/references/determinism.md` §8; a diff score is evidence,
+  never an aesthetic verdict.
 - Form component → `component-patterns/SKILL.md` plus `references/navigation-forms-overlays.md`.
 - R3F in Next.js → `r3f-patterns/SKILL.md` plus `references/nextjs.md`.
 - Six to ten exported PNG and SVG frames plus a written token block for a 3D
@@ -332,6 +340,38 @@ node scripts/verify-browser.mjs \
   --url http://127.0.0.1:3000 \
   --out output/playwright/verify/manual
 ```
+
+For a project that declares interaction checkpoints, `--checkpoints <manifest>`
+switches the adapter to checkpoint capture mode: it captures every declared
+checkpoint (hover before/during/after, click before/peak/recovered, scroll at
+declared normalized progress, focus before/during/after, keyboard and touch
+before/peak/recovered, loading, ready, failure, and — only when the manifest
+declares them — audio locked/enabled/muted/returning) under deterministic
+mode into `checkpoints/<checkpoint-id>.png`, with timestamp-free metadata in
+`checkpoints.json` and a status summary in `checkpoints-summary.json`. The
+manifest is the project's declaration (`interaction-checkpoints.schema.json`,
+bound by `core-rules/references/determinism.md` §7); the adapter implements
+only generic drivers — pointer move/down/up, Tab and Enter/Space, a held touch
+tap, and the declared audio gesture/control/storage surfaces — and exits 1 on
+any failed checkpoint, 2 when deterministic mode is not resolved. Keyboard and
+touch peaks wait for the same declared outcome state as the click peak, and
+audio entries run only when sound is declared: a silent deliverable captures
+no audio state, and unlock, mute persistence, and the voice limit are recorded
+as evidence when audio checkpoints do run.
+
+Two capture sets are comparable offline with the root-only comparator
+(`tests/immersive/interaction-capture/compare-baselines.mjs`): pass a
+committed baseline directory and a candidate run directory with
+`--baseline`/`--candidate`, optionally a comparison declaration
+(`baseline-comparison.schema.json`, `--declaration`) that names pixel masks
+and tolerances, and an `--out` directory. It classifies every difference
+into structural regression, perceptual difference, expected dynamic
+variation, or nondeterministic content; a deterministic mismatch outside
+every declared mask stays a perceptual difference and is never routed into a
+dynamic bucket. The comparison refuses to run (exit 2, `UNAVAILABLE`) when
+either side lacks deterministic capture metadata, and writes diff PNGs plus
+`comparison.json`, whose statement labels every score as evidence, never an
+aesthetic verdict, taste, or approval.
 
 For a runnable target with the shared immersive telemetry surface, the same
 output directory also contains `performance-summary.json`: a timestamp-free

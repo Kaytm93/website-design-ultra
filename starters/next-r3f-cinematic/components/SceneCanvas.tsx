@@ -17,6 +17,8 @@ interface SceneCanvasProps {
   stationId: string
   /** Resolved at the application boundary; passed through to the scene runtime. */
   motion: MotionPreference
+  /** Declared loading capture state (IP-06A): holds asset readiness so the loading surface stays visible. */
+  loadingHold?: boolean
   /** DOM-side quality subscription (poster tier reveals the poster overlay). */
   onQualityChange?: (state: QualityTelemetryState) => void
   /** DOM-side context-loss notification (poster plus restore action). */
@@ -37,6 +39,7 @@ export function SceneCanvas({
   mode,
   stationId,
   motion,
+  loadingHold = false,
   onQualityChange,
   onContextLost,
 }: SceneCanvasProps) {
@@ -54,6 +57,7 @@ export function SceneCanvas({
         mode={mode}
         stationId={stationId}
         motion={motion}
+        loadingHold={loadingHold}
         onQualityChange={onQualityChange}
       >
         <CameraRig stations={CAMERA_STATIONS} stationId={stationId} />

@@ -120,7 +120,99 @@ as ready. For a target outside this contract, the verifier may use its existing
 font, asset, and application readiness checks, but it must not claim deterministic
 capture.
 
-## 7. Evidence checklist
+## 7. Interaction checkpoints
+
+Declared interaction states are captured the same way stations are: the state
+is part of the capture contract, and the ready marker gates the capture.
+
+- A project declares its checkpoints in a checkpoint manifest (schema:
+  `core-rules/references/interaction-checkpoints.schema.json`). Hover declares
+  before/during/after, click declares before/peak/recovered, scroll declares
+  normalized progress in [0, 1], and loading, ready, and failure declare their
+  own state conditions. The manifest names the project's ready marker and
+  requires `WDU_DETERMINISTIC=1`. Nothing in the verifier names a concrete
+  checkpoint; the manifest is the declaration.
+- IP-06B input kinds: focus declares before/during/after with the during
+  condition being `:focus-visible` on the declared target, and keyboard and
+  touch declare before/peak/recovered. Keyboard (Tab to the target, then
+  Enter or Space) and touch (a held tap) must reach the same product outcome
+  as the pointer click group: the manifest's peak entries declare the same
+  waitFor state condition as the click peak, and the verifier performs only
+  generic Tab/Enter/touch drivers.
+- IP-06B audio kinds: a project that ships sound declares audio checkpoints
+  with one of the states locked, enabled, muted, or returning. locked
+  captures the pre-gesture state, enabled performs the declared unlock
+  gesture and may observe a declared voice limit, muted operates the declared
+  opt-out control and verifies the declared persistence key, and returning
+  writes the same persistence, reloads, and captures the restored state. A
+  silent deliverable declares no audio checkpoints, so audio tests never run
+  for it. The verifier invents no gesture, control, or storage key; every
+  selector and key is declared in the manifest.
+- Deterministic capture filenames are derived from checkpoint ids
+  (`<checkpoint-id>.png`, ids matching `^[a-z0-9][a-z0-9-]*$`). Capture
+  metadata is timestamp-free so two runs stay comparable.
+- A declared interaction-state change (for example a pointer entering or
+  pressing the subject) removes the ready marker and re-sets it after the next
+  rendered frame. The deterministic clock stays frozen across the change, so
+  the captured pose is a pure function of the frozen clock and the declared
+  state — never of the frame the input happened to land on. Interaction-state
+  changes must not resume the clock or move the camera.
+- The resolved interaction state is recorded on the document root
+  (`html[data-wdu-pointer="idle|hover|pressed"]` in the reference starter) and
+  the verifier waits for the declared state condition plus the re-set ready
+  marker before capturing.
+- A project may declare a loading capture state (the reference starter uses
+  `?wdu-loading=1`): asset readiness stays unresolved, so the composed loading
+  surface stays visible deterministically. A verifier must not invent such a
+  switch; it only uses what the manifest declares.
+- An entry may declare what must be visible in the viewport for the capture
+  (`scrollIntoView` selector): the verifier scrolls that element to the
+  viewport center before interacting or capturing. The final position is a
+  pure function of the fixed layout, so it is deterministic; scroll
+  checkpoints define their own position and never declare this.
+- The verifier waits for `html[data-wdu-ready="true"]` for every entry unless
+  the entry declares its own surface condition. Its timeout bounds the wait
+  and reports failure; it never counts as ready.
+
+## 8. Baseline comparison
+
+An optional baseline comparison is offline and never an aesthetic verdict.
+It compares two capture sets — a committed baseline and a candidate run —
+produced under this contract and classifies every difference into exactly one
+of four buckets:
+
+- `structural-regression`: the capture surface changed shape — a checkpoint id
+  appeared or disappeared, the viewport or project differs, a capture PNG is
+  missing, or a PNG cannot be decoded.
+- `perceptual-difference`: both sides are deterministic and pixels differ
+  outside every declared mask. The score is evidence of change, never taste
+  or approval, and the report says so in its own output.
+- `expected-dynamic-variation`: differences inside a mask the project declared
+  as varying (for example a live meter the project deliberately keeps out of
+  the frozen frame).
+- `nondeterministic-content`: differences the capture metadata itself records
+  as not deterministically resolved, or inside a mask declared
+  nondeterministic (for example embedded third-party content).
+
+A deterministic mismatch is never routed into a dynamic bucket: without a
+declared mask it is a perceptual difference, with one it is that mask's
+declared class. The comparison refuses to run — and reports `UNAVAILABLE` —
+when either side lacks deterministic capture metadata: no `checkpoints.json`,
+a wrong schema version or surface, or a mode input other than
+`WDU_DETERMINISTIC=1`. Nothing falls into a catch-all bucket.
+
+Masks are pixel rectangles in capture-viewport coordinates; tolerances bound
+the channel delta, changed fraction, and mean absolute difference. Both are
+declared by the project in a comparison declaration
+(`core-rules/references/baseline-comparison.schema.json`), and every mask and
+tolerance names its source — the report repeats that source, and names the
+built-in strict default when a comparison runs without a declaration. The
+executable comparator is the root-only
+`tests/immersive/interaction-capture/compare-baselines.mjs`; it writes diff
+PNGs and a timestamp-free `comparison.json` whose statement labels every
+score as evidence, never an aesthetic verdict, taste, or approval.
+
+## 9. Evidence checklist
 
 Before calling a dynamic capture deterministic, verify:
 
@@ -131,6 +223,18 @@ Before calling a dynamic capture deterministic, verify:
 - [ ] The requested camera-station id exists and its complete shot was applied.
 - [ ] The ready marker appeared only after the first stable frame rendered.
 - [ ] A readiness timeout remains a failure rather than a substitute signal.
+- [ ] Interaction checkpoints come from the project's manifest, their
+      filenames derive from checkpoint ids, and two deterministic runs of the
+      same commit produce identical stable states.
+- [ ] Focus, keyboard, and touch checkpoints are declared with their own
+      phases and targets; keyboard and touch peaks declare the same outcome
+      state as the pointer click peak.
+- [ ] Audio checkpoints run only when the manifest declares them; a silent
+      deliverable captures no audio state. Unlock, mute persistence, and the
+      voice limit are recorded as evidence, never assumed.
+- [ ] A baseline comparison classified every difference into the four buckets
+      and named every mask/tolerance and its source; a deterministic mismatch
+      outside declared masks stayed a perceptual difference.
 
 The copyable runtime and byte-identical two-run fixture are separate executable
 tasks. This reference defines their contract and does not claim those later gates

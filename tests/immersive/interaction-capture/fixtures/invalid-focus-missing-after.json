@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.interaction-checkpoints",
+  "project": "fixture",
+  "modeInput": "WDU_DETERMINISTIC=1",
+  "readyMarker": "html[data-wdu-ready=\"true\"]",
+  "checkpoints": [
+    {
+      "id": "focus-before",
+      "interaction": "focus",
+      "group": "fixture-focus",
+      "phase": "before",
+      "target": "[data-focus-target]"
+    },
+    {
+      "id": "focus-during",
+      "interaction": "focus",
+      "group": "fixture-focus",
+      "phase": "during",
+      "target": "[data-focus-target]",
+      "waitFor": "[data-focus-target]:focus-visible"
+    }
+  ]
+}

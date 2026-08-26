@@ -2,7 +2,9 @@
 
 import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { ActivationControl } from './ActivationControl.tsx'
 import { MotionControl } from './MotionControl.tsx'
+import { PointerTargetAnchor } from './PointerTargetAnchor.tsx'
 import { Poster } from './Poster.tsx'
 import { StationControl } from './StationControl.tsx'
 import {
@@ -81,6 +83,15 @@ export function SceneClient({ mode, stationId: initialStationId, motion: initial
   const [mountKey, setMountKey] = useState(0)
   const [everReady, setEverReady] = useState(false)
   const userPickedStationRef = useRef(false)
+  // Declared loading capture state (IP-06A): the ?wdu-loading=1 capture
+  // entry holds asset readiness so the composed loading surface (the poster)
+  // stays visible deterministically. The canvas is client-only, so this
+  // never reaches server-rendered HTML and cannot cause a hydration mismatch.
+  const [loadingHold] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      new URLSearchParams(window.location.search).has('wdu-loading'),
+  )
 
   // Live mode: portrait viewports start on the named portrait station unless
   // the user has explicitly picked one. Deterministic mode never
@@ -162,6 +173,28 @@ export function SceneClient({ mode, stationId: initialStationId, motion: initial
     else root.removeAttribute('data-wdu-context')
   }, [stationId, motion, contextLost])
 
+  // Focus-visible capture metadata (IP-06B): the resolved focus-visible
+  // state is recorded on the document root (html[data-wdu-focus]) the same
+  // way the pointer state is, so the focus checkpoints can wait for a
+  // declared state condition. Focus changes never move the scene, so they do
+  // not invalidate readiness.
+  useEffect(() => {
+    const root = document.documentElement
+    const update = () => {
+      const active = document.activeElement
+      const visible =
+        active !== null && active !== document.body && active.matches(':focus-visible')
+      root.setAttribute('data-wdu-focus', visible ? 'visible' : 'none')
+    }
+    document.addEventListener('focusin', update)
+    document.addEventListener('focusout', update)
+    update()
+    return () => {
+      document.removeEventListener('focusin', update)
+      document.removeEventListener('focusout', update)
+    }
+  }, [])
+
   // The composed fallback: the poster covers the frame while the canvas has
   // not rendered its stable frame, while quality is at the poster tier, and
   // while the WebGL context is lost. Everything else — copy, controls — stays
@@ -171,6 +204,7 @@ export function SceneClient({ mode, stationId: initialStationId, motion: initial
   return (
     <div className="scene-client">
       <div className="scene-controls">
+        <ActivationControl />
         <StationControl
           mode={mode}
           stationId={stationId}
@@ -188,9 +222,11 @@ export function SceneClient({ mode, stationId: initialStationId, motion: initial
           mode={mode}
           stationId={stationId}
           motion={motion}
+          loadingHold={loadingHold}
           onQualityChange={onQualityChange}
           onContextLost={onContextLost}
         />
+        <PointerTargetAnchor />
         {contextLost ? (
           <div className="context-panel" role="alert">
             <h3>Scene context lost</h3>
