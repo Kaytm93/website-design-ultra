@@ -19,7 +19,13 @@ Then open one experiment at a time:
 - `/?e=shader-fullscreen` — fullscreen GLSL shader with live raw-source HMR and uniform controls;
 - `/?e=particle-toy` — seeded point-particle experiment with a particle-count control;
 - `/?e=compile-error` — deliberate undeclared-uniform failure with source/line diagnostics;
-- `/?e=deterministic-capture&WDU_DETERMINISTIC=1` — seeded, stable-frame capture fixture.
+- `/?e=deterministic-capture&WDU_DETERMINISTIC=1` — seeded, stable-frame capture fixture;
+- `/?e=foundational-shaders` — noise, Fresnel, iridescence, dissolve (IP-08B);
+- `/?e=transition-interaction` — frosted transition, chromatic offset, shockwave, flow field (IP-08C);
+- `/?e=media-post` — video states, LUT render-graph pass, frame-rate-independent grain (IP-08D);
+- `/?e=media-post-deterministic&WDU_DETERMINISTIC=1` — seeded capture for media/post;
+- `/?e=media-post-failure` — failure/fallback states with compile-error fixture (non-blank);
+- `/?e=media-post-reduced-motion` — reduced-motion freeze: paused video, zero grain, static fallback.
 
 ## Verification
 

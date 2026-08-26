@@ -123,4 +123,38 @@ export const foundationalShaderManifest: ShaderModuleManifestEntry[] = [
     fixture: 'lab/src/experiments/shaders/transition-interaction.frag',
     noCombine: true,
   },
+  {
+    id: 'video-texture',
+    name: 'Video texture states',
+    rendererSupport: ['webgl2', 'webgpu'],
+    costClass: 'medium',
+    reducedMotion: 'Playback pauses; displays poster/fallback color. No time-driven change; static representation remains useful.',
+    colorSpace: 'sRGB video decoded to linear RGB for composition; output remains linear RGB before tone-map. Never blank.',
+    fixture: 'lab/src/experiments/shaders/media-post.frag',
+    noCombine: true,
+  },
+  {
+    id: 'lut-color-grade',
+    name: 'LUT color grade (render-graph)',
+    rendererSupport: ['webgl2', 'webgpu'],
+    costClass: 'low',
+    reducedMotion: 'LUT is color-only; no animation, reduced-motion unchanged.',
+    colorSpace: 'Input linear RGB unencoded pre-tone-map; LUT sRGB strip decoded to linear; output linear RGB still pre-tone-map. Pass order scene -> LUT (read A, write B, never self-sample) -> tone-map/encode. Intermediate targets linear unencoded. WebGL2 GLSL PASS, WebGPU WGSL/TSL UNAVAILABLE declaratively when only GLSL shipped; raw GLSL never reported as WebGPU PASS.',
+    fixture: 'lab/src/experiments/shaders/media-post.frag',
+    noCombine: true,
+  },
+  {
+    id: 'film-grain',
+    name: 'Frame-rate-independent film grain',
+    rendererSupport: ['webgl2', 'webgpu'],
+    costClass: 'low',
+    reducedMotion: 'Grain frozen at t=0 / intensity 0 under reduced motion; static composition preserved without animation.',
+    colorSpace: 'Additive luminance grain in linear RGB; tone-map after grain. Driven by elapsedSeconds and seed, not frame count.',
+    fixture: 'lab/src/experiments/shaders/media-post.frag',
+    noCombine: true,
+  },
 ];
+
+export const mediaPostManifest: ShaderModuleManifestEntry[] = foundationalShaderManifest.filter((entry) =>
+  ['video-texture', 'lut-color-grade', 'film-grain'].includes(entry.id),
+);
