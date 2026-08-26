@@ -149,7 +149,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Every assertion links evidence; a missing capture cannot be replaced by a build pass; failed resources and console/shader errors fail the applicable case.
   - **Verify:** One deliberate failing fixture per gate plus the green product hero.
 
-- [ ] `IP-07C` **Wire immersive evaluation into CI without silent skips** — Cache dependencies/browser binaries while preserving ADR-010 status semantics.
+- [x] `IP-07C` **Wire immersive evaluation into CI without silent skips** — Cache dependencies/browser binaries while preserving ADR-010 status semantics.
   - **Depends on:** IP-07B
   - **Deliver:** CI job, artifacts, retention, and explicit GPU/browser capability result.
   - **Acceptance:** Browser or GPU unavailability marks the suite unverified and prevents release readiness; runner output states duration and any external cost.
