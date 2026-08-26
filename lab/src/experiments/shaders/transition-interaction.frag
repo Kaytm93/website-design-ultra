@@ -12,8 +12,23 @@ uniform float uShockwaveMaxRadius;
 uniform float uShockwaveStrength;
 uniform float uSeed;
 uniform bool  uReducedMotion;
+uniform sampler2D screenTexture;
 
 out vec4 fragColor;
+
+// --- IP-08D bounded compatibility note (pre-existing IP-08C blocker) ---
+// IP-08C's visual fixture used `value2D`, `curl3D`, and `screenTexture`
+// without declaring them in-file. When this file is compiled standalone
+// (e.g. diagnostic tooling or a fresh gate that imports the frag directly)
+// those symbols are undeclared and a compile check fails before any IP-08D
+// logic is reached. The three definitions below are the minimum bounded
+// compatibility correction that preserves the original visual behavior and
+// module contracts while keeping the file self-contained for WebGL2
+// compilation. The original cross-file dependency is documented in
+// lab/src/fixtures/ip-08c-compatibility-note.md and not re-authored.
+float hash2D(vec2 p) { float h = dot(p, vec2(12.9898, 78.233)); return fract(sin(h) * 43758.5453); }
+float value2D(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f); float a = hash2D(i); float b = hash2D(i + vec2(1.0, 0.0)); float c = hash2D(i + vec2(0.0, 1.0)); float d = hash2D(i + vec2(1.0, 1.0)); return mix(mix(a, b, f.x), mix(c, d, f.x), f.y) * 2.0 - 1.0; }
+vec3 curl3D(vec3 p, float strength) { float e = 0.1; float dx = value2D(p.xy + e) - value2D(p.xy - e); float dy = value2D(p.yz + e) - value2D(p.yz - e); float dz = value2D(p.zx + e) - value2D(p.zx - e); return vec3(dy - dz, dz - dx, dx - dy) * strength / (2.0 * e + 0.0001); }
 
 // [module:frosted-transition-mask]
 vec3 frostedTransitionMask(vec2 uv, vec3 base, vec3 frosted, float progress, float strength, float seed) {

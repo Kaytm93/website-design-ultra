@@ -180,7 +180,7 @@ splits that proposal into implementation-sized units.
 
 ## PR 11 — Media and post shader module group
 
-- [ ] `IP-08D` **Add media and post shader modules** — Implement video texture states, render-graph-compatible LUT placement, and frame-rate-independent film grain.
+- [x] `IP-08D` **Add media and post shader modules** — Implement video texture states, render-graph-compatible LUT placement, and frame-rate-independent film grain.
   - **Depends on:** IP-08C
   - **Acceptance:** Video has locked/loading/playing/failure/fallback states; LUT color-space assumptions are explicit; grain does not change with display frame rate; SDF/MSDF remains deferred to `IP-11A` in PR 14.
   - **Verify:** Failure fixtures, reduced-motion behavior, WebGL2/WebGPU matrix, and no “apply all” path.

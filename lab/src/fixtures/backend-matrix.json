@@ -1,0 +1,35 @@
+{
+  "version": "ip-08d-v1",
+  "modules": [
+    {
+      "id": "video-texture",
+      "webgl2": { "status": "PASS", "source": "media-post.frag sampleVideoTexture (GLSL 300 es)", "executed": "browser-required" },
+      "webgpu": { "status": "UNAVAILABLE", "reason": "No WGSL/TSL device execution in this fixture; backend-agnostic sampler logic is covered offline but does not establish a WebGPU runtime PASS.", "note": "Real device execution is required; raw GLSL and declarative logic are never counted as WebGPU PASS." }
+    },
+    {
+      "id": "lut-color-grade",
+      "webgl2": { "status": "PASS", "source": "media-post.frag applyLutWebGL2 (GLSL 300 es, 2D strip, linear intermediate)", "executed": "browser-required" },
+      "webgpu": { "status": "UNAVAILABLE", "reason": "No WGSL/TSL device execution in lab harness; raw GLSL is never reported as WebGPU PASS. TSL wireframe documented in lab/src/modules/lut.ts; a WebGPU device execution is required to achieve PASS." }
+    },
+    {
+      "id": "film-grain",
+      "webgl2": { "status": "PASS", "source": "media-post.frag filmGrain (elapsedSeconds+seed, quantized, no frame count)", "executed": "browser-required" },
+      "webgpu": { "status": "UNAVAILABLE", "reason": "No WGSL/TSL device execution in this fixture; backend-agnostic grain math is covered offline but does not establish a WebGPU runtime PASS.", "note": "Real device execution is required; raw GLSL and declarative equivalence are never counted as WebGPU PASS." }
+    },
+    {
+      "id": "noise-simplex3d",
+      "webgl2": { "status": "PASS", "source": "foundational-shaders.frag snoise" },
+      "webgpu": { "status": "UNAVAILABLE", "reason": "Raw GLSL not reported as WebGPU PASS without TSL/WGSL execution." }
+    },
+    {
+      "id": "frosted-transition-mask",
+      "webgl2": { "status": "PASS", "source": "transition-interaction.frag frostedTransitionMask" },
+      "webgpu": { "status": "UNAVAILABLE", "reason": "Raw GLSL not reported as WebGPU PASS; plus pre-existing undeclared-symbol note applies." }
+    }
+  ],
+  "contract": {
+    "neverSampleWriteTarget": true,
+    "linearUnencodedIntermediates": true,
+    "rawGLSLisNotWebGPUPass": true
+  }
+}

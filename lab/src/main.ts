@@ -78,6 +78,10 @@ const EXPERIMENTS: Record<string, () => Promise<ExperimentModule>> = {
   'foundational-shaders-deterministic': () => import('./fixtures/foundational-shaders-deterministic.js'),
   'transition-interaction': () => import('./experiments/shaders/transition-interaction.js'),
   'transition-interaction-deterministic': () => import('./fixtures/transition-interaction-deterministic.js'),
+  'media-post': () => import('./experiments/shaders/media-post.js'),
+  'media-post-deterministic': () => import('./fixtures/media-post-deterministic.js'),
+  'media-post-failure': () => import('./fixtures/media-post-failure.js'),
+  'media-post-reduced-motion': () => import('./fixtures/media-post-reduced-motion.js'),
 };
 
 async function loadExperiment(name: string): Promise<void> {
