@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 1.9.1 contains 22 skills and 6 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting that reads a whole repository with one register per file, evidence-led content, a declared 2D composition contract, per-direction design tokens, a catalogue of signature devices, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with traceable reference intake, cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, and host-neutral browser verification. Four negative-gated add-ons cover the canvas-first class — architecture, multi-pass render graph, loading choreography, and sound — and stay unloaded until a brief names their condition. Copy quality is enforced deterministically, not by self-report.
+Version 1.9.1 contains 24 skills and 6 Claude commands. It combines tiered anti-slop enforcement for generated copy and visual defaults, locale-safe English/German copy linting that reads a whole repository with one register per file, evidence-led content, a declared 2D composition contract, per-direction design tokens, a catalogue of signature devices, responsive art direction, license-aware typography, automated state-contrast validation, a provider-trace harness for selective-loading audits, production motion, component/state patterns, and a focused R3F/Three.js/WebGPU stack with traceable reference intake, cinematic 3D direction, adaptive runtime quality, touch gestures, a maintained feature matrix, host-neutral browser verification, and procedural geometry generation before the asset pipeline. Seven negative-gated add-ons cover advanced immersive generation — procedural 3D, canvas-first architecture, multi-pass render graph, loading choreography, sound, GPU particles, and reference intake — and stay unloaded until a brief names their condition. Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
@@ -68,6 +68,8 @@ website-design-ultra/
     ├── shaders-tsl/
     │   └── references/          # TSL syntax, WebGPU feature matrix
     ├── scroll-immersion/
+    ├── procedural-3d/               # on demand: procedural geometry before the asset pipeline
+    │   └── references/          # catalogue with cost models, Blender contract, Houdini interchange
     ├── 3d-asset-pipeline/
     ├── canvas-first-architecture/   # on demand: the canvas is the page
     │   └── references/          # parallel DOM layer, scene state and clock
@@ -81,7 +83,7 @@ website-design-ultra/
         └── references/          # state textures, pointer field, click impulse
 ```
 
-The last five are add-ons behind an already-loaded 3D stack. Each description
+The last six are add-ons behind an already-loaded 3D stack, with `procedural-3d` placed before `3d-asset-pipeline` so generation hands off to the existing inspect/validate/optimize path. Each description
 names one activating condition and closes by naming what does not activate it,
 and `validate-content.mjs` fails the build when either sentence is missing.
 
@@ -134,8 +136,9 @@ exact provider, case, and tree):
 - Runtime adaptation → `3d-runtime-quality/SKILL.md` plus tier matrix and only then the adaptive controller.
 - WebGPU feature → `shaders-tsl/SKILL.md` plus `references/webgpu-feature-matrix.md`.
 - Simple CSS hover → `motion-system/SKILL.md`; no GSAP or Motion reference.
+- Procedural geometry that must be generated from parameters → `procedural-3d/SKILL.md` before `3d-asset-pipeline`; ordinary imported GLB inspection, validation, or optimization alone does not activate it.
 - 3D hero on a normal page → the three mandatory 3D skills only. The
-  canvas-first, render-graph, loading, audio, and gpu-particle add-ons stay unread, and the ordinary 3D forward cases forbid all five files.
+  procedural-3d, canvas-first, render-graph, loading, audio, and gpu-particle add-ons stay unread, and the ordinary 3D forward cases forbid all six files.
 - The canvas owns the page → `canvas-first-architecture/SKILL.md` plus
   `references/parallel-dom-layer.md`; a hero above a DOM page never reaches it.
 - One bloom → `r3f-patterns`; a chain whose passes read each other →
@@ -290,7 +293,8 @@ contract, so `border` is louder than the hairline those interfaces ship.
 - Click, hotspot, configurator, camera focus → `r3f-interaction`.
 - TSL/WebGPU or custom material → `shaders-tsl`.
 - Scroll storytelling → `scroll-immersion`.
-- Blender/Spline/glTF/KTX2 → `3d-asset-pipeline`.
+- Procedural geometry that must be generated from parameters → `procedural-3d` before `3d-asset-pipeline`; it generates the GLB that the pipeline then inspects, validates, and optimizes. Ordinary imported GLB inspection alone does not activate it.
+- Imported Blender/Spline/glTF/KTX2 asset that only needs inspection, validation, or optimization → `3d-asset-pipeline`.
 
 Five further layers exist and stay unloaded until the brief names their
 condition. Needing one says nothing about the others:
