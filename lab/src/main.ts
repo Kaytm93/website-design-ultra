@@ -76,6 +76,8 @@ const EXPERIMENTS: Record<string, () => Promise<ExperimentModule>> = {
   'deterministic-capture': () => import('./fixtures/deterministic-capture.js'),
   'foundational-shaders': () => import('./experiments/shaders/foundational-shaders.js'),
   'foundational-shaders-deterministic': () => import('./fixtures/foundational-shaders-deterministic.js'),
+  'transition-interaction': () => import('./experiments/shaders/transition-interaction.js'),
+  'transition-interaction-deterministic': () => import('./fixtures/transition-interaction-deterministic.js'),
 };
 
 async function loadExperiment(name: string): Promise<void> {

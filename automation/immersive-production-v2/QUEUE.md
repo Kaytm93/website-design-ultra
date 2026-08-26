@@ -173,7 +173,7 @@ splits that proposal into implementation-sized units.
 
 ## PR 10 — Transition and interaction shader module group
 
-- [ ] `IP-08C` **Add transition and interaction shader modules** — Implement frosted transition/displacement mask, capped chromatic offset, click shockwave, and flow-field deformation.
+- [x] `IP-08C` **Add transition and interaction shader modules** — Implement frosted transition/displacement mask, capped chromatic offset, click shockwave, and flow-field deformation.
   - **Depends on:** IP-08B
   - **Acceptance:** Every amplitude/radius has a hard cap; time is frame-rate independent; reduced motion has a deliberate representation; modules compose only when explicitly selected.
   - **Verify:** Manifest validation, compile fixtures, deterministic interaction checkpoints, and cost-class evidence.
