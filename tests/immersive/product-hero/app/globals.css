@@ -31,7 +31,11 @@ body {
 }
 
 main {
-  max-width: 1080px;
+  /* 1072px content column: 1024px content width after padding, so the
+   * 16/9 scene frame resolves to an integral height (576px) and the
+   * document height never sits on a subpixel rounding boundary that could
+   * flip a deterministic full-page capture by one row. */
+  max-width: 1072px;
   margin: 0 auto;
   padding: 0 24px 96px;
 }
@@ -213,7 +217,12 @@ h2 {
   background: var(--panel);
 }
 
-@media (orientation: portrait) {
+/* Portrait composition applies to narrow portrait viewports (phones and
+ * small tablets). The verifier's full-page captures temporarily make the
+ * desktop viewport tall; bounding the query by width keeps the stage
+ * landscape there, so the document height cannot flip mid-capture and the
+ * reduced-motion pair stays byte-identical. */
+@media (orientation: portrait) and (max-width: 767px) {
   .scene-frame {
     aspect-ratio: 9 / 14;
   }

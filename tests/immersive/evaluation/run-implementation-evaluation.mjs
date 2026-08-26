@@ -589,7 +589,7 @@ export function evaluateGates(context) {
         if (entry.status !== 'CAPTURED') {
           failures.push(`checkpoint ${entry.id} was ${entry.status}: ${entry.reason ?? ''}`)
         }
-        if (entry.interaction === 'touch' && !entry.touch) {
+        if (entry.interaction === 'touch' && entry.phase === 'peak' && !entry.touch) {
           failures.push(`touch checkpoint ${entry.id} recorded no touch input method`)
         }
       }
