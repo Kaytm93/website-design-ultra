@@ -206,7 +206,7 @@ splits that proposal into implementation-sized units.
 
 ## PR 13 — Procedural 3D, generated fixture, and volume gate
 
-- [ ] `IP-10A` **Add the procedural-3d skill and costed catalogue** — Place geometry generation before the existing asset pipeline.
+- [x] `IP-10A` **Add the procedural-3d skill and costed catalogue** — Place geometry generation before the existing asset pipeline.
   - **Depends on:** IP-09C
   - **Deliver:** Negatively gated skill plus crystal growth, Voronoi, marching cubes, curl noise, and L-system references with cost models.
   - **Acceptance:** Blender is the baseline; Houdini is only an interchange contract for justified volume/simulation cases; no second inspect/optimize pipeline is created.

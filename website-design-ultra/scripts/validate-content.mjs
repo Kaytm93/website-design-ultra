@@ -127,8 +127,8 @@ const skillDirectories = fs
   .readdirSync(skillsRoot, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
 
-if (skillDirectories.length !== 23) {
-  fail(`expected 23 skills, found ${skillDirectories.length}`)
+if (skillDirectories.length !== 24) {
+  fail(`expected 24 skills, found ${skillDirectories.length}`)
 }
 
 for (const directory of skillDirectories) {
@@ -470,6 +470,129 @@ for (const [file, markers] of referenceIntakeContracts) {
   }
 }
 
+/**
+ * Procedural generation owns geometry before the asset pipeline owns
+ * validation. Bind the exact five-method catalogue, the reversible
+ * deterministic Blender contract, the justified-only Houdini interchange,
+ * and the explicit handoff without a second pipeline.
+ */
+const proceduralContracts = [
+  [
+    'skills/procedural-3d/SKILL.md',
+    [
+      'procedural-3d',
+      'crystal growth',
+      'Voronoi',
+      'marching cubes',
+      'curl noise',
+      'L-system',
+      '3d-asset-pipeline',
+      'inspect',
+      'validate',
+      'optimize',
+      'reversible',
+      'deterministic seed',
+      'named collection',
+      'Geometry Nodes',
+      'versions',
+      'geometry statistics',
+      'material statistics',
+      'separate `.blend`',
+      'web output',
+      'rerun',
+      'rollback',
+      'automated GLB export',
+      'handoff',
+      'no second',
+      'Houdini',
+      'interchange',
+      'justified',
+      'volume',
+      'simulation',
+      'never a dependency',
+      'generic VDB',
+      'SDF',
+      'npm',
+      'does not activate this skill',
+      'use only when',
+    ],
+  ],
+  [
+    'skills/procedural-3d/references/catalogue.md',
+    [
+      'crystal growth',
+      'Voronoi',
+      'marching cubes',
+      'curl noise',
+      'L-system',
+      'resolution',
+      'iterations',
+      'sample',
+      'symbol growth',
+      'CPU',
+      'memory',
+      'geometry',
+      'determinism',
+    ],
+  ],
+  [
+    'skills/procedural-3d/references/blender-contract.md',
+    [
+      'reversible',
+      'named collection',
+      'deterministic seed',
+      'Blender version',
+      'geometry statistics',
+      'material statistics',
+      'separate',
+      '.blend',
+      'web output',
+      'rerun',
+      'rollback',
+      'automated GLB',
+      'inspect',
+      'validate',
+      'optimize',
+    ],
+  ],
+  [
+    'skills/procedural-3d/references/houdini-interchange.md',
+    [
+      'Houdini',
+      'interchange',
+      'justified',
+      'volume',
+      'simulation',
+      'never a dependency',
+      'generic VDB',
+      'paid',
+      'credential',
+    ],
+  ],
+  [
+    'README.md',
+    [
+      'procedural-3d',
+      '3d-asset-pipeline',
+      'before `3d-asset-pipeline`',
+    ],
+  ],
+]
+
+for (const [file, markers] of proceduralContracts) {
+  const fullPath = path.join(pluginRoot, file)
+  if (!fs.existsSync(fullPath)) {
+    fail(`${file}: missing procedural-3d artifact`)
+    continue
+  }
+  const content = read(fullPath).toLowerCase()
+  for (const marker of markers) {
+    if (!content.includes(marker.toLowerCase())) {
+      fail(`${file}: missing procedural-3d marker "${marker}"`)
+    }
+  }
+}
+
 const artDirectionTraceFields = [
   'visual-thesis',
   'hero-subject',
@@ -721,6 +844,7 @@ const negativeGatedSkills = [
   'canvas-first-architecture',
   'gpu-particle-systems',
   'loading-choreography',
+  'procedural-3d',
   'reference-intake',
   'render-graph',
   'spatial-audio',
@@ -768,6 +892,22 @@ for (const name of negativeGatedSkills) {
     ]) {
       if (!description.toLowerCase().includes(marker)) {
         fail(`skills/gpu-particle-systems: description must contain "${marker}"`)
+      }
+    }
+  }
+  if (name === 'procedural-3d') {
+    for (const marker of [
+      'procedural',
+      'crystal growth',
+      'voronoi',
+      'marching cubes',
+      'curl noise',
+      'l-system',
+      'imported glb',
+      'inspection',
+    ]) {
+      if (!description.toLowerCase().includes(marker)) {
+        fail(`skills/procedural-3d: description must contain "${marker}"`)
       }
     }
   }
@@ -1314,6 +1454,15 @@ for (const testCase of forwardCases) {
   if (!testCase.trace?.forbiddenFiles?.includes(referenceIntakeSkill)) {
     fail(
       `tests/forward/cases.json: ${testCase.id} must forbid reference-intake without a six-to-ten-frame set and written token block`,
+    )
+  }
+}
+
+const proceduralSkill = 'skills/procedural-3d/SKILL.md'
+for (const testCase of forwardCases) {
+  if (!testCase.trace?.forbiddenFiles?.includes(proceduralSkill)) {
+    fail(
+      `tests/forward/cases.json: ${testCase.id} must forbid procedural-3d without explicit procedural geometry generation`,
     )
   }
 }

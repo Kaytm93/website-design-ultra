@@ -49,7 +49,8 @@
         "skills/color-palettes/references/expressive.md",
         "skills/anti-slop/references/locale-de.md",
         "skills/core-rules/references/determinism.md",
-        "skills/reference-intake/SKILL.md"
+        "skills/reference-intake/SKILL.md",
+        "skills/procedural-3d/SKILL.md"
       ],
       "maxReferenceFiles": 9,
       "maxEstimatedPluginTokens": 16112
@@ -108,7 +109,8 @@
         "skills/color-palettes/references/editorial-natural.md",
         "skills/color-palettes/references/expressive.md",
         "skills/core-rules/references/determinism.md",
-        "skills/reference-intake/SKILL.md"
+        "skills/reference-intake/SKILL.md",
+        "skills/procedural-3d/SKILL.md"
       ],
       "maxReferenceFiles": 12,
       "maxEstimatedPluginTokens": 19863
@@ -170,7 +172,8 @@
         "skills/color-palettes/references/expressive.md",
         "skills/anti-slop/references/locale-de.md",
         "skills/core-rules/references/determinism.md",
-        "skills/reference-intake/SKILL.md"
+        "skills/reference-intake/SKILL.md",
+        "skills/procedural-3d/SKILL.md"
       ],
       "maxReferenceFiles": 12,
       "maxEstimatedPluginTokens": 18455
@@ -242,7 +245,8 @@
         "skills/color-palettes/references/expressive.md",
         "skills/anti-slop/references/locale-de.md",
         "skills/core-rules/references/determinism.md",
-        "skills/reference-intake/SKILL.md"
+        "skills/reference-intake/SKILL.md",
+        "skills/procedural-3d/SKILL.md"
       ],
       "maxReferenceFiles": 12,
       "maxEstimatedPluginTokens": 23045
@@ -315,7 +319,8 @@
         "skills/color-palettes/references/expressive.md",
         "skills/anti-slop/references/locale-de.md",
         "skills/core-rules/references/determinism.md",
-        "skills/reference-intake/SKILL.md"
+        "skills/reference-intake/SKILL.md",
+        "skills/procedural-3d/SKILL.md"
       ],
       "maxReferenceFiles": 12,
       "maxEstimatedPluginTokens": 23045
@@ -393,7 +398,8 @@
         "skills/color-palettes/references/expressive.md",
         "skills/anti-slop/references/locale-de.md",
         "skills/core-rules/references/determinism.md",
-        "skills/reference-intake/SKILL.md"
+        "skills/reference-intake/SKILL.md",
+        "skills/procedural-3d/SKILL.md"
       ],
       "maxReferenceFiles": 16,
       "maxEstimatedPluginTokens": 26399
@@ -462,7 +468,8 @@
         "skills/color-palettes/references/expressive.md",
         "skills/style-directions/references/product.md",
         "skills/core-rules/references/determinism.md",
-        "skills/reference-intake/SKILL.md"
+        "skills/reference-intake/SKILL.md",
+        "skills/procedural-3d/SKILL.md"
       ],
       "maxReferenceFiles": 9,
       "maxEstimatedPluginTokens": 14921
