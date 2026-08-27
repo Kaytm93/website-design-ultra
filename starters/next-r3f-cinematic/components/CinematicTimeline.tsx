@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { useFrame, useThree } from '@react-three/fiber'
+import { useFrame } from '@react-three/fiber'
 import { useSceneRuntime } from './SceneRuntime.tsx'
 import {
   validateTimelineManifest,
@@ -38,32 +38,85 @@ function isPortraitMatch(): boolean {
  *   scroll (or via ?wdu-timeline=<id> for deterministic single-frame probes).
  *   The runtime exposes html[data-wdu-timeline="<id>"] so capture metadata
  *   records the resolved checkpoint.
+ * - Camera ownership: this component never writes camera directly. It evaluates
+ *   the timeline and shares the result via SceneRuntime's mutable ref; CameraRig
+ *   remains the single physical camera writer and consumes camera.hero.z from
+ *   that ref. No R3F store read for camera exists here.
+ * - Loading gate: when SceneRuntime.loadingHold is true (?wdu-loading=1), the
+ *   timeline rests deterministically at progress 0 and does not produce per-frame
+ *   DOM/Canvas mutations or dynamic camera values; it writes one deterministic
+ *   snapshot and then freezes. Loading visibility remains driven by the real
+ *   assetsReady/poster state (SceneRuntime), not by timeline time.
  */
 export function CinematicTimeline() {
-  const { clock } = useSceneRuntime()
-  const camera = useThree((state) => state.camera)
-  const gl = useThree((state) => state.gl)
-  const progressRef = useRef(0)
+  const { clock, timelineEvaluationRef, timelineProgressRef, loadingHold } = useSceneRuntime()
+  const progressRef = timelineProgressRef
   const portraitRef = useRef(false)
   const checkpointRef = useRef<string | null>(null)
+  const loadingHoldRef = useRef(loadingHold)
+  loadingHoldRef.current = loadingHold
 
-  // Resolve checkpoint probe for deterministic single-frame capture (optional).
+  // Evaluate once for loading snapshot
+  function applyEvaluation(evaluation: Record<string, number>, portrait: boolean, checkpointId: string | null) {
+    timelineEvaluationRef.current = evaluation
+    // DOM track
+    const domOpacity = evaluation['dom.hero.opacity']
+    if (typeof domOpacity === 'number') {
+      document.documentElement.style.setProperty('--wdu-dom-hero-opacity', String(domOpacity))
+      document.documentElement.setAttribute('data-wdu-timeline-dom', String(domOpacity.toFixed(3)))
+    }
+    const sceneRot = evaluation['scene.hero.rotationY']
+    if (typeof sceneRot === 'number') {
+      document.documentElement.setAttribute('data-wdu-timeline-scene', String(sceneRot.toFixed(4)))
+    }
+    const matEmissive = evaluation['material.hero.emissive']
+    if (typeof matEmissive === 'number') {
+      document.documentElement.setAttribute('data-wdu-timeline-material', String(matEmissive.toFixed(3)))
+    }
+    const soundGain = evaluation['sound.ambient.gain']
+    if (typeof soundGain === 'number') {
+      document.documentElement.setAttribute('data-wdu-timeline-sound', String(soundGain.toFixed(3)))
+    }
+    const loadingProgress = evaluation['loading.bucket.progress']
+    if (typeof loadingProgress === 'number') {
+      document.documentElement.setAttribute('data-wdu-timeline-loading', String(loadingProgress.toFixed(3)))
+    }
+    if (checkpointId) {
+      document.documentElement.setAttribute('data-wdu-timeline', checkpointId)
+    }
+    void portrait
+  }
+
+  // Resolve checkpoint probe or scroll master — gated by loadingHold.
   useEffect(() => {
     if (typeof window === 'undefined') return
+    // Loading capture: deterministic rest at progress 0, no scroll listener, no per-frame churn.
+    if (loadingHoldRef.current) {
+      portraitRef.current = false
+      progressRef.current = 0
+      checkpointRef.current = 'timeline-0'
+      const evaluation = evaluateTimeline(manifest, 0, { portrait: false })
+      applyEvaluation(evaluation, false, 'timeline-0')
+      return
+    }
+
     const params = new URLSearchParams(window.location.search)
     const id = params.get('wdu-timeline')
     if (id) {
-      const list = manifest.portrait && isPortraitMatch() && manifest.portrait.checkpoints
+      const portrait = isPortraitMatch() && Boolean(manifest.portrait)
+      portraitRef.current = portrait
+      const list = portrait && manifest.portrait?.checkpoints
         ? manifest.portrait.checkpoints
         : manifest.checkpoints
       const entry = list.find((c) => c.id === id)
       if (entry) {
         progressRef.current = entry.progress
         checkpointRef.current = entry.id
+        const evaluation = evaluateTimeline(manifest, entry.progress, { portrait })
+        applyEvaluation(evaluation, portrait, entry.id)
         document.documentElement.setAttribute('data-wdu-timeline', entry.id)
         return
       }
-      // Unknown checkpoint probe is a contract failure — do not silently fallback.
       console.error(`[CinematicTimeline] unknown timeline checkpoint "${id}"`)
     }
     // No probe: track scroll for the normalized timeline master.
@@ -71,9 +124,9 @@ export function CinematicTimeline() {
       portraitRef.current = isPortraitMatch() && Boolean(manifest.portrait)
     }
     const updateProgress = () => {
+      if (loadingHoldRef.current) return
       const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight)
       progressRef.current = Math.max(0, Math.min(1, window.scrollY / max))
-      // Expose the nearest declared checkpoint for capture metadata.
       const list = portraitRef.current && manifest.portrait?.checkpoints ? manifest.portrait.checkpoints! : manifest.checkpoints
       let nearest = list[0]
       let best = Math.abs(list[0].progress - progressRef.current)
@@ -84,7 +137,6 @@ export function CinematicTimeline() {
           nearest = c
         }
       }
-      // Only promote checkpoint when within 2% — keeps metadata honest.
       if (best < 0.02) {
         checkpointRef.current = nearest.id
         document.documentElement.setAttribute('data-wdu-timeline', nearest.id)
@@ -95,71 +147,58 @@ export function CinematicTimeline() {
     }
     updatePortrait()
     updateProgress()
+    // Seed initial evaluation from current progress
+    {
+      const evaluation = evaluateTimeline(manifest, progressRef.current, { portrait: portraitRef.current && Boolean(manifest.portrait) })
+      applyEvaluation(evaluation, portraitRef.current && Boolean(manifest.portrait), checkpointRef.current)
+    }
     window.addEventListener('scroll', updateProgress, { passive: true })
     window.addEventListener('resize', updateProgress)
     const query = window.matchMedia('(orientation: portrait)')
-    query.addEventListener('change', () => {
+    const onChange = () => {
       updatePortrait()
       updateProgress()
-    })
+      if (!loadingHoldRef.current) {
+        const evaluation = evaluateTimeline(manifest, progressRef.current, { portrait: portraitRef.current && Boolean(manifest.portrait) })
+        applyEvaluation(evaluation, portraitRef.current && Boolean(manifest.portrait), checkpointRef.current)
+      }
+    }
+    query.addEventListener('change', onChange)
     return () => {
       window.removeEventListener('scroll', updateProgress)
       window.removeEventListener('resize', updateProgress)
+      query.removeEventListener('change', onChange)
     }
-  }, [])
+  }, [progressRef])
 
-  // Apply the evaluated timeline each frame — frame-rate independent because
-  // progress itself is the normalized scroll offset (layout-derived) and the
-  // smoothing uses clock.ratio/clock.delta when needed. This subscriber does
-  // not start a timer; it reads the injected clock only for delta-based
-  // damping when a track value is smoothed (none of the current keyframes
-  // require smoothing beyond lerp, so this is a direct evaluation).
+  // Per-frame evaluation — frozen during loadingHold.
   useFrame(() => {
+    if (loadingHoldRef.current) return
     const portrait = portraitRef.current && Boolean(manifest.portrait)
     const evaluation = evaluateTimeline(manifest, progressRef.current, { portrait })
-    // DOM track: reflect opacity as a CSS variable on the root for the DOM layer.
+    timelineEvaluationRef.current = evaluation
+    // DOM tracks — deterministic pure values
     const domOpacity = evaluation['dom.hero.opacity']
     if (typeof domOpacity === 'number') {
       document.documentElement.style.setProperty('--wdu-dom-hero-opacity', String(domOpacity))
       document.documentElement.setAttribute('data-wdu-timeline-dom', String(domOpacity.toFixed(3)))
     }
-    // Camera track: camera.hero.z — applied via the single camera owner contract
-    // (this component is the camera owner when a timeline is present; CameraRig
-    // still owns station selection but timeline owns the interpolated z).
-    const cameraZ = evaluation['camera.hero.z']
-    if (typeof cameraZ === 'number') {
-      camera.position.z = cameraZ
-      camera.updateProjectionMatrix()
-    }
-    // Scene track: rotation offset for the hero. Written as a CSS-read value
-    // on the element so HeroObject can add it to its seeded phase without
-    // adding a second clock.
     const sceneRot = evaluation['scene.hero.rotationY']
     if (typeof sceneRot === 'number') {
       document.documentElement.setAttribute('data-wdu-timeline-scene', String(sceneRot.toFixed(4)))
-      // Expose via clock for hero object: use dataset as the contract surface.
-      // The hero reads this attribute rather than a separate uniform.
-      gl.domElement.setAttribute('data-wdu-timeline-rotation', String(sceneRot))
     }
-    // Material track: emissive lift
     const matEmissive = evaluation['material.hero.emissive']
     if (typeof matEmissive === 'number') {
       document.documentElement.setAttribute('data-wdu-timeline-material', String(matEmissive.toFixed(3)))
-      gl.domElement.setAttribute('data-wdu-timeline-emissive', String(matEmissive))
     }
-    // Sound track: ambient gain — recorded as document state, not a second timer.
     const soundGain = evaluation['sound.ambient.gain']
     if (typeof soundGain === 'number') {
       document.documentElement.setAttribute('data-wdu-timeline-sound', String(soundGain.toFixed(3)))
     }
-    // Loading track: bucket progress
     const loadingProgress = evaluation['loading.bucket.progress']
     if (typeof loadingProgress === 'number') {
       document.documentElement.setAttribute('data-wdu-timeline-loading', String(loadingProgress.toFixed(3)))
     }
-    // Record frame trace for deterministic capture evidence: progress→evaluation
-    // is a pure function, so the same progress always writes the same values
-    // regardless of clock tick order.
     void clock.delta
   }, 0)
 

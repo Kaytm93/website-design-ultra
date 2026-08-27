@@ -72,15 +72,13 @@ test('exactly one clock is created and no wall-clock path exists in scene code',
 test('exactly one camera owner exists', () => {
   // The invariant is camera *writes*: position, lookAt, or field of view.
   // (QualityRuntime legitimately reads the R3F store for gl and setFrameloop,
-  // never the camera.) IP-09C adds the cinematic timeline as the coordinated
-  // owner for the interpolated hero Z; the manifest validator ensures no two
-  // writers share one property (one-owner-per-axis, made executable).
+  // never the camera.)
   const cameraWriters = SOURCES.filter(
     (file) =>
       file.startsWith('components/') &&
       /camera\.position|camera\.lookAt|camera\.fov/.test(read(file)),
   )
-  assert.deepEqual(cameraWriters, ['components/CameraRig.tsx', 'components/CinematicTimeline.tsx'])
+  assert.deepEqual(cameraWriters, ['components/CameraRig.tsx'])
 
   const stationLookups = SOURCES.filter((file) => /getCameraStation\b/.test(read(file)))
   // Definition in the runtime, server-side validation in the page, and the
@@ -90,6 +88,31 @@ test('exactly one camera owner exists', () => {
     'components/CameraRig.tsx',
     'lib/determinism-runtime.ts',
   ])
+})
+
+test('timeline does not write camera and uses SceneRuntime injection', () => {
+  const timeline = read('components/CinematicTimeline.tsx')
+  // Direct proof no extra camera writer (loadingHold regression)
+  assert.ok(!/camera\.position/.test(timeline), 'CinematicTimeline must not write camera.position')
+  assert.ok(!/camera\.lookAt/.test(timeline), 'CinematicTimeline must not write camera.lookAt')
+  assert.ok(!/camera\.fov/.test(timeline), 'CinematicTimeline must not write camera.fov')
+  assert.ok(!/useThree/.test(timeline), 'CinematicTimeline must not read useThree for camera; CameraRig is sole writer')
+  assert.ok(timeline.includes('timelineEvaluationRef'), 'CinematicTimeline must share evaluation via SceneRuntime ref')
+  assert.ok(timeline.includes('timelineProgressRef'), 'progress must be shared via SceneRuntime')
+  assert.ok(timeline.includes('loadingHold'), 'timeline must gate on loadingHold for deterministic poster')
+  // No second clock or scroll master duplication
+  assert.ok(!/performance\.now/.test(timeline))
+  assert.ok(!/Date\.now/.test(timeline))
+  assert.ok(!/requestAnimationFrame/.test(timeline))
+  // Verify gating freezes per-frame writes during loadingHold
+  assert.ok(/if\s*\(\s*loadingHoldRef\.current/.test(timeline), 'timeline must freeze per-frame writes when loadingHold')
+  const rig = read('components/CameraRig.tsx')
+  assert.ok(rig.includes('timelineEvaluationRef'), 'CameraRig must consume timeline evaluation from SceneRuntime')
+  assert.ok(rig.includes('loadingHold'), 'CameraRig must respect loadingHold gate')
+  const runtime = read('components/SceneRuntime.tsx')
+  assert.ok(runtime.includes('timelineEvaluationRef'), 'SceneRuntime must expose timelineEvaluationRef')
+  assert.ok(runtime.includes('timelineProgressRef'), 'SceneRuntime must expose timelineProgressRef')
+  assert.ok(runtime.includes('loadingHold'), 'SceneRuntime must expose loadingHold')
 })
 
 test('process environment is read only at the application boundary', () => {
@@ -164,15 +187,14 @@ test('the quality controller is created at exactly one site and owns every trans
   assert.ok(qualityRuntime.includes('recordFrameTime'))
   assert.ok(qualityRuntime.includes('attachVisibility'))
 
-  // The only R3F store readers: CameraRig (the camera owner), CinematicTimeline
-  // (the IP-09C coordinated 6-track timeline), QualityRuntime (gl + setFrameloop),
-  // SceneRuntime (renderer info for the diagnostic handle), ContextLossGate
-  // (the context-loss observer), and HeroObject (camera + invalidate for the
-  // pointer-interaction capture, IP-06A). No other component touches the store.
+  // The only R3F store readers: CameraRig (the camera owner), QualityRuntime
+  // (gl + setFrameloop), SceneRuntime (renderer info for the diagnostic
+  // handle), ContextLossGate (the context-loss observer), and HeroObject
+  // (camera + invalidate for the pointer-interaction capture, IP-06A). No
+  // other component touches the store.
   const storeReaders = SOURCES.filter((file) => read(file).includes('useThree'))
   assert.deepEqual(storeReaders, [
     'components/CameraRig.tsx',
-    'components/CinematicTimeline.tsx',
     'components/ContextLossGate.tsx',
     'components/HeroObject.tsx',
     'components/QualityRuntime.tsx',

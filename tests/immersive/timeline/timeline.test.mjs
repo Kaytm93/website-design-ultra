@@ -43,6 +43,13 @@ test('conflicting-owner fixture is rejected: two writers for one property', () =
 
 test('portrait-required fixture: requiresPortrait without portrait is rejected', () => {
   assert.throws(() => validateTimelineManifest(fixture('portrait-required.json')), /separate portrait choreography is required/)
+  const missingPortraitCheckpoints = fixture('valid-cinematic-timeline.json')
+  delete missingPortraitCheckpoints.portrait.checkpoints
+  assert.throws(
+    () => validateTimelineManifest(missingPortraitCheckpoints),
+    /portrait\.checkpoints are missing/,
+    'required portrait choreography must include explicit checkpoint data',
+  )
   // valid fixture with portrait passes and is genuinely different
   const valid = validateTimelineManifest(fixture('valid-cinematic-timeline.json'))
   assert.ok(valid.portrait)

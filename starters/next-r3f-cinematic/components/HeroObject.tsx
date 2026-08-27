@@ -29,7 +29,7 @@ import { useSceneRuntime } from './SceneRuntime.tsx'
  * input timing repeats.
  */
 export function HeroObject() {
-  const { clock, heroMotion, motion, invalidateCaptureState } = useSceneRuntime()
+  const { clock, heroMotion, motion, invalidateCaptureState, timelineEvaluationRef, loadingHold } = useSceneRuntime()
   const camera = useThree((state) => state.camera)
   const invalidate = useThree((state) => state.invalidate)
   const gl = useThree((state) => state.gl)
@@ -70,7 +70,10 @@ export function HeroObject() {
     const mesh = meshRef.current
     if (!mesh) return
     const state = pointerRef.current
-    mesh.rotation.y = heroRotationY(phaseRef.current ?? 0, clock.elapsed, motion)
+    const evaluation = timelineEvaluationRef.current
+    const timelineRot = !loadingHold && evaluation ? evaluation['scene.hero.rotationY'] : 0
+    const baseRot = heroRotationY(phaseRef.current ?? 0, clock.elapsed, motion)
+    mesh.rotation.y = baseRot + (typeof timelineRot === 'number' ? timelineRot : 0)
     const scale =
       state === 'pressed'
         ? POINTER_PRESSED_SCALE
@@ -80,13 +83,19 @@ export function HeroObject() {
     mesh.scale.setScalar(scale)
     const material = materialRef.current
     if (material) {
-      material.emissive.setHex(
-        state === 'pressed'
-          ? POINTER_PRESSED_EMISSIVE
-          : state === 'hover'
-            ? POINTER_HOVER_EMISSIVE
-            : 0x000000,
-      )
+      if (state === 'pressed') {
+        material.emissive.setHex(POINTER_PRESSED_EMISSIVE)
+      } else if (state === 'hover') {
+        material.emissive.setHex(POINTER_HOVER_EMISSIVE)
+      } else {
+        const timelineEmissive = !loadingHold && evaluation ? evaluation['material.hero.emissive'] : 0
+        // Timeline emissive lift is a subtle 0..0.75 scalar; map >0.35 to the warm lift, otherwise black.
+        if (typeof timelineEmissive === 'number' && timelineEmissive > 0.35) {
+          material.emissive.setHex(POINTER_HOVER_EMISSIVE)
+        } else {
+          material.emissive.setHex(0x000000)
+        }
+      }
     }
 
     // The deterministic pointer target: project the anchor point on the tube
