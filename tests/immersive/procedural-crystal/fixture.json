@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "procedural-crystal",
+  "kind": "next-app",
+  "port": 3213,
+  "expect": {
+    "status": "PASS"
+  },
+  "declared": {
+    "buildEvidence": ".next/BUILD_ID",
+    "readyMarker": "html[data-wdu-ready=\"true\"]",
+    "stationId": "crystal-wide",
+    "heroCapture": true,
+    "checkpointsManifest": "lib/interaction-checkpoints.json",
+    "portraitStation": "crystal-portrait",
+    "reducedMotionStaticPair": true,
+    "fallbackPosters": [
+      "/poster-desktop.svg",
+      "/poster-portrait.svg"
+    ],
+    "fallbackHeroAbsent": true
+  }
+}

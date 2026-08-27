@@ -69,6 +69,17 @@ const PRODUCT_HERO_DIRECTORY = path.join(
   'immersive',
   'product-hero',
 )
+const PROCEDURAL_CRYSTAL_DIRECTORY = path.join(
+  REPOSITORY_ROOT,
+  'tests',
+  'immersive',
+  'procedural-crystal',
+)
+const IMMERSIVE_FIXTURE_ROOT_DIRECTORY = path.join(
+  REPOSITORY_ROOT,
+  'tests',
+  'immersive',
+)
 const VERIFIER = path.join(
   REPOSITORY_ROOT,
   'website-design-ultra',
@@ -877,11 +888,32 @@ function runVerifier(url, outputDirectory, checkpointsManifest = null) {
 
 function fixtureDirectoryFor(name) {
   if (name === 'product-hero') return PRODUCT_HERO_DIRECTORY
+  if (name === 'procedural-crystal') return PROCEDURAL_CRYSTAL_DIRECTORY
   const candidate = path.join(FIXTURES_DIRECTORY, name)
   if (!fs.existsSync(path.join(candidate, 'fixture.json'))) {
     throw new Error(`unknown fixture ${JSON.stringify(name)}: no fixture.json under ${candidate}`)
   }
   return candidate
+}
+
+// Peer fixtures outside tests/immersive/evaluation/fixtures/ (the IP-07A
+// product-hero fixture and the IP-10C procedural-crystal fixture). Both are
+// registered green fixtures: their fixture.json declares expect.status PASS.
+export function peerGreenFixtureNames() {
+  const names = []
+  for (const entry of [
+    { id: 'product-hero', directory: PRODUCT_HERO_DIRECTORY },
+    { id: 'procedural-crystal', directory: PROCEDURAL_CRYSTAL_DIRECTORY },
+  ]) {
+    const declarationPath = path.join(entry.directory, 'fixture.json')
+    if (
+      fs.existsSync(declarationPath) &&
+      fs.existsSync(path.join(entry.directory, 'package.json'))
+    ) {
+      names.push(entry.id)
+    }
+  }
+  return names
 }
 
 function sha256File(file) {
@@ -1275,10 +1307,12 @@ async function main() {
     --fixture <name|all> --out /absolute/output/directory
 
 Fixtures:
-  all          the green product-hero fixture plus every deliberate failing
-               fixture under tests/immersive/evaluation/fixtures/
-  product-hero the R3F product-hero implementation fixture (IP-07A)
-  <name>       any fixture directory under tests/immersive/evaluation/fixtures/
+  all                every green peer fixture (product-hero +
+                     procedural-crystal) plus every deliberate failing
+                     fixture under tests/immersive/evaluation/fixtures/
+  product-hero       the R3F product-hero implementation fixture (IP-07A)
+  procedural-crystal  the procedural crystal implementation fixture (IP-10C)
+  <name>             any fixture directory under tests/immersive/evaluation/fixtures/
 
 Each fixture declares its own expectation in fixture.json (PASS, or FAIL with
 the gates it deliberately fails). The runner writes evaluation.json per
@@ -1298,7 +1332,7 @@ Exit codes: 0 = expectations met, 1 = expectation mismatch, 2 = UNAVAILABLE.`)
   const names =
     fixture === 'all'
       ? [
-          'product-hero',
+          ...peerGreenFixtureNames(),
           ...fs
             .readdirSync(FIXTURES_DIRECTORY, { withFileTypes: true })
             .filter(

@@ -1,0 +1,34 @@
+{
+  "name": "wdu-procedural-crystal",
+  "version": "0.1.0",
+  "private": true,
+  "description": "website-design-ultra immersive evaluation fixture (IP-10C): a procedurally generated Draco-compressed GLB (crystal-growth via Blender Python) loaded by R3F with a committed local Draco decoder (no CDN, no runtime fetch), semantic DOM, art-directed poster fallback, reduced-motion, context-loss recovery, mobile composition, and the shared quality/telemetry surfaces.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"tests/*.test.mjs\"",
+    "verify": "npm run typecheck && npm test && npm run build"
+  },
+  "dependencies": {
+    "@react-three/fiber": "9.7.0",
+    "next": "15.5.24",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "@gltf-transform/cli": "4.4.2",
+    "@types/node": "22.20.1",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "@types/three": "0.185.1",
+    "typescript": "5.9.3"
+  }
+}

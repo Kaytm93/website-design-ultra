@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.interaction-checkpoints",
+  "project": "wdu-procedural-crystal",
+  "modeInput": "WDU_DETERMINISTIC=1",
+  "readyMarker": "html[data-wdu-ready=\"true\"]",
+  "checkpoints": [
+    {
+      "id": "scene-ready",
+      "interaction": "ready"
+    },
+    {
+      "id": "scene-failure",
+      "interaction": "failure",
+      "waitFor": "html[data-wdu-context=\"lost\"]",
+      "action": "lose-webgl-context"
+    },
+    {
+      "id": "hover-before",
+      "interaction": "hover",
+      "phase": "before",
+      "group": "scene-hover",
+      "target": ".scene-frame",
+      "waitFor": "html[data-wdu-pointer=\"idle\"]",
+      "scrollIntoView": ".scene-frame"
+    },
+    {
+      "id": "hover-during",
+      "interaction": "hover",
+      "phase": "during",
+      "group": "scene-hover",
+      "target": ".scene-frame",
+      "waitFor": "html[data-wdu-pointer=\"hover\"]",
+      "scrollIntoView": ".scene-frame"
+    },
+    {
+      "id": "hover-after",
+      "interaction": "hover",
+      "phase": "after",
+      "group": "scene-hover",
+      "target": ".scene-frame",
+      "waitFor": "html[data-wdu-pointer=\"idle\"]",
+      "scrollIntoView": ".scene-frame"
+    },
+    {
+      "id": "click-before",
+      "interaction": "click",
+      "phase": "before",
+      "group": "scene-click",
+      "target": ".scene-frame",
+      "waitFor": "html[data-wdu-pointer=\"idle\"]",
+      "scrollIntoView": ".scene-frame"
+    },
+    {
+      "id": "click-peak",
+      "interaction": "click",
+      "phase": "peak",
+      "group": "scene-click",
+      "target": ".scene-frame",
+      "waitFor": "html[data-wdu-pointer=\"pressed\"]",
+      "scrollIntoView": ".scene-frame"
+    },
+    {
+      "id": "click-recovered",
+      "interaction": "click",
+      "phase": "recovered",
+      "group": "scene-click",
+      "target": ".scene-frame",
+      "waitFor": "html[data-wdu-pointer=\"idle\"]",
+      "scrollIntoView": ".scene-frame"
+    },
+    {
+      "id": "focus-before",
+      "interaction": "focus",
+      "phase": "before",
+      "group": "scene-focus",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-focus=\"none\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "focus-during",
+      "interaction": "focus",
+      "phase": "during",
+      "group": "scene-focus",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-focus=\"visible\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "focus-after",
+      "interaction": "focus",
+      "phase": "after",
+      "group": "scene-focus",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-focus=\"none\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "keyboard-before",
+      "interaction": "keyboard",
+      "phase": "before",
+      "group": "scene-keyboard",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-pointer=\"idle\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "keyboard-peak",
+      "interaction": "keyboard",
+      "phase": "peak",
+      "group": "scene-keyboard",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-pointer=\"pressed\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "keyboard-recovered",
+      "interaction": "keyboard",
+      "phase": "recovered",
+      "group": "scene-keyboard",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-pointer=\"idle\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "touch-before",
+      "interaction": "touch",
+      "phase": "before",
+      "group": "scene-touch",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-pointer=\"idle\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "touch-peak",
+      "interaction": "touch",
+      "phase": "peak",
+      "group": "scene-touch",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-pointer=\"pressed\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "touch-recovered",
+      "interaction": "touch",
+      "phase": "recovered",
+      "group": "scene-touch",
+      "target": "[data-wdu-activation-target]",
+      "waitFor": "html[data-wdu-pointer=\"idle\"]",
+      "scrollIntoView": "[data-wdu-activation-target]"
+    },
+    {
+      "id": "page-scroll-0",
+      "interaction": "scroll",
+      "progress": 0
+    },
+    {
+      "id": "page-scroll-50",
+      "interaction": "scroll",
+      "progress": 0.5
+    },
+    {
+      "id": "page-scroll-100",
+      "interaction": "scroll",
+      "progress": 1
+    }
+  ]
+}

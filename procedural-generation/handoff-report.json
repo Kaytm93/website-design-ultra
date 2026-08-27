@@ -1,0 +1,87 @@
+{
+  "task": "IP-10C",
+  "status": "PASS",
+  "generator": {
+    "script": "procedural-generation/generator.py",
+    "script_version": "1.0.0",
+    "script_hash": "b15ecf4dcfb60324",
+    "source_recipe": "procedural-generation/recipe.json",
+    "recipe_version": "1",
+    "algorithm": "crystal-growth",
+    "seed": 1337,
+    "iterations": 4,
+    "branching_factor": 2,
+    "resolution": 8
+  },
+  "source_vs_web": {
+    "source_recipe": "procedural-generation/recipe.json",
+    "input_glb": "tests/immersive/procedural-crystal/public/model/procedural-crystal-raw.glb",
+    "output_glb": "tests/immersive/procedural-crystal/public/model/procedural-crystal.glb",
+    "raw_log_pre_inspect": "tests/immersive/procedural-crystal/reports/model/pre-inspect.txt",
+    "raw_log_post_inspect": "tests/immersive/procedural-crystal/reports/model/post-inspect.txt",
+    "raw_log_pre_validate": "tests/immersive/procedural-crystal/reports/model/pre-validate.log",
+    "raw_log_post_validate": "tests/immersive/procedural-crystal/reports/model/post-validate.log",
+    "raw_log_optimize": "tests/immersive/procedural-crystal/reports/model/optimize.log",
+    "summary": "tests/immersive/procedural-crystal/reports/model/summary.json",
+    "separation": "PASS — recipe/glb artifacts committed under repo-relative paths; no host tempdir"
+  },
+  "pipeline": {
+    "skill": "3d-asset-pipeline",
+    "cli": "node_modules/.bin/gltf-transform",
+    "cli_version": "4.4.2",
+    "geometry_strategy": "Draco (--compress draco)",
+    "texture_strategy": "none (texture-free, --texture-compress false)",
+    "optimize_invocations": 1,
+    "optimize_command": "node_modules/.bin/gltf-transform optimize <input> <output> --compress draco --texture-compress false",
+    "not_run": [
+      "Blender Draco",
+      "gltfpack",
+      "gltfjsx --transform",
+      "second optimizer",
+      "new inspect/validate/optimize pipeline"
+    ]
+  },
+  "inspect_validate": {
+    "input_inspect_pass": true,
+    "input_validate_pass": true,
+    "output_inspect_pass": true,
+    "output_validate_pass": true,
+    "input_inspect_log": "tests/immersive/procedural-crystal/reports/model/pre-inspect.txt",
+    "input_validate_log": "tests/immersive/procedural-crystal/reports/model/pre-validate.log",
+    "output_inspect_log": "tests/immersive/procedural-crystal/reports/model/post-inspect.txt",
+    "output_validate_log": "tests/immersive/procedural-crystal/reports/model/post-validate.log"
+  },
+  "transfer": {
+    "input_bytes": 49544,
+    "input_sha256": "a2f716c40867cda9c0e40e6d483f5af9c984658cfad232fb67a891d984732cca",
+    "output_bytes": 6360,
+    "output_sha256": "7ff31faabca2e5bfd4534120375eaafc8c84a87a19393e0f22f0203faf40a9df",
+    "saving_bytes": 43184,
+    "saving_percent": 87.16
+  },
+  "decoded_cost": {
+    "triangles": 532,
+    "materials": 2,
+    "meshes": 2,
+    "draw_calls": 2,
+    "textures": 0,
+    "extensions_output": "KHR_draco_mesh_compression"
+  },
+  "budgets": {
+    "immersive_3d_desktop": "<100 draws / <500k triangles",
+    "immersive_3d_mobile": "<50 draws / <150k triangles",
+    "observed_draws": 2,
+    "observed_triangles": 532,
+    "desktop_draw": "PASS (2 < 100)",
+    "desktop_triangles": "PASS (532 < 500000)",
+    "mobile_draw": "PASS (2 < 50)",
+    "mobile_triangles": "PASS (532 < 150000)",
+    "overall": "PASS"
+  },
+  "provenance_license": {
+    "origin": "self-generated procedural-3d crystal-growth via Blender Python",
+    "license": "self-generated, no third-party",
+    "third_party_claim": "none"
+  },
+  "verifier": "procedural-generation/test_handoff.py"
+}

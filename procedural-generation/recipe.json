@@ -40,7 +40,7 @@
     "commands": [
       "npx @gltf-transform/cli inspect procedural-generation/output/Procedural__Crystal.glb",
       "npx @gltf-transform/cli validate procedural-generation/output/Procedural__Crystal.glb",
-      "npx @gltf-transform/cli optimize procedural-generation/output/Procedural__Crystal.glb optimized.glb --compress draco --texture-compress webp",
+      "npx @gltf-transform/cli optimize procedural-generation/output/Procedural__Crystal.glb optimized.glb --compress draco --texture-compress false",
       "npx @gltf-transform/cli validate optimized.glb"
     ],
     "note": "Do not fork pipeline; IP-10C owns passing the asset through it. Document/execute only handoff boundary."
