@@ -32,6 +32,17 @@
     "portrait": { "$ref": "#/$defs/portrait" },
     "requiresPortrait": { "const": true }
   },
+  "allOf": [
+    {
+      "if": { "required": ["requiresPortrait"] },
+      "then": {
+        "required": ["portrait"],
+        "properties": {
+          "portrait": { "required": ["checkpoints"] }
+        }
+      }
+    }
+  ],
   "$defs": {
     "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
     "checkpoint": {

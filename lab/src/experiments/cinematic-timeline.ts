@@ -56,6 +56,11 @@ const LAB_MANIFEST: CinematicTimelineManifest = validateTimelineManifest({
       { id: 'sound-ambient-gain', kind: 'sound', property: 'sound.ambient.gain', owner: 'sound-ambient-gain', keyframes: [{ progress: 0, value: 0 }, { progress: 0.7, value: 0.8 }, { progress: 1, value: 0.8 }] },
       { id: 'loading-bucket-progress', kind: 'loading', property: 'loading.bucket.progress', owner: 'loading-bucket-progress', keyframes: [{ progress: 0, value: 0 }, { progress: 0.3, value: 1 }, { progress: 1, value: 1 }] },
     ],
+    checkpoints: [
+      { id: 'timeline-0', progress: 0 },
+      { id: 'timeline-50', progress: 0.5 },
+      { id: 'timeline-100', progress: 1 },
+    ],
   },
   requiresPortrait: true,
 });

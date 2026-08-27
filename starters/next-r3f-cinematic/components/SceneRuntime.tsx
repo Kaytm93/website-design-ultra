@@ -84,6 +84,12 @@ interface SceneRuntimeValue {
   invalidateCaptureState: () => void
   /** True only after the deterministic stable frame rendered (drives the capture freeze). */
   stableFrameReached: () => boolean
+  /** Loading hold gate: true when ?wdu-loading=1 holds asset readiness for poster capture. */
+  loadingHold: boolean
+  /** Shared timeline evaluation ref: CinematicTimeline writes, CameraRig/HeroObject read — no per-frame React state. */
+  timelineEvaluationRef: React.MutableRefObject<Record<string, number> | null>
+  /** Shared timeline progress ref: normalized [0,1] progress backing the evaluation. */
+  timelineProgressRef: React.MutableRefObject<number>
 }
 
 interface SceneBootstrap {
@@ -179,6 +185,9 @@ export function SceneRuntime({
   const markerTraceRef = useRef<Array<{ frame: number; cam: boolean; reached: boolean }>>([])
   const camWritesRef = useRef<Array<string>>([])
   const gl = useThree((state) => state.gl)
+  // Shared timeline state: CinematicTimeline writes; CameraRig/HeroObject read; no React state per frame.
+  const timelineEvaluationRef = useRef<Record<string, number> | null>(null)
+  const timelineProgressRef = useRef(0)
 
   const onCameraApplied = useCallback(() => {
     cameraAppliedRef.current = true
@@ -324,6 +333,9 @@ export function SceneRuntime({
     invalidateReady,
     invalidateCaptureState,
     stableFrameReached: () => stableFrameReachedRef.current,
+    loadingHold,
+    timelineEvaluationRef,
+    timelineProgressRef,
   }
 
   return (

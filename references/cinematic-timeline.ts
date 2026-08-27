@@ -365,6 +365,9 @@ export function validateTimelineManifest(input: unknown): CinematicTimelineManif
       }
       portraitCheckpoints = pcs
     }
+    if (requiresPortrait === true && portraitCheckpoints === undefined) {
+      throw new Error('timeline manifest requiresPortrait is true but portrait.checkpoints are missing; portrait capture needs explicit checkpoint data')
+    }
     portrait = { tracks: portraitTracks, ...(portraitCheckpoints ? { checkpoints: portraitCheckpoints } : {}) }
   }
 

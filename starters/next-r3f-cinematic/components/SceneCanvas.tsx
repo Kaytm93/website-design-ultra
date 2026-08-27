@@ -61,8 +61,8 @@ export function SceneCanvas({
         loadingHold={loadingHold}
         onQualityChange={onQualityChange}
       >
-        <CameraRig stations={CAMERA_STATIONS} stationId={stationId} />
         <CinematicTimeline />
+        <CameraRig stations={CAMERA_STATIONS} stationId={stationId} />
         <QualityRuntime />
         <HeroObject />
         <ContextLossGate onContextLost={onContextLost ?? NOOP} />
