@@ -1,0 +1,48 @@
+{
+  "algorithm": "crystal-growth",
+  "catalogue_entry": 1,
+  "seed": 1337,
+  "iterations": 4,
+  "branching_factor": 2,
+  "resolution": 8,
+  "collection": "Procedural__Crystal",
+  "stable_names": {
+    "collection": "Procedural__Crystal",
+    "objects_prefix": "Procedural__Crystal_Segment_",
+    "materials": ["Procedural__Crystal_Material", "Procedural__Crystal_Tip_Material"]
+  },
+  "versions": {
+    "blender": "4.5.13",
+    "blender_build_hash": "daeeeca98fb0",
+    "script": "1.0.0",
+    "recipe_version": "1"
+  },
+  "cost_model": {
+    "resolution": 8,
+    "iterations": 4,
+    "branching_factor": 2,
+    "cpu": "O(tips * log occupancy) per iteration; tips grow sub-linearly with pruning",
+    "memory": "O(vertices + edges) linear in final crystal",
+    "geometry": "15 segments (2^0+2^1+2^2+2^3), ~270 vertices, ~240 triangles baseline",
+    "determinism_risk": "moderate-high if unseeded; seeded random.Random fixes branch direction/order"
+  },
+  "source_blend": "procedural-generation/output/source/Procedural__Crystal.blend",
+  "web_output": "procedural-generation/output/web/Procedural__Crystal.glb",
+  "report": "procedural-generation/output/report.json",
+  "export": {
+    "format": "GLB",
+    "collection": "Procedural__Crystal",
+    "export_apply": true,
+    "op": "bpy.ops.export_scene.gltf"
+  },
+  "handoff": {
+    "next_pipeline": "3d-asset-pipeline",
+    "commands": [
+      "npx @gltf-transform/cli inspect procedural-generation/output/Procedural__Crystal.glb",
+      "npx @gltf-transform/cli validate procedural-generation/output/Procedural__Crystal.glb",
+      "npx @gltf-transform/cli optimize procedural-generation/output/Procedural__Crystal.glb optimized.glb --compress draco --texture-compress webp",
+      "npx @gltf-transform/cli validate optimized.glb"
+    ],
+    "note": "Do not fork pipeline; IP-10C owns passing the asset through it. Document/execute only handoff boundary."
+  }
+}

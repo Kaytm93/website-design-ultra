@@ -212,7 +212,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Blender is the baseline; Houdini is only an interchange contract for justified volume/simulation cases; no second inspect/optimize pipeline is created.
   - **Verify:** Content validation, routing/negative-forward fixtures, and explicit handoff to `3d-asset-pipeline`.
 
-- [ ] `IP-10B` **Build a deterministic reversible Blender generator** — Generate one named-collection asset from recorded Geometry Nodes/script inputs and a stable seed.
+- [x] `IP-10B` **Build a deterministic reversible Blender generator** — Generate one named-collection asset from recorded Geometry Nodes/script inputs and a stable seed.
   - **Depends on:** IP-10A
   - **Deliver:** Reversible script, source `.blend` or reproducible source recipe, pre-export geometry/material statistics, and automated GLB export.
   - **Acceptance:** Source and web output are separate; rerun with the same seed preserves measured topology/material statistics; no hidden Houdini dependency.
