@@ -12,6 +12,11 @@ project-vault/
 .playwright-cli/
 website-design-ultra/.playwright-cli/
 website-design-ultra/output/
+procedural-generation/output/
+procedural-generation/evidence/
+procedural-generation/*.blend
+procedural-generation/**/*.blend
+procedural-generation/**/*.glb
 node_modules/
 lab/dist/
 *.log
