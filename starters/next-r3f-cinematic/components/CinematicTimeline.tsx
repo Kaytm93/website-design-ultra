@@ -49,12 +49,14 @@ function isPortraitMatch(): boolean {
  *   assetsReady/poster state (SceneRuntime), not by timeline time.
  */
 export function CinematicTimeline() {
-  const { clock, timelineEvaluationRef, timelineProgressRef, loadingHold } = useSceneRuntime()
+  const { clock, motion, timelineEvaluationRef, timelineProgressRef, loadingHold } = useSceneRuntime()
   const progressRef = timelineProgressRef
   const portraitRef = useRef(false)
   const checkpointRef = useRef<string | null>(null)
   const loadingHoldRef = useRef(loadingHold)
+  const motionRef = useRef(motion)
   loadingHoldRef.current = loadingHold
+  motionRef.current = motion
 
   // Evaluate once for loading snapshot
   function applyEvaluation(evaluation: Record<string, number>, portrait: boolean, checkpointId: string | null) {
@@ -97,6 +99,24 @@ export function CinematicTimeline() {
       checkpointRef.current = 'timeline-0'
       const evaluation = evaluateTimeline(manifest, 0, { portrait: false })
       applyEvaluation(evaluation, false, 'timeline-0')
+      return
+    }
+    // Reduced motion is a static scene state: preserve the base pose and do not
+    // let scroll or timeline values animate the scene.
+    if (motionRef.current === 'reduced') {
+      progressRef.current = 0
+      timelineEvaluationRef.current = null
+      for (const attribute of [
+        'data-wdu-timeline',
+        'data-wdu-timeline-dom',
+        'data-wdu-timeline-scene',
+        'data-wdu-timeline-material',
+        'data-wdu-timeline-sound',
+        'data-wdu-timeline-loading',
+      ]) {
+        document.documentElement.removeAttribute(attribute)
+      }
+      document.documentElement.style.removeProperty('--wdu-dom-hero-opacity')
       return
     }
 
@@ -169,11 +189,11 @@ export function CinematicTimeline() {
       window.removeEventListener('resize', updateProgress)
       query.removeEventListener('change', onChange)
     }
-  }, [progressRef])
+  }, [motion, progressRef])
 
   // Per-frame evaluation — frozen during loadingHold.
   useFrame(() => {
-    if (loadingHoldRef.current) return
+    if (loadingHoldRef.current || motionRef.current === 'reduced') return
     const portrait = portraitRef.current && Boolean(manifest.portrait)
     const evaluation = evaluateTimeline(manifest, progressRef.current, { portrait })
     timelineEvaluationRef.current = evaluation

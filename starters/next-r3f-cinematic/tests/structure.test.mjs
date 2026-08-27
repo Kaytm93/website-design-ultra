@@ -100,6 +100,8 @@ test('timeline does not write camera and uses SceneRuntime injection', () => {
   assert.ok(timeline.includes('timelineEvaluationRef'), 'CinematicTimeline must share evaluation via SceneRuntime ref')
   assert.ok(timeline.includes('timelineProgressRef'), 'progress must be shared via SceneRuntime')
   assert.ok(timeline.includes('loadingHold'), 'timeline must gate on loadingHold for deterministic poster')
+  assert.ok(timeline.includes("motionRef.current === 'reduced'"), 'reduced motion must hold a static timeline state')
+  assert.ok(timeline.includes("motionRef.current === 'reduced'"), 'reduced motion must not animate timeline tracks')
   // No second clock or scroll master duplication
   assert.ok(!/performance\.now/.test(timeline))
   assert.ok(!/Date\.now/.test(timeline))
@@ -109,6 +111,7 @@ test('timeline does not write camera and uses SceneRuntime injection', () => {
   const rig = read('components/CameraRig.tsx')
   assert.ok(rig.includes('timelineEvaluationRef'), 'CameraRig must consume timeline evaluation from SceneRuntime')
   assert.ok(rig.includes('loadingHold'), 'CameraRig must respect loadingHold gate')
+  assert.ok(rig.includes("motion === 'full'"), 'CameraRig must skip timeline camera values in reduced motion')
   const runtime = read('components/SceneRuntime.tsx')
   assert.ok(runtime.includes('timelineEvaluationRef'), 'SceneRuntime must expose timelineEvaluationRef')
   assert.ok(runtime.includes('timelineProgressRef'), 'SceneRuntime must expose timelineProgressRef')

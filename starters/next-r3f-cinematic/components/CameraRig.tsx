@@ -22,12 +22,12 @@ interface CameraRigProps {
  *
  * IP-09C: consumes the evaluated camera.hero.z from the shared timeline ref
  * (written by CinematicTimeline) — the only physical camera writer. When
- * loadingHold is true the timeline rests at progress 0 and the station's
- * native z is used, keeping the loading poster deterministically still.
+ * loadingHold or reduced motion is true the station's native z is used,
+ * keeping the loading/static pose deterministically still.
  */
 export function CameraRig({ stations, stationId }: CameraRigProps) {
   const camera = useThree((state) => state.camera)
-  const { onCameraApplied, timelineEvaluationRef, loadingHold } = useSceneRuntime()
+  const { motion, onCameraApplied, timelineEvaluationRef, loadingHold } = useSceneRuntime()
   const appliedRef = useRef<string | null>(null)
   const lastZRef = useRef<number | null>(null)
   const lastStationRef = useRef<string | null>(null)
@@ -37,7 +37,7 @@ export function CameraRig({ stations, stationId }: CameraRigProps) {
     const baseZ = station.position[2]
     // Timeline Z overrides station Z when timeline is active and not loading.
     let finalZ = baseZ
-    if (!loadingHold) {
+    if (!loadingHold && motion === 'full') {
       const evaluation = timelineEvaluationRef.current
       const timelineZ = evaluation?.['camera.hero.z']
       if (typeof timelineZ === 'number') {

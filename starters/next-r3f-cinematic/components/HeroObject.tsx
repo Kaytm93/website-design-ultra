@@ -71,7 +71,7 @@ export function HeroObject() {
     if (!mesh) return
     const state = pointerRef.current
     const evaluation = timelineEvaluationRef.current
-    const timelineRot = !loadingHold && evaluation ? evaluation['scene.hero.rotationY'] : 0
+    const timelineRot = !loadingHold && motion === 'full' && evaluation ? evaluation['scene.hero.rotationY'] : 0
     const baseRot = heroRotationY(phaseRef.current ?? 0, clock.elapsed, motion)
     mesh.rotation.y = baseRot + (typeof timelineRot === 'number' ? timelineRot : 0)
     const scale =
@@ -88,7 +88,7 @@ export function HeroObject() {
       } else if (state === 'hover') {
         material.emissive.setHex(POINTER_HOVER_EMISSIVE)
       } else {
-        const timelineEmissive = !loadingHold && evaluation ? evaluation['material.hero.emissive'] : 0
+        const timelineEmissive = !loadingHold && motion === 'full' && evaluation ? evaluation['material.hero.emissive'] : 0
         // Timeline emissive lift is a subtle 0..0.75 scalar; map >0.35 to the warm lift, otherwise black.
         if (typeof timelineEmissive === 'number' && timelineEmissive > 0.35) {
           material.emissive.setHex(POINTER_HOVER_EMISSIVE)
