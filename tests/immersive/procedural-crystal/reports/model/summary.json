@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "acceptance": "ip-10c-optimized-procedural-crystal",
+  "fixture": "procedural-crystal",
+  "algorithm": "crystal-growth",
+  "pipeline": "inspect -> validate -> optimize (--compress draco --texture-compress false) -> inspect -> validate",
+  "cli": {
+    "binary": "node_modules/.bin/gltf-transform",
+    "version": "4.4.2"
+  },
+  "raw": {
+    "bytes": 49544,
+    "sha256": "a2f716c40867cda9c0e40e6d483f5af9c984658cfad232fb67a891d984732cca"
+  },
+  "optimized": {
+    "bytes": 6360,
+    "sha256": "7ff31faabca2e5bfd4534120375eaafc8c84a87a19393e0f22f0203faf40a9df",
+    "triangles": 532,
+    "meshes": 2,
+    "materials": 2,
+    "extensionsUsed": "KHR_draco_mesh_compression",
+    "extensionsRequired": "KHR_draco_mesh_compression"
+  },
+  "validate": {
+    "pre": "PASS",
+    "post": "PASS"
+  },
+  "optimize_command": "node_modules/.bin/gltf-transform optimize <raw> <optimized> --compress draco --texture-compress false",
+  "optimize_invocations": 1
+}

@@ -1,0 +1,72 @@
+OVERVIEW
+ ────────────────────────────────────────────
+┌────────────────────┬────────────────────────────┐
+│ key                │ value                      │
+├────────────────────┼────────────────────────────┤
+│ version            │ 2.0                        │
+├────────────────────┼────────────────────────────┤
+│ generator          │ glTF-Transform v4.4.2      │
+├────────────────────┼────────────────────────────┤
+│ extensionsUsed     │ KHR_draco_mesh_compression │
+├────────────────────┼────────────────────────────┤
+│ extensionsRequired │ KHR_draco_mesh_compression │
+└────────────────────┴────────────────────────────┘
+
+
+
+ SCENES
+ ────────────────────────────────────────────
+┌───┬─────────────────────┬─────────────────────────────────┬─────────────────────────────┬───────────────────────────┬────────────────────┬───────────────────┬────────────────────────┐
+│ # │ name                │ rootName                        │ bboxMin                     │ bboxMax                   │ renderVertexCount¹ │ uploadVertexCount │ uploadNaiveVertexCount │
+├───┼─────────────────────┼─────────────────────────────────┼─────────────────────────────┼───────────────────────────┼────────────────────┼───────────────────┼────────────────────────┤
+│ 0 │ Procedural__Crystal │ Procedural__Crystal_Segment_000 │ -0.6488, -0.07068, -0.80738 │ 1.33276, 2.53107, 1.63443 │ 1,596              │ 1,072             │ 1,072                  │
+└───┴─────────────────────┴─────────────────────────────────┴─────────────────────────────┴───────────────────────────┴────────────────────┴───────────────────┴────────────────────────┘
+
+¹ Expected number of vertices processed by the vertex shader for one render
+  pass, without considering the vertex cache.
+
+² Expected number of vertices uploaded to GPU, assuming each Accessor
+  is uploaded only once. Actual number uploaded may be higher, 
+  dependent on the implementation and vertex buffer layout.
+
+³ Expected number of vertices uploaded to GPU, assuming each Primitive
+  is uploaded once, duplicating vertex attributes shared among Primitives.
+
+
+
+ MESHES
+ ────────────────────────────────────────────
+┌───┬──────────────────────────────────────┬───────────┬────────────────┬──────────────┬──────────┬─────────┬──────────────────────────┬───────────┬──────────┐
+│ # │ name                                 │ mode      │ meshPrimitives │ glPrimitives │ vertices │ indices │ attributes               │ instances │ size¹    │
+├───┼──────────────────────────────────────┼───────────┼────────────────┼──────────────┼──────────┼─────────┼──────────────────────────┼───────────┼──────────┤
+│ 0 │ Procedural__Crystal_Segment_000_Mesh │ TRIANGLES │ 1              │ 308          │ 560      │ u16     │ NORMAL:f32, POSITION:f32 │ 1         │ 15.29 KB │
+├───┼──────────────────────────────────────┼───────────┼────────────────┼──────────────┼──────────┼─────────┼──────────────────────────┼───────────┼──────────┤
+│ 1 │ Procedural__Crystal_Segment_014_Mesh │ TRIANGLES │ 1              │ 224          │ 512      │ u16     │ NORMAL:f32, POSITION:f32 │ 1         │ 13.63 KB │
+└───┴──────────────────────────────────────┴───────────┴────────────────┴──────────────┴──────────┴─────────┴──────────────────────────┴───────────┴──────────┘
+
+⁴ size estimates GPU memory required by a mesh, in isolation. If accessors are
+  shared by other mesh primitives, but the meshes themselves are not reused, then
+  the sum of all mesh sizes will overestimate the asset's total size. See "dedup".
+
+
+
+ MATERIALS
+ ────────────────────────────────────────────
+┌───┬──────────────────────────────────┬───────────┬──────────┬───────────┬─────────────┐
+│ # │ name                             │ instances │ textures │ alphaMode │ doubleSided │
+├───┼──────────────────────────────────┼───────────┼──────────┼───────────┼─────────────┤
+│ 0 │ Procedural__Crystal_Material     │ 1         │          │ OPAQUE    │ ✓           │
+├───┼──────────────────────────────────┼───────────┼──────────┼───────────┼─────────────┤
+│ 1 │ Procedural__Crystal_Tip_Material │ 1         │          │ OPAQUE    │ ✓           │
+└───┴──────────────────────────────────┴───────────┴──────────┴───────────┴─────────────┘
+
+
+
+ TEXTURES
+ ────────────────────────────────────────────
+No textures found.
+
+
+ ANIMATIONS
+ ────────────────────────────────────────────
+No animations found.

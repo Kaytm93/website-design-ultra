@@ -218,7 +218,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Source and web output are separate; rerun with the same seed preserves measured topology/material statistics; no hidden Houdini dependency.
   - **Verify:** Headless Blender generation/export twice and compare declared statistics/hashes where binary determinism is supported.
 
-- [ ] `IP-10C` **Pass the generated asset through the existing pipeline unchanged** — Use inspect/validate/optimize rather than forking it.
+- [x] `IP-10C` **Pass the generated asset through the existing pipeline unchanged** — Use inspect/validate/optimize rather than forking it.
   - **Depends on:** IP-10B
   - **Deliver:** Generated fixture, optimized web output, before/after reports, license/provenance metadata, and integration in the second immersive evaluation fixture.
   - **Acceptance:** Existing pipeline commands pass unchanged; optimized asset stays within declared desktop/mobile budgets; fallback does not depend on GLB decode.

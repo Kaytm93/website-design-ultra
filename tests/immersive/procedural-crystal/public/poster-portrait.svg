@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1600" width="900" height="1600" role="img" aria-label="Procedural Crystal poster, portrait">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a0d12"/>
+      <stop offset="1" stop-color="#162032"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="48%" r="38%">
+      <stop offset="0" stop-color="#bb9af7" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#bb9af7" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="crystal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#bb9af7"/>
+      <stop offset="0.5" stop-color="#7aa2f7"/>
+      <stop offset="1" stop-color="#3d59a1"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="1600" fill="url(#bg)"/>
+  <ellipse cx="450" cy="760" rx="380" ry="380" fill="url(#glow)"/>
+  <g transform="translate(450 760)">
+    <polygon points="0,-360 170,-40 110,360 -110,360 -170,-40" fill="url(#crystal)" opacity="0.95"/>
+    <polygon points="0,-360 170,-40 0,-60" fill="white" opacity="0.18"/>
+    <polygon points="0,-360 -170,-40 0,-60" fill="white" opacity="0.10"/>
+    <polygon points="-110,360 -170,-40 0,360" fill="#000000" opacity="0.20"/>
+  </g>
+  <text x="60" y="1500" fill="#cbd5e0" font-family="system-ui" font-size="36">Procedural Crystal</text>
+  <text x="60" y="1545" fill="#82a0bc" font-family="system-ui" font-size="22">crystal-growth · Draco · offline</text>
+</svg>

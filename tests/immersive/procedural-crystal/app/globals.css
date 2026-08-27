@@ -1,0 +1,150 @@
+/* globals.css — minimal layout for the procedural-crystal page; no runtime CSS-in-JS. */
+
+:root {
+  color-scheme: dark;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #0a0d12;
+  color: #e6edf3;
+}
+
+main {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #1c2530;
+}
+
+.site-header span {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.kicker {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: #82a0bc;
+  letter-spacing: 0.08em;
+}
+
+h1, h2 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.lead {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: #cbd5e0;
+}
+
+.contract-list > div {
+  margin: 0.5rem 0;
+}
+
+.contract-list dt {
+  font-weight: 600;
+}
+
+.contract-list dd {
+  margin: 0.1rem 0 0 0;
+  color: #cbd5e0;
+}
+
+.scene-client {
+  display: grid;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.scene-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.scene-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border: 1px solid #1c2530;
+  border-radius: 0.6rem;
+  overflow: hidden;
+  background: #06090d;
+}
+
+.scene-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.scene-loading, .webgl-note {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  color: #82a0bc;
+}
+
+.context-panel {
+  position: absolute;
+  inset: 1rem;
+  display: grid;
+  place-content: center;
+  gap: 0.6rem;
+  background: rgba(6, 9, 13, 0.85);
+  padding: 1rem;
+  border: 1px solid #1c2530;
+  border-radius: 0.4rem;
+}
+
+.restore-button {
+  background: #1f6feb;
+  color: white;
+  border: 0;
+  padding: 0.5rem 1rem;
+  border-radius: 0.3rem;
+  cursor: pointer;
+}
+
+.station-note code {
+  background: #1c2530;
+  padding: 0.05rem 0.4rem;
+  border-radius: 0.2rem;
+}
+
+.matrix {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.matrix th, .matrix td {
+  border-bottom: 1px solid #1c2530;
+  padding: 0.4rem;
+  text-align: left;
+}
+
+.skip-link {
+  position: absolute;
+  left: -1000px;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  background: #1f6feb;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.3rem;
+}
