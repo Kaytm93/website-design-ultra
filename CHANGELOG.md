@@ -99,7 +99,7 @@ Release-Tag: v2.0.1
 
 The immersive production layer defined in `TODO.md` is closed. Tier 0 (determinism + telemetry + reference intake) shipped across 1.10; Tier 1 (single Next/R3F starter + quality controller + interaction capture + implementation evaluation) shipped across 1.11; Tier 2 (lab harness + foundational/transition/media shader modules + GPU particles + cinematic timeline) shipped across 1.12; Tier 3 (procedural 3D skill + deterministic Blender generator + unchanged asset pipeline + volume research gate + SDF/MSDF text foundation + DOM semantics alignment + canvas-only prohibition enforcement) and the definition-of-done closure land here.
 
-Every `TODO.md` definition-of-done line is now backed by named evidence. The IP-11D evidence index (`automation/immersive-production-v2/IP-11D-EVIDENCE.md`) links each line to a fixture, a commit, or a capability. Byte-identical deterministic capture is reproduced from `volume_research/scripts/reproduce.sh`; the three-gate telemetry summary runs from `website-design-ultra/scripts/verify-browser.mjs`; the starter is `starters/next-r3f-cinematic/`; the two generated immersive fixtures are `tests/immersive/product-hero/` and `tests/immersive/procedural-crystal/`. The procedural asset reaches the unchanged existing pipeline at `procedural-generation/generator.py` → `tests/immersive/procedural-crystal/scripts/build-model.mjs` → `gltf-transform inspect / validate / optimize / validate`.
+Every `TODO.md` definition-of-done line is now backed by named evidence. The IP-11D evidence index (`automation/immersive-production-v2/IP-11D-EVIDENCE.md`) links each line to a fixture, a commit, or a capability. Browser-side byte-identical PNG capture is reproduced by `node tests/immersive/deterministic-capture/compare-captures.mjs --out <dir>` and runs in the `deterministic-capture` job in `.github/workflows/validate.yml`; byte-identical volume encoding artifacts are separately reproduced by `bash volume_research/scripts/reproduce.sh`. The three-gate telemetry summary runs from `website-design-ultra/scripts/verify-browser.mjs`; the starter is `starters/next-r3f-cinematic/`; the two generated immersive fixtures are `tests/immersive/product-hero/` and `tests/immersive/procedural-crystal/`. The procedural asset reaches the unchanged existing pipeline at `procedural-generation/generator.py` → `tests/immersive/procedural-crystal/scripts/build-model.mjs` → `gltf-transform inspect / validate / optimize / validate`.
 
 Three correctness fixes landed alongside the closure, in branch `fix/immersive-13-14-evidence-audit`:
 
@@ -111,7 +111,8 @@ Final verification on `fix/immersive-13-14-evidence-audit`:
 
 - `python3 -m unittest automation/immersive-production-v2/test_chain_driver.py` — 13/13 OK
 - `python3 -m unittest volume_research/tests/test_volume_research.py` — 12/12 OK
-- `bash volume_research/scripts/reproduce.sh` — `BYTE-LEVEL REPRODUCIBILITY PASS`
+- `node tests/immersive/deterministic-capture/capture-comparator.test.mjs` plus the CI `compare-captures.mjs` run — byte-identical PNG capture
+- `bash volume_research/scripts/reproduce.sh` — byte-identical volume artifacts, `BYTE-LEVEL REPRODUCIBILITY PASS`
 - `node website-design-ultra/scripts/validate-content.mjs` — passed
 - `node website-design-ultra/scripts/lint-copy.mjs --self` — passed
 - `node website-design-ultra/scripts/release.mjs` — passed
@@ -137,7 +138,7 @@ Tier 2 of the immersive production layer. The root-only shader/particle lab harn
 
 `cinematic-timeline` coordinates DOM, camera, scene state, materials, sound, and loading tracks under one normalized clock. The validator rejects two writers for the same property, declared checkpoint ids feed the verifier directly, and portrait choreography is required when the art-direction contract declares it.
 
-Final verification: 147/147 lab tests, all telemetry/IP-06C/IP-06B/interaction fixtures green, byte-identical deterministic capture proven.
+Final verification: 147/147 lab tests, all telemetry/IP-06C/IP-06B/interaction fixtures green, and byte-identical PNG capture proven by `tests/immersive/deterministic-capture/compare-captures.mjs`.
 
 Release-Tag: v1.12.0
 
@@ -159,7 +160,7 @@ Release-Tag: v1.11.0
 
 Tier 0 of the immersive production layer. The deterministic runtime contract, frame telemetry in the verifier, and the negatively gated reference-intake skill land on top of 1.9.1.
 
-`WDU_DETERMINISTIC` is now a documented runtime flag, not a convention. Scene code has no direct `performance.now()` path under the flag, every random source takes a named seed, named camera stations replace "wherever the scroll is", and a `data-wdu-ready` marker fires after the first stable frame. The byte-identical deterministic capture proof is reproduced from `volume_research/scripts/reproduce.sh`: two clean runs of the same commit and declared device profile hash the compared PNGs identically.
+`WDU_DETERMINISTIC` is now a documented runtime flag, not a convention. Scene code has no direct `performance.now()` path under the flag, every random source takes a named seed, named camera stations replace "wherever the scroll is", and a `data-wdu-ready` marker fires after the first stable frame. The byte-identical PNG capture proof is reproduced by `node tests/immersive/deterministic-capture/compare-captures.mjs --out <dir>`: two clean runs of the same commit and declared device profile hash the compared PNGs identically. The same command runs in the `deterministic-capture` CI job and archives its evidence.
 
 `verify-browser.mjs` now writes `performance-summary.json` with three gate classes: warm GPU frame median/p95, first meaningful frame, and transfer before that frame. Context counters (draw calls, triangles, textures, geometries, programs, long-frame count, quality tier, DPR, failed resources, shader compile errors, context-loss events) remain evidence, not new universal gates. Missing GPU or browser reports `UNAVAILABLE`, never `PASS`. The schema accepts a justified 30fps/33ms budget and rejects missing units, missing device profile, or an invented implicit threshold.
 
