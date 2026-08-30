@@ -84,6 +84,8 @@ const EXPERIMENTS: Record<string, () => Promise<ExperimentModule>> = {
   'media-post-reduced-motion': () => import('./fixtures/media-post-reduced-motion.js'),
   'cinematic-timeline': () => import('./experiments/cinematic-timeline.js'),
   'cinematic-timeline-deterministic': () => import('./fixtures/cinematic-timeline-deterministic.js'),
+  'sdf-text': () => import('./experiments/shaders/sdf-text.js'),
+  'sdf-text-deterministic': () => import('./fixtures/sdf-text-deterministic.js'),
 };
 
 async function loadExperiment(name: string): Promise<void> {

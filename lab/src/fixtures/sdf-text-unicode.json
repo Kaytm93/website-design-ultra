@@ -1,0 +1,47 @@
+{
+  "module": "sdf-text",
+  "version": "ip-11a-v1",
+  "unicodeCoverage": [
+    {
+      "block": "ASCII (U+0020 - U+007E)",
+      "codepoints": "0x20..0x7e",
+      "category": "Latin",
+      "covered": true,
+      "notes": "Letters, digits, punctuation, space; advance width per code path."
+    },
+    {
+      "block": "Replacement character (U+FFFD)",
+      "codepoints": "0xfffd",
+      "category": "Fallback",
+      "covered": true,
+      "notes": "Visible-failure path uses this tile when the codepoint is not in the atlas."
+    },
+    {
+      "block": "CJK Unified Ideographs (sample: U+4E2D)",
+      "codepoints": "0x4e2d",
+      "category": "CJK",
+      "covered": true,
+      "notes": "Single representative glyph; production paths extend this block via the upstream atlas generator."
+    }
+  ],
+  "blocksKnown": [
+    "Basic Latin (U+0020 - U+007F)",
+    "Latin-1 Supplement (U+0080 - U+00FF) — partial",
+    "CJK Unified Ideographs (U+4E00 - U+9FFF) — partial",
+    "Hangul Syllables (U+AC00 - U+D7AF) — partial",
+    "CJK Compatibility Ideographs (U+F900 - U+FAFF) — partial",
+    "Halfwidth and Fullwidth Forms (U+FF00 - U+FFEF) — partial"
+  ],
+  "visibleFailure": {
+    "tile": "MISSING_GLYPH_INDEX = 0xffff",
+    "shader": "lab/src/experiments/shaders/sdf-text.frag",
+    "marker": "uAtlasIndex == 65535"
+  },
+  "breakClasses": [
+    "Space (U+0020, U+0009, U+000B, U+000C, U+00A0)",
+    "Punctuation (U+002C, U+002E, U+003B, U+003A, U+2026)",
+    "CJK (U+3000 - U+303F, U+3400 - U+4DBF, U+4E00 - U+9FFF, U+AC00 - U+D7AF, U+F900 - U+FAFF, U+FF00 - U+FFEF)",
+    "Mandatory (U+000A, U+000D, U+2028, U+2029)",
+    "Word (everything else)"
+  ]
+}

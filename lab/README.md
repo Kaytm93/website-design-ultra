@@ -29,6 +29,8 @@ Then open one experiment at a time:
 - `/?e=gpu-particles-deterministic&WDU_DETERMINISTIC=1` — deterministic GPU particle spawn/reset, pointer normalization, capped falloff, one-shot impulse (IP-09A, `particles/spawn`).
 - `/?e=cinematic-timeline` — one normalized timeline coordinating DOM, camera, scene, material, sound, and loading tracks without a second clock (IP-09C).
 - `/?e=cinematic-timeline-deterministic&WDU_DETERMINISTIC=1&wdu-timeline=timeline-50` — seeded capture for the timeline checkpoint `timeline-50` with portrait choreography and deterministic filenames, feeding PR-6 capture directly.
+- `/?e=sdf-text` — SDF/MSDF text foundation (IP-11A): in-memory atlas with glyph metrics, line breaking, visible-failure tile for unsupported codepoints, and reduced-motion freeze.
+- `/?e=sdf-text-deterministic&WDU_DETERMINISTIC=1` — seeded capture for the SDF/MSDF text foundation so two runs hash the same atlas and produce byte-identical renders under deterministic mode.
 
 ## Verification
 

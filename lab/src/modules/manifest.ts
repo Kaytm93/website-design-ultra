@@ -163,8 +163,22 @@ export const foundationalShaderManifest: ShaderModuleManifestEntry[] = [
     fixture: 'lab/src/experiments/particle-toy.ts',
     noCombine: true,
   },
+  {
+    id: 'sdf-text',
+    name: 'SDF / MSDF text foundation',
+    rendererSupport: ['webgl2'],
+    costClass: 'low',
+    reducedMotion: 'Text geometry is static; dissolve uniform is clamped to 0 under reduced motion. The visual surface stays a stable composition with no animation.',
+    colorSpace: 'Atlas is linear RGB unencoded (signed-distance rescaled into [0, 1], not display color). Output is composed in linear RGB and tone-mapped after composition. Same pass-order contract as the LUT module: scene -> text -> tone-map.',
+    fixture: 'lab/src/experiments/shaders/sdf-text.frag',
+    noCombine: true,
+  },
 ];
 
 export const mediaPostManifest: ShaderModuleManifestEntry[] = foundationalShaderManifest.filter((entry) =>
   ['video-texture', 'lut-color-grade', 'film-grain'].includes(entry.id),
+);
+
+export const sdfTextManifest: ShaderModuleManifestEntry[] = foundationalShaderManifest.filter(
+  (entry) => entry.id === 'sdf-text',
 );

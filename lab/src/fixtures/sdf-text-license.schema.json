@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "IP-11A SDF/MSDF text license metadata",
+  "type": "object",
+  "required": ["module", "version", "license", "upstreamAtlasGenerator", "productionFontOptions", "fixtureFont", "noPaidFonts", "noCommittedCredentials"],
+  "properties": {
+    "module": { "const": "sdf-text" },
+    "version": { "type": "string", "pattern": "^ip-11a-v\\d+$" },
+    "license": { "type": "string" },
+    "upstreamAtlasGenerator": {
+      "type": "object",
+      "required": ["name", "license", "role"],
+      "properties": {
+        "name": { "type": "string" },
+        "author": { "type": "string" },
+        "repository": { "type": "string" },
+        "license": { "type": "string" },
+        "role": { "type": "string" }
+      }
+    },
+    "productionFontOptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["family", "license", "weights"],
+        "properties": {
+          "family": { "type": "string" },
+          "license": { "type": "string", "enum": ["OFL-1.1", "Apache-2.0", "MIT", "CC0-1.0"] },
+          "weights": { "type": "array", "items": { "type": "string" } },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "fixtureFont": {
+      "type": "object",
+      "required": ["name", "license"],
+      "properties": {
+        "name": { "type": "string" },
+        "license": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "noPaidFonts": { "const": true },
+    "noCommittedCredentials": { "const": true }
+  }
+}

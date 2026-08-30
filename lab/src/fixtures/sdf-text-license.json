@@ -1,0 +1,45 @@
+{
+  "$schema": "./sdf-text-license.schema.json",
+  "module": "sdf-text",
+  "version": "ip-11a-v1",
+  "license": "MIT (this module) / OFL or Apache-2.0 (production font)",
+  "upstreamAtlasGenerator": {
+    "name": "msdf-atlas-gen",
+    "author": "Jakub Chlumský",
+    "repository": "https://github.com/Chlumsky/msdf-atlas-gen",
+    "license": "MIT",
+    "role": "Recommended production generator; not a runtime dependency of this module."
+  },
+  "productionFontOptions": [
+    {
+      "family": "Inter",
+      "license": "OFL-1.1",
+      "weights": ["Regular", "Bold"],
+      "notes": "Default recommendation; freely redistributable, large Latin coverage."
+    },
+    {
+      "family": "IBM Plex Sans",
+      "license": "OFL-1.1",
+      "weights": ["Regular", "Bold"],
+      "notes": "Alternative; explicit CJK family available separately under OFL."
+    },
+    {
+      "family": "Roboto",
+      "license": "Apache-2.0",
+      "weights": ["Regular", "Bold"],
+      "notes": "Alternative; Apache-2.0 is compatible with this module's MIT terms."
+    }
+  ],
+  "fixtureFont": {
+    "name": "procedural MSDF stub",
+    "license": "MIT (generated at build time)",
+    "notes": "The lab ships no third-party font binary. The procedural registry produces a small reproducible atlas so the pipeline is exercised end-to-end. Production paths swap in a real OFL/Apache-2.0 font via the upstreamAtlasGenerator."
+  },
+  "noPaidFonts": true,
+  "noCommittedCredentials": true,
+  "consequences": [
+    "No third-party font binary is committed to the repository.",
+    "No font license terms prohibit redistribution or modification.",
+    "The procedural stub makes atlas generation reproducible without I/O."
+  ]
+}

@@ -232,7 +232,7 @@ splits that proposal into implementation-sized units.
 
 ## PR 14 — Shader-driven UI and definition-of-done closure
 
-- [ ] `IP-11A` **Implement the SDF/MSDF text foundation** — Generate a licensed atlas with glyph metrics, line breaking, renderer assumptions, and deterministic fixtures.
+- [x] `IP-11A` **Implement the SDF/MSDF text foundation** — Generate a licensed atlas with glyph metrics, line breaking, renderer assumptions, and deterministic fixtures.
   - **Depends on:** IP-10D
   - **Deliver:** Shared shader module/lab experiment plus license and Unicode-coverage metadata.
   - **Acceptance:** Atlas generation is reproducible; unsupported glyphs fail visibly; color space and cost class are declared; primary semantics remain outside Canvas.

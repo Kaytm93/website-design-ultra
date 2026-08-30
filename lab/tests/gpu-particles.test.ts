@@ -230,15 +230,18 @@ test('backend matrix has gpu-particles WebGL2 honest (PASS only with browser flo
   assert.equal(matrix.contract.rawGLSLisNotWebGPUPass, true);
 });
 
-test('manifest contains gpu particle entry and noCombine, no apply-all, no SDF', () => {
+test('manifest contains gpu particle entry and noCombine, no apply-all, no SDF inside particle scope', () => {
   const src = read(resolve(ROOT, 'src/modules/manifest.ts'));
   assert.match(src, /gpu-particles/);
   const entries = (src.match(/noCombine:\s*true/g) ?? []).length;
-  assert.ok(entries >= 14, `expected >=14 noCombine, got ${entries}`);
+  assert.ok(entries >= 15, `expected >=15 noCombine (sdf-text added by IP-11A), got ${entries}`);
   assert.doesNotMatch(src, /applyAll|apply_all/i);
-  // SDF/MSDF must remain deferred — allow only comment about deferred
-  const withoutComments = src.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
-  assert.doesNotMatch(withoutComments, /SDF|MSDF/i);
+  // SDF/MSDF is owned by IP-11A (the dedicated sdf-text module). The
+  // gpu-particle scope must remain free of it; comments that name IP-11A
+  // are allowed.
+  const particleScope = src.slice(src.indexOf('gpu-particles'), src.indexOf('sdf-text') > 0 ? src.indexOf('sdf-text') : src.length);
+  const particleWithoutComments = particleScope.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+  assert.doesNotMatch(particleWithoutComments, /SDF|MSDF/i, 'SDF/MSDF must remain outside the gpu-particles scope');
 });
 
 test('main.ts still routes particle-toy', () => {
@@ -263,7 +266,10 @@ test('no timeline / SDF / apply-all introduced in gpu particles scope', () => {
   const manifest = read(resolve(ROOT, 'src/modules/manifest.ts'));
   const toy = read(resolve(ROOT, 'src/experiments/particle-toy.ts'));
   const upd = read(resolve(ROOT, 'src/experiments/shaders/particle-toy-update.frag'));
-  const combined = `${manifest}\n${toy}\n${upd}`;
+  // Limit the manifest scope to the gpu-particles section so the IP-11A
+  // SDF/MSDF module (added later in the manifest) does not fail this gate.
+  const particleManifest = manifest.slice(manifest.indexOf('gpu-particles'), manifest.indexOf('sdf-text') > 0 ? manifest.indexOf('sdf-text') : manifest.length);
+  const combined = `${particleManifest}\n${toy}\n${upd}`;
   assert.doesNotMatch(combined, /applyAll/i);
   assert.doesNotMatch(combined.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, ''), /SDF/i);
   // Timeline is not introduced — ensure no timeline word in gpu scope beyond allowed mention in docs

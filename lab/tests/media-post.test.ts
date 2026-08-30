@@ -159,11 +159,35 @@ test('no generic apply-all export exists', () => {
   assert.doesNotMatch(allSources, /function applyAllEffects/);
 });
 
-test('SDF/MSDF remains deferred — no module introduces it', () => {
-  const moduleFiles = readdirSync(MODULES_ROOT).filter((f) => f.endsWith('.ts'));
-  const all = moduleFiles.map((f) => readFileSync(resolve(MODULES_ROOT, f), 'utf8')).join('\n');
-  assert.doesNotMatch(all, /SDF/i, 'SDF must remain deferred to IP-11A');
-  assert.doesNotMatch(all, /MSDF/i);
+test('SDF/MSDF is scoped to the dedicated IP-11A module', () => {
+  // The manifest is allowed to mention SDF because it documents the
+  // registry; the rule is that no shader/module implementation outside
+  // `sdf-text.ts` introduces the vocabulary. Exclude manifest.ts and
+  // any future registry file from this gate; the dedicated IP-11A module
+  // is the only implementation that may own SDF/MSDF.
+  const excluded = new Set(['sdf-text.ts', 'manifest.ts']);
+  const moduleFiles = readdirSync(MODULES_ROOT).filter(
+    (f) => f.endsWith('.ts') && !excluded.has(f),
+  );
+  for (const file of moduleFiles) {
+    const src = readFileSync(resolve(MODULES_ROOT, file), 'utf8');
+    const noComments = src.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+    assert.doesNotMatch(
+      noComments,
+      /\bSDF\b/i,
+      `${file} must not introduce SDF (IP-11A owns it)`,
+    );
+    assert.doesNotMatch(
+      noComments,
+      /\bMSDF\b/i,
+      `${file} must not introduce MSDF (IP-11A owns it)`,
+    );
+  }
+
+  // The dedicated module must exist and own the SDF/MSDF vocabulary.
+  const sdfSrc = readFileSync(resolve(MODULES_ROOT, 'sdf-text.ts'), 'utf8');
+  assert.match(sdfSrc, /\bSDF\b/);
+  assert.match(sdfSrc, /\bMSDF\b/);
 });
 
 test('failure fixture exists, is non-blank, and surfaces an undeclared-identifier diagnostic', () => {
