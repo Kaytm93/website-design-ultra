@@ -1,0 +1,28 @@
+❯ dedup
+✔ dedup                5ms
+❯ instance
+✔ instance             1ms
+❯ palette
+✔ palette              9ms
+❯ flatten
+✔ flatten              1ms
+❯ join
+✔ join                 14ms
+❯ weld
+✔ weld                 5ms
+❯ simplify
+✔ simplify             6ms
+❯ resample
+✔ resample             0ms
+❯ prune
+✔ prune                3ms
+❯ sparse
+✔ sparse               2ms
+❯ textureCompress
+✔ textureCompress      4ms
+❯ meshopt
+✔ meshopt              10ms
+
+info: orbit-one-raw.glb (100.83 KB) → orbit-one.glb (19.82 KB)
+
+objc[26911]: Class GNotificationCenterDelegate is implemented in both /Users/kaygewinner/Desktop/Claude code/website-design-ultra/tests/immersive/product-hero/node_modules/ndarray-pixels/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.18.3.dylib (0x122075a50) and /Users/kaygewinner/Desktop/Claude code/website-design-ultra/tests/immersive/product-hero/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib (0x123be1978). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
