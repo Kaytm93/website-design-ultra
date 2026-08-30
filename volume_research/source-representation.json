@@ -1,0 +1,44 @@
+{
+  "$comment": "IP-10D source-representation declaration. Read first. The benchmark treats this as the only scope of any recommendation.",
+  "schemaVersion": 1,
+  "id": "crystal-fog-density-32",
+  "phenomenon": "dense crystal-fog density field",
+  "domain": {
+    "bounds": { "min": [0.0, 0.0, 0.0], "max": [1.0, 1.0, 1.0] },
+    "units": "normalized",
+    "topology": "uniform grid"
+  },
+  "grid": {
+    "resolution": [32, 32, 32],
+    "cell_count": 32768,
+    "voxel_layout": "x-fastest, then y, then z"
+  },
+  "density_model": {
+    "kind": "sum-of-gaussians",
+    "anchors": "8 deterministic anchors placed on the procedural crystal skeleton (see anchors_seed)",
+    "falloff": "exp(-(r / sigma)^2) with sigma derived from anchor spacing",
+    "threshold": 0.25,
+    "note": "This is a single-source declaration. Any future asset must add its own declaration alongside this one."
+  },
+  "anchors_seed": 1337,
+  "anchors_count": 8,
+  "density_statistics": {
+    "expected_max_density": 1.0,
+    "expected_sparsity_below_threshold": 0.40,
+    "tolerance": { "max": 0.01, "sparsity": 0.05 }
+  },
+  "declared_asset_scope": {
+    "id": "crystal-fog-density-32",
+    "asset_family": "synthetic crystal-fog density anchor",
+    "NOT_generalized_to": [
+      "any other volumetric phenomenon",
+      "any other grid resolution",
+      "any other asset family"
+    ]
+  },
+  "applicability": "This declaration is read by the encoders/decoders/report. A recommendation is only valid while this file remains the active source representation.",
+  "versioning": {
+    "declaration_version": "1",
+    "recorded_at": "2026-08-30"
+  }
+}

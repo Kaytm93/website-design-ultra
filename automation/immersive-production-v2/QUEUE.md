@@ -224,7 +224,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Existing pipeline commands pass unchanged; optimized asset stays within declared desktop/mobile budgets; fallback does not depend on GLB decode.
   - **Verify:** glTF inspect/validate/optimize/validate, fixture build/runtime, telemetry, and lifecycle resource checks.
 
-- [ ] `IP-10D` **Execute the volume representation research gate** — Compare slice textures, sparse points, and one packed format before choosing any general exporter.
+- [x] `IP-10D` **Execute the volume representation research gate** — Compare slice textures, sparse points, and one packed format before choosing any general exporter.
   - **Depends on:** IP-10C
   - **Deliver:** Reproducible benchmark inputs/results for decode time, transfer size, and GPU memory plus a conventional point fallback.
   - **Acceptance:** Source representation is declared first; no generic VDB exporter is shipped or announced; any recommendation is scoped to measured assets.

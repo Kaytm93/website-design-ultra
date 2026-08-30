@@ -1,0 +1,21 @@
+{
+  "$comment": "Runtime knobs for the volume research gate. Two runs with the same input and the same runtime produce byte-identical encoded artifacts and reproducible median timings.",
+  "schemaVersion": 1,
+  "runtime_version": "1",
+  "seed": 1337,
+  "decoder_repeats": 16,
+  "decoder_repeats_min": 16,
+  "decoder_repeats_max": 64,
+  "encoding_cpu_budget_ms": 5000,
+  "decoding_cpu_budget_ms": 5000,
+  "winner_margin": {
+    "decode_time_relative": 0.20,
+    "transfer_bytes_relative": 0.15,
+    "gpu_memory_bytes_relative": 0.15,
+    "note": "A representation only wins if it beats every other representation on all three measurements by at least this relative margin. Otherwise the verdict is INCONCLUSIVE."
+  },
+  "io": {
+    "output_root": "volume-research/output",
+    "report_root": "volume-research/reports"
+  }
+}

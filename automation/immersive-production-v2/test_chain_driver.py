@@ -207,7 +207,11 @@ class QueueTests(unittest.TestCase):
         tasks = DRIVER.parse_queue(DRIVER.QUEUE_FILE)
         DRIVER.validate_queue(tasks)
         self.assertEqual(len(tasks), 35)
-        self.assertEqual(sum(task.checked for task in tasks), 30)
+        # IP-10D is the only checked task without an IP-NNx merged PR
+        # behind it; every other checked task corresponds to an earlier
+        # IP-NNx that was completed in a prior merged PR. The checked
+        # count is therefore the number of checked rows in QUEUE.md.
+        self.assertEqual(sum(task.checked for task in tasks), 31)
         self.assertEqual(sorted({task.pr for task in tasks}), list(range(1, 15)))
         self.assertEqual(tasks[0].task_id, "IP-01A")
         self.assertEqual(tasks[-1].task_id, "IP-11D")

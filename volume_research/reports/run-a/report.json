@@ -1,0 +1,297 @@
+{
+  "declared_source_representation": {
+    "anchors_count": 8,
+    "anchors_seed": 1337,
+    "cell_count": 32768,
+    "declared_asset_scope": "crystal-fog-density-32",
+    "id": "crystal-fog-density-32",
+    "phenomenon": "dense crystal-fog density field",
+    "resolution": [
+      32,
+      32,
+      32
+    ],
+    "versioning": {
+      "declaration_version": "1",
+      "recorded_at": "2026-08-30"
+    }
+  },
+  "declared_source_sha256": "b52b0d2d36c318302a8b713f522c5d81a93955cc607309bdb71dd6cc2e1231fd",
+  "decoders": {
+    "packed": {
+      "decode_iterations": 16,
+      "decode_time_ms_iqr": 0.0012807500000128202,
+      "decode_time_ms_median": 0.023896000000002415,
+      "decoded_hash_sha256": "44dd2bcff586f134426da434cadb7101b4c9a68e4854b364426db0fb51e2769f",
+      "decoded_shape": [
+        32,
+        32,
+        32
+      ],
+      "decoder": "packed",
+      "notes": {
+        "decoded_into": "uint8 volume (x, y, z)",
+        "decoder": "packed_voxels",
+        "header_size_bytes": 32,
+        "magic": "WDUV",
+        "version": 1
+      },
+      "samples_ms": [
+        0.03695900000000307,
+        0.028082999999998193,
+        0.024500000000010624,
+        0.023499999999995747,
+        0.023958000000004476,
+        0.023834000000000355,
+        0.023541999999987517,
+        0.023582999999993692,
+        0.023584000000007044,
+        0.02404100000000242,
+        0.023208000000010665,
+        0.023332999999986503,
+        0.02362499999999934,
+        0.02483300000000188,
+        0.026082999999996193,
+        0.02483300000000188
+      ]
+    },
+    "points": {
+      "decode_iterations": 16,
+      "decode_time_ms_iqr": 0.001969000000007909,
+      "decode_time_ms_median": 0.05114600000000191,
+      "decoded_hash_sha256": "7d0f3195c600e594c3ceda3705d46f635cf1b6315d3dd92abc438b57407d7e23",
+      "decoded_shape": [
+        19611,
+        4
+      ],
+      "decoder": "points",
+      "notes": {
+        "decoded_into": "float32 (N, 4): position xyz + density",
+        "decoder": "sparse_points_glb",
+        "glb_version": 2
+      },
+      "samples_ms": [
+        0.09595799999999322,
+        0.058791999999988076,
+        0.05429199999999745,
+        0.052707999999998534,
+        0.05045800000000322,
+        0.04999999999999449,
+        0.05100000000000937,
+        0.051457999999990345,
+        0.05054200000000064,
+        0.05183300000000113,
+        0.05054099999998729,
+        0.05087500000000578,
+        0.05008299999999244,
+        0.05191699999999855,
+        0.05129199999999445,
+        0.05058400000000629
+      ]
+    },
+    "slices": {
+      "decode_iterations": 16,
+      "decode_time_ms_iqr": 0.25552099999999456,
+      "decode_time_ms_median": 1.4394994999999966,
+      "decoded_hash_sha256": "44dd2bcff586f134426da434cadb7101b4c9a68e4854b364426db0fb51e2769f",
+      "decoded_shape": [
+        32,
+        32,
+        32
+      ],
+      "decoder": "slices",
+      "notes": {
+        "decoded_into": "uint8 volume (x, y, z)",
+        "decoder": "slice_textures",
+        "filter_types_supported": [
+          0
+        ]
+      },
+      "samples_ms": [
+        1.594959000000007,
+        1.860957999999996,
+        1.7880420000000035,
+        1.5233750000000073,
+        1.444332999999992,
+        1.4147500000000064,
+        1.4747920000000025,
+        1.414499999999999,
+        1.4214580000000003,
+        1.3980830000000082,
+        1.4208329999999965,
+        1.4032920000000004,
+        1.7545419999999978,
+        1.6951249999999918,
+        1.434666000000001,
+        1.390125000000006
+      ]
+    }
+  },
+  "density_statistics": {
+    "cell_count": 32768,
+    "density_byte_size": 131072,
+    "density_hash_sha256": "c05a545d382ef2d4e99240c7ddc2401232a634d9df48728d98afd255689472d6",
+    "max_density": 1.0,
+    "mean_density": 0.35388827323913574,
+    "resolution": [
+      32,
+      32,
+      32
+    ],
+    "sigma": 0.25965565289786113,
+    "sparsity_below_threshold": 0.401519775390625,
+    "visible_cell_count": 19611
+  },
+  "encoders": {
+    "packed": {
+      "encoder": "packed",
+      "gpu_memory_estimate_bytes": 32768,
+      "notes": {
+        "NOT_a_VDB_exporter": true,
+        "bytes_per_voxel": 1,
+        "encoder": "packed_voxels",
+        "format": "single custom blob, 1 byte per voxel, scoped to declared source representation",
+        "header_size_bytes": 32,
+        "is_NOT_a_general_volume_format": true,
+        "magic": "WDUV",
+        "scoped_to_source_representation_id": "crystal-fog-density-32",
+        "version": 1
+      },
+      "output_paths": [
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/packed.wduv"
+      ],
+      "per_file_bytes": [
+        32800
+      ],
+      "sha256_concat": "263c25a6e188b8b20bc17f946b8db6fbb90122a7f27e23cb45216e1acdcf5d31",
+      "total_bytes": 32800
+    },
+    "points": {
+      "encoder": "points",
+      "gpu_memory_estimate_bytes": 313776,
+      "notes": {
+        "bytes_per_point": 16,
+        "encoder": "sparse_points",
+        "format": "glTF 2.0 binary (.glb), POINTS primitive",
+        "interleaved_layout": "vec3 position, scalar density",
+        "is_point_fallback": true,
+        "threshold": 0.25,
+        "visible_count": 19611
+      },
+      "output_paths": [
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/points.glb"
+      ],
+      "per_file_bytes": [
+        314368
+      ],
+      "sha256_concat": "5741bde22ed65af03c156732bd8e0de911257c714a4783a3fa849f70c0aa9a22",
+      "total_bytes": 314368
+    },
+    "slices": {
+      "encoder": "slices",
+      "gpu_memory_estimate_bytes": 1024,
+      "notes": {
+        "decoder_assumes_uniform_filter": true,
+        "encoder": "slice_textures",
+        "format": "PNG LUMINANCE8 stack",
+        "scratch_bytes_accounted_elsewhere": true,
+        "slice_count": 32,
+        "slice_pixel_bytes": 1024
+      },
+      "output_paths": [
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_000.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_001.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_002.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_003.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_004.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_005.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_006.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_007.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_008.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_009.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_010.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_011.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_012.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_013.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_014.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_015.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_016.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_017.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_018.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_019.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_020.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_021.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_022.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_023.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_024.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_025.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_026.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_027.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_028.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_029.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_030.png",
+        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/slices/slice_031.png"
+      ],
+      "per_file_bytes": [
+        1086,
+        1106,
+        1112,
+        1103,
+        1106,
+        1093,
+        1094,
+        1085,
+        1092,
+        1098,
+        1100,
+        1089,
+        1079,
+        1055,
+        1035,
+        1036,
+        1022,
+        1007,
+        1020,
+        1039,
+        1056,
+        1073,
+        1079,
+        1092,
+        1101,
+        1100,
+        1081,
+        1091,
+        1079,
+        1056,
+        1055,
+        1009
+      ],
+      "sha256_concat": "cedcca2c15fde8ff5fdf2a0f4bfcb42a9eea53cf04b03f82dbfb78a1ff05e1bf",
+      "total_bytes": 34329
+    }
+  },
+  "encoding_total_elapsed_ms": 8.408625000000002,
+  "point_fallback": {
+    "bytes_on_disk": 314368,
+    "consumable_by": "3d-asset-pipeline inspect / validate / optimize",
+    "format": "glTF 2.0 .glb POINTS primitive",
+    "path": "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-a/points.glb",
+    "representation": "points",
+    "visible_count": 19611
+  },
+  "recommendation": "No single representation beats every other on every measurement. The measurements disagree (transfer best: packed voxels, GPU best: slice textures, decode best: packed voxels); the gate stays INCONCLUSIVE. No general volume exporter is shipped or announced; any future decision is scoped to the measured source representation id only.",
+  "runtime_config": {
+    "decoder_repeats": 16,
+    "runtime_version": "1",
+    "winner_margin": {
+      "decode_time_relative": 0.2,
+      "gpu_memory_bytes_relative": 0.15,
+      "note": "A representation only wins if it beats every other representation on all three measurements by at least this relative margin. Otherwise the verdict is INCONCLUSIVE.",
+      "transfer_bytes_relative": 0.15
+    }
+  },
+  "schemaVersion": 1,
+  "task": "IP-10D",
+  "title": "Volume representation research gate",
+  "verdict": "INCONCLUSIVE"
+}
