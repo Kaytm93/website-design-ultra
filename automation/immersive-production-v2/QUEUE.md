@@ -243,7 +243,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Canvas never invents interaction state; resizing/reflow preserves alignment; one normalized timeline owns effect time; search, selection, translation, and screen-reader paths remain DOM-native.
   - **Verify:** Keyboard/focus/pointer parity, portrait reflow, localization fixture, reduced motion, and deterministic interaction captures.
 
-- [ ] `IP-11C` **Enforce the canvas-only prohibition list** — Make primary actions, forms, legal copy, and pricing impossible to ship only in the canvas.
+- [x] `IP-11C` **Enforce the canvas-only prohibition list** — Make primary actions, forms, legal copy, and pricing impossible to ship only in the canvas.
   - **Depends on:** IP-11B
   - **Deliver:** Static/runtime validator fixtures plus documentation and forward negative gates.
   - **Acceptance:** Each prohibited surface fails when its semantic DOM counterpart is absent; decorative duplicate canvas text may remain hidden from accessibility APIs.

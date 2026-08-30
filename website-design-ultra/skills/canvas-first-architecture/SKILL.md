@@ -114,6 +114,21 @@ fixes which side is not open to negotiation.
 - React implementation of the scene → **`r3f-patterns`**
 - Scroll as the section driver → **`scroll-immersion`**
 
+## 7. Canvas-only prohibition list
+
+§4 names the categories that must never ship in the canvas alone. Each
+declared surface needs a DOM twin, and the canvas overlay must remain
+decorative. The validator (`lab/src/modules/canvas-only-prohibition.ts`)
+runs statically via `validateDeclaration(declaration, root)` and at runtime
+via `createProhibitionObserver(declaration, root)`; both share one surface
+and one violation vocabulary. The full category list, signature shape,
+and validator wiring live in
+`canvas-first-architecture/references/prohibition-list.md`. The four
+categories are `primary-action`, `form`, `legal-copy`, and `pricing`;
+each must enumerate a `domTwinSelector` and an optional
+`canvasSurfaceSelector`; a surface that ships without its DOM twin fails
+the validator with a recorded violation, not a silent pass.
+
 ## Check
 
 - [ ] The §1 gate was answered, and the answer is in the deliverable.
@@ -123,5 +138,9 @@ fixes which side is not open to negotiation.
 - [ ] The DOM parallel layer exists, and a keyboard-only run reaches every
       section and every action.
 - [ ] Nothing from §4 is painted into the scene.
+- [ ] Every §4 category has a validator declaration that returns `isPassing: true`
+      against the rendered DOM, with the four categories enumerated and the
+      canvas overlay either absent or decorated (aria-hidden / pointer-events:none
+      / `data-wdu-canvas-decorative` wrapper).
 - [ ] Deep links resolve to a section, and a shared link restores it.
 - [ ] The poster route renders the statement without a canvas.

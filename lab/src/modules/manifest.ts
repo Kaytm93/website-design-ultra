@@ -183,6 +183,16 @@ export const foundationalShaderManifest: ShaderModuleManifestEntry[] = [
     fixture: 'lab/src/experiments/shaders/dom-text-effects.ts',
     noCombine: true,
   },
+  {
+    id: 'canvas-only-prohibition',
+    name: 'Canvas-only prohibition list (primary actions, forms, legal copy, pricing)',
+    rendererSupport: ['webgl2'],
+    costClass: 'low',
+    reducedMotion: 'The prohibition list is independent of motion: violation detection, runtime observer, and fixture all run identically with prefers-reduced-motion set. The decorative canvas surface stays static under reduced motion; only its visual amplitude is bounded, never its semantic authority.',
+    colorSpace: 'The module is structural, not visual: it asserts DOM presence and machine-translation readability of canonical twins. No color or pixel data is emitted by the module itself; the canvas overlay reuses the same linear-RGB premultiplied contract as the DOM-mirrored text effects.',
+    fixture: 'lab/src/fixtures/canvas-only-prohibition-deterministic.ts',
+    noCombine: true,
+  },
 ];
 
 export const mediaPostManifest: ShaderModuleManifestEntry[] = foundationalShaderManifest.filter((entry) =>
