@@ -20,8 +20,8 @@
   "decoders": {
     "packed": {
       "decode_iterations": 16,
-      "decode_time_ms_iqr": 0.0005937500000066653,
-      "decode_time_ms_median": 0.02293749999999345,
+      "decode_time_ms_iqr": 0.0014369999999860883,
+      "decode_time_ms_median": 0.023812499999997794,
       "decoded_hash_sha256": "44dd2bcff586f134426da434cadb7101b4c9a68e4854b364426db0fb51e2769f",
       "decoded_shape": [
         32,
@@ -37,28 +37,28 @@
         "version": 1
       },
       "samples_ms": [
-        0.035290999999992856,
-        0.02462500000000034,
-        0.023750000000002935,
-        0.02337500000000603,
-        0.023290999999994733,
+        0.04404199999999414,
+        0.024790999999996233,
+        0.02395899999999007,
         0.023250000000002435,
-        0.0229169999999973,
+        0.0254169999999998,
+        0.023458000000003976,
+        0.033124999999994964,
+        0.024458000000004976,
+        0.024458999999976694,
+        0.023666000000005516,
+        0.02362499999999934,
+        0.024166999999991612,
+        0.023334000000013733,
         0.02287500000000553,
-        0.022957999999989598,
-        0.0234169999999978,
-        0.022791999999993706,
-        0.022708000000010164,
-        0.02262499999999834,
-        0.022874999999991652,
-        0.0229169999999973,
-        0.022584000000006044
+        0.02308300000000707,
+        0.02249999999998087
       ]
     },
     "points": {
       "decode_iterations": 16,
-      "decode_time_ms_iqr": 0.0030724999999960645,
-      "decode_time_ms_median": 0.04895849999999452,
+      "decode_time_ms_iqr": 0.027520249999999497,
+      "decode_time_ms_median": 0.05218799999999468,
       "decoded_hash_sha256": "7d0f3195c600e594c3ceda3705d46f635cf1b6315d3dd92abc438b57407d7e23",
       "decoded_shape": [
         19611,
@@ -71,28 +71,28 @@
         "glb_version": 2
       },
       "samples_ms": [
-        0.1212500000000033,
-        0.06062499999999471,
-        0.05320899999999851,
-        0.05175000000000318,
-        0.05000000000000837,
-        0.050207999999996034,
-        0.04900000000000737,
-        0.048957999999987845,
-        0.048959000000001196,
-        0.04829200000000533,
-        0.04870899999999401,
-        0.04804199999999814,
-        0.04804199999999814,
-        0.04870800000000841,
-        0.04824999999999968,
-        0.04829200000000533
+        0.3480000000000011,
+        0.11354099999999478,
+        0.1141249999999927,
+        0.08095799999999209,
+        0.06266700000000236,
+        0.06512500000001309,
+        0.05508299999999744,
+        0.0518340000000006,
+        0.05183299999998725,
+        0.052541999999988764,
+        0.049667000000003236,
+        0.04995800000000272,
+        0.0488339999999976,
+        0.04941699999999605,
+        0.04850000000000687,
+        0.049125000000010965
       ]
     },
     "slices": {
       "decode_iterations": 16,
-      "decode_time_ms_iqr": 0.17327099999999573,
-      "decode_time_ms_median": 1.3650829999999963,
+      "decode_time_ms_iqr": 0.16562575000000224,
+      "decode_time_ms_median": 1.5493959999999944,
       "decoded_hash_sha256": "44dd2bcff586f134426da434cadb7101b4c9a68e4854b364426db0fb51e2769f",
       "decoded_shape": [
         32,
@@ -108,22 +108,22 @@
         ]
       },
       "samples_ms": [
-        1.5668339999999892,
-        1.374832999999992,
-        1.8290830000000091,
-        1.6247080000000025,
-        1.39695799999999,
-        1.3553330000000003,
-        1.3488749999999994,
-        1.3956249999999977,
-        1.3516249999999952,
-        1.347292,
-        1.3509169999999933,
-        1.35470800000001,
-        1.3434169999999996,
-        1.3516250000000092,
-        1.7850000000000088,
-        1.394832999999998
+        1.5004160000000044,
+        1.458000000000001,
+        1.5601660000000017,
+        1.4287919999999983,
+        1.6033330000000123,
+        2.2951660000000014,
+        1.9712919999999996,
+        1.5483749999999907,
+        1.6455000000000082,
+        1.4864159999999904,
+        1.5202500000000008,
+        1.6259170000000045,
+        1.4357499999999996,
+        1.5504169999999984,
+        1.47116600000001,
+        1.827749999999989
       ]
     }
   },
@@ -158,7 +158,7 @@
         "version": 1
       },
       "output_paths": [
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/packed.wduv"
+        "volume_research/reports/run-b/packed.wduv"
       ],
       "per_file_bytes": [
         32800
@@ -179,7 +179,7 @@
         "visible_count": 19611
       },
       "output_paths": [
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/points.glb"
+        "volume_research/reports/run-b/points.glb"
       ],
       "per_file_bytes": [
         314368
@@ -199,38 +199,38 @@
         "slice_pixel_bytes": 1024
       },
       "output_paths": [
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_000.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_001.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_002.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_003.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_004.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_005.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_006.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_007.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_008.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_009.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_010.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_011.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_012.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_013.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_014.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_015.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_016.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_017.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_018.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_019.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_020.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_021.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_022.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_023.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_024.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_025.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_026.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_027.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_028.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_029.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_030.png",
-        "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/slices/slice_031.png"
+        "volume_research/reports/run-b/slices/slice_000.png",
+        "volume_research/reports/run-b/slices/slice_001.png",
+        "volume_research/reports/run-b/slices/slice_002.png",
+        "volume_research/reports/run-b/slices/slice_003.png",
+        "volume_research/reports/run-b/slices/slice_004.png",
+        "volume_research/reports/run-b/slices/slice_005.png",
+        "volume_research/reports/run-b/slices/slice_006.png",
+        "volume_research/reports/run-b/slices/slice_007.png",
+        "volume_research/reports/run-b/slices/slice_008.png",
+        "volume_research/reports/run-b/slices/slice_009.png",
+        "volume_research/reports/run-b/slices/slice_010.png",
+        "volume_research/reports/run-b/slices/slice_011.png",
+        "volume_research/reports/run-b/slices/slice_012.png",
+        "volume_research/reports/run-b/slices/slice_013.png",
+        "volume_research/reports/run-b/slices/slice_014.png",
+        "volume_research/reports/run-b/slices/slice_015.png",
+        "volume_research/reports/run-b/slices/slice_016.png",
+        "volume_research/reports/run-b/slices/slice_017.png",
+        "volume_research/reports/run-b/slices/slice_018.png",
+        "volume_research/reports/run-b/slices/slice_019.png",
+        "volume_research/reports/run-b/slices/slice_020.png",
+        "volume_research/reports/run-b/slices/slice_021.png",
+        "volume_research/reports/run-b/slices/slice_022.png",
+        "volume_research/reports/run-b/slices/slice_023.png",
+        "volume_research/reports/run-b/slices/slice_024.png",
+        "volume_research/reports/run-b/slices/slice_025.png",
+        "volume_research/reports/run-b/slices/slice_026.png",
+        "volume_research/reports/run-b/slices/slice_027.png",
+        "volume_research/reports/run-b/slices/slice_028.png",
+        "volume_research/reports/run-b/slices/slice_029.png",
+        "volume_research/reports/run-b/slices/slice_030.png",
+        "volume_research/reports/run-b/slices/slice_031.png"
       ],
       "per_file_bytes": [
         1086,
@@ -270,12 +270,12 @@
       "total_bytes": 34329
     }
   },
-  "encoding_total_elapsed_ms": 8.087042000000002,
+  "encoding_total_elapsed_ms": 9.637915999999997,
   "point_fallback": {
     "bytes_on_disk": 314368,
     "consumable_by": "3d-asset-pipeline inspect / validate / optimize",
     "format": "glTF 2.0 .glb POINTS primitive",
-    "path": "/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/run-b/points.glb",
+    "path": "volume_research/reports/run-b/points.glb",
     "representation": "points",
     "visible_count": 19611
   },

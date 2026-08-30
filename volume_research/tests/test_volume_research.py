@@ -361,5 +361,82 @@ class DeclaredSourceFirstTests(unittest.TestCase):
             self.assertLess(source_index, encoders_index)
 
 
+class NoAbsolutePathLeakTests(unittest.TestCase):
+    """The committed structured report is host-independent.
+
+    Every string-typed field in the structured report must be expressible
+    without a per-host filesystem prefix. If an encoder ever returns an
+    absolute path that bypasses the benchmark's normaliser, this test
+    fails so the leak never reaches ``volume_research/reports/report.json``.
+    """
+
+    @staticmethod
+    def _walk_strings(obj, path=()):
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                yield from NoAbsolutePathLeakTests._walk_strings(value, path + (key,))
+            return
+        if isinstance(obj, list):
+            for index, value in enumerate(obj):
+                yield from NoAbsolutePathLeakTests._walk_strings(value, path + (index,))
+            return
+        if isinstance(obj, str):
+            yield path, obj
+
+    def _run_benchmark_into(self, out_dir: Path) -> dict:
+        declaration = load_declaration(SOURCE_PATH)
+        runtime = json.loads(RUNTIME_PATH.read_text(encoding="utf-8"))
+        from volume_research import benchmark as benchmark_module
+        return benchmark_module.run_benchmark(declaration, runtime, out_dir)
+
+    def test_no_string_in_structured_report_is_absolute(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td)
+            structured = self._run_benchmark_into(tmp)
+
+            offenders = []
+            for field_path, value in self._walk_strings(structured):
+                # POSIX absolute, Windows drive-letter absolute, and UNC
+                # paths all count as host-prefixed and are forbidden.
+                if (
+                    value.startswith("/")
+                    or value.startswith("\\")
+                    or (len(value) >= 3 and value[1] == ":" and value[2] in ("/", "\\"))
+                ):
+                    offenders.append((field_path, value))
+
+            self.assertEqual(
+                offenders,
+                [],
+                msg=(
+                    "Absolute paths leaked into the structured report: "
+                    + ", ".join(f"{'/'.join(map(str, p))}={v!r}" for p, v in offenders)
+                ),
+            )
+
+    def test_point_fallback_path_is_repo_relative(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td)
+            structured = self._run_benchmark_into(tmp)
+            rel = structured["point_fallback"]["path"]
+            # Must not be absolute; must still point at a points.glb-style
+            # file inside the output directory the benchmark just wrote.
+            self.assertFalse(rel.startswith("/"))
+            self.assertFalse(rel.startswith("\\"))
+            self.assertFalse(
+                len(rel) >= 3 and rel[1] == ":" and rel[2] in ("/", "\\"),
+                msg=f"point_fallback.path looks Windows-absolute: {rel!r}",
+            )
+            self.assertTrue(
+                rel.endswith("points.glb"),
+                msg=f"point_fallback.path does not look like a points.glb path: {rel!r}",
+            )
+            # And it must resolve to a file that actually exists on disk.
+            self.assertTrue(
+                (tmp / rel).exists(),
+                msg=f"point_fallback.path does not resolve under the output dir: {rel!r}",
+            )
+
+
 if __name__ == "__main__":
     unittest.main()

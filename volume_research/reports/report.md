@@ -31,14 +31,14 @@
 
 | Representation | Iterations | Median | IQR | Decoded hash | Shape |
 |---|---|---|---|---|---|
-| slice textures | 16 | 1.42 ms | 0.04 ms | `44dd2bcff586f134…` | 32×32×32 |
+| slice textures | 16 | 1.45 ms | 0.23 ms | `44dd2bcff586f134…` | 32×32×32 |
 | sparse points | 16 | 0.05 ms | 0.00 ms | `7d0f3195c600e594…` | 19611×4 |
 | packed voxels | 16 | 0.02 ms | 0.00 ms | `44dd2bcff586f134…` | 32×32×32 |
 
 ## Conventional point fallback
 
 - Format: glTF 2.0 .glb POINTS primitive
-- Path: `/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr14-run/volume_research/reports/points.glb`
+- Path: `volume_research/reports/points.glb`
 - Consumable by: 3d-asset-pipeline inspect / validate / optimize
 - Visible points: 19611
 - Bytes on disk: 307.0 KiB

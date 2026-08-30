@@ -65,6 +65,54 @@ def _write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _to_repo_relative(path_str: str, repo_root: Path, output_dir: Path) -> str:
+    """Return ``path_str`` expressed without the host's filesystem prefix.
+
+    The structured report is committed to git, so any absolute filesystem
+    path it carries leaks the host's prefix into the repo. This helper
+    rewrites every absolute path emitted by an encoder (or recorded in
+    the point-fallback note) to a POSIX-style relative string.
+
+    Resolution order:
+
+    1. If ``path_str`` already looks relative, return it untouched.
+    2. If it lives inside ``repo_root``, return the repo-relative form
+       (so a reviewer opening the report in the repo tree sees the same
+       paths regardless of where the benchmark was run from).
+    3. If it lives inside ``output_dir`` (the benchmark's own output
+       directory — even when that directory is a tempfile outside the
+       repo, e.g. during the test suite), return a path relative to the
+       report's directory. The structured report lives next to the
+       encoded artifacts in this case, so a directory-relative path is
+       still host-independent.
+    4. Otherwise return the input unchanged. This branch is only hit
+       when an encoder writes into a directory unrelated to either the
+       repo or the report — a configuration the test suite does not
+       exercise.
+
+    Decoders still receive the absolute ``Path`` because they are called
+    before this normalisation happens.
+    """
+    try:
+        candidate = Path(path_str)
+    except (TypeError, ValueError):
+        return path_str
+    if not candidate.is_absolute():
+        return path_str
+
+    resolved_repo = repo_root.resolve()
+    try:
+        return candidate.resolve().relative_to(resolved_repo).as_posix()
+    except ValueError:
+        pass
+
+    resolved_out = output_dir.resolve()
+    try:
+        return candidate.resolve().relative_to(resolved_out).as_posix()
+    except ValueError:
+        return path_str
+
+
 def run_benchmark(declaration: dict, runtime: dict, output_dir: Path) -> dict:
     """Run the full encode + decode cycle and return the structured report."""
 
@@ -94,6 +142,15 @@ def run_benchmark(declaration: dict, runtime: dict, output_dir: Path) -> dict:
     packed_dec = measure_decode_packed(Path(packed_enc.output_paths[0]), repeats=repeats)
 
     # 4. Encode the structured report.
+    # Normalise every absolute path emitted by the encoders to a
+    # repo-relative POSIX string BEFORE the structured report is built.
+    # The decoders above already consumed the absolute Path objects they
+    # need; only the report's string-typed fields are affected.
+    for enc_result in (slices_enc, points_enc, packed_enc):
+        enc_result.output_paths = [
+            _to_repo_relative(p, REPO_ROOT, output_dir) for p in enc_result.output_paths
+        ]
+
     encoder_results = {
         "slices": asdict(slices_enc),
         "points": asdict(points_enc),
@@ -107,7 +164,9 @@ def run_benchmark(declaration: dict, runtime: dict, output_dir: Path) -> dict:
 
     # The point fallback note comes from the encoder notes; record it
     # explicitly at the report root so the gate does not depend on reading
-    # the encoder's notes block.
+    # the encoder's notes block. ``points_enc.output_paths[0]`` has already
+    # been rewritten to a repo-relative string by the loop above, so the
+    # recorded path is host-independent.
     point_fallback = {
         "representation": "points",
         "format": "glTF 2.0 .glb POINTS primitive",
