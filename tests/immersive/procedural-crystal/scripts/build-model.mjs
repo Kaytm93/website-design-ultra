@@ -33,13 +33,51 @@ const OPTIMIZED_GLB = path.join(PROJECT_ROOT, 'public', 'model', 'procedural-cry
 const REPORTS_DIRECTORY = path.join(PROJECT_ROOT, 'reports', 'model')
 const CLI = path.join(PROJECT_ROOT, 'node_modules', '.bin', 'gltf-transform')
 
+// Stable commit-time evidence: a sanitizer that turns nondeterministic CLI
+// stdout/stderr into reproducible text. Used ONLY when persisting report
+// files; the raw output is still surfaced in thrown errors when a step
+// fails. Normalizations (in order):
+//   - CRLF / CR -> LF
+//   - strip ANSI escape sequences (CSI + simple ESC sequences)
+//   - drop macOS duplicate-library objc[PID]: ... warning lines
+//   - replace per-stage timing values at line ends with <timing omitted>
+//     (matches `5ms`, `1.25ms`, with one or more separating spaces)
+//   - strip trailing whitespace from every line
+//   - scrub any leftover PROJECT_ROOT absolute path -> <repo-root>
+//   - end the file with exactly one newline
+// The stable marker guarantees committed log bytes do not change between
+// reruns, so the durable evidence diff is empty on a clean rebuild.
+const TIMING_OMITTED = '<timing omitted>'
+const REPO_ROOT_MARKER = '<repo-root>'
+const STAGE_TIMING_RE = /([ \t]+)(\d+(?:\.\d+)?)ms[ \t]*$/
+const OBJ_WARNING_RE = /^objc\[\d+\]: /
+// ANSI: ESC [ ... letter, and a few simple non-CSI escapes (e.g. ESC =).
+const ANSI_RE = /\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b[@-Z\\-_]/g
+
+function normalizeReportText(raw) {
+  let text = String(raw ?? '')
+  text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+  text = text.replace(ANSI_RE, '')
+  const lines = text.split('\n').map((line) => {
+    if (OBJ_WARNING_RE.test(line)) return null
+    const replaced = line.replace(STAGE_TIMING_RE, ` ${TIMING_OMITTED}`)
+    const scrubbed = replaced.split(PROJECT_ROOT).join(REPO_ROOT_MARKER)
+    return scrubbed.replace(/[ \t]+$/, '')
+  }).filter((line) => line !== null)
+  while (lines.length > 0 && lines[lines.length - 1] === '') lines.pop()
+  return `${lines.join('\n')}\n`
+}
+
 function run(args, targetLog) {
   const result = spawnSync(CLI, args, { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 })
-  const output = `${result.stdout ?? ''}\n${result.stderr ?? ''}`.trim()
-  if (targetLog) fs.writeFileSync(targetLog, `${output}\n`)
+  const rawOutput = `${result.stdout ?? ''}\n${result.stderr ?? ''}`.trim()
+  // Persist only normalized output to the report files; the raw form is
+  // still surfaced in the thrown error below when a step fails.
+  const output = normalizeReportText(rawOutput)
+  if (targetLog) fs.writeFileSync(targetLog, output)
   if (result.error || result.status !== 0) {
     throw new Error(
-      `gltf-transform ${args.join(' ')} failed: ${result.error?.message ?? output ?? String(result.status)}`,
+      `gltf-transform ${args.join(' ')} failed: ${result.error?.message ?? rawOutput ?? String(result.status)}`,
     )
   }
   return output
