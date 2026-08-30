@@ -209,8 +209,8 @@ class QueueTests(unittest.TestCase):
         self.assertEqual(len(tasks), 35)
         # Every checked row in QUEUE.md corresponds to a completed task;
         # the checked count is therefore the number of checked rows in
-        # QUEUE.md (currently 34 after IP-11C).
-        self.assertEqual(sum(task.checked for task in tasks), 34)
+        # QUEUE.md (currently 35 after IP-11D closure).
+        self.assertEqual(sum(task.checked for task in tasks), 35)
         self.assertEqual(sorted({task.pr for task in tasks}), list(range(1, 15)))
         self.assertEqual(tasks[0].task_id, "IP-01A")
         self.assertEqual(tasks[-1].task_id, "IP-11D")

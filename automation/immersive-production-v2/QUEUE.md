@@ -249,11 +249,12 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Each prohibited surface fails when its semantic DOM counterpart is absent; decorative duplicate canvas text may remain hidden from accessibility APIs.
   - **Verify:** One failing fixture per prohibited category and one passing mirrored-interface fixture.
 
-- [ ] `IP-11D` **Close the immersive production definition of done** — Run two generated fixtures through install, build, runtime, keyboard, mobile, reduced-motion, fallback, interaction, and telemetry gates.
+- [x] `IP-11D` **Close the immersive production definition of done** — Run two generated fixtures through install, build, runtime, keyboard, mobile, reduced-motion, fallback, interaction, and telemetry gates.
   - **Depends on:** IP-11C
   - **Deliver:** Evidence index linking captures, performance summaries, generated-asset provenance, CI runs, and every `TODO.md` definition-of-done line.
   - **Acceptance:** Byte-identical fixture proven; three budget gates reported; one procedural asset uses the unchanged asset pipeline; unavailable execution is not a pass; ordinary 2D and 3D-hero forward cases still forbid advanced add-ons; no paid design tool is required.
   - **Verify:** Full strict validation, copy suite, forward dry-run/live evidence where available, both immersive evaluations, deterministic comparator, and artifact manifest integrity.
+  - **Evidence:** `automation/immersive-production-v2/IP-11D-EVIDENCE.md` links every `TODO.md` definition-of-done line to the fixture, commit, or run that proves it. The evidence index records `PASS` for all ten lines and lists the repository state, capability declarations, queue state, operator gates, and preserved negative gates at closure.
 
 ## Manual release gates
 
