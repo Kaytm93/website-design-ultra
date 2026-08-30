@@ -1,6 +1,6 @@
 {
   "name": "website-design-ultra",
-  "version": "1.9.1",
+  "version": "2.0.0",
   "description": "Token-efficient website design plugin with tiered anti-slop enforcement for copy and visuals, a deterministic copy linter, provider-trace audits for selective skill loading, evidence-led content, responsive recomposition, license-aware typography, validated state contrast, accessible UI patterns, cinematic 3D direction, adaptive runtime quality, and portable rendered verification.",
   "author": {
     "name": "Kay"

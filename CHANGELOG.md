@@ -1,5 +1,77 @@
 # website-design-ultra
 
+## 2.0.0 — Immersive Production Layer Closed (2026-08-30)
+
+The immersive production layer defined in `TODO.md` is closed. Tier 0 (determinism + telemetry + reference intake) shipped across 1.10; Tier 1 (single Next/R3F starter + quality controller + interaction capture + implementation evaluation) shipped across 1.11; Tier 2 (lab harness + foundational/transition/media shader modules + GPU particles + cinematic timeline) shipped across 1.12; Tier 3 (procedural 3D skill + deterministic Blender generator + unchanged asset pipeline + volume research gate + SDF/MSDF text foundation + DOM semantics alignment + canvas-only prohibition enforcement) and the definition-of-done closure land here.
+
+Every `TODO.md` definition-of-done line is now backed by named evidence. The IP-11D evidence index (`automation/immersive-production-v2/IP-11D-EVIDENCE.md`) links each line to a fixture, a commit, or a capability. Byte-identical deterministic capture is reproduced from `volume_research/scripts/reproduce.sh`; the three-gate telemetry summary runs from `website-design-ultra/scripts/verify-browser.mjs`; the starter is `starters/next-r3f-cinematic/`; the two generated immersive fixtures are `tests/immersive/product-hero/` and `tests/immersive/procedural-crystal/`. The procedural asset reaches the unchanged existing pipeline at `procedural-generation/generator.py` → `tests/immersive/procedural-crystal/scripts/build-model.mjs` → `gltf-transform inspect / validate / optimize / validate`.
+
+Three correctness fixes landed alongside the closure, in branch `fix/immersive-13-14-evidence-audit`:
+
+- `fix(volume): normalize paths in research report to repo-relative` — `volume_research/benchmark.py` now rewrites absolute paths in the structured report to POSIX repo-relative paths via a new `_to_repo_relative` helper, and a recursive unit test rejects any absolute path (`/`, `\`, or a Windows drive letter) anywhere in the report. The committed `report.json` no longer carries host-specific worktree prefixes; two contributors on different machines produce the same committed report.
+- `fix(evaluation): commit missing product-hero pipeline reports for IP-07A acceptance` — `tests/immersive/product-hero/reports/model/` now carries the full six-file evidence set (`pre-inspect.txt`, `pre-validate.log`, `optimize.log`, `post-inspect.txt`, `post-validate.log`, `summary.json`). The structure test `pipeline evidence files are committed alongside the model` passes on a clean checkout.
+- `fix(evaluation): commit missing procedural-crystal pipeline reports for IP-10C acceptance` — `tests/immersive/procedural-crystal/reports/model/` now carries `pre-validate.log`, `optimize.log`, and `post-validate.log` alongside the existing inspect and summary files. A negation rule in `.gitignore` keeps these durable pipeline logs committed without weakening the root `*.log` filter.
+
+Final verification on `fix/immersive-13-14-evidence-audit`:
+
+- `python3 -m unittest automation/immersive-production-v2/test_chain_driver.py` — 13/13 OK
+- `python3 -m unittest volume_research/tests/test_volume_research.py` — 12/12 OK
+- `bash volume_research/scripts/reproduce.sh` — `BYTE-LEVEL REPRODUCIBILITY PASS`
+- `node website-design-ultra/scripts/validate-content.mjs` — passed
+- `node website-design-ultra/scripts/lint-copy.mjs --self` — passed
+- `node website-design-ultra/scripts/release.mjs` — passed
+- `node website-design-ultra/scripts/run-forward-tests.mjs --dry-run` — passed
+- `node website-design-ultra/scripts/verify-browser.mjs --probe` — `READY`
+- product-hero fixture suite — 5/5 + 12/12 + 9/9 + 10/10
+- procedural-crystal fixture suite — 10/10 + 4/4 + 9/9 + 3/3 + 6/6
+- lab suite — 147/147
+- interaction-capture + telemetry suites — 21/21 + 6/6
+- `python3 procedural-generation/test_handoff.py` — 16/16
+
+Release-Tag: v2.0.0
+
+## 1.12.0 — Tier 2 Lab, Shaders, Particles, Timeline (2026-08-30)
+
+Tier 2 of the immersive production layer. The root-only shader/particle lab harness (`lab/`), three shader module groups (foundational, transition/interaction, media/post), the negatively gated GPU-particle-systems skill, particle interaction/resource stability, and one cinematic timeline land on top of 1.11.
+
+`lab/` exposes one route per experiment with sub-second shader hot reload, uniform controls, deterministic capture, and textual compile errors; it lives outside the installed plugin tree per ADR-011. The lab tests cover every experiment deterministically.
+
+`shaders-tsl` extends into module groups: simplex/value/curl noise + Fresnel + iridescence + dissolve; frosted transition + displacement mask + capped chromatic offset + click shockwave + flow-field deformation; video texture + render-graph-compatible LUT + frame-rate-independent film grain. Every amplitude, radius, or falloff carries a hard cap, time is frame-rate independent, reduced motion is a deliberate representation, and there is no combined "apply all effects" path.
+
+`gpu-particle-systems` is negatively gated (thousands of particles, persistent simulation, fields, trails, or volume morphing). State textures, ping-pong ownership, stable spawn/reset, normalized pointer field, and click impulse live there; counts stay owned by `3d-runtime-quality`, never duplicated. The interaction suite proves hover displacement, one recovering click pulse, two-shape morphing, mobile quality reduction, and resource stability across mount/unmount cycles.
+
+`cinematic-timeline` coordinates DOM, camera, scene state, materials, sound, and loading tracks under one normalized clock. The validator rejects two writers for the same property, declared checkpoint ids feed the verifier directly, and portrait choreography is required when the art-direction contract declares it.
+
+Final verification: 147/147 lab tests, all telemetry/IP-06C/IP-06B/interaction fixtures green, byte-identical deterministic capture proven.
+
+Release-Tag: v1.12.0
+
+## 1.11.0 — Tier 1 Starter, Quality, Interaction, Evaluation (2026-08-30)
+
+Tier 1 of the immersive production layer. The single `next-r3f-cinematic` starter, the copied quality controller, declared interaction checkpoints with keyboard/touch/audio coverage, optional baseline comparison, and the first implementation evaluation land on top of 1.10.
+
+`starters/next-r3f-cinematic/` ships a pinned React/R3F/Three matrix with a server-rendered page around a client-only Canvas leaf. Semantic DOM copy and controls stay outside the Canvas. The starter carries an art-directed poster, reduced motion with a visible motion control, context-loss recovery, portrait composition, disposal checks, and route-transition checks. The starter is wired for the deterministic runtime contract from 1.10.
+
+The quality controller is one heavily commented zero-runtime-dependency file under `starters/next-r3f-cinematic/lib/quality-controller.ts`. It owns Poster/Low/Medium/High transitions, DPR steps, hysteresis, offscreen pause, and thermal backoff. Values stay owned by `3d-runtime-quality`; this is the mechanism, not the matrix. It is not published to npm.
+
+Interaction checkpoints are declared by the project (`interaction-checkpoints.schema.json` + `core-rules/references/determinism.md` §7) and captured by `verify-browser.mjs --checkpoints` under deterministic mode into `checkpoints/<id>.png` with timestamp-free metadata. Hover before/during/after, click before/peak/recovered, scroll at declared normalized progress, focus/keyboard/touch parity, loading/ready/failure, and audio locked/enabled/muted/returning (only when the deliverable declares sound) all run.
+
+`tests/immersive/product-hero/` is the first implementation evaluation fixture. The evaluator runner (`tests/immersive/evaluation/run-implementation-evaluation.mjs`) asserts install, build, runtime, keyboard, mobile, reduced-motion, fallback, interaction checkpoints, and the three telemetry gates from 1.10. CI wires the job without silent skips — `UNAVAILABLE` is reported, never `PASS`.
+
+Release-Tag: v1.11.0
+
+## 1.10.0 — Tier 0 Determinism, Telemetry, Reference Intake (2026-08-30)
+
+Tier 0 of the immersive production layer. The deterministic runtime contract, frame telemetry in the verifier, and the negatively gated reference-intake skill land on top of 1.9.1.
+
+`WDU_DETERMINISTIC` is now a documented runtime flag, not a convention. Scene code has no direct `performance.now()` path under the flag, every random source takes a named seed, named camera stations replace "wherever the scroll is", and a `data-wdu-ready` marker fires after the first stable frame. The byte-identical deterministic capture proof is reproduced from `volume_research/scripts/reproduce.sh`: two clean runs of the same commit and declared device profile hash the compared PNGs identically.
+
+`verify-browser.mjs` now writes `performance-summary.json` with three gate classes: warm GPU frame median/p95, first meaningful frame, and transfer before that frame. Context counters (draw calls, triangles, textures, geometries, programs, long-frame count, quality tier, DPR, failed resources, shader compile errors, context-loss events) remain evidence, not new universal gates. Missing GPU or browser reports `UNAVAILABLE`, never `PASS`. The schema accepts a justified 30fps/33ms budget and rejects missing units, missing device profile, or an invented implicit threshold.
+
+`reference-intake` runs before `3d-art-direction`, not beside it. Input is six to ten exported reference frames plus a written token block; output is a filled art-direction contract with every field traced to a source frame or marked `unknown`. The poster target precedes scene code; the live frame is held against it. Named direction with no reference material does not activate the skill. The free Figma REST path (with a personal access token) is optional acceleration; exported PNG/SVG plus a written token block is the required input.
+
+Release-Tag: v1.10.0
+
 ## 1.9.1 — The Line a Finding Points At (2026-08-09)
 
 Pointed at a real Next.js layout, the linter reported `de:english-em-dash` at
