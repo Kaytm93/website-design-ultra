@@ -31,6 +31,8 @@ Then open one experiment at a time:
 - `/?e=cinematic-timeline-deterministic&WDU_DETERMINISTIC=1&wdu-timeline=timeline-50` — seeded capture for the timeline checkpoint `timeline-50` with portrait choreography and deterministic filenames, feeding PR-6 capture directly.
 - `/?e=sdf-text` — SDF/MSDF text foundation (IP-11A): in-memory atlas with glyph metrics, line breaking, visible-failure tile for unsupported codepoints, and reduced-motion freeze.
 - `/?e=sdf-text-deterministic&WDU_DETERMINISTIC=1` — seeded capture for the SDF/MSDF text foundation so two runs hash the same atlas and produce byte-identical renders under deterministic mode.
+- `/?e=dom-text-effects` — DOM-mirrored shader text effects (IP-11B): real DOM text labels own selection, copy, translation, and screen reading; the canvas overlay renders scramble (pointer-driven), glitch (focus / activate), and dissolve (activate) whose uniforms are mirrored from DOM events and DOM measurements. Reduced-motion toggle, localization toggle (English / German / short caption) and a portrait reflow probe.
+- `/?e=dom-text-effects-deterministic&WDU_DETERMINISTIC=1` — seeded capture for the DOM-mirrored text effects so two runs hash the same canvas under deterministic mode.
 
 ## Verification
 

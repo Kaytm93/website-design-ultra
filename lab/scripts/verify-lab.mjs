@@ -739,6 +739,72 @@ async function main() {
       const fragSrc = readFileSync(join(LAB_ROOT, 'src/experiments/shaders/particle-toy-update.frag'), 'utf8');
       check('IP-09B morph shader uses uniform progress lerp (no per-frame allocation)', fragSrc.includes('uMorphProgress') && fragSrc.includes('uMorphA') && fragSrc.includes('uMorphB') && /no per-frame allocation/i.test(fragSrc), fragSrc.slice(0,200));
     }
+
+    // ── IP-11B gates ─────────────────────────────────────────────────────
+    {
+      // 11a. Module contract
+      const src = readFileSync(join(LAB_ROOT, 'src/modules/dom-text-effects.ts'), 'utf8');
+      check('IP-11B module exists and exports the contract surface', src.includes('computeScrambleUniforms') && src.includes('computeGlitchUniforms') && src.includes('computeDissolveUniforms') && src.includes('createDomMirror') && src.includes('updateEffectTime'));
+      check('IP-11B module documents that no interaction state is invented in the canvas', /interaction state is invented/i.test(src) && /the canvas never invents/i.test(src));
+      check('IP-11B module declares pointer, focus, and activation mirror surfaces', /Pointer state mirrored from DOM events/.test(src) && /Activation state mirrored/.test(src) && /Layout snapshot mirrored/.test(src));
+      check('IP-11B module declares the injected clock as the only time owner', /injected.*clock.*only time owner|the only time owner/i.test(src));
+      check('IP-11B module freezes time under reduced motion', /reduced motion/i.test(src) && /freeze time/i.test(src));
+      check('IP-11B module exports DEFAULT_PULSE_DURATION_SECONDS', src.includes('DEFAULT_PULSE_DURATION_SECONDS'));
+      check('IP-11B module mirrors pointer events, focus, click, and key activations', src.includes("addEventListener('pointerenter'") && src.includes("addEventListener('pointermove'") && src.includes("addEventListener('focus'") && src.includes("addEventListener('click'") && src.includes("addEventListener('keydown'"));
+      check('IP-11B module owns ResizeObserver for layout revision tracking', src.includes('ResizeObserver') && src.includes('layoutRevision'));
+    }
+
+    {
+      const fxSrc = readFileSync(join(LAB_ROOT, 'src/experiments/shaders/dom-text-effects.ts'), 'utf8');
+      check('IP-11B experiment uses RawShaderMaterial and premultiplied alpha', fxSrc.includes('new THREE.RawShaderMaterial') && /premultipliedAlpha:\s*true/.test(fxSrc));
+      check('IP-11B experiment canvas overlay is pointer-events:none (decorative only)', /pointer-events:\s*none/.test(fxSrc));
+      check('IP-11B experiment DOM text owns selection (user-select:text + tabIndex:0)', /user-select:\s*text/.test(fxSrc) && /tabIndex\s*=\s*0/.test(fxSrc));
+      check('IP-11B experiment publishes role=region + aria-label + per-label lang', /setAttribute\('role',\s*'region'\)/.test(fxSrc) && /setAttribute\('aria-label'/.test(fxSrc) && /setAttribute\('lang'/.test(fxSrc));
+      check('IP-11B experiment handles German localization swap', fxSrc.includes('SAMPLE_GERMAN') && /headline\.textContent\s*=\s*target\.text/.test(fxSrc));
+      check('IP-11B experiment uniform set covers intensity, seed, pulse age, pointer uv, reduced motion', fxSrc.includes('uIntensity') && fxSrc.includes('uSeed') && fxSrc.includes('uPulseAge') && fxSrc.includes('uPointer') && fxSrc.includes('uReducedMotion'));
+      check('IP-11B experiment updates overlay size on window resize and reflow', fxSrc.includes("window.addEventListener('resize', syncOverlaySize)") && fxSrc.includes('target.mirror.refreshLayout()'));
+    }
+
+    {
+      const det = readFileSync(join(LAB_ROOT, 'src/fixtures/dom-text-effects-deterministic.ts'), 'utf8');
+      check('IP-11B deterministic fixture exists and inherits the experiment', det.includes('mount as mountDomTextEffects'));
+      const main = readFileSync(join(LAB_ROOT, 'src/main.ts'), 'utf8');
+      check('IP-11B routes wired in the lab router', main.includes("'dom-text-effects'") && main.includes("'dom-text-effects-deterministic'"));
+      const readme = readFileSync(join(LAB_ROOT, 'README.md'), 'utf8');
+      check('IP-11B routes documented in the lab README', readme.includes('dom-text-effects'));
+      const manifest = readFileSync(join(LAB_ROOT, 'src/modules/manifest.ts'), 'utf8');
+      check('IP-11B manifest entry declares all five required fields and noCombine:true', /id:\s*'dom-text-effects'/.test(manifest) && /fixture:\s*'lab\/src\/experiments\/shaders\/dom-text-effects\.ts'/.test(manifest) && /noCombine:\s*true/.test(manifest));
+    }
+
+    if (playwrightCli && serverReady) {
+      // Browser evidence for IP-11B: open the deterministic fixture, capture
+      // two screenshots, hash them. Uniforms are produced from real DOM
+      // state; without any pointer/focus/click the captures should hash
+      // identically when the deterministic clock and the layout revision
+      // match.
+      try {
+        const tmp1 = mkdtempSync(join(LAB_ROOT, '.tmp-ip11b-'));
+        const tmp2 = mkdtempSync(join(LAB_ROOT, '.tmp-ip11b-'));
+        try {
+          const shot1 = await labScreenshot(playwrightCli, baseUrl, 'dom-text-effects-deterministic', join(tmp1, 'a.png'), 'WDU_DETERMINISTIC=1');
+          const shot2 = await labScreenshot(playwrightCli, baseUrl, 'dom-text-effects-deterministic', join(tmp2, 'b.png'), 'WDU_DETERMINISTIC=1');
+          if (shot1 && shot2) {
+            const h1 = createHash('sha256').update(readFileSync(shot1)).digest('hex');
+            const h2 = createHash('sha256').update(readFileSync(shot2)).digest('hex');
+            check('IP-11B two deterministic browser captures have identical PNG hashes', h1 === h2, `${h1.slice(0,8)} vs ${h2.slice(0,8)}`);
+          } else {
+            check('IP-11B two deterministic browser captures have identical PNG hashes', 'UNAVAILABLE', 'one or more screenshots could not be captured');
+          }
+        } finally {
+          rmSync(tmp1, { force: true, recursive: true });
+          rmSync(tmp2, { force: true, recursive: true });
+        }
+      } catch (e) {
+        check('IP-11B two deterministic browser captures have identical PNG hashes', 'UNAVAILABLE', String(e?.message || e).slice(0, 200));
+      }
+    } else {
+      check('IP-11B two deterministic browser captures have identical PNG hashes', 'UNAVAILABLE', playwrightCli ? 'Vite server unavailable' : 'WDU_PLAYWRIGHT_CLI is not configured');
+    }
   } finally {
     await stopServer(serverProcess);
   }

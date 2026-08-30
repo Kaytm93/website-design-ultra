@@ -238,7 +238,7 @@ splits that proposal into implementation-sized units.
   - **Acceptance:** Atlas generation is reproducible; unsupported glyphs fail visibly; color space and cost class are declared; primary semantics remain outside Canvas.
   - **Verify:** Atlas generation tests, line-break fixtures, license checks, and deterministic visual capture.
 
-- [ ] `IP-11B` **Align DOM semantics with shader-driven text effects** — Mirror DOM layout, pointer, focus, and activation into canvas uniforms for scramble, glitch, and dissolve.
+- [x] `IP-11B` **Align DOM semantics with shader-driven text effects** — Mirror DOM layout, pointer, focus, and activation into canvas uniforms for scramble, glitch, and dissolve.
   - **Depends on:** IP-11A
   - **Acceptance:** Canvas never invents interaction state; resizing/reflow preserves alignment; one normalized timeline owns effect time; search, selection, translation, and screen-reader paths remain DOM-native.
   - **Verify:** Keyboard/focus/pointer parity, portrait reflow, localization fixture, reduced motion, and deterministic interaction captures.

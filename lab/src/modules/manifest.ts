@@ -173,6 +173,16 @@ export const foundationalShaderManifest: ShaderModuleManifestEntry[] = [
     fixture: 'lab/src/experiments/shaders/sdf-text.frag',
     noCombine: true,
   },
+  {
+    id: 'dom-text-effects',
+    name: 'DOM-mirrored shader text effects (scramble, glitch, dissolve)',
+    rendererSupport: ['webgl2'],
+    costClass: 'low',
+    reducedMotion: 'All three effects collapse to amplitude 0 under reduced motion; the DOM interaction paths (pointer, focus, click, keyboard) stay live so accessibility is unaffected. The visual surface stays static and the DOM text remains the visible authority.',
+    colorSpace: 'Canvas overlay composes additively in linear RGB and is rendered with premultiplied alpha so the underlying DOM text is the visible authority. The DOM owns the color tokens; the shader does not invent color values.',
+    fixture: 'lab/src/experiments/shaders/dom-text-effects.ts',
+    noCombine: true,
+  },
 ];
 
 export const mediaPostManifest: ShaderModuleManifestEntry[] = foundationalShaderManifest.filter((entry) =>
@@ -181,4 +191,8 @@ export const mediaPostManifest: ShaderModuleManifestEntry[] = foundationalShader
 
 export const sdfTextManifest: ShaderModuleManifestEntry[] = foundationalShaderManifest.filter(
   (entry) => entry.id === 'sdf-text',
+);
+
+export const domTextEffectsManifest: ShaderModuleManifestEntry[] = foundationalShaderManifest.filter(
+  (entry) => entry.id === 'dom-text-effects',
 );
