@@ -1,5 +1,77 @@
 # website-design-ultra
 
+## 2.0.1 — Evidence Audit and Portable Suites (2026-08-31)
+
+A post-release audit of 2.0.0 on a clean checkout. No skill, command, or
+runtime behaviour changes. Every finding below is a case of the repository
+failing a standard it already enforces on generated output.
+
+**The evidence index pointed at the wrong artefact.** `IP-11D-EVIDENCE.md`
+backed the definition-of-done line "two runs of one fixture produce
+byte-identical captures" with `volume_research/scripts/reproduce.sh`. That
+script compares encoder output — slice PNGs, `packed.wduv`, `points.glb` —
+and never opens a browser, so it cannot prove a rendered capture. The line
+is now anchored to `tests/immersive/deterministic-capture/compare-captures.mjs`,
+which hashes `capture.png` against the committed `expected-metadata.json`
+with acceptance `byte-identical-png-bytes` and runs in the
+`deterministic-capture` CI job. The volume result is kept, labelled as
+supporting evidence for encoder determinism rather than for scene capture.
+
+**One definition-of-done line is now recorded as unverified.** "Two
+generated immersive fixtures pass install, build, runtime, keyboard,
+mobile, reduced-motion and fallback checks" read PASS. Both fixtures exist
+and their offline suites pass, but the live `immersive-evaluation` job
+exceeds its own `timeout-minutes: 45` once the second fixture is included
+and is cancelled on `main` at `e5a1ea0` and `a9b432c`. The last green run
+of that job is `3214f12`, which predates `procedural-crystal`. A cancelled
+run is not a pass, so the row now reads UNVERIFIED and names what has to
+change. Bringing the evaluation inside its CI budget is open work.
+
+**Blender paths are resolved, not hardcoded.** `procedural-generation/`
+carried one contributor's absolute install path in `test_generator.py`,
+`verify.py` and the README, and `test_generator.py` had no environment
+override at all. The new `procedural-generation/blender_path.py` resolves
+`BLENDER_BIN`, then `blender` on `PATH`, then the conventional install
+locations for the platform, and returns `None` rather than guessing. A
+host without Blender still fails closed, now with a message that says what
+to set. The host-path assertion in `test_handoff.py` was checking for one
+username and now rejects any `/Users/` or `/home/` fragment.
+
+**A dead regression suite is alive again.** `test_ip10c_debug_regressions.mjs`
+resolved its repository root from an absolute path to a working copy that no
+longer exists, was referenced by nothing, and crashed on start. The root is
+now derived from the file itself. The suite passes and covers six real seams
+in the procedural-crystal fixture: SSR runtime attributes, telemetry document
+schema, telemetry surface fields, the renderer reader, the scene clock tick,
+and the local Draco decoder.
+
+**CI covers what the changelog was claiming by hand.** `validate.yml` gained
+three jobs and one step. `root-suites` runs the queue driver contract, the
+volume research suite, the volume artefact reproducibility script, and the
+procedural source contracts, and declares the Blender capability UNAVAILABLE
+instead of skipping into a green result. `lab` runs the lab suite from the
+exact lockfile. `starter` runs typecheck, tests and the production build, which
+is the definition-of-done line about scaffolding without reconstructing the
+architecture. The `validate` job now also runs `lint-copy.mjs --self`: a plugin
+whose central claim is a deterministic copy linter has to pass its own linter
+in CI, not only on a maintainer's machine.
+
+**`references/` was examined and deliberately left alone.** Its
+`package.json` carries nothing but `{ "type": "module" }` and there is no
+lockfile, which reads at first like an inconsistency next to the other root
+surfaces. It is not. `starters/next-r3f-cinematic/tests/quality-controller.test.mjs`
+asserts that exact shape so the directory can never grow into a publishable
+package, which is the "distribute by copy, do not publish to npm" rule from
+`TODO.md` §T1.2 made executable. `npm ci` failing there is the intended
+outcome: these files are pasted into a project, not installed. Recorded here
+so the same non-finding is not "fixed" later.
+
+Verification on a clean checkout of this branch is recorded in
+`automation/immersive-production-v2/IP-11D-EVIDENCE.md` under
+"Re-verification on a clean checkout".
+
+Release-Tag: v2.0.1
+
 ## 2.0.0 — Immersive Production Layer Closed (2026-08-30)
 
 The immersive production layer defined in `TODO.md` is closed. Tier 0 (determinism + telemetry + reference intake) shipped across 1.10; Tier 1 (single Next/R3F starter + quality controller + interaction capture + implementation evaluation) shipped across 1.11; Tier 2 (lab harness + foundational/transition/media shader modules + GPU particles + cinematic timeline) shipped across 1.12; Tier 3 (procedural 3D skill + deterministic Blender generator + unchanged asset pipeline + volume research gate + SDF/MSDF text foundation + DOM semantics alignment + canvas-only prohibition enforcement) and the definition-of-done closure land here.
