@@ -7,7 +7,8 @@ Two-run deterministic verification + rollback for procedural-generation/generato
 - Compares GLB hashes where Blender determinism supports it; classifies mismatch as UNAVAILABLE_HASH honestly.
 - Verifies rollback: clean removes generated collection, rerun recreates same stats.
 
-Blender binary default: /Users/kaygewinner/tools/Blender-4.5.13.app/Contents/MacOS/Blender
+Blender binary is resolved by blender_path: --blender, then BLENDER_BIN,
+then PATH, then the platform's conventional install locations.
 """
 
 from __future__ import annotations
@@ -20,9 +21,11 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from blender_path import resolve_blender, unavailable_reason  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 GENERATOR = REPO_ROOT / "procedural-generation" / "generator.py"
-DEFAULT_BLENDER = "/Users/kaygewinner/tools/Blender-4.5.13.app/Contents/MacOS/Blender"
 DEFAULT_SEED = 1337
 DEFAULT_ITER = 4
 DEFAULT_BRANCH = 2
@@ -113,7 +116,11 @@ def classify_hash(a, b):
         }
 
 
-def verify(blender: str = DEFAULT_BLENDER):
+def verify(blender: str | None = None):
+    blender = resolve_blender(blender)
+    if blender is None:
+        print(f"[verify] {unavailable_reason(None)}", file=sys.stderr)
+        return {"status": "UNAVAILABLE", "reason": "no blender resolved"}
     import tempfile
     print(f"[verify] Blender: {blender}")
     # Check blender reachable
@@ -219,7 +226,11 @@ def verify(blender: str = DEFAULT_BLENDER):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--blender", default=DEFAULT_BLENDER)
+    ap.add_argument(
+        "--blender",
+        default=None,
+        help="Path to the Blender executable. Defaults to BLENDER_BIN, then PATH.",
+    )
     ap.add_argument("--json-out", default="")
     args = ap.parse_args()
     result = verify(args.blender)

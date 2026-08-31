@@ -10,8 +10,15 @@ Blender baseline reversible generator for `procedural-3d` → `3d-asset-pipeline
 
 ## Headless usage (required binary)
 
+The Blender executable is resolved by `blender_path.py`: `BLENDER_BIN` first,
+then `blender` on `PATH`, then the platform's conventional install locations.
+No absolute path to one contributor's machine is committed. On macOS the
+executable sits inside the bundle at `Blender.app/Contents/MacOS/Blender`.
+
 ```bash
-/Users/kaygewinner/tools/Blender-4.5.13.app/Contents/MacOS/Blender \
+export BLENDER_BIN="$HOME/tools/Blender-4.5.13.app/Contents/MacOS/Blender"
+
+"$BLENDER_BIN" \
   --background --factory-startup \
   --python procedural-generation/generator.py -- \
   --seed 1337 --iterations 4 --branching-factor 2 --resolution 8 \
@@ -29,8 +36,10 @@ Export is automated via `bpy.ops.export_scene.gltf(filepath=..., export_format='
 ## Verification
 
 ```bash
-python3 procedural-generation/verify.py --blender /Users/kaygewinner/tools/Blender-4.5.13.app/Contents/MacOS/Blender
-python3 -m unittest procedural-generation/test_generator.py
+# --blender is optional; without it BLENDER_BIN and PATH are used.
+python3 procedural-generation/verify.py
+python3 procedural-generation/test_generator.py
+python3 procedural-generation/test_handoff.py
 ```
 
 `verify.py` runs the generator twice in isolated temp dirs, compares input/version/seed, geometry/material statistics and stable names, classifies GLB binary hash comparison honestly (PASS if identical, or `UNAVAILABLE_HASH` with explanation when Blender binary determinism does not guarantee byte-identical GLB), and verifies rollback + rerun.

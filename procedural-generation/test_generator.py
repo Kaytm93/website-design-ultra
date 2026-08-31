@@ -3,8 +3,10 @@
 Unittest for deterministic Blender generator (IP-10B).
 Runs generator twice via Blender headless and checks rollback.
 
-Real execution, not source-text claim. Requires Blender 4.5.13 at default path.
-If Blender unavailable, tests report UNAVAILABLE and fail (do not fake PASS).
+Real execution, not source-text claim. Requires a real Blender install,
+resolved by blender_path (BLENDER_BIN, then PATH, then the platform's
+conventional locations). If Blender is unavailable, tests report
+UNAVAILABLE and fail (do not fake PASS).
 """
 
 import json
@@ -14,10 +16,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from blender_path import resolve_blender, unavailable_reason  # noqa: E402
+from blender_path import blender_available as probe_blender  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 GENERATOR = REPO_ROOT / "procedural-generation" / "generator.py"
 VERIFY = REPO_ROOT / "procedural-generation" / "verify.py"
-BLENDER = "/Users/kaygewinner/tools/Blender-4.5.13.app/Contents/MacOS/Blender"
+BLENDER = resolve_blender()
 
 SEED = 1337
 ITER = 4
@@ -27,11 +33,7 @@ TIMEOUT = 90
 
 
 def blender_available():
-    try:
-        r = subprocess.run([BLENDER, "--version"], capture_output=True, text=True, timeout=10)
-        return r.returncode == 0 and "Blender" in r.stdout
-    except Exception:
-        return False
+    return probe_blender(BLENDER)
 
 
 def run_generator(output_dir: Path, extra=None):
@@ -48,11 +50,11 @@ def run_generator(output_dir: Path, extra=None):
 
 class TestDeterministicGenerator(unittest.TestCase):
     def test_blender_available(self):
-        self.assertTrue(blender_available(), f"Blender not available at {BLENDER} — cannot verify IP-10B")
+        self.assertTrue(blender_available(), f"{unavailable_reason(BLENDER)} Cannot verify IP-10B.")
 
     def test_two_run_determinism(self):
         if not blender_available():
-            self.skipTest(f"UNAVAILABLE: Blender not at {BLENDER}")
+            self.skipTest(unavailable_reason(BLENDER))
 
         with tempfile.TemporaryDirectory(prefix="pg-test-A-") as a, tempfile.TemporaryDirectory(prefix="pg-test-B-") as b:
             dirA = Path(a); dirB = Path(b)
@@ -106,7 +108,7 @@ class TestDeterministicGenerator(unittest.TestCase):
 
     def test_rollback(self):
         if not blender_available():
-            self.skipTest(f"UNAVAILABLE: Blender not at {BLENDER}")
+            self.skipTest(unavailable_reason(BLENDER))
         with tempfile.TemporaryDirectory(prefix="pg-rollback-") as tmp:
             d = Path(tmp)
             r1 = run_generator(d)

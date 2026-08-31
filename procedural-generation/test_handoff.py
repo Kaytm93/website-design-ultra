@@ -22,7 +22,8 @@ The verifier also reads back procedural-generation/handoff-report.json
     the optimized GLB inspect output and compared against desktop/mobile
     budgets, not the generator's pre-export counts.
 
-BLENDER_BIN (env var) overrides the default Blender 4.5.13 install path.
+BLENDER_BIN (env var) selects the Blender executable; blender_path falls
+back to PATH and the platform's conventional install locations.
 
 SIDE-EFFECT DISCIPLINE (IP-10C isolation/evidence fix):
   This verifier must NEVER write to, mutate, or rewrite the tracked file
@@ -45,10 +46,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from blender_path import resolve_blender, unavailable_reason  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 GENERATOR = REPO_ROOT / "procedural-generation" / "generator.py"
-DEFAULT_BLENDER = "/Users/kaygewinner/tools/Blender-4.5.13.app/Contents/MacOS/Blender"
-BLENDER = os.environ.get("BLENDER_BIN", DEFAULT_BLENDER)
+BLENDER = resolve_blender()
 RECIPE = REPO_ROOT / "procedural-generation" / "recipe.json"
 HANDOFF_REPORT = REPO_ROOT / "procedural-generation" / "handoff-report.json"
 # Pinned CLI binary: product-hero's lockfile pins @gltf-transform/cli@4.4.2.
@@ -95,6 +98,8 @@ def pinned_cli_available() -> tuple[bool, str]:
 
 def blender_available() -> bool:
     try:
+        if BLENDER is None:
+            return False
         r = run([BLENDER, "--version"], timeout=10)
         return r.returncode == 0 and "Blender" in r.stdout
     except Exception:
@@ -193,8 +198,8 @@ class TestIP10CPreflight(unittest.TestCase):
 
     def test_blender_path_or_env_override(self):
         self.assertTrue(
-            "BLENDER_BIN" in os.environ or Path(BLENDER).exists(),
-            f"UNAVAILABLE: Blender not at {BLENDER} and BLENDER_BIN env var not set",
+            BLENDER is not None,
+            unavailable_reason(None),
         )
 
 
@@ -212,7 +217,7 @@ class TestIP10CDurableHandoff(unittest.TestCase):
                 f"UNAVAILABLE: pinned glTF Transform CLI {CLI_VERSION_EXPECTED} not at {PINNED_CLI}"
             )
         if not blender_available():
-            raise unittest.SkipTest(f"UNAVAILABLE: Blender not at {BLENDER}")
+            raise unittest.SkipTest(unavailable_reason(BLENDER))
         cls.cli = str(PINNED_CLI)
 
     def test_durable_report_present_and_well_formed(self):
@@ -499,7 +504,7 @@ class TestNoTrackedReportSideEffects(unittest.TestCase):
         """
         report = json.loads(HANDOFF_REPORT.read_text(encoding="utf-8"))
         optimize = report.get("pipeline", {}).get("optimize_command", "")
-        for forbidden in ("/tmp/", "/private/tmp/", "/var/folders/", "/Users/kaygewinner"):
+        for forbidden in ("/tmp/", "/private/tmp/", "/var/folders/", "/Users/", "/home/"):
             self.assertNotIn(
                 forbidden, optimize,
                 f"pipeline.optimize_command carries host-specific path "
