@@ -56,6 +56,29 @@ architecture. The `validate` job now also runs `lint-copy.mjs --self`: a plugin
 whose central claim is a deterministic copy linter has to pass its own linter
 in CI, not only on a maintainer's machine.
 
+**The immersive evaluation is sharded, so it finishes.** The live gate ran all
+fourteen fixtures in one job. On `main` at `a9b432c` that took 45m53s against a
+`timeout-minutes: 45`, so the job was cancelled and the gate produced no result
+at all — the reason the definition-of-done row above reads UNVERIFIED. The
+fixtures are independent, so the job now runs one per shard with `fail-fast`
+off, and the wall clock is the slowest single fixture rather than the sum.
+Nothing about what is asserted changed: same runner, same gates, same ADR-010
+status semantics, and each shard keeps its own `immersive-evaluation-<fixture>`
+evidence artifact.
+
+Two things guard the new shape. `immersive-evaluation-gate` is one status check
+over all shards, so a cancelled or skipped shard cannot pass as an absent check.
+And `evaluation.test.mjs` asserts the matrix list against the runner's own
+fixture enumeration, because a fixture missing from the matrix does not fail —
+it never runs, and a suite that never ran looks exactly like a suite that
+passed. The offline evaluation tests moved to the `validate` job instead of
+being repeated in every shard.
+
+Per-checkpoint browser sessions were left alone. Each of the twenty checkpoints
+per fixture opens its own session, which is what makes captures comparable
+across runs; reusing one session would trade the determinism contract for wall
+clock. Parallelism buys the same time without touching the guarantee.
+
 **`references/` was examined and deliberately left alone.** Its
 `package.json` carries nothing but `{ "type": "module" }` and there is no
 lockfile, which reads at first like an inconsistency next to the other root

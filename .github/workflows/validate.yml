@@ -40,6 +40,12 @@ jobs:
       - name: Test immersive telemetry calculations and status handling
         run: node --test tests/immersive/telemetry/telemetry-schema.test.mjs tests/immersive/telemetry/performance-summary.test.mjs tests/immersive/telemetry/ip-03c-status.test.mjs
 
+      # Offline half of the implementation evaluation, including the guard that
+      # the shard matrix still lists every fixture the runner knows about. It
+      # needs no browser, so it runs here once instead of in every shard.
+      - name: Test offline implementation evaluation
+        run: node --test tests/immersive/evaluation/evaluation.test.mjs
+
       - name: Validate plugin content
         working-directory: website-design-ultra
         run: node scripts/validate-content.mjs
@@ -186,9 +192,39 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  # One shard per fixture. The suite is the same suite; only the scheduling
+  # changed. Running all fourteen fixtures serially took 45m53s on main at
+  # a9b432c and was cancelled by this job's own timeout, so the live gate had
+  # no result at all. Sharded, the wall clock is the slowest single fixture.
+  #
+  # The matrix list is asserted against the runner's own fixture enumeration by
+  # tests/immersive/evaluation/evaluation.test.mjs, so a fixture cannot be added
+  # to the repository and silently never run here.
+  #
+  # fail-fast is off on purpose: one fixture failing must not hide the verdict
+  # of the other thirteen, and the deliberate failing fixtures each prove a
+  # different gate.
   immersive-evaluation:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        fixture:
+          - product-hero
+          - procedural-crystal
+          - build-fail
+          - failed-resource
+          - fallback-fail
+          - interaction-fail
+          - keyboard-fail
+          - mobile-fail
+          - reduced-motion-fail
+          - runtime-console-error
+          - shader-error
+          - telemetry-first-frame-fail
+          - telemetry-transfer-fail
+          - telemetry-warm-gpu-fail
     env:
       WDU_PLAYWRIGHT_CLI_VERSION: 0.1.17
       WDU_CHROMIUM_REVISION: '1234'
@@ -239,18 +275,16 @@ jobs:
           npx --yes --package playwright@1.62.1 playwright install --with-deps chromium
           "$WDU_PLAYWRIGHT_CLI" install-browser --with-deps chromium
 
-      - name: Run offline evaluation unit tests
-        run: node --test tests/immersive/evaluation/evaluation.test.mjs
-
-      # Live evidence run: green product hero plus every deliberate failing
-      # fixture. Output states duration per phase and external cost; exit 2
-      # means an applicable gate was UNAVAILABLE.
+      # Live evidence run for this shard's fixture. Output states duration per
+      # phase and external cost; exit 2 means an applicable gate was
+      # UNAVAILABLE. The offline unit tests run once in the validate job
+      # rather than being repeated in every shard.
       - name: Run live immersive implementation evaluation
         id: evaluation
         run: |
           set +e
           node tests/immersive/evaluation/run-implementation-evaluation.mjs \
-            --fixture all \
+            --fixture "${{ matrix.fixture }}" \
             --out "${{ runner.temp }}/wdu-immersive-evaluation"
           code=$?
           set -e
@@ -288,10 +322,29 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: immersive-evaluation
+          name: immersive-evaluation-${{ matrix.fixture }}
           path: ${{ runner.temp }}/wdu-immersive-evaluation
           if-no-files-found: error
           retention-days: 30
+
+  # One status check that stands for the whole sharded suite, so branch
+  # protection has a single name to require and a cancelled or skipped shard
+  # cannot pass as an absent check. ADR-010 holds: anything that is not a
+  # success here leaves the suite unverified, never passed.
+  immersive-evaluation-gate:
+    runs-on: ubuntu-latest
+    needs: immersive-evaluation
+    if: always()
+    steps:
+      - name: Require every fixture shard to have succeeded
+        run: |
+          result="${{ needs.immersive-evaluation.result }}"
+          echo "immersive evaluation shards: $result"
+          if [ "$result" = "success" ]; then
+            exit 0
+          fi
+          echo "::error::Immersive evaluation not verified: shard aggregate result=$result. Browser or GPU unavailability, a cancelled shard and a failed gate all land here, and none of them is a pass (ADR-010). Inspect the per-fixture immersive-evaluation-<fixture> artifacts."
+          exit 1
 
   release-provenance:
     if: startsWith(github.ref, 'refs/tags/v')

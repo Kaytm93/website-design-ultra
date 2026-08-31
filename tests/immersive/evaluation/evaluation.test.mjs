@@ -13,6 +13,10 @@
  * - expectations (PASS, and deliberate FAIL per gate) are matched exactly,
  *   with UNAVAILABLE never treated as PASS or FAIL.
  *
+ * They also guard the CI shard matrix against drift: the suite runs one
+ * fixture per job, so a fixture added to the repository without a matrix
+ * entry would never run and its absence would look like a green suite.
+ *
  * Run from the repository root:
  *   node --test tests/immersive/evaluation/evaluation.test.mjs
  */
@@ -30,6 +34,7 @@ import {
   evaluateGates,
   matchExpectation,
   parseFixtureDeclaration,
+  peerGreenFixtureNames,
   validateFixtureDeclaration,
 } from './run-implementation-evaluation.mjs'
 
@@ -665,4 +670,79 @@ test('aggregation: UNAVAILABLE dominates PASS, FAIL dominates both', () => {
     aggregateGateStatus({ a: { status: 'PASS' }, b: { status: 'NOT_APPLICABLE' } }),
     'PASS',
   )
+})
+
+// --- CI shard matrix ---------------------------------------------------------
+//
+// The immersive evaluation runs one fixture per CI job. That list lives in the
+// workflow, and a workflow cannot enumerate a directory, so the two can drift.
+// A fixture missing from the matrix does not fail: it simply never runs, and a
+// suite that never ran looks exactly like a suite that passed. This test is the
+// only thing standing between that and a false green.
+
+function workflowMatrixFixtures() {
+  const workflow = fs.readFileSync(
+    path.join(SCRIPT_DIRECTORY, '..', '..', '..', '.github', 'workflows', 'validate.yml'),
+    'utf8',
+  )
+  const block = workflow.match(/\n {8}fixture:\n((?: {10}- \S+\n)+)/)
+  assert.ok(block, 'validate.yml must declare a matrix.fixture list for the sharded evaluation')
+  return block[1]
+    .split('\n')
+    .filter((line) => line.trim().length > 0)
+    .map((line) => line.trim().replace(/^-\s*/, ''))
+}
+
+function runnerFixtureNames() {
+  const failing = fs
+    .readdirSync(FIXTURES_DIRECTORY, { withFileTypes: true })
+    .filter(
+      (entry) =>
+        entry.isDirectory() &&
+        entry.name !== 'common' &&
+        fs.existsSync(path.join(FIXTURES_DIRECTORY, entry.name, 'fixture.json')),
+    )
+    .map((entry) => entry.name)
+    .sort()
+  return [...peerGreenFixtureNames(), ...failing]
+}
+
+test('the CI shard matrix covers exactly the fixtures the runner knows', () => {
+  const declared = workflowMatrixFixtures()
+  const actual = runnerFixtureNames()
+
+  const missing = actual.filter((name) => !declared.includes(name))
+  assert.deepEqual(
+    missing,
+    [],
+    `fixtures exist but no CI shard runs them: ${missing.join(', ')}`,
+  )
+
+  const stale = declared.filter((name) => !actual.includes(name))
+  assert.deepEqual(
+    stale,
+    [],
+    `CI shards name fixtures the runner does not have: ${stale.join(', ')}`,
+  )
+
+  assert.equal(
+    new Set(declared).size,
+    declared.length,
+    'a fixture is listed twice in the shard matrix',
+  )
+})
+
+test('every shard uploads its evidence under its own artifact name', () => {
+  const workflow = fs.readFileSync(
+    path.join(SCRIPT_DIRECTORY, '..', '..', '..', '.github', 'workflows', 'validate.yml'),
+    'utf8',
+  )
+  // Artifact names must be unique per job, and the aggregate gate points
+  // readers at immersive-evaluation-<fixture> when a shard is not green.
+  assert.match(workflow, /name: immersive-evaluation-\$\{\{ matrix\.fixture \}\}/)
+  assert.match(workflow, /--fixture "\$\{\{ matrix\.fixture \}\}"/)
+  // fail-fast would let one red shard hide the verdict of the others.
+  assert.match(workflow, /fail-fast: false/)
+  // One required check stands for the whole sharded suite.
+  assert.match(workflow, /immersive-evaluation-gate:/)
 })
