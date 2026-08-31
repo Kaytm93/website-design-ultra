@@ -53,6 +53,98 @@ jobs:
         working-directory: website-design-ultra
         run: node scripts/run-forward-tests.mjs --dry-run
 
+      # A plugin whose central claim is a deterministic copy linter has to pass
+      # its own linter. NO-COPY is exit code 2, not a pass.
+      - name: Lint the plugin's own copy
+        working-directory: website-design-ultra
+        run: node scripts/lint-copy.mjs --self
+
+  # Root-only executable surfaces (ADR-011). These are fast, need no browser and
+  # no GPU, and were previously verified only by hand.
+  root-suites:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22
+
+      # The runner's own python3 is used rather than pinning another action.
+      # numpy is the only third-party import in the root python suites.
+      - name: Install python dependencies
+        run: python3 -m pip install --disable-pip-version-check numpy
+
+      - name: Queue driver contract
+        run: |
+          python3 -m unittest automation/immersive-production-v2/test_chain_driver.py
+          python3 automation/immersive-production-v2/chain_driver.py --check
+
+      - name: Volume research benchmark
+        run: python3 -m unittest volume_research/tests/test_volume_research.py
+
+      # Byte-level reproducibility of the committed volume artefacts. This is
+      # encoder determinism; the rendered-capture proof lives in the
+      # deterministic-capture job and neither substitutes for the other.
+      - name: Volume artefact reproducibility
+        run: bash volume_research/scripts/reproduce.sh
+
+      # Source-contract regressions for the procedural fixture. No Blender
+      # needed: these read committed source, they do not generate geometry.
+      - name: Procedural source contracts
+        run: |
+          python3 procedural-generation/test_ip10c_review_regressions.py
+          node procedural-generation/test_ip10c_debug_regressions.mjs
+
+      # The generator itself needs a real Blender install, which this runner
+      # does not have. It is deliberately not run here rather than being run
+      # and allowed to report a green result it cannot support.
+      - name: Declare Blender capability
+        run: echo "UNAVAILABLE capability=blender — generator suites run on a host with Blender; see procedural-generation/README.md"
+
+  lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: lab/package-lock.json
+
+      - name: Install lab (exact lockfile)
+        working-directory: lab
+        run: npm ci
+
+      - name: Lab suite
+        working-directory: lab
+        run: npm test
+
+  starter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: starters/next-r3f-cinematic/package-lock.json
+
+      - name: Install starter (exact lockfile)
+        working-directory: starters/next-r3f-cinematic
+        run: npm ci
+
+      # The definition of done requires that a fresh run builds the starter
+      # without reconstructing the architecture. This is that check.
+      - name: Typecheck, test, build
+        working-directory: starters/next-r3f-cinematic
+        run: npm run verify
+
   deterministic-capture:
     runs-on: ubuntu-latest
     timeout-minutes: 10

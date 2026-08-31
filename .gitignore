@@ -21,6 +21,10 @@ node_modules/
 lab/dist/
 *.log
 
+# Python bytecode from the root test suites
+__pycache__/
+*.py[cod]
+
 # macOS
 .DS_Store
 
