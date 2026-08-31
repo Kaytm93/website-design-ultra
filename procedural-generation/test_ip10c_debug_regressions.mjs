@@ -38,9 +38,12 @@
 
 import { strict as assert } from 'node:assert'
 import { readFileSync, existsSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const REPO = '/Users/kaygewinner/Desktop/Claude code/website-design-ultra-pr13c-run'
+// The repository root is derived from this file, never from one contributor's
+// checkout: procedural-generation/ sits one level below the root.
+const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const PH = (rel) => resolve(REPO, 'tests/immersive/product-hero', rel)
 const PC = (rel) => resolve(REPO, 'tests/immersive/procedural-crystal', rel)
 
