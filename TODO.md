@@ -1,5 +1,29 @@
 # TODO — Immersive Production Layer
 
+> **Status: closed.** Tier 0 shipped in 1.10.0, Tier 1 in 1.11.0, Tier 2 in
+> 1.12.0, Tier 3 plus the definition-of-done closure in 2.0.0, and the evidence
+> audit in 2.0.1. The checkboxes below were never ticked and are kept as the
+> plan they were. Per-task state lives in
+> `automation/immersive-production-v2/QUEUE.md`, which reports 36 of 36 tasks
+> checked and 0 open, asserted by `test_chain_driver.py`. Every
+> definition-of-done line is linked to the fixture, commit or run that proves
+> it in `automation/immersive-production-v2/IP-11D-EVIDENCE.md`.
+>
+> **One line is still open.** "Two generated immersive fixtures pass install,
+> build, runtime, keyboard, mobile, reduced-motion and fallback checks" reads
+> UNVERIFIED. Both offline fixture suites pass on a clean checkout, but the
+> live `immersive-evaluation` job exceeded its own 45-minute budget on `main`
+> at `e5a1ea0` and `a9b432c` and was cancelled, and a cancelled run is not a
+> pass. The per-fixture shard matrix in `f303b67` is the fix. The line moves to
+> PASS when a green `immersive-evaluation-gate` run exists and is named in the
+> evidence index.
+>
+> Deferred on purpose, and recorded in §"Not doing": `vite-three-canvas` until
+> the first starter has been used on two unrelated projects, publishing the
+> quality controller to npm until two consumers exist, and a general VDB
+> exporter until two unrelated assets use the format.
+
+
 **Branch:** `proposal/immersive-production-v2`
 **Baseline:** 1.9.1 (`b5474cc`)
 **Thesis:** a budget nothing reads back is not a budget.
