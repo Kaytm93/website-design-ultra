@@ -114,7 +114,7 @@ test('the optimized GLB is a real Draco-compressed file and a sane size', () => 
   assert.ok(existsSync(glbPath))
   const bytes = statSync(glbPath).size
   assert.ok(bytes > 1000, `optimized GLB should be > 1 KB, got ${bytes}`)
-  assert.ok(bytes < 50000, `optimized GLB should be < 50 KB, got ${bytes}`)
+  assert.ok(bytes < 100_000, `optimized GLB should be < 100 KB, got ${bytes}`)
 })
 
 test('the committed summary reports decoded stats below the declared budgets', () => {

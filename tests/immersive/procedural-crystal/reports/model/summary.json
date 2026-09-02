@@ -9,13 +9,13 @@
     "version": "4.4.2"
   },
   "raw": {
-    "bytes": 49544,
-    "sha256": "a2f716c40867cda9c0e40e6d483f5af9c984658cfad232fb67a891d984732cca"
+    "bytes": 879152,
+    "sha256": "8ac233c68a5ad47ca927603efe35e81f8d3c52e12121fb95ee6627aeb8d1f792"
   },
   "optimized": {
-    "bytes": 6360,
-    "sha256": "7ff31faabca2e5bfd4534120375eaafc8c84a87a19393e0f22f0203faf40a9df",
-    "triangles": 532,
+    "bytes": 67788,
+    "sha256": "271e5b2561959a1340c11b9e046f9b59afe6b6c30bd662bc82218754de63bd57",
+    "triangles": 23582,
     "meshes": 2,
     "materials": 2,
     "extensionsUsed": "KHR_draco_mesh_compression",

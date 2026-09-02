@@ -1,11 +1,10 @@
 # wdu-procedural-crystal — IP-10C fixture
 
 The second immersive-evaluation fixture for the website-design-ultra production
-layer. It proves that the IP-10B procedural crystal (Blender Python,
-crystal-growth) passes through the IP-10C existing `3d-asset-pipeline`
-unchanged, lands as a committed Draco-compressed GLB, decodes through a
-local Draco decoder (no CDN, no runtime fetch), and survives the same
-evaluation gates the product-hero fixture does.
+layer. It proves that the J-C4 JavaScript crystal-growth source GLB passes
+through the existing `3d-asset-pipeline` unchanged, lands as a committed
+Draco-compressed GLB, decodes through a local Draco decoder (no CDN, no runtime
+fetch), and survives the same evaluation gates the product-hero fixture does.
 
 ## Fixture surface
 
@@ -27,7 +26,8 @@ evaluation gates the product-hero fixture does.
 - `reports/model/` — pre-inspect.txt, pre-validate.log, post-inspect.txt,
   post-validate.log, summary.json — every raw pipeline artifact plus a
   committed structured summary.
-- `scripts/build-model.mjs` — the documented pipeline driver.
+- `scripts/build-model.mjs` — the documented pipeline driver; it consumes the
+  JS-generated raw GLB without changing the existing handoff.
 - `tests/*.test.mjs` — fixture-structure, model, runtime, telemetry-surface
   offline tests.
 
