@@ -53,7 +53,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
   - **Acceptance:** Reduced-Motion-, Poster- und Context-Loss-Regeln stehen nur in `immersive-3d` §5.
   - **Verify:** `prefers-reduced-motion`-Treffer ≤ 5.
 
-- [ ] `J-B3` **Commands entkoppeln** — M
+- [x] `J-B3` **Commands entkoppeln** — M
   - **Depends on:** J-B1, J-B2
   - **Deliver:** `commands/immersive.md` ≤ 3,5 KB und `commands/design.md` ≤ 3,5 KB; keine duplizierten Skill-Absätze.
   - **Acceptance:** Command-Dateien ≤ 4 KB; Touch-Fragen zeigen auf `r3f-interaction/references/touch-and-gestures.md`.

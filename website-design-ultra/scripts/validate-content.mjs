@@ -172,6 +172,27 @@ if (commandDirectories.length !== 6) {
 }
 
 /**
+ * A command is a running order, not a second copy of the rules.
+ *
+ * Every kilobyte a command spends restating a skill is a kilobyte read twice
+ * on every invocation, and a place the two copies can disagree. The cap is
+ * what keeps a command pointing instead of repeating.
+ *
+ * `verify.md` and `audit.md` are named exceptions, not silent ones: they are
+ * procedure documents that have not been cut yet. The exception is listed so
+ * the debt is visible, and the cap holds for everything else.
+ */
+const commandSizeLimit = 4096
+const uncutCommands = new Set(['verify.md', 'audit.md'])
+for (const name of commandDirectories) {
+  if (uncutCommands.has(name)) continue
+  const size = fs.statSync(path.join(pluginRoot, 'commands', name)).size
+  if (size > commandSizeLimit) {
+    fail(`commands/${name}: ${size} bytes exceeds the ${commandSizeLimit}-byte command budget`)
+  }
+}
+
+/**
  * A path a skill names has to be a path the reader can open.
  *
  * An installation is the plugin directory and nothing else: `references/*.ts`,
