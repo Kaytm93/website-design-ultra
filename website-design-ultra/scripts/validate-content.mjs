@@ -420,7 +420,15 @@ const hardeningContracts = [
   ],
   [
     'scripts/verify-browser.mjs',
-    ['--probe', 'WDU_PLAYWRIGHT_CLI', 'run-code', 'UNAVAILABLE'],
+    [
+      '--probe',
+      'WDU_PLAYWRIGHT_CLI',
+      'run-code',
+      'UNAVAILABLE',
+      '--target',
+      'target-comparison.json',
+      'target-diff.png',
+    ],
   ],
   [
     'commands/verify.md',

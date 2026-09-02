@@ -51,6 +51,22 @@ Justify deviations in the contract rather than scattered components.
 6. Design a distinct portrait shot, then choose a poster from the same image.
 7. Hand quality hooks to `3d-runtime-quality` without changing visual ranking.
 
+
+## Look-loop: live frame against the poster target
+
+A poster is a target, not proof that the live scene matches it. Once scene code
+exists, capture the live hero frame in the declared desktop shot and run
+`verify-browser.mjs --target <poster-target.png>` against it. The verifier
+writes `target-comparison.json` and `target-diff.png` beside the capture. Name
+one changed decision per round, keep an iteration log, and treat a correction as
+better only when the measured distance falls — read
+[references/look-loop.md](references/look-loop.md) before the first iteration.
+
+An implemented scene cannot finish with an unmeasured look claim. `/immersive`
+ends with the comparison artifact, or with `NOT_APPLICABLE` and a concrete
+plan-only or out-of-scope reason. Ordinary 2D work and an ordinary 3D hero do not
+load an advanced immersive module merely because this evidence procedure exists.
+
 ## Invariants and output
 
 One camera source writes each state. Reframe with FOV, distance, and scale rather
@@ -72,5 +88,8 @@ ledger/target when applicable.
 - [ ] Color spaces, tone mapping, and exposure are fixed.
 - [ ] Spatial text stays readable and semantically present in the DOM.
 - [ ] Poster, reduced motion, and the live scene tell the same statement.
+- [ ] An implemented scene records at least one target comparison iteration with
+      `target-comparison.json` and `target-diff.png`, or states a concrete
+      `NOT_APPLICABLE` reason.
 - [ ] When `reference-intake` ran, every field still cites a source frame or is
       `unknown`, and the poster target existed before scene code.
