@@ -27,7 +27,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
   - **Acceptance:** `commands/verify.md` und `canvas-first-architecture` verweisen auf Plugin-Pfade; Comparator-Help läuft ohne Repo-Checkout.
   - **Verify:** Sync-Test, Pfad-Validator, `node <plugin-root>/templates/runtime/compare-baselines.mjs --help`.
 
-- [ ] `J-A3` **Router-Lücke schließen** — S
+- [x] `J-A3` **Router-Lücke schließen** — S
   - **Depends on:** none
   - **Deliver:** `gpu-particle-systems` und `procedural-3d` in `immersive-3d`-Add-on-Tabelle/Routing und als `core-rules`-Gate-Zeilen.
   - **Acceptance:** Jeder Skill wird genau einmal von `core-rules` oder `immersive-3d` genannt; beide Add-ons bleiben in den drei 3D-Forward-Cases verboten.

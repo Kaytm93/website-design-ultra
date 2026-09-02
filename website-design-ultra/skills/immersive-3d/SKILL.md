@@ -74,6 +74,8 @@ others.
 | Passes that read what earlier passes wrote, or more than two effects whose order matters | multi-pass render chain | `render-graph` |
 | A first frame that depends on staged assets, or an art-directed arrival | manifest and loading sequence | `loading-choreography` |
 | The experience plays sound | audio graph, unlock gesture, opt-out | `spatial-audio` |
+| Thousands of particles carrying per-particle state across frames, driven by a field, a trail, or a morph between targets | GPU simulation in textures | `gpu-particle-systems` |
+| The geometry itself has to be produced from parameters or grown algorithmically, not imported | generator before the asset path | `procedural-3d`, then `3d-asset-pipeline` |
 
 **Renderer:** WebGLRenderer is the mature default. Select WebGPURenderer only when TSL/WebGPU/node features justify the additional effort; compatible features can fall back to WebGL2. Renderer-specific limits and postprocessing live in `shaders-tsl`.
 
@@ -173,6 +175,8 @@ For production or complex scenes → `r3f-patterns`.
 - Multi-pass chain, buffers, grading → **`render-graph`**
 - Manifest, buckets, progress, warm-up → **`loading-choreography`**
 - Sound → **`spatial-audio`**
+- Thousands of particles with persistent state, a field, trails, or a morph → **`gpu-particle-systems`**
+- Geometry generated from parameters or grown → **`procedural-3d`**, then **`3d-asset-pipeline`**
 - Before every output: walk the `core-rules` pre-flight plus the 3D budget from section 3.
 
 ## 8. Browser verification and launch gate
