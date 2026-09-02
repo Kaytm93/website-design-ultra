@@ -32,9 +32,9 @@ named sessions, `run-code`, and screenshots. It tries in this order:
 3. `playwright-cli` from `PATH`,
 4. `npx --yes --package @playwright/cli@0.1.17 playwright-cli`.
 
-A merely existing path or package name is not enough. When the adapter reports
-`UNAVAILABLE` but the host provides real browser automation, run the same state
-matrix with that host tool. This applies in particular to Claude Cowork: use its
+A merely existing path or package name is not enough. When the adapter has no
+usable backend but the host provides real browser automation, run the same
+state matrix with that host tool. This applies in particular to Claude Cowork: use its
 browser capability directly instead of imitating a Codex path.
 
 ## 3. Deterministic capture
@@ -176,12 +176,9 @@ Next concrete fix:
 
 FAIL on an empty canvas/fallback, an obscured primary CTA, mobile overflow, a missing DOM alternative, active nonessential reduced-motion movement, or runtime errors that damage the experience.
 
-`UNAVAILABLE` is permitted when the executable target lacks the required
-browser, GPU, or telemetry capability, or the target is externally unreachable.
-When the adapter reports an unavailable browser capability but the host provides
-real host browser automation, run the same state matrix with that host tool. For a
-missing GPU or telemetry surface, document the capability evidence and leave the
-launch gate open. Additionally run build/typecheck and static fallback/DOM/
-reduced-motion checks, but never call them a visual or telemetry substitute and
-never report `PASS`. The implementation may be handed over as **unverified**;
-a release/launch gate stays open until real browser and telemetry evidence.
+The four status values and what each one obliges are defined in
+`core-rules/references/verification-status.md`. Two things this command adds:
+when the adapter has no usable browser backend but the host provides real
+host browser automation, run the same state matrix with that host tool instead
+of degrading; and for a missing GPU or telemetry surface, document the capability
+evidence in the report.

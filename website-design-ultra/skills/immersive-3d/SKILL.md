@@ -186,15 +186,8 @@ Check a runnable experience with the capability-checked
 automation. Photograph desktop, mobile, reduced motion, and the disabled GPU
 fallback, and inspect the images.
 
-With a runnable target the result is `PASS`, `FAIL`, or `UNAVAILABLE`. When
-neither the adapter nor a host browser is available, deliver static
-build/fallback evidence, mark the result **unverified**, and leave the launch
-gate open. A missing slash command, a missing Codex path, or a successful build
-must never lead to a claimed `PASS`.
-
-For an explicit plan/contract without a runnable target, use `NOT_APPLICABLE
-(plan-only)` plus the planned capture matrix. That is not a launch assessment;
-with the first runnable build the browser check becomes mandatory.
+Report the outcome with the four values `core-rules/references/verification-status.md`
+defines. That file owns when each applies and what each one obliges.
 
 ## 9. Output format (in addition to core-rules)
 

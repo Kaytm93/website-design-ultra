@@ -87,11 +87,8 @@ If the briefing calls for 3D, WebGL, a scene, or an immersive experience → use
 10. **Verification** — When the app is runnable, use the capability-checked
     adapter from `scripts/verify-browser.mjs` or a real host browser capability
     following the state contract in `/verify`. Inspect desktop, mobile, and
-    reduced motion; for 3D also the fallback. When both are missing, report
-    `UNAVAILABLE` and hand over **unverified**; never claim `PASS` from a build
-    or a code review. For an explicit plan/contract without a runnable target,
-    report `NOT_APPLICABLE (plan-only)` and define only the later capture
-    matrix; that is not a launch assessment.
+    reduced motion; for 3D also the fallback. Report the outcome with the four
+    values `core-rules/references/verification-status.md` defines.
 
 ## Arguments
 

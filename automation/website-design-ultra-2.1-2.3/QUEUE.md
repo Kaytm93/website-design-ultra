@@ -41,7 +41,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
 
 ## PR 2 — PR B: Effizienz — 2.1.0 Teil 2
 
-- [ ] `J-B1` **Eine Quelle für den Verifikationsstatus** — S
+- [x] `J-B1` **Eine Quelle für den Verifikationsstatus** — S
   - **Depends on:** none
   - **Deliver:** `core-rules/references/verification-status.md` ≤ 1,5 KB; sechs Statuskopien auf Pointer-Sätze reduzieren.
   - **Acceptance:** Statuswerte werden nur einmal definiert; `UNAVAILABLE`-Treffer ≤ 14.
