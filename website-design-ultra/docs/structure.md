@@ -31,6 +31,12 @@ website-design-ultra/
 │   ├── install-codex-sync.sh       # install hourly macOS Git sync
 │   ├── sync-codex-marketplace.sh   # refresh and reinstall from GitHub
 │   └── verify-browser.mjs          # capability-gated browser adapter
+├── templates/
+│   ├── README.md
+│   ├── runtime/                    # copyable zero-dependency runtime contracts
+│   ├── shaders/                    # copyable GLSL modules
+│   └── material-lookdev/
+│       └── material-lookdev.ts     # copyable typed material contract
 └── skills/
     ├── core-rules/
     │   └── references/              # composition, recomposition, deterministic runtime

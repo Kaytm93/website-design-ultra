@@ -21,12 +21,16 @@ that carries the visual thesis. Keep a standard material when no physical
 feature is enabled; **base color alone never promotes a surface to a physical
 material**.
 
+## Copyable module
+
+Copy [templates/material-lookdev/material-lookdev.ts](templates/material-lookdev/material-lookdev.ts) into the project. It is a dependency-free TypeScript contract with the five recipe maps, explicit environment tiers, bounded material fields, and the `MeshStandardMaterial`/`MeshPhysicalMaterial` decision gate. It imports no package; after copying, the project owns its version.
+
 ## Contract
 
 1. Read [references/material-recipes.md](references/material-recipes.md) for the five starting recipes.
 2. Read [references/physical-fields.md](references/physical-fields.md) before setting transmission, IOR, thickness, attenuation, clearcoat, or iridescence.
 3. Read [references/environment-tiers.md](references/environment-tiers.md) before loading a reflection environment.
-4. Use the typed source contract at `repo:lab/src/modules/material-lookdev.ts` when the root-only lab is available; copy the values into the project rather than importing the lab.
+4. Use [templates/material-lookdev/material-lookdev.ts](templates/material-lookdev/material-lookdev.ts) as the copyable implementation contract. When the root-only lab is available, use the typed source contract at `repo:lab/src/modules/material-lookdev.ts` to exercise it; copy the values into the project rather than importing the lab.
 
 The contract keeps color textures in sRGB, data textures in their data color
 space, and tone mapping after material evaluation. `MeshPhysicalMaterial` is a
