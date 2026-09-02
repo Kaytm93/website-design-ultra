@@ -7,7 +7,7 @@
  */
 
 import type { ExperimentContext } from '../main.js';
-import { mount as mountSiteReconnaissance } from '../experiments/site-reconnaissance.js';
+import { mount as mountSiteReconnaissance } from '../experiments/site-reconnaissance.ts';
 
 export function mount(ctx: ExperimentContext): void {
   mountSiteReconnaissance(ctx);
@@ -16,4 +16,4 @@ export function mount(ctx: ExperimentContext): void {
 export {
   OFFLINE_RECONNAISSANCE_CAPTURE,
   createOfflineCaptureSignature,
-} from '../experiments/site-reconnaissance.js';
+} from '../experiments/site-reconnaissance.ts';
