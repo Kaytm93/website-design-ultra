@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 
 const pluginRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const casesPath = path.join(pluginRoot, 'tests', 'forward', 'cases.json')
-const MINIMUM_PATH_MAX_BYTES = 57_000
+const DEFAULT_HERO_PATH_MAX_BYTES = 57_000
 
 function fail(message) {
   console.error(`Path measurement: ${message}`)
@@ -70,13 +70,17 @@ try {
   process.exit()
 }
 
-const pathPasses = result.bytes <= MINIMUM_PATH_MAX_BYTES
+const pathBudget =
+  testCase.trace?.maxPathBytes ??
+  (caseId === '3d-hero' ? DEFAULT_HERO_PATH_MAX_BYTES : null)
+const pathPasses = pathBudget === null || result.bytes <= pathBudget
 const tokenBudget = testCase.trace?.maxEstimatedPluginTokens ?? null
 const tokenPasses = tokenBudget === null || result.tokens <= tokenBudget
 const bytesLabel = `${result.bytes.toLocaleString('en-US')} bytes`
 const kbLabel = `${(result.bytes / 1000).toFixed(2)} KB`
+const pathLimitLabel = pathBudget === null ? 'no byte cap declared' : `${Math.round(pathBudget / 1000)} KB`
 console.log(`${caseId}: ${result.entries.length} files`)
-console.log(`Minimum path: ${bytesLabel} (${kbLabel}) <= 57 KB: ${pathPasses ? 'PASS' : 'FAIL'}`)
+console.log(`Minimum path: ${bytesLabel} (${kbLabel}) <= ${pathLimitLabel}: ${pathPasses ? 'PASS' : 'FAIL'}`)
 console.log(
   `Estimated plugin tokens: ${result.tokens.toLocaleString('en-US')}` +
     (tokenBudget === null

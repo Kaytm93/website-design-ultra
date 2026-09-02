@@ -31,7 +31,7 @@ Select exactly one implementation layer only when writing code:
 | Situation | Layer |
 |---|---|
 | React/Next production scene | `r3f-patterns` (R3F + drei) |
-| Plain HTML, embed, or quick demo | `references/vanilla-three-baseline.md` |
+| Plain HTML, embed, or quick demo | `r3f-patterns/references/vanilla-three.md` |
 
 When unclear, React means R3F and plain HTML means Vanilla Three.js. WebGL is the
 mature default; use WebGPU only for a concrete TSL/compute benefit and preserve
