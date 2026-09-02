@@ -76,6 +76,7 @@ others.
 | The experience plays sound | audio graph, unlock gesture, opt-out | `spatial-audio` |
 | Thousands of particles carrying per-particle state across frames, driven by a field, a trail, or a morph between targets | GPU simulation in textures | `gpu-particle-systems` |
 | The geometry itself has to be produced from parameters or grown algorithmically, not imported | generator before the asset path | `procedural-3d`, then `3d-asset-pipeline` |
+| A public live 3D reference URL is supplied and the brief explicitly requests implementation reconnaissance | bundle/network/runtime evidence ledger | `site-reconnaissance` |
 
 **Renderer:** WebGLRenderer is the mature default. Select WebGPURenderer only when TSL/WebGPU/node features justify the additional effort; compatible features can fall back to WebGL2. Renderer-specific limits and postprocessing live in `shaders-tsl`.
 
@@ -176,6 +177,7 @@ For production or complex scenes → `r3f-patterns`.
 - Sound → **`spatial-audio`**
 - Thousands of particles with persistent state, a field, trails, or a morph → **`gpu-particle-systems`**
 - Geometry generated from parameters or grown → **`procedural-3d`**, then **`3d-asset-pipeline`**
+- Public live 3D reference URL plus explicit runtime-reconnaissance request → **`site-reconnaissance`**; a screenshot alone does not activate it
 - Before every output: walk the `core-rules` pre-flight plus the 3D budget from section 3.
 
 ## 8. Browser verification and launch gate

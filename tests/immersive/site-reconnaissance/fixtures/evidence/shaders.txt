@@ -1,0 +1,12 @@
+program: crystal-main
+material: Crystal
+stage: vertexShader
+uniforms: uTime, uCameraPosition, uTransmission
+#define USE_TANGENT
+void main() { /* captured vertex source excerpt */ }
+
+stage: fragmentShader
+uniforms: uTime, uCameraPosition, uTransmission
+#define USE_TRANSMISSION
+void main() { /* captured fragment source excerpt */ }
+source-hash: sha256:fixture-crystal-program

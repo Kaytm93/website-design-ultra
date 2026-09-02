@@ -127,8 +127,8 @@ const skillDirectories = fs
   .readdirSync(skillsRoot, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
 
-if (skillDirectories.length !== 24) {
-  fail(`expected 24 skills, found ${skillDirectories.length}`)
+if (skillDirectories.length !== 25) {
+  fail(`expected 25 skills, found ${skillDirectories.length}`)
 }
 
 for (const directory of skillDirectories) {
@@ -720,6 +720,74 @@ for (const [file, markers] of proceduralContracts) {
   }
 }
 
+/**
+ * Site reconnaissance is an evidence gate, not a visual-reference shortcut.
+ * Bind the five runtime evidence families and the executable ledger contract so
+ * a new skill cannot claim that a screenshot is an implementation inspection.
+ */
+const siteReconnaissanceContracts = [
+  [
+    'skills/site-reconnaissance/SKILL.md',
+    [
+      'public live 3d reference url',
+      'bundle',
+      'network',
+      'renderer.info',
+      'inspector',
+      'shader',
+      'screenshot alone',
+      'does not activate this skill',
+      'at least two supported fields',
+      'at least ten supported fields',
+      'UNAVAILABLE',
+    ],
+  ],
+  [
+    'skills/site-reconnaissance/references/reconnaissance-method.md',
+    [
+      'public URL',
+      'bundle',
+      'network manifest',
+      'renderer.info',
+      'Inspector capture',
+      'shader extraction',
+      'non-screenshot',
+      'at least ten supported rows',
+      'redact',
+    ],
+  ],
+  [
+    'skills/site-reconnaissance/templates/site-reconnaissance.md',
+    [
+      'wdu-site-reconnaissance/v1',
+      'explicitRuntimeRequest',
+      'screenshotOnly',
+      'renderer-info',
+      'ledger:',
+      'bundle.entrypoints',
+      'network.first-frame-assets',
+      'renderer.info.calls',
+      'inspector.scene',
+      'shader.uniforms',
+      'UNAVAILABLE',
+    ],
+  ],
+]
+
+for (const [file, markers] of siteReconnaissanceContracts) {
+  const fullPath = path.join(pluginRoot, file)
+  if (!fs.existsSync(fullPath)) {
+    fail(`${file}: missing site-reconnaissance artifact`)
+    continue
+  }
+  const content = read(fullPath).toLowerCase()
+  for (const marker of markers) {
+    if (!content.includes(marker.toLowerCase())) {
+      fail(`${file}: missing site-reconnaissance marker "${marker}"`)
+    }
+  }
+}
+
 const artDirectionTraceFields = [
   'visual-thesis',
   'hero-subject',
@@ -982,6 +1050,7 @@ const negativeGatedSkills = [
   'procedural-3d',
   'reference-intake',
   'render-graph',
+  'site-reconnaissance',
   'spatial-audio',
 ]
 
@@ -1043,6 +1112,24 @@ for (const name of negativeGatedSkills) {
     ]) {
       if (!description.toLowerCase().includes(marker)) {
         fail(`skills/procedural-3d: description must contain "${marker}"`)
+      }
+    }
+  }
+  if (name === 'site-reconnaissance') {
+    for (const marker of [
+      'public',
+      'runtime reconnaissance',
+      'bundle',
+      'network',
+      'renderer.info',
+      'inspector',
+      'shader',
+      'screenshot alone',
+      'ordinary 2d',
+      'ordinary 3d hero',
+    ]) {
+      if (!description.toLowerCase().includes(marker)) {
+        fail(`skills/site-reconnaissance: description must contain "${marker}"`)
       }
     }
   }
@@ -1598,6 +1685,15 @@ for (const testCase of forwardCases) {
   if (!testCase.trace?.forbiddenFiles?.includes(proceduralSkill)) {
     fail(
       `tests/forward/cases.json: ${testCase.id} must forbid procedural-3d without explicit procedural geometry generation`,
+    )
+  }
+}
+
+const siteReconnaissanceSkill = 'skills/site-reconnaissance/SKILL.md'
+for (const testCase of forwardCases) {
+  if (!testCase.trace?.forbiddenFiles?.includes(siteReconnaissanceSkill)) {
+    fail(
+      `tests/forward/cases.json: ${testCase.id} must forbid site-reconnaissance without an explicit public URL runtime-reconnaissance request`,
     )
   }
 }

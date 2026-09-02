@@ -58,8 +58,9 @@ Read only what the task needs. A row fires on its gate, not on the topic.
 | 3D, WebGL, WebGPU, shaders, Three.js, or R3F | `immersive-3d`; if the reference gate fired, `reference-intake`; then `3d-art-direction` and `3d-runtime-quality`, then one implementation sub-skill |
 | A 3D brief needs thousands of particles carrying state across frames, a spatial field, trails, or a morph between targets | `gpu-particle-systems`, behind `immersive-3d` |
 | A 3D brief needs geometry produced from parameters or grown algorithmically instead of imported | `procedural-3d`, before `3d-asset-pipeline` |
+| A public live 3D reference URL is supplied with an explicit runtime-reconnaissance request | `site-reconnaissance`, behind `immersive-3d` |
 
-Five clarifications the table cannot carry:
+Six clarifications the table cannot carry:
 
 - **The copy gate is independent of `content-design`.** A headline, subhead,
   button label, empty state, or demo string needs the tell catalogue even when
@@ -75,6 +76,9 @@ Five clarifications the table cannot carry:
 - **The reference gate requires both artifacts.** A named direction, style label,
   or text-only 3D briefing without the six-to-ten-frame set and written token
   block does not activate `reference-intake`.
+- **The site-reconnaissance gate requires runtime evidence.** A public URL and an
+  explicit implementation-reconnaissance request are required; a screenshot
+  alone, ordinary 2D audit, or ordinary 3D hero does not activate it.
 - **Two gates fire on a concrete decision, never on a topic.**
   Generic content/layout hierarchy does not activate `typography`; generic page
   or dashboard planning does not activate `component-patterns`. Both need a
