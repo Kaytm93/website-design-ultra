@@ -9,12 +9,12 @@
     "version": "4.4.2"
   },
   "raw": {
-    "bytes": 879152,
-    "sha256": "8ac233c68a5ad47ca927603efe35e81f8d3c52e12121fb95ee6627aeb8d1f792"
+    "bytes": 879388,
+    "sha256": "fc82c884d69c4d4a8fdcef9b287cfb283970c11c981567b597c608f9f67cc4a1"
   },
   "optimized": {
-    "bytes": 67788,
-    "sha256": "271e5b2561959a1340c11b9e046f9b59afe6b6c30bd662bc82218754de63bd57",
+    "bytes": 68008,
+    "sha256": "a3cf330b78e05ea84779aeb16232e0a4f6b7458b9a5a89cd54bf5d257c52fd71",
     "triangles": 23582,
     "meshes": 2,
     "materials": 2,

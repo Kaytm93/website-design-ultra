@@ -3,9 +3,13 @@
   "status": "PASS",
   "generator": {
     "script": "procedural-generation/js/crystal-growth.mjs",
-    "script_version": "1.0.0",
-    "implementation": "node-standard-library",
-    "script_hash": "4ed0b0f5ad33180b",
+    "script_version": "1.1.0",
+    "implementation": "three + @gltf-transform/core",
+    "versions": {
+      "three_revision": "185",
+      "gltf_transform_core": "v4.4.2"
+    },
+    "script_hash": "6caec2dde3669e8f",
     "source_recipe": "procedural-generation/recipe.json",
     "recipe_version": "1",
     "algorithm": "crystal-growth",
@@ -53,12 +57,12 @@
     "output_validate_log": "tests/immersive/procedural-crystal/reports/model/post-validate.log"
   },
   "transfer": {
-    "input_bytes": 879152,
-    "input_sha256": "8ac233c68a5ad47ca927603efe35e81f8d3c52e12121fb95ee6627aeb8d1f792",
-    "output_bytes": 67788,
-    "output_sha256": "271e5b2561959a1340c11b9e046f9b59afe6b6c30bd662bc82218754de63bd57",
-    "saving_bytes": 811364,
-    "saving_percent": 92.29
+    "input_bytes": 879388,
+    "input_sha256": "fc82c884d69c4d4a8fdcef9b287cfb283970c11c981567b597c608f9f67cc4a1",
+    "output_bytes": 68008,
+    "output_sha256": "a3cf330b78e05ea84779aeb16232e0a4f6b7458b9a5a89cd54bf5d257c52fd71",
+    "saving_bytes": 811380,
+    "saving_percent": 92.27
   },
   "decoded_cost": {
     "triangles": 23582,
@@ -80,9 +84,9 @@
     "overall": "PASS"
   },
   "provenance_license": {
-    "origin": "self-generated procedural-3d crystal-growth via JavaScript (dependency-free Node.js)",
-    "license": "self-generated, no third-party",
-    "third_party_claim": "none"
+    "origin": "self-generated procedural-3d crystal-growth via JavaScript using pinned three and @gltf-transform/core",
+    "license": "self-generated geometry; runtime packages are MIT-licensed",
+    "third_party_claim": "three@0.185.1 and @gltf-transform/core@4.4.2"
   },
   "verifier": "procedural-generation/test_handoff.py"
 }

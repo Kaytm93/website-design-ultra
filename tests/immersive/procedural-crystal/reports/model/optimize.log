@@ -1,24 +1,24 @@
 ❯ dedup
-✔ dedup                12ms
+✔ dedup                2ms
 ❯ instance
-✔ instance             87ms
+✔ instance             1ms
 ❯ palette
-✔ palette              36ms
+✔ palette              1ms
 ❯ flatten
-✔ flatten              34ms
+✔ flatten              1ms
 ❯ join
-✔ join                 143ms
+✔ join                 11ms
 ❯ weld
-✔ weld                 103ms
+✔ weld                 14ms
 ❯ simplify
-✔ simplify             1,148ms
+✔ simplify             38ms
 ❯ resample
-✔ resample             1ms
+✔ resample             0ms
 ❯ prune
-✔ prune                18ms
+✔ prune                1ms
 ❯ sparse
-✔ sparse               124ms
+✔ sparse               7ms
 ❯ draco
-✔ draco                144ms
+✔ draco                9ms
 
-info: procedural-crystal-raw.glb (879.15 KB) → procedural-crystal.glb (67.79 KB)
+info: procedural-crystal-raw.glb (879.39 KB) → procedural-crystal.glb (68.01 KB)

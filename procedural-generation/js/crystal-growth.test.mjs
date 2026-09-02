@@ -4,6 +4,7 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test from 'node:test'
+import { NodeIO } from '@gltf-transform/core'
 
 import {
   DEFAULT_OPTIONS,
@@ -38,6 +39,19 @@ test('the CLI exposes shape, seed, iterations, and facets as validated parameter
   assert.throws(() => parseOptions(['--facets', '2']), /facets must be an integer from 3/)
   assert.throws(() => parseOptions(['--iterations', '0']), /iterations must be an integer from 1/)
   assert.throws(() => parseOptions(['--shape', 'unknown']), /shape must be one of/)
+})
+
+test('the source document is serialized by glTF Transform core', async () => {
+  const generated = generateCrystal(DEFAULT_OPTIONS)
+
+  assert.ok(generated.document, 'generator must expose its glTF Transform document')
+  const glb = Buffer.from(await new NodeIO().writeBinary(generated.document))
+  const gltf = readJsonChunk(glb)
+
+  assert.equal(gltf.asset.generator, 'website-design-ultra procedural-generation/js')
+  assert.equal(gltf.meshes.length, 2)
+  assert.equal(gltf.materials.length, 2)
+  assert.equal(gltf.nodes[0].extras.algorithm, 'crystal-growth')
 })
 
 test('the default crystal exceeds the 20,000 triangle production floor', () => {
