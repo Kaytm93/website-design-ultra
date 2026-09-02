@@ -33,6 +33,8 @@ Then open one experiment at a time:
 - `/?e=sdf-text-deterministic&WDU_DETERMINISTIC=1` — seeded capture for the SDF/MSDF text foundation so two runs hash the same atlas and produce byte-identical renders under deterministic mode.
 - `/?e=dom-text-effects` — DOM-mirrored shader text effects (IP-11B): real DOM text labels own selection, copy, translation, and screen reading; the canvas overlay renders scramble (pointer-driven), glitch (focus / activate), and dissolve (activate) whose uniforms are mirrored from DOM events and DOM measurements. Reduced-motion toggle, localization toggle (English / German / short caption) and a portrait reflow probe.
 - `/?e=dom-text-effects-deterministic&WDU_DETERMINISTIC=1` — seeded capture for the DOM-mirrored text effects so two runs hash the same canvas under deterministic mode.
+- `/?e=site-reconnaissance` — offline site-reconnaissance ledger experiment: semantic cards render committed bundle, network, renderer.info, Inspector, and shader observations without opening a live URL.
+- `/?e=site-reconnaissance-deterministic&WDU_DETERMINISTIC=1` — deterministic capture of the same offline-only ledger surface; `data-wdu-ready="true"` marks the second stable frame.
 
 ## Verification
 
