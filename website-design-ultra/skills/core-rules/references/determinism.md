@@ -207,8 +207,8 @@ declared by the project in a comparison declaration
 (`core-rules/references/baseline-comparison.schema.json`), and every mask and
 tolerance names its source — the report repeats that source, and names the
 built-in strict default when a comparison runs without a declaration. The
-executable comparator is the source-repository
-`repo:tests/immersive/interaction-capture/compare-baselines.mjs`; it writes diff
+executable comparator ships with the plugin as
+`templates/runtime/compare-baselines.mjs`; it writes diff
 PNGs and a timestamp-free `comparison.json` whose statement labels every
 score as evidence, never an aesthetic verdict, taste, or approval.
 

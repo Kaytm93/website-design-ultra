@@ -9,7 +9,7 @@ shape, the four categories, the signature map, and the runtime observer.
 
 ## Module
 
-`repo:lab/src/modules/canvas-only-prohibition.ts` exports:
+`templates/runtime/canvas-only-prohibition.ts` exports:
 
 | Export | Shape | Role |
 |---|---|---|

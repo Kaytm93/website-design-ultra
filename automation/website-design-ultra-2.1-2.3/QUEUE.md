@@ -21,7 +21,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
   - **Acceptance:** Runtime-Skills und `/verify` zeigen auf Plugin-Templates; kein installierter Pfad fehlt.
   - **Verify:** Backtick-Pfad-Regel in `validate-content.mjs`, Sync-Test, `claude plugin validate website-design-ultra --strict`.
 
-- [ ] `J-A2` **Comparator und Prohibition-Validator ins Plugin** — S
+- [x] `J-A2` **Comparator und Prohibition-Validator ins Plugin** — S
   - **Depends on:** J-A1
   - **Deliver:** `templates/runtime/compare-baselines.mjs` und `templates/runtime/canvas-only-prohibition.ts`, dependency-frei; Sync-Test erweitert.
   - **Acceptance:** `commands/verify.md` und `canvas-first-architecture` verweisen auf Plugin-Pfade; Comparator-Help läuft ohne Repo-Checkout.
