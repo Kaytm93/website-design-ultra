@@ -93,10 +93,9 @@ You will build an immersive 3D experience (hero, scene, viewer, or scroll-driven
 12. **Render verification** — When the app runs locally, execute the
     capability-checked adapter `scripts/verify-browser.mjs` or a real host
     browser automation with the state matrix from `/verify`. Actually inspect
-    desktop, mobile, reduced motion, and fallback. With a runnable target the
-    step always ends in `PASS`, `FAIL`, or `UNAVAILABLE`; without images, `PASS`
-    is forbidden. On `UNAVAILABLE`, deliver static build/fallback evidence, mark
-    the result **unverified**, and keep the launch gate open.
+    desktop, mobile, reduced motion, and fallback. Report the outcome with the
+    four values `core-rules/references/verification-status.md` defines; without
+    inspected images there is no pass.
 
 ## Output format
 
@@ -109,15 +108,13 @@ You will build an immersive 3D experience (hero, scene, viewer, or scroll-driven
 7. For interactive scenes: the keyboard solution, plus all six touch answers
    from step 10 as separate entries — drag threshold, pinch/zoom, pointer
    capture, `touch-action`, hover fallback, cancellation
-8. Verification status (`PASS | FAIL | UNAVAILABLE | NOT_APPLICABLE`), backend, and
-   artifact folder; on `UNAVAILABLE` the open manual capture matrix
+8. Verification status, backend, and artifact folder; when the status obliges
+   a capture matrix, the open matrix
 9. Customization hooks (colors, light, exposure, motion intensity, camera distance)
 
 If the user explicitly asks only for a plan or contract: deliver the applicable
 contracts, tiers, fallbacks, and interaction states without install commands or
-working code. Set verification to `NOT_APPLICABLE (plan-only/no executable
-target)` and deliver the planned capture matrix; do not use `UNAVAILABLE` for
-that.
+working code, and set verification to `NOT_APPLICABLE (plan-only)`.
 
 ## Arguments
 

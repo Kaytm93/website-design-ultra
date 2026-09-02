@@ -57,15 +57,10 @@ Answering the step from this file alone leaves it unfilled.
    adapter from the plugin, or real host browser automation with the same state
    matrix. A slash command or a Codex path is not a prerequisite.
 
-With a runnable target, the mandatory step ends in `PASS`, `FAIL`, or
-`UNAVAILABLE`. `UNAVAILABLE` applies when the required browser, GPU, or telemetry
-capability is missing, or the target cannot be reached. Run build/typecheck plus
-static poster, DOM, and reduced-motion checks, hand over the experience explicitly
-as **unverified**, and leave the launch gate open. These checks do not replace
-visual or telemetry verification.
-For a pure plan/contract without a runnable target, use `NOT_APPLICABLE
-(plan-only)` plus the planned capture matrix; as soon as an implementation runs,
-the check becomes the launch gate.
+Report the result as `PASS`, `FAIL`, `UNAVAILABLE`, or `NOT_APPLICABLE`
+exactly as `core-rules/references/verification-status.md` defines
+them; that file owns what each one obliges, including the **unverified**
+handover and the open launch gate.
 
 ## Quality ownership
 
@@ -101,8 +96,8 @@ Deliver:
 3. offscreen/visibility behavior,
 4. the renderer-specific PostFX decision,
 5. the poster/fallback path and verification artifacts,
-6. verification status, backend, and on `UNAVAILABLE` or `NOT_APPLICABLE` the
-   open capture matrix.
+6. verification status, backend, and the open capture matrix whenever the
+   status obliges one.
 
 ## Check
 
