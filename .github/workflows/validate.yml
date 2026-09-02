@@ -49,6 +49,9 @@ jobs:
       - name: Test plugin template sync
         run: node --test tests/templates/sync.test.mjs
 
+      - name: Run the shipped comparator from the plugin tree
+        run: node --experimental-strip-types website-design-ultra/templates/runtime/compare-baselines.mjs --help
+
       - name: Validate plugin content
         working-directory: website-design-ultra
         run: node scripts/validate-content.mjs
