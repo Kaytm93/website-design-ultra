@@ -15,6 +15,12 @@ export const STEP_SECONDS = 1 / 60
 /** The marker waits for this many rendered frames before readiness. */
 export const STABLE_FRAME = 12
 
+/** The committed, Draco-compressed procedural crystal model. */
+export const MODEL_ASSET_URL = '/model/procedural-crystal.glb'
+
+/** The local CC0 environment map copied from website-design-ultra/templates/assets. */
+export const HDRI_ASSET_URL = '/assets/studio_small_08_1k.hdr'
+
 /** Rotation speed of the hero in full motion, radians per second. */
 export const HERO_ROTATION_SPEED = 0.4
 
@@ -36,11 +42,11 @@ export const POINTER_HOVER_EMISSIVE = 0x3a2f1d
 /** Emissive lift while the pointer is pressed on the hero. */
 export const POINTER_PRESSED_EMISSIVE = 0x4a3b24
 /**
- * A local point on the torus-knot tube (the major circle) that is projected
+ * A local point near the crystal's front-facing lower facet that is projected
  * to the screen as the deterministic pointer target. The verifier moves the
- * pointer to this anchor's center; the ray through it hits the tube.
+ * pointer to this anchor's center; the ray through it hits the hero group.
  */
-export const POINTER_ANCHOR_LOCAL: readonly [number, number, number] = [0.85, 0, 0]
+export const POINTER_ANCHOR_LOCAL: readonly [number, number, number] = [0.35, 0.65, 0.45]
 
 /**
  * The hero's rotation as a pure function of capture-contract values (IP-05C).

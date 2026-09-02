@@ -24,8 +24,8 @@
       "owner": "camera-hero-z",
       "keyframes": [
         { "progress": 0, "value": 4.6 },
-        { "progress": 0.5, "value": 3.2 },
-        { "progress": 1, "value": 2.15 }
+        { "progress": 0.5, "value": 4.95 },
+        { "progress": 1, "value": 5.3 }
       ]
     },
     {
@@ -97,9 +97,9 @@
         "property": "camera.hero.z",
         "owner": "camera-hero-z-portrait",
         "keyframes": [
-          { "progress": 0, "value": 5.6 },
-          { "progress": 0.5, "value": 4.1 },
-          { "progress": 1, "value": 3.0 }
+          { "progress": 0, "value": 5.8 },
+          { "progress": 0.5, "value": 6.2 },
+          { "progress": 1, "value": 6.6 }
         ]
       },
       {

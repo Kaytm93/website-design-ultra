@@ -13,24 +13,24 @@ import type { CameraStation } from './determinism-runtime.ts'
  */
 export const CAMERA_STATIONS = {
   'hero-wide': {
-    position: [0, 1.1, 4.6],
-    target: [0, 0.4, 0],
+    position: [0, 0.8, 4.6],
+    target: [0, 0.25, 0],
     projection: 'perspective',
-    fov: 35,
+    fov: 34,
     sceneState: 'hero',
   },
   'hero-detail': {
-    position: [0.9, 0.5, 2.1],
-    target: [0, 0.3, 0],
+    position: [0.65, 0.5, 2.8],
+    target: [0, 0.55, 0],
     projection: 'perspective',
     fov: 30,
     sceneState: 'hero',
   },
   'hero-portrait': {
-    position: [0, 1.5, 5.6],
-    target: [0, 0.55, 0],
+    position: [0, 1.2, 5.8],
+    target: [0, 0.45, 0],
     projection: 'perspective',
-    fov: 33,
+    fov: 32,
     sceneState: 'hero',
   },
 } as const satisfies Readonly<Record<string, CameraStation>>

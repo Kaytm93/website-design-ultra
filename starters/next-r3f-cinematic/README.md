@@ -79,7 +79,7 @@ validator: `references/interaction-checkpoints.ts`, copied byte-identical into
 
 - hover before/during/after and click before/peak/recovered on the hero, driven
   through a deterministic pointer target (`[data-wdu-pointer-target]`, a 2x2 px
-  capture anchor projected onto the torus-knot tube),
+  capture anchor projected near the crystal's front-facing lower facet),
 - scroll at declared normalized progress (0, 0.5, 1),
 - loading (`?wdu-loading=1`, the declared loading capture state that holds
   asset readiness so the composed poster surface stays visible
@@ -148,8 +148,8 @@ contract, not conventions:
   stable-frame marker after the visible render (priority -1). Scene code
   contains no `performance.now()` or `Date.now()` path.
 - **One asset manifest.** `lib/asset-manifest.json` is the single declared
-  list of runtime assets. The header mark is the only entry; the scene is
-  procedural geometry and loads nothing over the network.
+  list of runtime assets. It includes the header mark, both posters, the
+  procedural crystal model, the local HDRI, and the local Draco decoder files.
 - **Wired determinism.** `lib/determinism-runtime.ts` is a byte-identical copy
   of the repository reference `references/determinism-runtime.ts` (IP-02B) and
   `tests/runtime.test.mjs` fails if the copies drift. The root seed is

@@ -1,65 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 675 1200">
-  <!-- Art-directed portrait poster fallback (IP-05C). The same composition as
-       poster-desktop.svg, restacked for a tall viewport: the subject sits
-       higher and the pedestal lower, so the statement survives the crop
-       (3d-art-direction: export desktop and portrait posters separately when
-       the crop would otherwise lose the statement). Purely decorative. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1600" width="900" height="1600" role="img" aria-label="Procedural Crystal poster, portrait">
   <defs>
-    <radialGradient id="bg" cx="50%" cy="22%" r="75%">
-      <stop offset="0%" stop-color="#191a21"/>
-      <stop offset="70%" stop-color="#0e0f13"/>
-    </radialGradient>
-    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#ffb86b" stop-opacity="0.3"/>
-      <stop offset="100%" stop-color="#ffb86b" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="knot" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ecdfbc"/>
-      <stop offset="55%" stop-color="#d8c9a3"/>
-      <stop offset="100%" stop-color="#b7a67f"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a0d12"/>
+      <stop offset="1" stop-color="#162032"/>
     </linearGradient>
-    <linearGradient id="pedestal" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#2b2e37"/>
-      <stop offset="100%" stop-color="#1a1c22"/>
+    <radialGradient id="glow" cx="50%" cy="43%" r="42%">
+      <stop offset="0" stop-color="#bb9af7" stop-opacity="0.44"/>
+      <stop offset="1" stop-color="#bb9af7" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="crystal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c8b5ff"/>
+      <stop offset="0.48" stop-color="#7aa2f7"/>
+      <stop offset="1" stop-color="#3d59a1"/>
     </linearGradient>
-    <linearGradient id="pedestal-top" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#343843"/>
-      <stop offset="100%" stop-color="#23262e"/>
+    <linearGradient id="crystal-deep" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#8eaaf5"/>
+      <stop offset="1" stop-color="#273d76"/>
+    </linearGradient>
+    <linearGradient id="stage" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#27354d"/>
+      <stop offset="1" stop-color="#111722"/>
     </linearGradient>
   </defs>
 
-  <rect width="675" height="1200" fill="url(#bg)"/>
+  <rect width="900" height="1600" fill="url(#bg)"/>
+  <ellipse cx="450" cy="700" rx="360" ry="470" fill="url(#glow)"/>
+  <ellipse cx="450" cy="1260" rx="150" ry="18" fill="#000000" opacity="0.48"/>
 
-  <!-- Warm accent light, lower left. -->
-  <circle cx="250" cy="560" r="310" fill="url(#glow)"/>
-
-  <!-- Floor shadow under the pedestal. -->
-  <ellipse cx="337" cy="1032" rx="210" ry="20" fill="#000000" opacity="0.4"/>
-
-  <!-- Pedestal. -->
-  <path d="M 162 958 L 150 1002 A 187 34 0 0 1 524 1002 L 512 958 A 175 30 0 0 1 162 958 Z" fill="url(#pedestal)"/>
-  <ellipse cx="337" cy="956" rx="175" ry="30" fill="url(#pedestal-top)"/>
-  <ellipse cx="337" cy="954" rx="175" ry="30" fill="none" stroke="#3a3f4b" stroke-opacity="0.6"/>
-
-  <!-- Shadow cast by the knot onto the pedestal. -->
-  <ellipse cx="337" cy="868" rx="120" ry="18" fill="#000000" opacity="0.42"/>
-
-  <!-- The knot: three interlocking rings with holes, in the matte accent tone. -->
-  <g transform="translate(337 720)">
-    <g transform="rotate(-30)">
-      <ellipse cx="0" cy="0" rx="150" ry="85" fill="url(#knot)"/>
-      <ellipse cx="0" cy="0" rx="87" ry="49" fill="#12141a"/>
-    </g>
-    <g transform="rotate(90)">
-      <ellipse cx="0" cy="0" rx="150" ry="85" fill="url(#knot)"/>
-      <ellipse cx="0" cy="0" rx="87" ry="49" fill="#12141a"/>
-    </g>
-    <g transform="rotate(210)">
-      <ellipse cx="0" cy="0" rx="150" ry="85" fill="url(#knot)"/>
-      <ellipse cx="0" cy="0" rx="87" ry="49" fill="#12141a"/>
-    </g>
+  <g transform="translate(450 720)">
+    <path d="M 0 -390 L 118 -165 L 86 42 L 152 222 L 55 378 L 0 305 L -64 382 L -152 235 L -87 42 L -120 -165 Z" fill="url(#crystal)"/>
+    <path d="M 0 -390 L 0 305 L 55 378 L 152 222 L 86 42 L 118 -165 Z" fill="url(#crystal-deep)" opacity="0.82"/>
+    <path d="M 0 -390 L 118 -165 L 0 -78 L -120 -165 Z" fill="#e7eaff" opacity="0.24"/>
+    <path d="M 0 -78 L 86 42 L 0 305 L -87 42 Z" fill="#b7caff" opacity="0.16"/>
+    <path d="M -152 235 L -64 382 L 0 305 L -87 42 Z" fill="#1e3268" opacity="0.52"/>
+    <path d="M 86 42 L 152 222 L 55 378 L 0 305 Z" fill="#253b79" opacity="0.6"/>
+    <path d="M 0 -390 L 0 -78 L -87 42 L -120 -165 Z" fill="#ffffff" opacity="0.1"/>
   </g>
 
-  <!-- Soft top-left sheen across the subject. -->
-  <ellipse cx="285" cy="640" rx="120" ry="56" transform="rotate(-24 285 640)" fill="#ffffff" opacity="0.07"/>
+  <path d="M 255 1220 Q 450 1188 645 1220 L 675 1260 Q 450 1292 225 1260 Z" fill="url(#stage)" opacity="0.9"/>
+  <ellipse cx="450" cy="1220" rx="195" ry="28" fill="#30415f" opacity="0.65"/>
 </svg>
