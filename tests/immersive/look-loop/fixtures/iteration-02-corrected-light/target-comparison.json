@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "surface": "wdu.target-comparison",
+  "mode": "poster-target",
+  "status": "PASS",
+  "verificationStatus": "PASS",
+  "statement": "A target score is evidence of visual change. It is never an aesthetic verdict, taste, or approval.",
+  "iteration": "corrected-light",
+  "target": {
+    "file": "poster-target.png",
+    "bytes": 93,
+    "sha256": "7ffffda5c638e7938ea81343ce1fabe022de5c56f2c0bb6b66f9c375b18fb568",
+    "width": 24,
+    "height": 16
+  },
+  "liveFrame": {
+    "file": "live-corrected.png",
+    "bytes": 93,
+    "sha256": "7ffffda5c638e7938ea81343ce1fabe022de5c56f2c0bb6b66f9c375b18fb568",
+    "width": 24,
+    "height": 16
+  },
+  "comparison": {
+    "totalPixels": 384,
+    "changedPixels": 0,
+    "changedFraction": 0,
+    "meanAbsDifference": 0,
+    "maxChannelDelta": 0,
+    "withinTolerance": true
+  },
+  "tolerance": {
+    "id": "strict-default",
+    "maxChannelDelta": 0,
+    "maxChangedFraction": 0,
+    "maxMeanAbsDifference": 0,
+    "source": "built-in strict target default (zero tolerance)"
+  },
+  "diffArtifact": "target-diff.png",
+  "reason": null
+}
