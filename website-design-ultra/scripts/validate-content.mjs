@@ -276,6 +276,24 @@ const priorityOneContracts = [
     'skills/shaders-tsl/references/webgpu-feature-matrix.md',
     ['WebGPU', 'WebGL2 fallback', 'TSL postprocessing', 'Compute dependency', 'Known limitations'],
   ],
+  // A module list without the five fields is the prose list T2.2 forbids.
+  [
+    'skills/shaders-tsl/references/module-index.md',
+    [
+      '| Renderer support |',
+      '| Cost class |',
+      '| Reduced motion |',
+      '| Colour space |',
+      '| Fixture |',
+      '| Copy from |',
+      'templates/shaders/',
+      'noCombine',
+    ],
+  ],
+  [
+    'skills/shaders-tsl/SKILL.md',
+    ['references/module-index.md'],
+  ],
   [
     'commands/verify.md',
     ['desktop-full.png', 'mobile-full.png', 'reduced-motion-a.png', 'fallback-full.png', 'visual'],

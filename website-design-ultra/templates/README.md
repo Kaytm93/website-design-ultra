@@ -11,6 +11,10 @@ skill can name a path the reader can actually open.
   canvas-first page keeps its primary actions, forms, legal copy, and pricing
   in the DOM.
 
+- `shaders/` — the GLSL the lab's shader modules are built from. Read
+  `skills/shaders-tsl/references/module-index.md` first: it says which file
+  carries which effect, at what cost, on which backend.
+
 `compare-baselines.mjs` reads its declaration contract from the sibling
 `baseline-comparison.ts`, so it needs a Node that strips TypeScript types:
 Node 23 and newer run it as written, Node 22 needs `--experimental-strip-types`.
