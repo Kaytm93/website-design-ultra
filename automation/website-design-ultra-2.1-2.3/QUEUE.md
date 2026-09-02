@@ -33,7 +33,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
   - **Acceptance:** Jeder Skill wird genau einmal von `core-rules` oder `immersive-3d` genannt; beide Add-ons bleiben in den drei 3D-Forward-Cases verboten.
   - **Verify:** Router-Vollständigkeitsregel, `run-forward-tests.mjs --dry-run`.
 
-- [ ] `J-A4` **Lab-Module aus `shaders-tsl` referenzieren** — M
+- [x] `J-A4` **Lab-Module aus `shaders-tsl` referenzieren** — M
   - **Depends on:** J-A1
   - **Deliver:** `shaders-tsl/references/module-index.md` mit allen elf Modulen, fünf T2.2-Feldern, Fixture- und Copy-Pfad; GLSL nach `templates/shaders/` spiegeln.
   - **Acceptance:** Conditional References nennen den Index; jede Indexzeile zeigt auf eine existierende Template-Datei.

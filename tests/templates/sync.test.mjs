@@ -49,6 +49,19 @@ export const mirroredFiles = [
       ["from '../../../references/baseline-comparison.ts'", "from './baseline-comparison.ts'"],
     ],
   },
+  { source: 'lab/src/experiments/shaders/foundational-shaders.frag', target: 'shaders/foundational-shaders.frag' },
+  { source: 'lab/src/experiments/shaders/foundational-shaders.vert', target: 'shaders/foundational-shaders.vert' },
+  { source: 'lab/src/experiments/shaders/media-post.frag', target: 'shaders/media-post.frag' },
+  { source: 'lab/src/experiments/shaders/media-post.vert', target: 'shaders/media-post.vert' },
+  { source: 'lab/src/experiments/shaders/transition-interaction.frag', target: 'shaders/transition-interaction.frag' },
+  { source: 'lab/src/experiments/shaders/transition-interaction.vert', target: 'shaders/transition-interaction.vert' },
+  { source: 'lab/src/experiments/shaders/sdf-text.frag', target: 'shaders/sdf-text.frag' },
+  { source: 'lab/src/experiments/shaders/sdf-text.vert', target: 'shaders/sdf-text.vert' },
+  { source: 'lab/src/experiments/shaders/particle-toy-render.frag', target: 'shaders/particle-toy-render.frag' },
+  { source: 'lab/src/experiments/shaders/particle-toy-render.vert', target: 'shaders/particle-toy-render.vert' },
+  { source: 'lab/src/experiments/shaders/particle-toy-update.frag', target: 'shaders/particle-toy-update.frag' },
+  { source: 'lab/src/experiments/shader-fullscreen.frag', target: 'shaders/shader-fullscreen.frag' },
+  { source: 'lab/src/experiments/shader-fullscreen.vert', target: 'shaders/shader-fullscreen.vert' },
 ]
 
 /** Files the plugin owns outright: they document the tree, they do not mirror it. */
@@ -108,5 +121,57 @@ test('no mirrored source has gone missing from the repository', () => {
   for (const entry of mirroredFiles) {
     const absolute = path.join(repoRoot, entry.source)
     assert.ok(fs.existsSync(absolute), `${entry.source}: source removed while templates/${entry.target} still ships it`)
+  }
+})
+
+/**
+ * The module index is a view of `lab/src/modules/manifest.ts`, not a second
+ * opinion about it. Prose drifting away from the manifest is exactly the
+ * failure the index was written to end, so every id, cost class and fixture
+ * path is asserted against the source here. The manifest is parsed from text
+ * rather than imported: a `.ts` import would put a Node type-stripping
+ * requirement on the whole test file.
+ */
+test('the shader module index matches the lab manifest', () => {
+  const manifest = fs.readFileSync(
+    path.join(repoRoot, 'lab', 'src', 'modules', 'manifest.ts'),
+    'utf8',
+  )
+  const index = fs.readFileSync(
+    path.join(
+      repoRoot,
+      'website-design-ultra/skills/shaders-tsl/references/module-index.md',
+    ),
+    'utf8',
+  )
+
+  const blocks = manifest
+    .split('export const foundationalShaderManifest')[1]
+    .split(/\n  \},/)
+    .filter((block) => block.includes('id:'))
+
+  assert.equal(blocks.length, 17, 'manifest entry count changed; regenerate the index')
+
+  for (const block of blocks) {
+    const id = block.match(/id: '([^']+)'/)[1]
+    const costClass = block.match(/costClass: '([^']+)'/)[1]
+    const fixture = block.match(/fixture: '([^']+)'/)[1]
+    const renderers = block.match(/rendererSupport: \[([^\]]*)\]/)[1]
+
+    assert.ok(index.includes(`\`${id}\``), `module-index.md: no entry for ${id}`)
+    const entry = index.split(`\`${id}\``)[1].split('\n####')[0]
+    assert.ok(
+      entry.includes(`| Cost class | ${costClass} |`),
+      `module-index.md: ${id} does not carry cost class ${costClass}`,
+    )
+    assert.ok(
+      entry.includes(`\`repo:${fixture}\``),
+      `module-index.md: ${id} does not name fixture ${fixture}`,
+    )
+    const expected = renderers.includes('webgpu') ? 'WebGL2, WebGPU' : 'WebGL2'
+    assert.ok(
+      entry.includes(`| Renderer support | ${expected} |`),
+      `module-index.md: ${id} does not carry renderer support ${expected}`,
+    )
   }
 })
