@@ -13,7 +13,7 @@
  * public-reference validator. This lab surface deliberately has no source URL.
  */
 
-import { createStableFrameMarker } from '@wdu-references/determinism-runtime.ts';
+import { createStableFrameMarker } from '../../../references/determinism-runtime.ts';
 import type { ExperimentContext } from '../main.js';
 
 export type OfflineEvidenceFamily =
