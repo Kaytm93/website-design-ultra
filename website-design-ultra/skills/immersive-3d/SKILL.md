@@ -50,6 +50,9 @@ Load an add-on only when its condition is already in the brief; possible use is
 not activation and add-ons are not a checklist:
 
 - custom material, deformation, or node look → `shaders-tsl`;
+- authored physical surface response — transmission, refraction, clearcoat,
+  iridescence, attenuation — or a reflection-environment tier →
+  `material-lookdev`;
 - scroll is the story → `scroll-immersion`;
 - click, hover, inspection, or configuration → `r3f-interaction`;
 - custom model/texture preparation → `3d-asset-pipeline`;

@@ -117,7 +117,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
   - **Acceptance:** immersive §2 nennt R3F und Vanilla gleichwertig mit Entscheidungskriterium; beide Starter bestehen dieselben Gates.
   - **Verify:** Starter-CI für beide und Forward `3d-hero`.
 
-- [ ] `J-D2` **Skill `material-lookdev`** — M
+- [x] `J-D2` **Skill `material-lookdev`** — M
   - **Depends on:** J-A4
   - **Deliver:** Ice/Frost/Glass/Metal/Matte-Rezepte, physikalische Materialfelder, Environment-Tiers und Lab `?e=lookdev`.
   - **Acceptance:** `light-material-and-tone.md:42-43` zeigt auf Skill; Standard-Materialfarbe allein aktiviert kein Physik-Feature.
