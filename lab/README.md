@@ -33,6 +33,9 @@ Then open one experiment at a time:
 - `/?e=sdf-text-deterministic&WDU_DETERMINISTIC=1` — seeded capture for the SDF/MSDF text foundation so two runs hash the same atlas and produce byte-identical renders under deterministic mode.
 - `/?e=dom-text-effects` — DOM-mirrored shader text effects (IP-11B): real DOM text labels own selection, copy, translation, and screen reading; the canvas overlay renders scramble (pointer-driven), glitch (focus / activate), and dissolve (activate) whose uniforms are mirrored from DOM events and DOM measurements. Reduced-motion toggle, localization toggle (English / German / short caption) and a portrait reflow probe.
 - `/?e=dom-text-effects-deterministic&WDU_DETERMINISTIC=1` — seeded capture for the DOM-mirrored text effects so two runs hash the same canvas under deterministic mode.
+- `/?e=shader-text` — production shader-text headline: the MSDF foundation and three DOM-derived effect uniforms sit behind a selectable, translatable DOM h1.
+- `/?e=shader-text-deterministic&WDU_DETERMINISTIC=1` — deterministic production shader-text capture.
+- `/?e=shader-text-screenreader&WDU_DETERMINISTIC=1` — DOM-only screen-reader and translation fixture; it does not require WebGL.
 
 ## Verification
 

@@ -1,0 +1,36 @@
+{
+  "module": "shader-text",
+  "version": "wdu-shader-text-license-v1",
+  "license": "MIT",
+  "noPaidFonts": true,
+  "noCommittedCredentials": true,
+  "generator": {
+    "name": "msdf-atlas-gen",
+    "version": "1.3.0",
+    "license": "MIT",
+    "source": "https://github.com/Chlumsky/msdf-atlas-gen",
+    "attribution": "msdf-atlas-gen contributors"
+  },
+  "fonts": [
+    {
+      "family": "Noto Sans",
+      "license": "OFL-1.1",
+      "source": "https://fonts.google.com/specimen/Noto+Sans",
+      "attribution": "The Noto Project authors"
+    },
+    {
+      "family": "Source Sans 3",
+      "license": "OFL-1.1",
+      "source": "https://github.com/adobe-fonts/source-sans",
+      "attribution": "Adobe and Source Sans 3 contributors"
+    }
+  ],
+  "atlas": {
+    "format": "MSDF",
+    "channels": 3,
+    "colorSpace": "LINEAR_UNENCODED",
+    "distanceRange": 4,
+    "glyphSet": "ASCII + replacement + project-declared Unicode ranges",
+    "attribution": "Generated per project from the selected font option"
+  }
+}

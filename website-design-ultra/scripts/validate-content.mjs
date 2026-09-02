@@ -127,8 +127,8 @@ const skillDirectories = fs
   .readdirSync(skillsRoot, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
 
-if (skillDirectories.length !== 24) {
-  fail(`expected 24 skills, found ${skillDirectories.length}`)
+if (skillDirectories.length !== 25) {
+  fail(`expected 25 skills, found ${skillDirectories.length}`)
 }
 
 for (const directory of skillDirectories) {
@@ -982,6 +982,7 @@ const negativeGatedSkills = [
   'procedural-3d',
   'reference-intake',
   'render-graph',
+  'shader-text',
   'spatial-audio',
 ]
 
@@ -1030,19 +1031,18 @@ for (const name of negativeGatedSkills) {
       }
     }
   }
-  if (name === 'procedural-3d') {
+  if (name === 'shader-text') {
     for (const marker of [
-      'procedural',
-      'crystal growth',
-      'voronoi',
-      'marching cubes',
-      'curl noise',
-      'l-system',
-      'imported glb',
-      'inspection',
+      'msdf',
+      'license',
+      'troika',
+      'dom twin',
+      'scramble',
+      'glitch',
+      'dissolve',
     ]) {
       if (!description.toLowerCase().includes(marker)) {
-        fail(`skills/procedural-3d: description must contain "${marker}"`)
+        fail(`skills/shader-text: description must contain "${marker}"`)
       }
     }
   }

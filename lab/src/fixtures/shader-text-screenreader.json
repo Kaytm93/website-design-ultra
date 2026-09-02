@@ -1,0 +1,10 @@
+{
+  "fixture": "shader-text-screenreader",
+  "route": "?e=shader-text-screenreader",
+  "semanticAuthority": "DOM",
+  "headlineSelector": "#shader-text-screenreader-headline",
+  "required": ["h1", "tabIndex=0", "lang", "translate=yes", "user-select:text", "textContent"],
+  "decorativeCanvas": { "ariaHidden": true, "role": "presentation", "pointerEvents": "none" },
+  "translationAction": "button[type=button]",
+  "webglDependency": false
+}

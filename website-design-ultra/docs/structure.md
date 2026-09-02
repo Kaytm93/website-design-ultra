@@ -66,6 +66,7 @@ website-design-ultra/
     │   └── references/          # hotspots/camera, configurator, touch/gestures
     ├── shaders-tsl/
     │   └── references/          # TSL syntax, WebGPU feature matrix
+    ├── shader-text/                # on demand: MSDF/Troika text with DOM twin
     ├── scroll-immersion/
     ├── procedural-3d/               # on demand: procedural geometry before the asset pipeline
     │   └── references/          # catalogue with cost models, Blender contract, Houdini interchange
@@ -82,7 +83,7 @@ website-design-ultra/
         └── references/          # state textures, pointer field, click impulse
 ```
 
-The last six are add-ons behind an already-loaded 3D stack, with `procedural-3d` placed before `3d-asset-pipeline` so generation hands off to the existing inspect/validate/optimize path. Each description
+The last seven are add-ons behind an already-loaded 3D stack, with `procedural-3d` placed before `3d-asset-pipeline` so generation hands off to the existing inspect/validate/optimize path. Each description
 names one activating condition and closes by naming what does not activate it,
 and `validate-content.mjs` fails the build when either sentence is missing.
 
@@ -135,9 +136,10 @@ exact provider, case, and tree):
 - Runtime adaptation → `3d-runtime-quality/SKILL.md` plus tier matrix and only then the adaptive controller.
 - WebGPU feature → `shaders-tsl/SKILL.md` plus `shaders-tsl/references/webgpu-feature-matrix.md`.
 - Simple CSS hover → `motion-system/SKILL.md`; no GSAP or Motion reference.
+- Shader-driven text with an MSDF atlas or Troika alternative → `shader-text/SKILL.md` plus its production contract and templates.
 - Procedural geometry that must be generated from parameters → `procedural-3d/SKILL.md` before `3d-asset-pipeline`; ordinary imported GLB inspection, validation, or optimization alone does not activate it.
 - 3D hero on a normal page → the three mandatory 3D skills only. The
-  procedural-3d, canvas-first, render-graph, loading, audio, and gpu-particle add-ons stay unread, and the ordinary 3D forward cases forbid all six files.
+  shader-text, procedural-3d, canvas-first, render-graph, loading, audio, and gpu-particle add-ons stay unread, and the ordinary 3D forward cases forbid all seven files.
 - The canvas owns the page → `canvas-first-architecture/SKILL.md` plus
   `canvas-first-architecture/references/parallel-dom-layer.md`; a hero above a DOM page never reaches it.
 - One bloom → `r3f-patterns`; a chain whose passes read each other →
