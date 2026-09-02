@@ -1,4 +1,0 @@
-interface:
-  display_name: "Content Design"
-  short_description: "Evidence-led hierarchy and localized microcopy"
-  default_prompt: "Use $content-design to shape an evidence-led content hierarchy and localization-ready interface copy."

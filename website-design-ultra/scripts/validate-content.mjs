@@ -219,7 +219,7 @@ const repositoryRoot = path.resolve(pluginRoot, '..')
 const repositoryRootPresent = fs.existsSync(path.join(repositoryRoot, '.git'))
 let documentedPathCount = 0
 
-for (const directory of ['skills', 'commands']) {
+for (const directory of ['skills', 'commands', 'docs']) {
   for (const file of walkFiles(path.join(pluginRoot, directory))) {
     if (!file.endsWith('.md')) continue
     const markdown = read(file)
@@ -1738,6 +1738,20 @@ if (readmeVersion !== claudeManifest.version) {
   fail(
     `README.md: lead version ${readmeVersion ?? 'missing'} differs from manifest ${claudeManifest.version}`,
   )
+}
+
+/**
+ * The README is the first thing an installation reads, and it was 52 KB: a
+ * changelog copy, the full file tree, and every contract in longhand. Detail
+ * belongs in docs/, where nobody pays for it before they want it.
+ */
+const readmeSizeLimit = 12 * 1024
+const readmeSize = fs.statSync(readmePath).size
+if (readmeSize > readmeSizeLimit) {
+  fail(`README.md: ${readmeSize} bytes exceeds the ${readmeSizeLimit}-byte budget; move detail into docs/`)
+}
+if (/\n## Version\n/.test(readme)) {
+  fail('README.md: version history belongs in CHANGELOG.md, not in a second copy here')
 }
 
 const readmeIntroduction = readme.split('\n## Structure')[0]
