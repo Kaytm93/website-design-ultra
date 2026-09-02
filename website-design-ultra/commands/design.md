@@ -4,101 +4,70 @@ description: Builds a website, landing page, or component according to the websi
 
 # /design
 
-You will build a website, landing page, or UI component.
-
-If the briefing calls for 3D, WebGL, a scene, or an immersive experience → use `/immersive` instead of `/design`.
+Build a website, landing page, or UI component. `core-rules` owns the gates;
+this command owns the order and the shape of the answer. For 3D, WebGL, or a
+scene, use `/immersive` instead.
 
 ## Workflow
 
-1. **Reconnaissance** — If inside a repo: read `package.json` for a stack check (React/Next, Tailwind v3/v4, existing UI library). If `DESIGN.md` or `tokens.css` exists: respect it.
+1. **Reconnaissance** — Inside a repo, read `package.json` for the stack, and
+   respect an existing `DESIGN.md` or `tokens.css`.
+2. **Content contract** — `content-design` when hierarchy or copy is built or
+   changed. Do not invent claims; mark unknowns.
 
-2. **Content contract** — When hierarchy or copy is built or changed, load `content-design`. Fix promise, mechanism, evidence, objections, primary action, and unknown facts; do not invent claims.
+   **Copy form** — `anti-slop` and its prose reference the moment any
+   user-visible line is written. Independent of step 2, and a plan-only brief
+   does not suspend it: deciding what a headline, CTA, or state message says
+   is writing it. Add the locale annex for non-English.
+3. **Direction** — `style-directions` only for requested exploration, or when
+   no brand, system, or product cue yields a direction. A direction the
+   briefing names is an input, not a request to explore.
 
-   **Copy form** — As soon as any user-visible line is written, load `anti-slop`
-   and its prose reference. This gate is independent of step 2: a headline, a
-   button label, or an empty state still needs it when the claim ledger was not
-   in scope. A plan-only or contract-only brief does not suspend the gate:
-   deciding what a headline, CTA, or state message will say is writing copy,
-   even when the answer ships as a row in a content contract rather than as
-   code. Add the locale annex for non-English output. Clear every Tier-1
-   tell, measure the Tier-3 budgets, and check the specificity floor before the
-   copy enters the layout.
+   **Divergence before commitment** — For a page or signature section, name
+   three variants before choosing, whether or not `style-directions` loaded.
+   One line each: direction, signature move, first screen. They must differ in
+   composition, not in palette alone. Then choose and say what the other two
+   lose. Skip it only for a single component or a system that already declares
+   its direction, and say which decision made that unnecessary.
+4. **Palette and type** — `color-palettes` only when colors are chosen.
+   `typography` only when family, licensing, language coverage, a type scale,
+   or wrapping is decided; generic hierarchy does not activate it. Check the
+   license and a free alternative for every font file.
+5. **Composition** — For full pages and signature sections, read
+   `core-rules/references/composition-contract.md` for what must survive every
+   viewport, then `core-rules/references/responsive-recomposition.md` for the
+   wide, portrait, and narrow shots.
+6. **Motion** — `motion-system` only when motion is requested, present, or
+   part of the direction. Calibrate with `MOTION_INTENSITY`.
+7. **Pattern** — `component-patterns` only for a concrete recipe the system
+   has not already decided.
+8. **States** — `ui-states` only for components with data, mutation,
+   validation, or interaction.
+9. **Verification** — `scripts/verify-browser.mjs` or real host browser
+   automation following `/verify`. Inspect desktop, mobile, reduced motion.
 
-3. **Choose a direction** — Load `style-directions` only for explicitly
-   requested style exploration, or when neither brand/system nor functional
-   product cues provide a workable direction and that decision materially
-   changes the output. A direction the briefing already names is an input, not a
-   request to explore: apply it from the briefing. A functionally well-described
-   product, a dashboard, or a named palette does not activate the skill
-   automatically either. Choose from the briefing and the existing system, not
-   from forced variation.
+## Output format
 
-   **Divergence before commitment** — For a page or a signature section, name
-   three variants before choosing one, whether or not `style-directions` was
-   loaded. One line each: direction plus signature move plus what the first
-   screen looks like. They have to differ in composition, not in palette alone.
-   Then choose and state what the other two lose against this brief. This costs
-   almost nothing and is the only counter-measure to the attractor the anti-slop
-   thesis names: the most likely option wins whenever the brief did not
-   constrain, and picking the closest row of a shortlist has exactly that shape.
-   Skip it for a single component or where the system already declares its
-   direction, and say which decision made it unnecessary.
+- 1–2 sentences of rationale, naming the two rejected variants
+- Content and claim contract, unknowns marked
+- Copy-lint result: tier counts and the command that produced it
+- Composition contract and the three viewport shots, for pages and sections
+- Install commands if needed, then working code
+- Relevant states and accessibility
+- Customization hooks
 
-4. **Palette and type** — Load `color-palettes` only when colors are chosen or
-   changed. Load `typography` only when font family, license/loading, language
-   coverage, a detailed type scale, or wrapping is chosen, changed, or audited;
-   generic content/layout hierarchy alone does not activate the skill. Inside
-   each skill, read only the matching reference family. For every font file,
-   check license/embedding and a free alternative.
-
-5. **Composition and responsive art direction** — For full pages or signature
-   sections, load both `core-rules` references. The composition contract fixes
-   what must survive every viewport: thesis, focal element, first-screen
-   occupancy, asymmetry, dominant contrast, quiet zones, signature move. The
-   recomposition reference then defines wide, portrait, and narrow each with
-   focus, order, crop/media, CTA, density, and interaction model.
-
-6. **Motion profile** — Load `motion-system` only when motion is requested, already present, or part of the chosen direction. Then use `MOTION_INTENSITY` to calibrate it and load only the selected runtime reference.
-
-7. **Choose a pattern** — Load `component-patterns` only when the briefing calls
-   for a concrete hero, card, form, nav, or overlay recipe that is not already
-   decided by the existing system and layout contract. Generic page, landing
-   page, or dashboard planning alone does not activate the skill. Load at most
-   the matching pattern reference.
-
-8. **States** — Load `ui-states` only for components with data, mutation, validation, or interaction. Implement the states the applicability matrix marks as relevant, and use `content-design` for any new state copy.
-
-   Treat routing pointers as selection, not as a recursive load instruction.
-   Keep an internal ledger of the skills/references actually read and do not
-   load a sibling reference “just in case”.
-
-9. **Output format**:
-   - 1–2 sentences of direction rationale, with the two rejected variants named
-   - Content/claim contract with unknowns marked
-   - Copy-lint result: tier counts and the command that produced them
-   - Composition contract and wide/portrait/narrow recomposition for pages and signature sections
-   - `npm install ...` if libraries are needed
-   - Working code
-   - Short note on relevant states/accessibility
-   - Customization hooks (which CSS vars / Tailwind vars are easy to change)
-
-   If the user explicitly asks only for a plan, contract, wireframe, or explanation: deliver the same decisions without install commands and working code. Do not invent a build mandate.
-
-10. **Verification** — When the app is runnable, use the capability-checked
-    adapter from `scripts/verify-browser.mjs` or a real host browser capability
-    following the state contract in `/verify`. Inspect desktop, mobile, and
-    reduced motion; for 3D also the fallback. Report the outcome with the four
-    values `core-rules/references/verification-status.md` defines.
+For a plan, contract, wireframe, or explanation: the same decisions without
+install commands or code. Do not invent a build mandate.
 
 ## Arguments
 
-Whatever the user types after `/design` is the briefing. Examples:
+Whatever follows `/design` is the briefing. Examples:
 - `/design landing page for an AI code editor`
 - `/design dashboard hero, dark mode, minimal`
 - `/design portfolio site, editorial style`
 
-If nothing is given: ask — what are we building? What is the context?
+If nothing is given: ask what we are building and in which context.
 
-## Pre-flight check before output
+## Pre-flight
 
-Mandatory: load `core-rules` and check only the applicable items. Fix every ✗ before delivering.
+Load `core-rules` §7 and fix every ✗ before delivering.
