@@ -1,0 +1,8 @@
+{
+  "entrypoints": ["/_next/static/chunks/9c1b.js", "/_next/static/chunks/app/page.js"],
+  "runtime": {
+    "framework": "Three.js r170 with a small WebGL renderer adapter",
+    "sourceMaps": false
+  },
+  "chunks": ["9c1b.js", "app/page.js", "assets/crystal.glb"]
+}

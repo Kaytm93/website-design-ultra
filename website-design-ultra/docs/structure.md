@@ -56,6 +56,9 @@ website-design-ultra/
     ├── reference-intake/              # on demand: 6–10 exported frames + tokens
     │   ├── references/                 # source grammar and extraction method
     │   └── templates/                  # traced contract and poster target
+    ├── site-reconnaissance/            # on demand: public URL runtime evidence
+    │   ├── references/                 # bundle/network/renderer/Inspector/shader method
+    │   └── templates/                  # evidence ledger form
     ├── 3d-art-direction/
     │   └── references/          # camera, light/material/tone, spatial type
     ├── 3d-runtime-quality/
@@ -82,7 +85,7 @@ website-design-ultra/
         └── references/          # state textures, pointer field, click impulse
 ```
 
-The last six are add-ons behind an already-loaded 3D stack, with `procedural-3d` placed before `3d-asset-pipeline` so generation hands off to the existing inspect/validate/optimize path. Each description
+The last seven are add-ons behind an already-loaded 3D stack, with `procedural-3d` placed before `3d-asset-pipeline` so generation hands off to the existing inspect/validate/optimize path, and `site-reconnaissance` reserved for explicit public-URL runtime evidence. Each description
 names one activating condition and closes by naming what does not activate it,
 and `validate-content.mjs` fails the build when either sentence is missing.
 
@@ -131,13 +134,17 @@ exact provider, case, and tree):
 - Six to ten exported PNG and SVG frames plus a written token block for a 3D
   direction → `reference-intake/SKILL.md` before `3d-art-direction`; a named
   direction without reference material does not load it.
+- A public live 3D reference URL plus an explicit runtime-reconnaissance request
+  → `site-reconnaissance/SKILL.md`; a screenshot alone does not load it.
 - 3D camera/light brief → `3d-art-direction/SKILL.md` plus only the relevant shot, light, or type reference.
 - Runtime adaptation → `3d-runtime-quality/SKILL.md` plus tier matrix and only then the adaptive controller.
 - WebGPU feature → `shaders-tsl/SKILL.md` plus `shaders-tsl/references/webgpu-feature-matrix.md`.
 - Simple CSS hover → `motion-system/SKILL.md`; no GSAP or Motion reference.
 - Procedural geometry that must be generated from parameters → `procedural-3d/SKILL.md` before `3d-asset-pipeline`; ordinary imported GLB inspection, validation, or optimization alone does not activate it.
 - 3D hero on a normal page → the three mandatory 3D skills only. The
-  procedural-3d, canvas-first, render-graph, loading, audio, and gpu-particle add-ons stay unread, and the ordinary 3D forward cases forbid all six files.
+  procedural-3d, canvas-first, render-graph, loading, audio, gpu-particle, and
+  site-reconnaissance add-ons stay unread, and the ordinary 3D forward cases
+  forbid all seven files.
 - The canvas owns the page → `canvas-first-architecture/SKILL.md` plus
   `canvas-first-architecture/references/parallel-dom-layer.md`; a hero above a DOM page never reaches it.
 - One bloom → `r3f-patterns`; a chain whose passes read each other →

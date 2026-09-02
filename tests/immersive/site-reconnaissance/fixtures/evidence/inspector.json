@@ -1,0 +1,7 @@
+{
+  "scene": {"path":"Scene/CrystalGroup","type":"Group","children":4},
+  "camera": {"path":"Scene/MainCamera","type":"PerspectiveCamera","fov":38,"near":0.1,"far":100},
+  "materials": [{"path":"Scene/CrystalGroup/Crystal","type":"MeshPhysicalMaterial","transmission":0.2,"roughness":0.24}],
+  "programs": [{"id":"crystal-main","material":"Crystal","vertex":"vertexShader","fragment":"fragmentShader"}],
+  "capture": "semantic inspector tree; screenshot is supplemental"
+}

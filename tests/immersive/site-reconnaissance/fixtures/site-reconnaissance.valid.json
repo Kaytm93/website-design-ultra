@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "wdu-site-reconnaissance/v1",
+  "status": "PASS",
+  "activation": {
+    "sourceUrl": "https://threejs.org/examples/#webgl_loader_gltf",
+    "explicitRuntimeRequest": true,
+    "publicAccess": true,
+    "screenshotOnly": false,
+    "evidenceFamilies": ["bundle", "network", "renderer-info", "inspector", "shader"]
+  },
+  "runtime": {
+    "browser": "PASS",
+    "gpu": "PASS",
+    "inspector": "PASS",
+    "shaderCapture": "PASS"
+  },
+  "evidence": [
+    {
+      "id": "bundle-main",
+      "kind": "bundle",
+      "format": "json",
+      "file": "evidence/bundle.json",
+      "sha256": "482d8fafd39e5b691974a639c92e3b17b24cff11d17fe5ca7914b791c466d465",
+      "locator": "document scripts and chunks"
+    },
+    {
+      "id": "network-first-frame",
+      "kind": "network",
+      "format": "json",
+      "file": "evidence/network.json",
+      "sha256": "2fdc068331acf767e5833aa804fa219614d9a736e911f4b9175e03306d6e0893",
+      "locator": "request log through first stable frame"
+    },
+    {
+      "id": "renderer-info",
+      "kind": "renderer-info",
+      "format": "json",
+      "file": "evidence/renderer-info.json",
+      "sha256": "e7bce333576818bf2f1c2550fa2304449316e815a7bb9a24eda01c7bedc78b3d",
+      "locator": "renderer.info after warm-up"
+    },
+    {
+      "id": "inspector-scene",
+      "kind": "inspector",
+      "format": "json",
+      "file": "evidence/inspector.json",
+      "sha256": "3ba50aca8ac940355fd0efcce334d5e247ac1e4ea008633b0126af8eb7123d85",
+      "locator": "scene graph, camera, materials, programs"
+    },
+    {
+      "id": "shader-program",
+      "kind": "shader",
+      "format": "text",
+      "file": "evidence/shaders.txt",
+      "sha256": "f7d9bb165ea3e1a2daaa79b4d1b2771080d638d1ca1a09845320efe511c0c5fe",
+      "locator": "linked vertex and fragment program source"
+    }
+  ],
+  "ledger": [
+    {
+      "id": "bundle.entrypoints",
+      "value": "/_next/static/chunks/9c1b.js and /_next/static/chunks/app/page.js",
+      "evidence": [{"artifact": "bundle-main", "locator": "$.entrypoints", "excerpt": "two document script entrypoints"}],
+      "observation": "The document loads one framework chunk and one app entrypoint."
+    },
+    {
+      "id": "bundle.framework",
+      "value": "Three.js r170 with a WebGL renderer adapter",
+      "evidence": [{"artifact": "bundle-main", "locator": "$.runtime.framework", "excerpt": "Three.js r170"}],
+      "observation": "The runtime marker names Three.js r170 and a WebGL adapter."
+    },
+    {
+      "id": "network.document",
+      "value": "GET https://threejs.org/examples/ status 200 document 18432 bytes",
+      "evidence": [{"artifact": "network-first-frame", "locator": "$.requests[0]", "excerpt": "GET document status 200"}],
+      "observation": "The first request is the public document and completed successfully."
+    },
+    {
+      "id": "network.first-frame-assets",
+      "value": "script 92814 bytes, model 183201 bytes, texture 64218 bytes",
+      "evidence": [{"artifact": "network-first-frame", "locator": "$.requests", "excerpt": "script, model, and texture requests"}],
+      "observation": "The manifest records the asset requests through the first stable frame."
+    },
+    {
+      "id": "renderer.type",
+      "value": "WebGLRenderer",
+      "evidence": [{"artifact": "renderer-info", "locator": "$.renderer.type", "excerpt": "WebGLRenderer"}],
+      "observation": "The live renderer reports WebGLRenderer rather than a guessed renderer."
+    },
+    {
+      "id": "renderer.info.calls",
+      "value": "43 draw calls",
+      "evidence": [{"artifact": "renderer-info", "locator": "$.rendererInfo.render.calls", "excerpt": "43"}],
+      "observation": "After warm-up, renderer.info.render.calls is 43."
+    },
+    {
+      "id": "renderer.info.triangles",
+      "value": "118402 visible triangles",
+      "evidence": [{"artifact": "renderer-info", "locator": "$.rendererInfo.render.triangles", "excerpt": "118402"}],
+      "observation": "After warm-up, renderer.info.render.triangles is 118402."
+    },
+    {
+      "id": "inspector.scene",
+      "value": "Scene/CrystalGroup with 4 children",
+      "evidence": [{"artifact": "inspector-scene", "locator": "$.scene", "excerpt": "Scene/CrystalGroup"}],
+      "observation": "The semantic Inspector tree exposes the named group and child count."
+    },
+    {
+      "id": "inspector.camera",
+      "value": "PerspectiveCamera fov 38 near 0.1 far 100",
+      "evidence": [{"artifact": "inspector-scene", "locator": "$.camera", "excerpt": "PerspectiveCamera fov 38"}],
+      "observation": "The Inspector capture exposes the camera type and parameters."
+    },
+    {
+      "id": "inspector.materials",
+      "value": "MeshPhysicalMaterial transmission 0.2 roughness 0.24",
+      "evidence": [{"artifact": "inspector-scene", "locator": "$.materials[0]", "excerpt": "MeshPhysicalMaterial"}],
+      "observation": "The Inspector capture identifies the material and its observed physical fields."
+    },
+    {
+      "id": "shader.vertex",
+      "value": "captured vertexShader for crystal-main",
+      "evidence": [{"artifact": "shader-program", "locator": "vertexShader", "excerpt": "stage: vertexShader"}],
+      "observation": "The extracted program contains the renderer-visible vertex stage."
+    },
+    {
+      "id": "shader.fragment",
+      "value": "captured fragmentShader for crystal-main",
+      "evidence": [{"artifact": "shader-program", "locator": "fragmentShader", "excerpt": "stage: fragmentShader"}],
+      "observation": "The extracted program contains the renderer-visible fragment stage."
+    },
+    {
+      "id": "shader.uniforms",
+      "value": "uTime, uCameraPosition, uTransmission",
+      "evidence": [{"artifact": "shader-program", "locator": "uniforms", "excerpt": "uTime, uCameraPosition, uTransmission"}],
+      "observation": "The shader capture lists the uniforms used by both extracted stages."
+    }
+  ],
+  "contradictions": [],
+  "openQuestions": ["The production source map is unavailable and was not inferred from minified names."]
+}

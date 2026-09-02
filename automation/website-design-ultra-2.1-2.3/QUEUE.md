@@ -147,7 +147,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
   - **Acceptance:** Canvas-first-Case verlangt Skill; kein zweiter Clock und genau ein Timeline-Track.
   - **Verify:** Zwei-Writer-Validator und `timeline-50`-Capture.
 
-- [ ] `J-D7` **Skill `site-reconnaissance`** — M
+- [x] `J-D7` **Skill `site-reconnaissance`** — M
   - **Depends on:** none
   - **Deliver:** negativ gated Methode/Template für Bundle, Netzwerk-Manifest, `renderer.info`, Inspector-Capture und Shader-Extraktion mit Ledger-Form.
   - **Acceptance:** öffentliche Referenz-URL erzeugt ≥ 10 belegte Ledger-Felder; Screenshot allein aktiviert nicht.

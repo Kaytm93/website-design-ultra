@@ -1,0 +1,9 @@
+{
+  "renderer": {"type":"WebGLRenderer","version":"Three.js r170","outputColorSpace":"SRGBColorSpace"},
+  "rendererInfo": {
+    "render": {"calls": 43,"triangles": 118402,"points": 0,"lines": 0,"frame": 128},
+    "memory": {"geometries": 12,"textures": 7},
+    "programs": 9
+  },
+  "capture": {"phase":"after warm-up","stableFrame":true}
+}

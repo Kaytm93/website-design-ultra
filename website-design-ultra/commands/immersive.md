@@ -19,6 +19,11 @@ owns the order and the shape of the answer.
    six to ten exported PNG and SVG frames plus a written token block, load
    `reference-intake`: finish its traced ledger and poster target
    before scene code, then hand both to `3d-art-direction`.
+
+   **Site-reconnaissance gate** — Only when the briefing names a public live 3D
+   reference URL and explicitly requests implementation/runtime reconnaissance,
+   load `site-reconnaissance` and finish its bundle, network, `renderer.info`,
+   Inspector, and shader ledger. A screenshot alone does not load it.
 3. **Art direction** — `3d-art-direction`, delivered as a contract.
 4. **Content and copy** — `content-design` for the claim. `anti-slop` the
    moment any user-visible line is written, plan-only included: deciding what
@@ -45,8 +50,9 @@ owns the order and the shape of the answer.
 ## Output format
 
 1. Why 3D is justified, the base layer, the direction
-2. The contracts: reference trace and poster target when supplied, the claim,
-   art direction for desktop, portrait, and poster
+2. The contracts: reference trace and poster target when supplied, the
+   site-reconnaissance ledger when its gate fires, the claim, art direction for
+   desktop, portrait, and poster
 3. Wide, portrait, and narrow recomposition of the page
 4. Install commands or import map
 5. Working code carrying the §5 fallbacks

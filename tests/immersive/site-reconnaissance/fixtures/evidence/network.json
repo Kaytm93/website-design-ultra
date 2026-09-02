@@ -1,0 +1,9 @@
+{
+  "requests": [
+    {"method":"GET","url":"https://threejs.org/examples/","status":200,"type":"document","transferBytes":18432},
+    {"method":"GET","url":"/_next/static/chunks/9c1b.js","status":200,"type":"script","transferBytes":92814,"encoding":"br"},
+    {"method":"GET","url":"/assets/crystal.glb","status":200,"type":"model","transferBytes":183201,"encoding":"br"},
+    {"method":"GET","url":"/assets/environment.ktx2","status":200,"type":"texture","transferBytes":64218,"encoding":"br"}
+  ],
+  "captureBoundary": "first stable frame"
+}
