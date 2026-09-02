@@ -171,6 +171,67 @@ if (commandDirectories.length !== 6) {
   fail(`expected 6 commands, found ${commandDirectories.length}`)
 }
 
+/**
+ * A path a skill names has to be a path the reader can open.
+ *
+ * An installation is the plugin directory and nothing else: `references/*.ts`,
+ * `lab/`, and the root test suites are not there. Naming one of them without
+ * saying so hands the reader a dead path, which is the failure this rule
+ * exists to catch. Every backtick span that looks like a file — it contains a
+ * slash and ends in a known extension — must resolve inside the installed
+ * tree, or carry the `repo:` prefix that marks it as source-repository-only.
+ *
+ * Spans holding `<` or `*` are templates for a name, not names.
+ */
+const documentedPathExtensions = [
+  '.md', '.mjs', '.js', '.ts', '.tsx', '.json', '.yaml', '.yml',
+  '.frag', '.vert', '.glsl', '.py', '.png', '.svg', '.glb', '.wduv',
+]
+
+function looksLikeDocumentedPath(span) {
+  if (!span.includes('/')) return false
+  if (/[\s<>*()`]/.test(span)) return false
+  return documentedPathExtensions.some((extension) => span.endsWith(extension))
+}
+
+const repositoryRoot = path.resolve(pluginRoot, '..')
+const repositoryRootPresent = fs.existsSync(path.join(repositoryRoot, '.git'))
+let documentedPathCount = 0
+
+for (const directory of ['skills', 'commands']) {
+  for (const file of walkFiles(path.join(pluginRoot, directory))) {
+    if (!file.endsWith('.md')) continue
+    const markdown = read(file)
+    for (const match of markdown.matchAll(/`([^`\n]+)`/g)) {
+      const span = match[1].trim()
+      if (!looksLikeDocumentedPath(span)) continue
+      documentedPathCount += 1
+
+      if (span.startsWith('repo:')) {
+        const target = span.slice('repo:'.length)
+        if (target.startsWith('/') || target.startsWith('.')) {
+          fail(`${relative(file)}: repo: path "${target}" must be repository-root relative`)
+        } else if (repositoryRootPresent && !fs.existsSync(path.join(repositoryRoot, target))) {
+          fail(`${relative(file)}: repo: path "${target}" does not exist in this repository`)
+        }
+        continue
+      }
+
+      const candidates = [
+        path.join(pluginRoot, span),
+        path.join(skillsRoot, span),
+        path.join(path.dirname(file), span),
+      ]
+      if (!candidates.some((candidate) => fs.existsSync(candidate))) {
+        fail(
+          `${relative(file)}: documented path "${span}" is missing from the installed plugin; ` +
+            'point it at a plugin file or mark it `repo:` when it only exists in the source repository',
+        )
+      }
+    }
+  }
+}
+
 const priorityOneContracts = [
   [
     'skills/3d-art-direction/SKILL.md',
@@ -1804,6 +1865,7 @@ if (paletteCount !== 20) {
 }
 
 notes.push(`${skillDirectories.length} skills`)
+notes.push(`${documentedPathCount} documented paths resolved`)
 notes.push(`${negativeGatedSkills.length} negative-gated skills`)
 notes.push(`${commandDirectories.length} commands`)
 notes.push(`${paletteCount} palettes / ${contrastCheckCount} state contrast checks`)

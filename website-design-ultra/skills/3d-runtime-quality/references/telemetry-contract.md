@@ -3,7 +3,7 @@
 Version 1 of the immersive telemetry surface is the one document shared by the
 renderer, the quality controller, and the verifier. The formal JSON Schema is
 `telemetry-schema.json`. The zero-dependency TypeScript reference that a project
-copies is the repository-root file `references/immersive-telemetry.ts`; it
+copies ships with the plugin as `templates/runtime/immersive-telemetry.ts`; it
 validates the same shape without becoming an npm package.
 
 This reference is reached after `immersive-3d` has justified a shipped 3D
@@ -92,8 +92,8 @@ zero; a zero context-loss count is still represented with `{ "unit": "count" }`.
 
 ## Example and fixture coverage
 
-The root-only fixture at
-`tests/immersive/telemetry/fixtures/valid-30fps.json` demonstrates a complete
+The source-repository fixture at
+`repo:tests/immersive/telemetry/fixtures/valid-30fps.json` demonstrates a complete
 30 fps / 33 ms declaration, all three gates, renderer counters, the Medium tier,
 DPR, empty errors, and zero context loss. The accompanying Node test exercises
 that fixture and negative cases for missing units, missing device profile,
