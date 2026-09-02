@@ -74,6 +74,8 @@ interface SceneRuntimeValue {
    * to re-apply before the next ready. Recovery is the DOM remount.
    */
   invalidateReady: () => void
+  /** The model and local environment report readiness after both loaders resolve. */
+  markAssetsReady: () => void
   /**
    * Capture-state invalidation (IP-06A): removes readiness when a declared
    * interaction state (pointer hover/press) changes, without touching the
@@ -98,7 +100,6 @@ interface SceneBootstrap {
   seedNames: readonly string[]
   marker: ReturnType<typeof createStableFrameMarker>
   streamsInitialized: boolean
-  assetsReady: boolean
   quality: QualityController
 }
 
@@ -112,7 +113,7 @@ export function useSceneRuntime(): SceneRuntimeValue {
   return value
 }
 
-function createBootstrap(mode: RuntimeMode, loadingHold: boolean): SceneBootstrap {
+function createBootstrap(mode: RuntimeMode): SceneBootstrap {
   // One clock: the deterministic adapter advances the declared fixed step per
   // rendered frame; the live adapter reads the wall clock only here, at its
   // outer boundary. No scene system reads a wall clock or a library ticker.
@@ -142,11 +143,6 @@ function createBootstrap(mode: RuntimeMode, loadingHold: boolean): SceneBootstra
     seedNames: streams.names(),
     marker,
     streamsInitialized: true,
-    // The manifest is bundled and schema-checked above; nothing loads over the
-    // network, so asset readiness is a resolved constant. The declared loading
-    // capture state (?wdu-loading=1, IP-06A) holds readiness so the composed
-    // loading surface stays visible deterministically.
-    assetsReady: !loadingHold,
   }
 }
 
@@ -174,12 +170,13 @@ export function SceneRuntime({
   const bootstrapRef = useRef<SceneBootstrap | null>(null)
   let bootstrap = bootstrapRef.current
   if (bootstrap === null) {
-    bootstrap = createBootstrap(mode, loadingHold)
+    bootstrap = createBootstrap(mode)
     bootstrapRef.current = bootstrap
   }
 
   const cameraAppliedRef = useRef(false)
   const cameraApplyCountRef = useRef(0)
+  const assetsReadyRef = useRef(false)
   const stableFrameReachedRef = useRef(false)
   const frameCountRef = useRef(0)
   const markerTraceRef = useRef<Array<{ frame: number; cam: boolean; reached: boolean }>>([])
@@ -201,6 +198,17 @@ export function SceneRuntime({
     camWritesRef.current.push(`invalidate@${frameCountRef.current}`)
     bootstrapRef.current?.marker.invalidate()
   }, [])
+
+  // Model and HDRI loading are both owned by HeroObject. Loading capture keeps
+  // the poster visible even after those assets resolve, so it never races the
+  // declared ?wdu-loading=1 state.
+  const markAssetsReady = useCallback(() => {
+    if (loadingHold) return
+    if (assetsReadyRef.current) return
+    assetsReadyRef.current = true
+    camWritesRef.current.push(`assets-ready@${frameCountRef.current}`)
+    bootstrapRef.current?.marker.invalidate()
+  }, [loadingHold])
 
   // Capture-state invalidation (IP-06A): a declared interaction state change
   // removes readiness without resuming the frozen clock or touching the
@@ -307,7 +315,7 @@ export function SceneRuntime({
     if (!boot) return
     const reached = boot.marker.afterVisibleRender({
       frame: boot.clock.frame,
-      assetsReady: boot.assetsReady,
+      assetsReady: assetsReadyRef.current,
       cameraStationApplied: cameraAppliedRef.current,
       streamsInitialized: boot.streamsInitialized,
     })
@@ -331,6 +339,7 @@ export function SceneRuntime({
     motion,
     mode,
     invalidateReady,
+    markAssetsReady,
     invalidateCaptureState,
     stableFrameReached: () => stableFrameReachedRef.current,
     loadingHold,
