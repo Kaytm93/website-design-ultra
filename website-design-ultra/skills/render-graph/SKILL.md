@@ -5,27 +5,13 @@ description: Design a multi-pass render chain for a Three.js, WebGL, or WebGPU s
 
 # Render Graph
 
-A chain of passes is a budget with a drawing attached. Declare the chain, price
-it, and only then implement it. `3d-art-direction` owns what the image should
-look like; this skill owns how many buffers it costs to get there.
+Load only when a pass reads an earlier buffer, more than two ordered effects
+share the frame, resolution splits are needed, or grading/exposure has a defined
+position. One stock bloom/vignette/effect chain stays in `r3f-patterns`.
 
-## 1. Gate
+## Pass-chain contract
 
-Load this skill when at least one is true:
-
-- A pass samples a buffer an earlier pass wrote — depth, normals, velocity, or a
-  previous frame.
-- The chain runs more than two effects and their order changes the result.
-- The scene needs a resolution split: full-res geometry, half-res effects.
-- Grading, a LUT, or an exposure decision has to sit at a defined point.
-
-A single bloom behind `@react-three/postprocessing`, a vignette, or an unmodified
-stock chain is `r3f-patterns` work and stops here.
-
-## 2. Pass-chain contract
-
-Fill before implementation. The block is the schema; the passes below are one
-filled example, not a default chain to copy.
+Fill before implementation; the block is the schema and the values are an example.
 
 ```yaml
 color-space: "linear working space, output transform at the end"
@@ -49,74 +35,33 @@ passes:
 budget-full-res-passes: 3
 ```
 
-`scale` is the field that decides whether the chain fits. A full-resolution
-fullscreen pass costs width by height by device-pixel-ratio squared fragment
-invocations: roughly 5.2 megapixels per pass on a 1440 by 900 viewport at DPR 2.
-Three such passes are a frame's worth of fill on an integrated GPU before the
-scene itself has drawn anything.
+`scale` prices fullscreen work; at 1440×900 and DPR 2, one full-resolution pass
+is about 5.2 megapixels. Read [references/pass-catalogue.md](references/pass-catalogue.md)
+for choices and [references/buffers-and-precision.md](references/buffers-and-precision.md)
+for target formats, resize, and disposal.
 
-Read [references/pass-catalogue.md](references/pass-catalogue.md) when selecting
-passes, and [references/buffers-and-precision.md](references/buffers-and-precision.md)
-when allocating the targets they need.
+## Invariants and order
 
-## 3. Invariants
+Never sample the target currently bound: use two targets and swap for feedback.
+Apply one exposure/tone map once; keep intermediates unencoded; match grading to
+its declared scene/display side. Resize and dispose every target. Postprocessing
+must match the renderer; `shaders-tsl` owns WebGL versus WebGPU separation.
 
-- **Never sample the target currently bound.** Effects that read their own
-  output need two targets and a swap. The failure is silent on some drivers and
-  a black frame on others.
-- **One tone map, one exposure, one place.** A second operator inside a material
-  produces an image no exposure change can correct.
-- **Intermediate targets stay unencoded.** Only the final output carries the
-  sRGB transform. An encoded intermediate double-applies the curve, and the
-  result reads as washed-out rather than as a bug.
-- **A grade built for display-referred input cannot eat HDR values.** Declare
-  `grade-position` and match the LUT to it.
-- **Every target resizes.** One target missed on resize renders at the previous
-  size and reads as softness rather than as an error.
-- **Every target is disposed.** Render targets are the largest single source of
-  leaked GPU memory in a long-lived scene.
-- **Postprocessing follows the renderer.** The classic WebGL composer and the
-  node-based WebGPU stack are separate; `shaders-tsl` owns that split and the
-  feature matrix behind it.
+Depth/normal/velocity prepasses precede readers. Scene-referred bloom, volumetrics,
+and DOF precede tone mapping. Display-referred grain, chromatic offset, vignette,
+and matching LUT follow it. Anti-alias geometry before effects that smear it; the
+output transform is last and once.
 
-## 4. Order
+## Cost and routing
 
-Ordering is not stylistic. These dependencies are fixed:
+`3d-runtime-quality` chooses the tier; this graph declares pass-level degradation:
+reduce effect scale, shorten mips/steps, remove temporal passes, and keep the
+pass carrying the thesis. Prefer uniforms/scale over rebuilding variants.
 
-1. Depth, normal, and velocity prepasses precede anything that reads them.
-2. Effects that operate on scene-referred light — bloom, volumetrics, depth of
-   field — run before the tone map.
-3. Effects that operate on the final image — film grain, chromatic offset,
-   vignette, and any LUT authored for display-referred input — run after it.
-4. Anti-aliasing that resolves geometry edges runs before effects that smear
-   them; temporal anti-aliasing wants the frame before any other temporal pass.
-5. The output transform is last and happens once.
-
-## 5. Cost control
-
-Tiers come from `3d-runtime-quality`; this skill supplies what those tiers drop
-and in what order. Declare the pass-level degradation together with the chain:
-
-1. Reduce effect-pass scale before touching global DPR — half-res bloom is
-   nearly free visually, half-res geometry is not.
-2. Shorten mip chains and raymarch step counts before removing a pass, so the
-   image changes gradually rather than by disappearing.
-3. Remove the temporal passes first when the frame budget is missed; they cost
-   the most and degrade the worst under an unstable frame time.
-4. Keep the pass that carries the visual thesis. A chain that drops its subject
-   to hold a frame rate has lost the scene rather than optimized it.
-
-Switching a pass on or off recompiles material variants and can itself stall.
-Prefer changing a uniform or a scale over rebuilding the chain at runtime.
-
-## 6. Routing
-
-- Effect selection, cost class, failure modes → **[references/pass-catalogue.md](references/pass-catalogue.md)**
-- Formats, precision, depth access, MRT, resize, disposal → **[references/buffers-and-precision.md](references/buffers-and-precision.md)**
-- WebGPU or TSL node postprocessing → **`shaders-tsl`**
-- Which tier drops which pass → **`3d-runtime-quality`**
-- Exposure, tone-mapping intent, material hierarchy → **`3d-art-direction`**
-- React integration of the composer → **`r3f-patterns`**
+Pass catalogue → [references/pass-catalogue.md](references/pass-catalogue.md);
+buffers/precision → [references/buffers-and-precision.md](references/buffers-and-precision.md);
+TSL → `shaders-tsl`; visual intent → `3d-art-direction`; React composer →
+`r3f-patterns`.
 
 ## Check
 
