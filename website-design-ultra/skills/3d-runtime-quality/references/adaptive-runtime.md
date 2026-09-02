@@ -12,7 +12,7 @@
 
 Start with Medium by default unless a conservative project signal requires Low or Poster. Use these signals only as an upper bound:
 
-- `prefers-reduced-motion` controls motion, not image quality automatically.
+- Reduced motion controls motion, not image quality. The rule itself is `immersive-3d` §5; this controller does not re-derive it from frame time.
 - `navigator.deviceMemory`, `hardwareConcurrency`, Save-Data, and DPR are hints, not benchmarks.
 - A missing renderer or repeated context loss leads directly to Poster.
 - An explicit user setting takes precedence and must be preserved.
