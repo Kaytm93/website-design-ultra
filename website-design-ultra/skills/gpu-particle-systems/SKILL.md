@@ -61,7 +61,7 @@ Do not copy particle counts from a fixture or example into production; read the 
 
 ## 4. Routing
 
-- Concrete counts per tier → **`3d-runtime-quality` (`references/tier-matrix.md`, `qualityProfile.particles`)**
+- Concrete counts per tier → **`3d-runtime-quality` (`3d-runtime-quality/references/tier-matrix.md`, `qualityProfile.particles`)**
 - Single-pass decorative dust / sparkle / short burst → **`r3f-patterns`**
 - TSL / WebGPU node material choice and WebGL2 fallback → **`shaders-tsl`**
 - Multi-pass chains that read earlier buffers → **`render-graph`**

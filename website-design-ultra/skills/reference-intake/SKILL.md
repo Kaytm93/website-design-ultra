@@ -25,7 +25,8 @@ skill for ordinary 2D work, an ordinary text-only 3D hero, or a mood adjective.
 The input contract is offline and tool-neutral. Keep original files unchanged
 and refer to them by stable ids rather than by their order in a folder listing.
 When working from a source-repository checkout at the same commit or tag, the
-root-only `automation/reference-intake/validate-reference-intake.mjs` validator
+source-repository `repo:automation/reference-intake/validate-reference-intake.mjs`
+validator
 can verify the companion JSON record and exported bytes offline. Its fixtures
 and optional REST helper remain outside this installed plugin tree. Manual PNG
 and SVG exports plus the written token block stay the required interface; Figma

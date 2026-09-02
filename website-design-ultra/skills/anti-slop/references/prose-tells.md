@@ -77,7 +77,7 @@ fabrication, owned by `content-design`.
 
 **Empty and error states.** State the condition and the next step. No jokes, no
 apology theatre, no invented cause. Owned by `content-design`
-`references/microcopy.md`; this file only flags the slop shapes.
+`content-design/references/microcopy.md`; this file only flags the slop shapes.
 
 **Demo and placeholder content.** Label it as illustrative in the interface.
 Fictional customer names that read as real are a fabrication, not a placeholder.
