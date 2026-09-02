@@ -417,7 +417,12 @@ function parseArguments(argv) {
   if (options.self) {
     options.profileMode = 'explicit'
     options.profile = 'docs'
-    options.paths.push(path.join(pluginRoot, 'README.md'), path.join(pluginRoot, 'commands'), path.join(pluginRoot, 'skills'))
+    options.paths.push(
+      path.join(pluginRoot, 'README.md'),
+      path.join(pluginRoot, 'commands'),
+      path.join(pluginRoot, 'docs'),
+      path.join(pluginRoot, 'skills'),
+    )
   }
   if (!options.paths.length && !options.stdin) die('pass --path, --stdin, or --self')
   return options
