@@ -991,6 +991,7 @@ const negativeGatedSkills = [
   'procedural-3d',
   'reference-intake',
   'render-graph',
+  'shader-text',
   'spatial-audio',
   'vanilla-three-production',
 ]
@@ -1040,19 +1041,18 @@ for (const name of negativeGatedSkills) {
       }
     }
   }
-  if (name === 'procedural-3d') {
+  if (name === 'shader-text') {
     for (const marker of [
-      'procedural',
-      'crystal growth',
-      'voronoi',
-      'marching cubes',
-      'curl noise',
-      'l-system',
-      'imported glb',
-      'inspection',
+      'msdf',
+      'license',
+      'troika',
+      'dom twin',
+      'scramble',
+      'glitch',
+      'dissolve',
     ]) {
       if (!description.toLowerCase().includes(marker)) {
-        fail(`skills/procedural-3d: description must contain "${marker}"`)
+        fail(`skills/shader-text: description must contain "${marker}"`)
       }
     }
   }

@@ -50,6 +50,8 @@ Load an add-on only when its condition is already in the brief; possible use is
 not activation and add-ons are not a checklist:
 
 - custom material, deformation, or node look → `shaders-tsl`;
+- shader-driven text with an MSDF atlas or Troika treatment, carrying a
+  semantic DOM twin → `shader-text`;
 - scroll is the story → `scroll-immersion`;
 - click, hover, inspection, or configuration → `r3f-interaction`;
 - custom model/texture preparation → `3d-asset-pipeline`;

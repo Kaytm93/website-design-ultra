@@ -91,7 +91,7 @@ function FresnelMaterial() {
 
 ## Conditional references
 
-- Read [references/module-index.md](references/module-index.md) before writing a shader by hand: seventeen modules already exist as running code with a copyable file, and the index names the one to copy.
+- Read [references/module-index.md](references/module-index.md) before writing a shader by hand: eighteen modules already exist as running code with a copyable file, and the index names the one to copy.
 - Read [references/tsl-cheatsheet.md](references/tsl-cheatsheet.md) only when implementing a TSL graph or checking an API name.
 - Read [references/webgpu-feature-matrix.md](references/webgpu-feature-matrix.md) for every WebGPU feature decision and update its feature record after testing.
 - Use `r3f-patterns` for Canvas/resource lifecycle and `3d-runtime-quality` for all tiers and adaptation.

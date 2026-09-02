@@ -184,6 +184,16 @@ export const foundationalShaderManifest: ShaderModuleManifestEntry[] = [
     noCombine: true,
   },
   {
+    id: 'shader-text',
+    name: 'Production shader text (MSDF/Troika with DOM twin)',
+    rendererSupport: ['webgl2'],
+    costClass: 'low',
+    reducedMotion: 'Scramble, glitch, and dissolve amplitudes freeze at 0; DOM selection, focus, translation, and activation remain live.',
+    colorSpace: 'MSDF atlas is linear RGB unencoded distance data; the premultiplied decorative overlay is composed before tone mapping. DOM text remains the visual authority.',
+    fixture: 'lab/src/experiments/shaders/shader-text.ts',
+    noCombine: true,
+  },
+  {
     id: 'canvas-only-prohibition',
     name: 'Canvas-only prohibition list (primary actions, forms, legal copy, pricing)',
     rendererSupport: ['webgl2'],
@@ -201,6 +211,10 @@ export const mediaPostManifest: ShaderModuleManifestEntry[] = foundationalShader
 
 export const sdfTextManifest: ShaderModuleManifestEntry[] = foundationalShaderManifest.filter(
   (entry) => entry.id === 'sdf-text',
+);
+
+export const shaderTextManifest: ShaderModuleManifestEntry[] = foundationalShaderManifest.filter(
+  (entry) => entry.id === 'shader-text',
 );
 
 export const domTextEffectsManifest: ShaderModuleManifestEntry[] = foundationalShaderManifest.filter(

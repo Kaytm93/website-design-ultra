@@ -135,7 +135,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
   - **Acceptance:** echtes WebGPU-Device PASS; ohne Device `UNAVAILABLE`; Ping-Pong bleibt grün.
   - **Verify:** Chromium-Headless WebGPU-Test mit `--enable-unsafe-webgpu`.
 
-- [ ] `J-D5` **Skill `shader-text` (Produktion)** — M
+- [x] `J-D5` **Skill `shader-text` (Produktion)** — M
   - **Depends on:** J-A4
   - **Deliver:** MSDF-Atlas-Script mit Lizenzmanifest, Troika-Alternative, DOM-Text-Template und Scramble/Glitch/Dissolve-Uniforms.
   - **Acceptance:** Lab-Headline mit selektierbarem/übersetzbarem DOM-Zwilling; Screenreader-Fixture grün; Prohibition bleibt unverändert.

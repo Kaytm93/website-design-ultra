@@ -87,8 +87,18 @@ export const mirroredFiles = [
  * Files the plugin owns outright: they document the tree, they do not mirror
  * it. `assets/README.md` is the licence trail for the redistributed CC0 HDRI —
  * publisher, upstream URL and source hash — and has no counterpart to mirror.
+ * The `shader-text/` files are the production text pipeline itself, shipped
+ * here rather than copied from a lab module.
  */
-const pluginOwnedTemplates = new Set(['README.md', 'assets/README.md'])
+const pluginOwnedTemplates = new Set([
+  'README.md',
+  'assets/README.md',
+  'shader-text/dom-text-template.ts',
+  'shader-text/license-manifest.json',
+  'shader-text/msdf-atlas.mjs',
+  'shader-text/text-effects-uniforms.ts',
+  'shader-text/troika-alternative.md',
+])
 
 function readSource(entry) {
   const absolute = path.join(repoRoot, entry.source)
@@ -217,7 +227,7 @@ test('the shader module index matches the lab manifest', () => {
     .split(/\n  \},/)
     .filter((block) => block.includes('id:'))
 
-  assert.equal(blocks.length, 17, 'manifest entry count changed; regenerate the index')
+  assert.equal(blocks.length, 18, 'manifest entry count changed; regenerate the index')
 
   for (const block of blocks) {
     const id = block.match(/id: '([^']+)'/)[1]

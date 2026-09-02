@@ -445,7 +445,10 @@ async function main() {
       // and every other module must stay free of it. Same rule as
       // lab/tests/gpu-particles.test.ts.
       const stripComments = (s) => s.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
-      const SDF_OWNER = 'sdf-text.ts';
+      // Two modules legitimately name SDF/MSDF: the IP-11A lab experiment and
+      // J-D5's production text module. Containment is still the rule — every
+      // other module stays free of it — so the constant is a set, not a name.
+      const SDF_OWNERS = ['sdf-text.ts', 'shader-text.ts'];
       // Cut the sdf-text entry out of the manifest so the remaining entries
       // are still held to the no-SDF rule.
       const manifestSansComments = stripComments(manifest);
@@ -461,13 +464,14 @@ async function main() {
         .split('\n')
         .some((line) => /SDF|MSDF/i.test(line) && !/sdf-text|sdfText/.test(line));
       const sdfStrays = readdirSync(join(LAB_ROOT, 'src/modules'))
-        .filter((f) => f.endsWith('.ts') && f !== SDF_OWNER)
+        .filter((f) => f.endsWith('.ts') && !SDF_OWNERS.includes(f))
         .filter((f) => (f === 'manifest.ts'
           ? manifestNamesStraySdf
           : /SDF|MSDF/i.test(stripComments(readFileSync(join(LAB_ROOT, 'src/modules', f), 'utf8')))));
-      check('SDF/MSDF confined to the dedicated IP-11A module', sdfStrays.length === 0, sdfStrays.length ? `SDF/MSDF outside ${SDF_OWNER}: ${sdfStrays.join(', ')}` : `owned by ${SDF_OWNER}`);
-      const sdfOwnerExists = existsSync(join(LAB_ROOT, 'src/modules', SDF_OWNER));
-      check('IP-11A sdf-text module implements SDF/MSDF', sdfOwnerExists && /SDF|MSDF/i.test(stripComments(readFileSync(join(LAB_ROOT, 'src/modules', SDF_OWNER), 'utf8'))), sdfOwnerExists ? '' : `missing src/modules/${SDF_OWNER}`);
+      check('SDF/MSDF confined to its owning modules', sdfStrays.length === 0, sdfStrays.length ? `SDF/MSDF outside ${SDF_OWNERS.join(', ')}: ${sdfStrays.join(', ')}` : `owned by ${SDF_OWNERS.join(' + ')}`);
+      const missingOwners = SDF_OWNERS.filter((f) => !existsSync(join(LAB_ROOT, 'src/modules', f)));
+      const silentOwners = SDF_OWNERS.filter((f) => !missingOwners.includes(f) && !/SDF|MSDF/i.test(stripComments(readFileSync(join(LAB_ROOT, 'src/modules', f), 'utf8'))));
+      check('each owning module implements SDF/MSDF', missingOwners.length === 0 && silentOwners.length === 0, [missingOwners.length ? `missing: ${missingOwners.join(', ')}` : '', silentOwners.length ? `names no SDF/MSDF: ${silentOwners.join(', ')}` : ''].filter(Boolean).join('; '));
       const noCombineCount = (manifest.match(/noCombine:\s*true/g) ?? []).length;
       check('all manifest entries are noCombine:true', noCombineCount >= 13);
     }

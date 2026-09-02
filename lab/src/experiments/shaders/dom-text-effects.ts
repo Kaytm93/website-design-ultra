@@ -342,7 +342,7 @@ export function mount(ctx: ExperimentContext): void {
 
     frame += 1;
     if (deterministic && frame === 1) {
-      document.documentElement.dataset.wduReady = '1';
+      document.documentElement.dataset.wduReady = 'true';
     }
     requestAnimationFrame(animate);
   }
