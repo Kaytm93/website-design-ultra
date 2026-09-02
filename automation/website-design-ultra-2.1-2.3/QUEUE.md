@@ -15,7 +15,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
 
 ## PR 1 — PR A: Erreichbarkeit und Routing — 2.1.0 Teil 1
 
-- [ ] `J-A1` **Kopierbare Runtime-Dateien ins Plugin legen** — S
+- [x] `J-A1` **Kopierbare Runtime-Dateien ins Plugin legen** — S
   - **Depends on:** none
   - **Deliver:** `website-design-ultra/templates/runtime/` mit byte-identischen Kopien der sechs Runtime-Referenzen aus `references/`; `tests/templates/sync.test.mjs`.
   - **Acceptance:** Runtime-Skills und `/verify` zeigen auf Plugin-Templates; kein installierter Pfad fehlt.

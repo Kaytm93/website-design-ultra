@@ -6,7 +6,7 @@ this file in addition to [prose-tells.md](prose-tells.md) whenever German copy i
 written or audited.
 
 Text expansion, formatting, plural rules, and RTL behavior are owned by
-`content-design` `references/localization.md`. This file covers only the slop
+`content-design` `content-design/references/localization.md`. This file covers only the slop
 shapes.
 
 ## Tier 1 — Structural, always rewrite
