@@ -763,6 +763,10 @@ const materialLookdevContracts = [
     'skills/material-lookdev/references/environment-tiers.md',
     ['Poster', 'Low', 'Medium', 'High', 'maxTextureSize', 'maxSpecularSamples', 'dynamic', 'procedural', 'HDRI', 'dispose', 'reduced-cost'],
   ],
+  [
+    'templates/material-lookdev/material-lookdev.ts',
+    ['MATERIAL_RECIPES', 'ENVIRONMENT_TIERS', 'hasPhysicalFeature', 'materialClassFor', 'MeshStandardMaterial', 'MeshPhysicalMaterial', 'baseColor'],
+  ],
 ]
 
 for (const [file, markers] of materialLookdevContracts) {

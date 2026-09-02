@@ -19,6 +19,9 @@ skill can name a path the reader can actually open.
   so a run has a real HDRI without reaching the network. `assets/README.md`
   beside it carries the publisher, the upstream URL, the licence and the
   source hash.
+- `material-lookdev/` — the dependency-free TypeScript material contract. Copy
+  `material-lookdev/material-lookdev.ts` into a project for the five recipes,
+  explicit physical fields, environment tiers, and the material-class gate.
 
 `compare-baselines.mjs` reads its declaration contract from the sibling
 `baseline-comparison.ts`, so it needs a Node that strips TypeScript types:
