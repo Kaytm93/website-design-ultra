@@ -56,8 +56,10 @@ Read only what the task needs. A row fires on its gate, not on the topic.
 | A component owns async data, validation, mutation, or interactive state | `ui-states` |
 | A 3D brief supplies six to ten exported PNG and SVG frames plus a written token block | `reference-intake`, before `3d-art-direction` |
 | 3D, WebGL, WebGPU, shaders, Three.js, or R3F | `immersive-3d`; if the reference gate fired, `reference-intake`; then `3d-art-direction` and `3d-runtime-quality`, then one implementation sub-skill |
+| A 3D brief needs thousands of particles carrying state across frames, a spatial field, trails, or a morph between targets | `gpu-particle-systems`, behind `immersive-3d` |
+| A 3D brief needs geometry produced from parameters or grown algorithmically instead of imported | `procedural-3d`, before `3d-asset-pipeline` |
 
-Three clarifications the table cannot carry:
+Five clarifications the table cannot carry:
 
 - **The copy gate is independent of `content-design`.** A headline, subhead,
   button label, empty state, or demo string needs the tell catalogue even when

@@ -232,6 +232,33 @@ for (const directory of ['skills', 'commands']) {
   }
 }
 
+/**
+ * A skill no router names is a skill nobody reaches.
+ *
+ * Routing here is deliberate and negative: a skill loads because a gate fired,
+ * never because it looked topical. That only works while every skill has a
+ * gate somewhere. `gpu-particle-systems` and `procedural-3d` shipped without
+ * one and were reachable only by guessing, which is the failure mode the
+ * routing model exists to prevent.
+ *
+ * Being named is not being loaded. A forward case may still forbid a skill
+ * whose gate is written down here.
+ */
+const routerFiles = ['skills/core-rules/SKILL.md', 'skills/immersive-3d/SKILL.md']
+const routerText = routerFiles
+  .map((file) => read(path.join(pluginRoot, file)))
+  .join('\n')
+
+for (const directory of skillDirectories) {
+  if (routerFiles.some((file) => file === `skills/${directory.name}/SKILL.md`)) continue
+  if (!routerText.includes(directory.name)) {
+    fail(
+      `skills/${directory.name}: named by neither ${routerFiles.join(' nor ')}; ` +
+        'a skill no router names cannot be reached by a gate',
+    )
+  }
+}
+
 const priorityOneContracts = [
   [
     'skills/3d-art-direction/SKILL.md',
@@ -872,7 +899,15 @@ const canvasFirstContracts = [
   // The add-ons only stay optional while their owners point at them by name.
   [
     'skills/immersive-3d/SKILL.md',
-    ['canvas-first-architecture', 'render-graph', 'loading-choreography', 'spatial-audio', 'Budget class'],
+    [
+      'canvas-first-architecture',
+      'render-graph',
+      'loading-choreography',
+      'spatial-audio',
+      'gpu-particle-systems',
+      'procedural-3d',
+      'Budget class',
+    ],
   ],
   [
     'skills/core-rules/SKILL.md',
