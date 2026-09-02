@@ -71,7 +71,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
   - **Acceptance:** `/tweak` ≤ 8 KB Plugin; `/immersive` liest `core-rules` nur über §3/§4.
   - **Verify:** `measure-path.mjs --command tweak`, Slop-Case `--repeat 3`.
 
-- [ ] `J-B6` **README auf Plugin-Größe** — S
+- [x] `J-B6` **README auf Plugin-Größe** — S
   - **Depends on:** none
   - **Deliver:** README ≤ 12 KB ohne eigenen Versionsabschnitt; Add-on-Zählung vereinheitlichen; `agents/openai.yaml` konsistent in allen oder keinem Skill.
   - **Acceptance:** `release.mjs --strict` grün und README nennt keine Version außer `plugin.json`.
