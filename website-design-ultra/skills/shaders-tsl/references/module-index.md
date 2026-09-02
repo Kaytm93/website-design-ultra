@@ -226,9 +226,11 @@ routes to them.
 | Reduced motion | Simulation frozen at t=0; static Points composition preserved. No animation when prefers-reduced-motion is set. |
 | Colour space | Linear data texture (NoColorSpace, NearestFilter); render targets RGBA16F HalfFloat highp, no depth/stencil. Not display color. |
 | Fixture | `repo:lab/src/experiments/particle-toy.ts` |
-| Copy from | `templates/shaders/particle-toy-update.frag` |
+| Copy from | `templates/particles/compute-particles.ts` (WebGPU TSL); `templates/shaders/particle-toy-update.frag` (WebGL2 fallback) |
 
-The GLSL half is mirrored; the simulation loop itself is TypeScript and stays in the lab.
+The WebGPU compute path is copyable from `templates/particles/compute-particles.ts`;
+the GLSL state-update half is mirrored for the WebGL2 Ping-Pong fallback. The lab
+fixture is the executable evidence for both paths.
 
 Gate owner: `gpu-particle-systems`.
 

@@ -21,15 +21,16 @@ Before simulation code, read [references/state-textures-and-interaction.md](refe
 It owns the two RGBA16F/HalfFloat targets, precision/filter/color-space/depth
 settings, one read/write/swap owner, reset, seeded streams, normalized pointer
 field, bounded recovering impulse, no per-particle React state, and renderer
-matrix. WebGL2 is PASS only after real float-target execution; WebGPU is
-UNAVAILABLE without a real WGSL/TSL device. Fallbacks are non-empty.
+matrix. WebGL2 is PASS only after real float-target execution; WebGPU takes the
+copyable `templates/particles/compute-particles.ts` TSL path and is PASS only
+after that runs on a real `GPUDevice`. Fallbacks are non-empty.
 
 1. Answer the gate and select the quality profile.
 2. Allocate two targets with no per-frame reallocation and one simulation owner.
 3. Wire normalized pointer and one recovering impulse from the injected clock.
 4. Seed spawn/reset through `particles/spawn` and named streams.
 5. Provide reduced-motion, poster, and capability fallback compositions.
-6. Verify the declared WebGL2 path honestly; leave unsupported WebGPU unverified.
+6. Verify each declared backend by executing it; an absent device is UNAVAILABLE.
 
 ## Routing
 
@@ -47,4 +48,6 @@ clock/streams → `core-rules/references/determinism.md`.
 - [ ] Click creates exactly one impulse record decaying via the injected clock's recovery time; no per-particle React state or setter in the render loop.
 - [ ] Production particle allowance is read from `qualityProfile.particles`; no count is duplicated in this skill or the reference matrix.
 - [ ] Reduced-motion / poster / capability fallback is a non-empty composition, not a blank canvas.
-- [ ] Renderer matrix is honest: WebGL2 PASS only after real float-target browser execution; otherwise UNAVAILABLE; WebGPU UNAVAILABLE without a real WGSL/TSL device.
+- [ ] Renderer matrix is honest: WebGL2 PASS only after real float-target browser
+      execution; WebGPU PASS only after `templates/particles/compute-particles.ts`
+      executes on a real `GPUDevice`; otherwise each backend is UNAVAILABLE.

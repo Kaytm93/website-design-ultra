@@ -4,7 +4,7 @@
     {
       "id": "gpu-particles",
       "webgl2": { "status": "PASS", "source": "particle-toy update/render (GLSL 300 es, RGBA16F HalfFloat, NearestFilter, NoColorSpace, no depth/stencil, ping-pong read/write swap) browser-verified float render target init (4) + update draws (6) + render (3) + non-blank capture, data-wdu-particle-* evidence", "executed": "browser-required" },
-      "webgpu": { "status": "UNAVAILABLE", "reason": "No WGSL/TSL device execution in lab harness; raw GLSL is never reported as WebGPU PASS. A WGSL/TSL particle update+render implementation executed on a GPUDevice is required for WebGPU PASS.", "note": "Real device execution is required; raw GLSL is never counted as WebGPU PASS." }
+      "webgpu": { "status": "PASS", "source": "templates/particles/compute-particles.ts (TSL storage buffers, Fn, instanceIndex, computeKernel, velocity color, A/B morph) with lab/src/experiments/compute-particles.ts", "executed": "lab/scripts/verify-compute-webgpu.mjs — Chromium headless --enable-unsafe-webgpu; GPUDevice=true, compute dispatch=true, render=true, errors=[]" }
     },
     {
       "id": "video-texture",

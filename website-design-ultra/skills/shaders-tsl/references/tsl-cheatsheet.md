@@ -42,6 +42,27 @@ const n = mx_noise_float(positionLocal.mul(1.5).add(time.mul(0.3)));
 material.positionNode = positionLocal.add(normalLocal.mul(n.mul(0.2)));
 ```
 
+## Compute + storage buffers (WebGPU-only)
+```js
+import * as THREE from 'three/webgpu';
+import { Fn, storage, instanceIndex, computeKernel, uniform } from 'three/tsl';
+const data = new THREE.StorageInstancedBufferAttribute(count, 4);
+const state = storage(data, 'vec4', count);
+const morphA = storage(new THREE.StorageInstancedBufferAttribute(count, 4), 'vec4', count).toReadOnly();
+const morphB = storage(new THREE.StorageInstancedBufferAttribute(count, 4), 'vec4', count).toReadOnly();
+const progress = uniform(0);
+const update = Fn(() => {
+  const p = state.element(instanceIndex).toVar();
+  const target = morphA.element(instanceIndex).mix(morphB.element(instanceIndex), progress);
+  p.xyz.assign(p.xyz.add(target.xyz.sub(p.xyz).mul(0.016)));
+  state.element(instanceIndex).assign(p);
+})();
+const kernel = computeKernel(update, [64]);
+kernel.count = count; // count comes from qualityProfile.particles
+await renderer.computeAsync(kernel);
+```
+`state.toAttribute()` feeds `positionNode`; morph targets are selected with `mix(A, B, progress)`. Map the velocity buffer to a speed node and `mix(colorA, colorB, speed.clamp(0, 1))` for velocity colour. Compute/storage has no WebGL2 path: keep the RGBA16F ping-pong shader fallback and report WebGPU `UNAVAILABLE` without a real `GPUDevice` execution.
+
 ## Renderer
 - `WebGPURenderer` from `three/webgpu`; `await renderer.init()`; compatible features can fall back to WebGL2.
 - WebGPU-only compute/effects still need an explicit fallback.

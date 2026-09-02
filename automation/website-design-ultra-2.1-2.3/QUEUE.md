@@ -129,7 +129,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
   - **Acceptance:** `ref-volume` zeigt 64³ mit ≤ 8 ms auf Profil; Reduced Motion friert Step-Offset.
   - **Verify:** Lab-Suite und Telemetrie-Gate.
 
-- [ ] `J-D4` **Compute-Pfad für `gpu-particle-systems` + TSL-Cheatsheet** — L
+- [x] `J-D4` **Compute-Pfad für `gpu-particle-systems` + TSL-Cheatsheet** — L
   - **Depends on:** J-A4
   - **Deliver:** `templates/particles/compute-particles.ts` mit `Fn`, `storage`, `instanceIndex`, `computeKernel`, Velocity-Farbe und Morph; Ping-Pong-Fallback bleibt; Cheatsheet ≤ 4 KB.
   - **Acceptance:** echtes WebGPU-Device PASS; ohne Device `UNAVAILABLE`; Ping-Pong bleibt grün.

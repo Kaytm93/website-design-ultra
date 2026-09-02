@@ -212,7 +212,7 @@ test('deterministic fixture uses named streams, produces identical hashes, defin
   assert.equal(impulseStrength(13, impulse), 0);
 });
 
-test('backend matrix has gpu-particles WebGL2 honest (PASS only with browser float evidence, otherwise UNAVAILABLE) and WebGPU UNAVAILABLE never PASS', () => {
+test('backend matrix has honest WebGL2 fallback and WebGPU compute evidence', () => {
   const matrix = JSON.parse(read(resolve(ROOT, 'src/fixtures/backend-matrix.json')));
   const entry = matrix.modules.find((m: { id: string }) => m.id === 'gpu-particles');
   assert.ok(entry, 'gpu-particles entry missing');
@@ -224,8 +224,15 @@ test('backend matrix has gpu-particles WebGL2 honest (PASS only with browser flo
     assert.equal(entry.webgl2.status, 'UNAVAILABLE');
     assert.match(entry.webgl2.reason ?? '', /browser.*float.*evidence|float.*render.*target|No browser.*float/i);
   }
-  assert.equal(entry.webgpu.status, 'UNAVAILABLE');
-  assert.match(entry.webgpu.reason ?? '', /WGSL\/TSL|WebGPU.*PASS/i);
+  if (entry.webgpu.status === 'PASS') {
+    const evidence = `${entry.webgpu.source ?? ''} ${entry.webgpu.executed ?? ''}`;
+    assert.match(evidence, /compute-particles\.ts/);
+    assert.match(evidence, /Chromium headless.*enable-unsafe-webgpu/i);
+    assert.match(evidence, /GPUDevice=true.*compute dispatch=true.*render=true/i);
+  } else {
+    assert.equal(entry.webgpu.status, 'UNAVAILABLE');
+    assert.match(entry.webgpu.reason ?? '', /WGSL\/TSL|WebGPU.*PASS/i);
+  }
   // ensure contract marks raw GLSL never webgpu pass
   assert.equal(matrix.contract.rawGLSLisNotWebGPUPass, true);
 });

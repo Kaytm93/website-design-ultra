@@ -72,6 +72,7 @@ const experimentName =
 const EXPERIMENTS: Record<string, () => Promise<ExperimentModule>> = {
   'shader-fullscreen': () => import('./experiments/shader-fullscreen.js'),
   'particle-toy': () => import('./experiments/particle-toy.js'),
+  'compute-particles': () => import('./experiments/compute-particles.js'),
   'compile-error': () => import('./fixtures/compile-error.js'),
   'deterministic-capture': () => import('./fixtures/deterministic-capture.js'),
   'foundational-shaders': () => import('./experiments/shaders/foundational-shaders.js'),

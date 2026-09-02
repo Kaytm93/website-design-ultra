@@ -158,7 +158,14 @@ A **PASS** may only be recorded after **real browser execution** with a **float 
 
 ### WebGPU
 
-**UNAVAILABLE, never PASS**, unless all of these co-occur: a live `GPUDevice` was acquired, a WGSL/TSL implementation of the state update and the particle render was submitted and executed, and an artifact or screenshot tied to that run was recorded. Raw GLSL - even via `three.webgpu`'s compatibility fallback - that has not been rewritten as WGSL/TSL and executed on a `GPUDevice` is declaratively not a WebGPU PASS. The backend matrix (`repo:lab/src/fixtures/backend-matrix.json`) stores `gpu-particles` as `webgpu: UNAVAILABLE` with the reason citing "No WGSL/TSL device execution; raw GLSL is never WebGPU PASS" when that condition holds.
+**WebGPU** is `UNAVAILABLE`, never `PASS`, unless all of these co-occur: a live
+`GPUDevice` was acquired, the copyable `templates/particles/compute-particles.ts`
+WGSL/TSL implementation of the state update and particle render was submitted
+and executed, and an artifact or screenshot tied to that run was recorded. Raw
+GLSL - even via `three.webgpu`'s compatibility fallback - that has not been
+rewritten as WGSL/TSL and executed on a `GPUDevice` is declaratively not a
+WebGPU PASS. The backend matrix stores the result of the real compute verifier;
+without that run it must remain `UNAVAILABLE`.
 
 The contract field `webgpuRequires` records exactly that sentence so tooling can match it:
 
@@ -188,7 +195,7 @@ When copying this contract into a project:
 - [ ] No per-particle React state and no React state setter inside the render loop - no per-particle React state.
 - [ ] Reduced-motion / poster / capability fallback are non-empty compositions, not a blank canvas.
 - [ ] No particle count appears in this reference or the skill matrix; production consumes `qualityProfile.particles`; the fixture dimension carries a `fixture/test size` annotation.
-- [ ] WebGL2 PASS only after real browser float-target execution; otherwise UNAVAILABLE; WebGPU UNAVAILABLE without a real WGSL/TSL device run.
+- [ ] WebGL2 PASS only after real browser float-target execution; WebGPU PASS only after the copyable TSL template runs on a real GPUDevice; otherwise each backend is UNAVAILABLE.
 
 ## 8. Verification markers (test-only, must remain)
 
