@@ -47,7 +47,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
   - **Acceptance:** Statuswerte werden nur einmal definiert; `UNAVAILABLE`-Treffer ≤ 14.
   - **Verify:** Byte-Diff der sechs Dateien und `validate-content.mjs`.
 
-- [ ] `J-B2` **Fallback-Regeln nur in `immersive-3d` §5** — S
+- [x] `J-B2` **Fallback-Regeln nur in `immersive-3d` §5** — S
   - **Depends on:** J-B1
   - **Deliver:** Fallback-Wiederholungen in `core-rules`, `r3f-patterns`, `3d-runtime-quality` und `/immersive` auf Pointer reduzieren.
   - **Acceptance:** Reduced-Motion-, Poster- und Context-Loss-Regeln stehen nur in `immersive-3d` §5.

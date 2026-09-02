@@ -146,10 +146,9 @@ the same contract:
 - Drive the loop with `renderer.setAnimationLoop`, cap DPR at 2 (mobile 1–1.5),
   and enable damping on any controls.
 - Set `outputColorSpace` and take the tone-mapping choice from `3d-art-direction`.
-- Read `prefers-reduced-motion` and react to changes: no idle motion, auto
-  rotation, or scroll scrub while it is set.
-- Keep statement, heading, and primary action in the DOM outside the canvas, and
-  reveal that content when WebGL is unavailable or the context is lost.
+- Apply §5 unchanged. Without React the same five rules need hand-written
+  wiring: a `matchMedia` listener, a DOM layer outside the canvas that becomes
+  visible on context loss, and an `IntersectionObserver`.
 - Stop the loop on `document.hidden` and when the canvas leaves the viewport;
   restart deliberately instead of remounting.
 - Dispose geometries, materials, textures, and the renderer when the demo is
