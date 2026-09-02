@@ -18,6 +18,7 @@ Then open one experiment at a time:
 
 - `/?e=shader-fullscreen` — fullscreen GLSL shader with live raw-source HMR and uniform controls;
 - `/?e=particle-toy` — GPU particle ping-pong simulation (RGBA16F HalfFloat, NearestFilter, NoColorSpace, no depth/stencil, one owner swap, deterministic `particles/spawn`, normalized pointer field with capped Gaussian falloff, one recovering click impulse, two morph targets A/B with uniform progress (no per-frame allocation), stable `renderer.info` across cycles, mobile count/DPR reduction fixture, deterministic reset/morph hashes, reduced-motion/poster/capability fallback);
+- `/?e=compute-particles` — real WebGPU/TSL storage-buffer compute fixture (`GPUDevice`, `Fn`, `instanceIndex`, `computeKernel`, velocity colour, and A/B morph) with an explicit `UNAVAILABLE` poster when the device is absent;
 - `/?e=compile-error` — deliberate undeclared-uniform failure with source/line diagnostics;
 - `/?e=deterministic-capture&WDU_DETERMINISTIC=1` — seeded, stable-frame capture fixture;
 - `/?e=foundational-shaders` — noise, Fresnel, iridescence, dissolve (IP-08B);
@@ -38,6 +39,7 @@ Then open one experiment at a time:
 
 ```bash
 npm run verify
+npm run verify:compute # Chromium headless + --enable-unsafe-webgpu
 WDU_PLAYWRIGHT_CLI=/path/to/playwright-cli npm run verify:harness
 ```
 

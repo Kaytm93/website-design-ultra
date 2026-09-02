@@ -45,7 +45,7 @@ That reference is the single copyable contract for:
 - normalized pointer field and capped radial falloff,
 - one recovering click impulse with origin / radius / strength / startTime-or-age decaying via the injected clock,
 - the rule that no per-particle React state and no React state setter exists in the render loop,
-- WebGL2 requires real float-render-target execution for PASS; WebGPU is UNAVAILABLE without an actual WGSL/TSL implementation and WebGPU device; and the non-empty reduced-motion / poster / capability fallback.
+- WebGL2 requires real float-render-target execution for PASS; WebGPU uses the copyable `templates/particles/compute-particles.ts` TSL path and requires a real GPUDevice execution for PASS. Both paths keep the non-empty reduced-motion / poster / capability fallback.
 
 Do not copy particle counts from a fixture or example into production; read the quality profile.
 
@@ -57,7 +57,10 @@ Do not copy particle counts from a fixture or example into production; read the 
 4. Wire the normalized pointer field and the one-shot recovering impulse from the contract - never per-particle React state.
 5. Implement deterministic spawn/reset from `particles/spawn` and any additional named streams.
 6. Produce the mandatory fallbacks: a reduced-motion composition, a poster tier, and a capability fallback that is never a blank canvas - each is a non-empty composition.
-7. Verify on the declared WebGL2 path with a real browser float-target execution before claiming PASS; leave WebGPU as UNAVAILABLE when no WGSL/TSL device execution exists.
+7. Verify the WebGL2 path with a real browser float-target execution and the
+   WebGPU path with `templates/particles/compute-particles.ts` on a live
+   `GPUDevice`; leave each backend `UNAVAILABLE` when its required execution is
+   absent.
 
 ## 4. Routing
 
@@ -77,4 +80,4 @@ Do not copy particle counts from a fixture or example into production; read the 
 - [ ] Click creates exactly one impulse record decaying via the injected clock's recovery time; no per-particle React state or setter in the render loop.
 - [ ] Production particle allowance is read from `qualityProfile.particles`; no count is duplicated in this skill or the reference matrix.
 - [ ] Reduced-motion / poster / capability fallback is a non-empty composition, not a blank canvas.
-- [ ] Renderer matrix is honest: WebGL2 PASS only after real float-target browser execution; otherwise UNAVAILABLE; WebGPU UNAVAILABLE without a real WGSL/TSL device.
+- [ ] Renderer matrix is honest: WebGL2 PASS only after real float-target browser execution; WebGPU PASS only after `templates/particles/compute-particles.ts` executes on a real GPUDevice; otherwise each backend is UNAVAILABLE.

@@ -15,6 +15,9 @@ skill can name a path the reader can actually open.
   `skills/shaders-tsl/references/module-index.md` first: it says which file
   carries which effect, at what cost, on which backend.
 
+- `particles/` — copyable WebGPU/TSL compute kernels. They use storage buffers
+  for persistent state and must ship with the existing WebGL2 ping-pong fallback.
+
 `compare-baselines.mjs` reads its declaration contract from the sibling
 `baseline-comparison.ts`, so it needs a Node that strips TypeScript types:
 Node 23 and newer run it as written, Node 22 needs `--experimental-strip-types`.

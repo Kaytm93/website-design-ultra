@@ -14,7 +14,10 @@
     "forceConsistentCasingInFileNames": true,
     "types": ["vite/client", "node"],
     "paths": {
-      "@wdu-references/*": ["../references/*"]
+      "@wdu-references/*": ["../references/*"],
+      "@wdu-templates/*": ["../website-design-ultra/templates/*"],
+      "three/webgpu": ["node_modules/@types/three/build/three.webgpu.d.ts"],
+      "three/tsl": ["node_modules/@types/three/build/three.tsl.d.ts"]
     },
     "baseUrl": "."
   },
