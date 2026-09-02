@@ -11,9 +11,10 @@
  * through `npm ci` first; no npx, no registry fetch at runtime.
  *
  * The raw output GLB is generated separately by
- * procedural-generation/generator.py (Blender Python, crystal-growth); this
- * script only consumes it. The four committed pipeline reports under
- * reports/model/ are the durable evidence.
+ * procedural-generation/js/crystal-growth.mjs (dependency-free Node.js,
+ * crystal-growth); this script only consumes it. The runtime asset is the
+ * optimized output of scripts/build-model.mjs, never this raw export. The
+ * four committed pipeline reports under reports/model/ are the durable evidence.
  */
 
 import { spawnSync } from 'node:child_process'
@@ -25,8 +26,8 @@ import { fileURLToPath } from 'node:url'
 const SCRIPT_DIRECTORY = path.dirname(fileURLToPath(import.meta.url))
 const PROJECT_ROOT = path.resolve(SCRIPT_DIRECTORY, '..')
 
-// The raw input GLB is produced by procedural-generation/generator.py and
-// committed by the IP-10B task. We do NOT regenerate it here: this fixture
+// The raw input GLB is produced by procedural-generation/js/crystal-growth.mjs
+// and committed by the J-C4 task. We do NOT regenerate it here: this fixture
 // is the second immersive evaluation, not a third pipeline.
 const RAW_GLB = path.join(PROJECT_ROOT, 'public', 'model', 'procedural-crystal-raw.glb')
 const OPTIMIZED_GLB = path.join(PROJECT_ROOT, 'public', 'model', 'procedural-crystal.glb')
@@ -79,7 +80,7 @@ function parseCountFromInspect(text) {
     // glPrimitives guess: vertices can be larger than glPrimitives, so take
     // the value right after meshPrimitives (=1) when the sequence is
     // [1, P, V, ...].
-    const numerics = [...line.matchAll(/(\d+)/g)].map((m) => Number(m[1]))
+    const numerics = [...line.matchAll(/(\d[\d,]*)/g)].map((m) => Number(m[1].replaceAll(',', '')))
     if (numerics.length < 2) continue
     const afterOne = numerics.findIndex((n, i) => i > 0 && n === 1)
     if (afterOne >= 0 && afterOne + 1 < numerics.length) {

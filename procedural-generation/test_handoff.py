@@ -141,7 +141,7 @@ def parse_optimized_inspect(text: str) -> dict:
             continue
         if in_meshes and "TRIANGLES" in line:
             out["meshes"] += 1
-            numerics = [int(m) for m in re.findall(r"(\d+)", line)]
+            numerics = [int(m.replace(',', '')) for m in re.findall(r"(\d[\d,]*)", line)]
             after_one = next((i for i, n in enumerate(numerics) if i > 0 and n == 1), -1)
             if after_one >= 0 and after_one + 1 < len(numerics):
                 out["triangles"] += numerics[after_one + 1]

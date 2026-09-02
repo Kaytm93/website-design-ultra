@@ -2,16 +2,17 @@
   "task": "IP-10C",
   "status": "PASS",
   "generator": {
-    "script": "procedural-generation/generator.py",
+    "script": "procedural-generation/js/crystal-growth.mjs",
     "script_version": "1.0.0",
-    "script_hash": "b15ecf4dcfb60324",
+    "implementation": "node-standard-library",
+    "script_hash": "4ed0b0f5ad33180b",
     "source_recipe": "procedural-generation/recipe.json",
     "recipe_version": "1",
     "algorithm": "crystal-growth",
+    "shape": "crystal",
     "seed": 1337,
-    "iterations": 4,
-    "branching_factor": 2,
-    "resolution": 8
+    "iterations": 6,
+    "facets": 96
   },
   "source_vs_web": {
     "source_recipe": "procedural-generation/recipe.json",
@@ -52,15 +53,15 @@
     "output_validate_log": "tests/immersive/procedural-crystal/reports/model/post-validate.log"
   },
   "transfer": {
-    "input_bytes": 49544,
-    "input_sha256": "a2f716c40867cda9c0e40e6d483f5af9c984658cfad232fb67a891d984732cca",
-    "output_bytes": 6360,
-    "output_sha256": "7ff31faabca2e5bfd4534120375eaafc8c84a87a19393e0f22f0203faf40a9df",
-    "saving_bytes": 43184,
-    "saving_percent": 87.16
+    "input_bytes": 879152,
+    "input_sha256": "8ac233c68a5ad47ca927603efe35e81f8d3c52e12121fb95ee6627aeb8d1f792",
+    "output_bytes": 67788,
+    "output_sha256": "271e5b2561959a1340c11b9e046f9b59afe6b6c30bd662bc82218754de63bd57",
+    "saving_bytes": 811364,
+    "saving_percent": 92.29
   },
   "decoded_cost": {
-    "triangles": 532,
+    "triangles": 23582,
     "materials": 2,
     "meshes": 2,
     "draw_calls": 2,
@@ -71,15 +72,15 @@
     "immersive_3d_desktop": "<100 draws / <500k triangles",
     "immersive_3d_mobile": "<50 draws / <150k triangles",
     "observed_draws": 2,
-    "observed_triangles": 532,
+    "observed_triangles": 23582,
     "desktop_draw": "PASS (2 < 100)",
-    "desktop_triangles": "PASS (532 < 500000)",
+    "desktop_triangles": "PASS (23582 < 500000)",
     "mobile_draw": "PASS (2 < 50)",
-    "mobile_triangles": "PASS (532 < 150000)",
+    "mobile_triangles": "PASS (23582 < 150000)",
     "overall": "PASS"
   },
   "provenance_license": {
-    "origin": "self-generated procedural-3d crystal-growth via Blender Python",
+    "origin": "self-generated procedural-3d crystal-growth via JavaScript (dependency-free Node.js)",
     "license": "self-generated, no third-party",
     "third_party_claim": "none"
   },

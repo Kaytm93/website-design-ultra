@@ -97,7 +97,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
   - **Acceptance:** alle drei Gates pro Device-Profil; ≥ 5 Look-Loop-Runden mit sinkendem Score.
   - **Verify:** Lab-Suite und Immersive-Evaluation-Shards.
 
-- [ ] `J-C4` **Prozedurales Wachstum in JS** — L
+- [x] `J-C4` **Prozedurales Wachstum in JS** — L
   - **Depends on:** none
   - **Deliver:** `procedural-generation/js/crystal-growth.mjs` mit Shape-/Seed-/Iterations-/Facetten-Parametern, GLB und `report.json`; Blender bleibt Alternative.
   - **Acceptance:** CI führt JS-Generator; gleicher Seed erzeugt identische Topologie-Statistik; ≥ 20.000 Dreiecke; bestehender Handoff bleibt unverändert.
