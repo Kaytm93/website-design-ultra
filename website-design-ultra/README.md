@@ -383,11 +383,11 @@ For a runnable target with the shared immersive telemetry surface, the same
 output directory also contains `performance-summary.json`: a timestamp-free
 comparison of the declared three-gate budget with the fixed warm sample window,
 first meaningful frame, and transfer completed before that marker. The top-level
-`status` is `PASS`, `FAIL`, or `UNAVAILABLE`; `comparison.status` reports only the
+`status` carries the launch-gate result; `comparison.status` reports only the
 three budget gates. The summary also records separate browser, GPU, and telemetry
 capabilities plus distinct resource-load, shader-compile, long-frame, and
-context-loss evidence. Missing browser, GPU, or surface evidence remains
-`UNAVAILABLE`, never `PASS`.
+context-loss evidence. What each status value means and obliges is defined once,
+in `skills/core-rules/references/verification-status.md`.
 
 Run the committed offline PASS/FAIL/UNAVAILABLE regression matrix from the
 repository root with:
@@ -402,17 +402,14 @@ for a real browser capture.
 The adapter accepts an explicit CLI, a compatible Codex wrapper, a CLI on
 `PATH`, or the npm CLI only after the required session, `run-code`, and
 screenshot capabilities pass. An explicit `WDU_PLAYWRIGHT_CLI` path overrides
-fallback discovery; if it is missing, the probe reports `UNAVAILABLE` instead of
-silently selecting another backend. If no compatible CLI exists, use the host’s
-native browser automation. Otherwise report `UNAVAILABLE`, never `PASS`, and
-keep the launch gate open until real screenshots are inspected. A URL capture
+fallback discovery; if it is missing, the probe reports the capability as
+missing instead of silently selecting another backend. If no compatible CLI
+exists, use the host’s native browser automation. A URL capture
 still writes a non-empty `performance-summary.json` and `capture.json` when the
 browser CLI is unavailable.
 
 For an explicit plan/contract with no executable target, report
-`NOT_APPLICABLE (plan-only)` and define the future capture matrix. Do not use
-`UNAVAILABLE`: that status is reserved for an executable target whose browser
-capability is missing.
+`NOT_APPLICABLE (plan-only)` and define the future capture matrix.
 
 ## Asset optimization
 
