@@ -5,24 +5,14 @@ description: Direct the visual language of a web 3D scene. Use for camera and FO
 
 # 3D Art Direction
 
-Define a reproducible image first, then the technique. Use `immersive-3d` for
-justification and budget, `3d-runtime-quality` for runtime tiers, and this skill
-as the visual single source of truth. When its evidence gate fired,
-`reference-intake` is the predecessor: read its traced ledger and poster target
-before selecting values here.
+Define a reproducible image before choosing technique. `immersive-3d` owns
+justification/budget, `3d-runtime-quality` owns runtime tiers, and
+`reference-intake` is the evidence predecessor when its gate fired.
 
 ## Art-direction contract
 
-Fix exactly these decisions before writing scene code. The block below is the
-schema, not the values. `fov: 38` is one filled example, not a default to
-reuse; the ranges each key must be chosen from live in the references. A
-contract filled from this block alone is unfilled rather than shortened, and a
-plan or contract-only answer is exactly where that shortcut is tempting.
-
-When `reference-intake` preceded this skill, keep its trace ledger attached to
-the contract. Every leaf below retains a `source-frame` citation or remains
-`unknown`; a written token or direction name never repairs missing visual
-evidence.
+Fix these decisions before scene code. This is the schema, not a set of defaults;
+when reference intake ran, every leaf needs a `source-frame` or stays `unknown`.
 
 ```yaml
 visual-thesis: "Which statement does the space carry?"
@@ -45,44 +35,33 @@ spatial-type: "DOM-first; one decorative world label"
 poster-frame: "same silhouette and message as live scene"
 ```
 
-Justify deviations inside the contract instead of hiding them in scattered components.
+Justify deviations in the contract rather than scattered components.
 
 ## Workflow
 
-A step that names a reference requires it before that step can be answered.
-Answering the step from this file alone leaves it unfilled.
+1. If intake ran, inspect its poster target, citations, contradictions, and
+   unknowns; do not answer a reference-dependent field from this file alone.
+2. State the thesis and what must be recognizable after two seconds.
+3. Fix silhouette, camera/FOV/target, negative space, and DOM safe area using
+   [references/camera-and-composition.md](references/camera-and-composition.md).
+4. Stage light, material roles, color space, tone mapping, and exposure with
+   [references/light-material-and-tone.md](references/light-material-and-tone.md).
+5. Choose DOM, `<Html>`, `<Text>`, or rare `<Text3D>` per text layer using
+   [references/spatial-typography.md](references/spatial-typography.md).
+6. Design a distinct portrait shot, then choose a poster from the same image.
+7. Hand quality hooks to `3d-runtime-quality` without changing visual ranking.
 
-1. If `reference-intake` ran, inspect its poster target, citations,
-   contradictions, and `unknown` fields before choosing a reference below.
-2. State a visual thesis and determine what must be recognizable after two seconds.
-3. Fix camera, FOV, target point, silhouette, negative space, and DOM safe area. Read [references/camera-and-composition.md](references/camera-and-composition.md).
-4. Stage light, material roles, color space, tone mapping, and exposure together. Read [references/light-material-and-tone.md](references/light-material-and-tone.md).
-5. For every text layer, decide between semantic DOM, `<Html>`, `<Text>`, and the rare `<Text3D>`. Read [references/spatial-typography.md](references/spatial-typography.md).
-6. Design at least one dedicated portrait shot; do not merely scale the desktop scene.
-7. Choose the poster frame from the same composition. It may read as a deliberate key visual, never as a loading error.
-8. Hand measurable quality hooks to `3d-runtime-quality` without changing the visual ranking of the scene.
+## Invariants and output
 
-## Invariants
+One camera source writes each state. Reframe with FOV, distance, and scale rather
+than FOV alone; keep near/far no larger than the needed space. Use light as
+hierarchy with at most one dynamic shadow owner. Reserve transmission, emission,
+clearcoat, and iridescence for accents. Manage exposure and tone mapping once.
+Meaningful text remains in the DOM and in poster/fallback states.
 
-- Keep exactly one camera source per state. Scroll, controls, and focus rig must not write simultaneously.
-- On responsive changes, adjust FOV, distance, and object scale deliberately; do not use FOV as a substitute for composition.
-- Limit `near`/`far` to the space actually needed in order to preserve depth precision.
-- Use light as hierarchy: only the most important light may require dynamic shadows by default.
-- Avoid equally loud materials. Transmission, strong emission, clearcoat, and iridescence are accents.
-- Manage exposure and tone mapping in one place. Do not compensate for a wrong pipeline with arbitrary material colors.
-- Keep meaningful text in the DOM and retain it in the poster/fallback state.
-
-## Output
-
-Deliver:
-
-1. the visual thesis in one sentence,
-2. the completed art-direction contract,
-3. desktop, portrait, and poster composition,
-4. light and material roles,
-5. the smallest changeable hooks for camera, light, exposure, and spatial typography,
-6. when reference intake ran, the source-frame ledger and poster target it
-   produced before scene code.
+Deliver the thesis, completed contract, desktop/portrait/poster compositions,
+light/material roles, changeable camera/light/exposure/type hooks, and intake
+ledger/target when applicable.
 
 ## Check
 
