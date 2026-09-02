@@ -101,10 +101,11 @@ checkpoints in the script.
 When a committed baseline capture set exists, compare the new run offline
 instead of judging pixels by eye. Read `core-rules/references/determinism.md`
 section 8 and `core-rules/references/baseline-comparison.schema.json`, then
-run the root-only comparator with the two capture-set directories:
+run the comparator that ships with this plugin, with the two capture-set
+directories:
 
 ```bash
-node tests/immersive/interaction-capture/compare-baselines.mjs \
+node <plugin-root>/templates/runtime/compare-baselines.mjs \
   --baseline "$BASELINE_RUN" \
   --candidate "$VERIFY_OUT" \
   --declaration "$PROJECT/baseline-comparison.json" \
@@ -119,6 +120,12 @@ deterministic capture metadata, and its `comparison.json` names every
 mask/tolerance and its source and labels every score as evidence, never an
 aesthetic verdict, taste, or approval. A score is never approval: report it
 as evidence and decide on the product outcome separately.
+
+The comparator reads its declaration contract from the sibling
+`templates/runtime/baseline-comparison.ts`, so it needs a Node that strips
+TypeScript types: Node 23 and newer run it as written, Node 22 needs
+`--experimental-strip-types`. Nothing else is required — no install, no
+repository checkout.
 
 The adapter closes sessions even after failures. With a host tool, produce the
 same named artifacts:

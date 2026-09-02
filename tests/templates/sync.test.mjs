@@ -34,6 +34,21 @@ export const mirroredFiles = [
   { source: 'references/baseline-comparison.ts', target: 'runtime/baseline-comparison.ts' },
   { source: 'references/cinematic-timeline.ts', target: 'runtime/cinematic-timeline.ts' },
   { source: 'references/package.json', target: 'runtime/package.json' },
+  {
+    source: 'lab/src/modules/canvas-only-prohibition.ts',
+    target: 'runtime/canvas-only-prohibition.ts',
+  },
+  {
+    source: 'tests/immersive/interaction-capture/compare-baselines.mjs',
+    target: 'runtime/compare-baselines.mjs',
+    // The root comparator reaches three levels up for the declaration
+    // contract. Inside the plugin that contract is the sibling shipped next
+    // to it, so the specifier is the one and only difference between the two
+    // files — and any second difference still fails this test.
+    rewrites: [
+      ["from '../../../references/baseline-comparison.ts'", "from './baseline-comparison.ts'"],
+    ],
+  },
 ]
 
 /** Files the plugin owns outright: they document the tree, they do not mirror it. */

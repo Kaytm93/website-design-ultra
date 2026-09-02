@@ -118,7 +118,7 @@ fixes which side is not open to negotiation.
 
 §4 names the categories that must never ship in the canvas alone. Each
 declared surface needs a DOM twin, and the canvas overlay must remain
-decorative. The validator (`repo:lab/src/modules/canvas-only-prohibition.ts`)
+decorative. The validator (`templates/runtime/canvas-only-prohibition.ts`)
 runs statically via `validateDeclaration(declaration, root)` and at runtime
 via `createProhibitionObserver(declaration, root)`; both share one surface
 and one violation vocabulary. The full category list, signature shape,
