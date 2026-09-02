@@ -1575,6 +1575,31 @@ for (const testCase of forwardCases) {
   }
 }
 
+/**
+ * Keep the measured path budget executable. The case contract owns the limit;
+ * measure-path.mjs owns how the selected skills and references are counted.
+ * A declared budget that is never run is documentation, not a gate.
+ */
+const pathMeasureScript = path.join(pluginRoot, 'scripts', 'measure-path.mjs')
+if (!fs.existsSync(pathMeasureScript)) {
+  fail('scripts/measure-path.mjs: missing path-budget validator')
+} else {
+  for (const testCase of forwardCases) {
+    if (!Number.isInteger(testCase.trace?.maxEstimatedPluginTokens)) continue
+    const result = spawnSync(
+      process.execPath,
+      [pathMeasureScript, '--case', testCase.id],
+      { encoding: 'utf8' },
+    )
+    if (result.error || result.status !== 0) {
+      const detail = (
+        result.stderr || result.stdout || result.error?.message || `exit ${result.status}`
+      ).trim()
+      fail(`tests/forward/cases.json: ${testCase.id} path budget check failed: ${detail}`)
+    }
+  }
+}
+
 const determinismReference = 'skills/core-rules/references/determinism.md'
 for (const testCase of forwardCases) {
   if (!testCase.trace?.forbiddenFiles?.includes(determinismReference)) {
