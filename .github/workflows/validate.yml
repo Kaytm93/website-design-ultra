@@ -109,6 +109,26 @@ jobs:
           python3 procedural-generation/test_ip10c_review_regressions.py
           node procedural-generation/test_ip10c_debug_regressions.mjs
 
+      # The source generator owns a small root-only package so its imports are
+      # resolved from a committed lockfile rather than from a fixture's install.
+      - name: Install procedural generator dependencies
+        run: npm ci --ignore-scripts --prefix procedural-generation
+
+      # J-C4's dependency-pinned generator is a real CI execution, not a
+      # source-only contract check. It writes scratch artifacts so CI never
+      # mutates the fixture.
+      - name: Run JavaScript procedural generator
+        run: |
+          rm -rf "${RUNNER_TEMP}/wdu-crystal-js"
+          node procedural-generation/js/crystal-growth.mjs \
+            --shape crystal --seed 1337 --iterations 6 --facets 96 \
+            --output-dir "${RUNNER_TEMP}/wdu-crystal-js"
+          test -s "${RUNNER_TEMP}/wdu-crystal-js/crystal-growth.glb"
+          test -s "${RUNNER_TEMP}/wdu-crystal-js/report.json"
+
+      - name: Test JavaScript procedural generator
+        run: node --test procedural-generation/js/*.test.mjs
+
       # The generator itself needs a real Blender install, which this runner
       # does not have. It is deliberately not run here rather than being run
       # and allowed to report a green result it cannot support.

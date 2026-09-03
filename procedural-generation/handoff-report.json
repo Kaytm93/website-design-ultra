@@ -2,16 +2,21 @@
   "task": "IP-10C",
   "status": "PASS",
   "generator": {
-    "script": "procedural-generation/generator.py",
-    "script_version": "1.0.0",
-    "script_hash": "b15ecf4dcfb60324",
+    "script": "procedural-generation/js/crystal-growth.mjs",
+    "script_version": "1.1.0",
+    "implementation": "three + @gltf-transform/core",
+    "versions": {
+      "three_revision": "185",
+      "gltf_transform_core": "v4.4.2"
+    },
+    "script_hash": "6caec2dde3669e8f",
     "source_recipe": "procedural-generation/recipe.json",
     "recipe_version": "1",
     "algorithm": "crystal-growth",
+    "shape": "crystal",
     "seed": 1337,
-    "iterations": 4,
-    "branching_factor": 2,
-    "resolution": 8
+    "iterations": 6,
+    "facets": 96
   },
   "source_vs_web": {
     "source_recipe": "procedural-generation/recipe.json",
@@ -52,15 +57,15 @@
     "output_validate_log": "tests/immersive/procedural-crystal/reports/model/post-validate.log"
   },
   "transfer": {
-    "input_bytes": 49544,
-    "input_sha256": "a2f716c40867cda9c0e40e6d483f5af9c984658cfad232fb67a891d984732cca",
-    "output_bytes": 6360,
-    "output_sha256": "7ff31faabca2e5bfd4534120375eaafc8c84a87a19393e0f22f0203faf40a9df",
-    "saving_bytes": 43184,
-    "saving_percent": 87.16
+    "input_bytes": 879388,
+    "input_sha256": "fc82c884d69c4d4a8fdcef9b287cfb283970c11c981567b597c608f9f67cc4a1",
+    "output_bytes": 68008,
+    "output_sha256": "a3cf330b78e05ea84779aeb16232e0a4f6b7458b9a5a89cd54bf5d257c52fd71",
+    "saving_bytes": 811380,
+    "saving_percent": 92.27
   },
   "decoded_cost": {
-    "triangles": 532,
+    "triangles": 23582,
     "materials": 2,
     "meshes": 2,
     "draw_calls": 2,
@@ -71,17 +76,17 @@
     "immersive_3d_desktop": "<100 draws / <500k triangles",
     "immersive_3d_mobile": "<50 draws / <150k triangles",
     "observed_draws": 2,
-    "observed_triangles": 532,
+    "observed_triangles": 23582,
     "desktop_draw": "PASS (2 < 100)",
-    "desktop_triangles": "PASS (532 < 500000)",
+    "desktop_triangles": "PASS (23582 < 500000)",
     "mobile_draw": "PASS (2 < 50)",
-    "mobile_triangles": "PASS (532 < 150000)",
+    "mobile_triangles": "PASS (23582 < 150000)",
     "overall": "PASS"
   },
   "provenance_license": {
-    "origin": "self-generated procedural-3d crystal-growth via Blender Python",
-    "license": "self-generated, no third-party",
-    "third_party_claim": "none"
+    "origin": "self-generated procedural-3d crystal-growth via JavaScript using pinned three and @gltf-transform/core",
+    "license": "self-generated geometry; runtime packages are MIT-licensed",
+    "third_party_claim": "three@0.185.1 and @gltf-transform/core@4.4.2"
   },
   "verifier": "procedural-generation/test_handoff.py"
 }

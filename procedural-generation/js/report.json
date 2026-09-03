@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "generator": {
+    "script": "procedural-generation/js/crystal-growth.mjs",
+    "implementation": "three + @gltf-transform/core",
+    "versions": {
+      "three_revision": "185",
+      "gltf_transform_core": "v4.4.2"
+    },
+    "version": "1.1.0"
+  },
+  "input_contract": {
+    "algorithm": "crystal-growth",
+    "shape": "crystal",
+    "seed": 1337,
+    "iterations": 6,
+    "facets": 96,
+    "collection": "Procedural__Crystal"
+  },
+  "parameters": {
+    "shape": "crystal",
+    "seed": 1337,
+    "iterations": 6,
+    "facets": 96
+  },
+  "geometry_statistics": {
+    "object_count": 2,
+    "vertex_count": 24444,
+    "triangle_count": 48384,
+    "triangles": 48384,
+    "material_count": 2,
+    "draw_call_count": 2,
+    "mesh_count": 2,
+    "collection_names": [
+      "Procedural__Crystal"
+    ],
+    "objects": [
+      {
+        "name": "Procedural__Crystal_Base_Mesh",
+        "vertices": 12028,
+        "triangles": 23808,
+        "material": "Procedural__Crystal_Material",
+        "segments": 62
+      },
+      {
+        "name": "Procedural__Crystal_Tips_Mesh",
+        "vertices": 12416,
+        "triangles": 24576,
+        "material": "Procedural__Crystal_Tip_Material",
+        "segments": 64
+      }
+    ],
+    "topology_hash": "e48798a61559547b3a7381ce40c6cffb9a28f41857303633bfed6fc371d112b3",
+    "geometry_hash": "9a5e7ae27dfa179f52f12f2a210d033a199016301cf8a01628f431b782dfb399"
+  },
+  "topology_statistics": {
+    "vertices": 24444,
+    "triangles": 48384,
+    "meshes": 2,
+    "materials": 2,
+    "topology_hash": "e48798a61559547b3a7381ce40c6cffb9a28f41857303633bfed6fc371d112b3"
+  },
+  "topology_hash": "e48798a61559547b3a7381ce40c6cffb9a28f41857303633bfed6fc371d112b3",
+  "geometry_hash": "9a5e7ae27dfa179f52f12f2a210d033a199016301cf8a01628f431b782dfb399",
+  "material_statistics": [
+    {
+      "name": "Procedural__Crystal_Material",
+      "textures": [],
+      "texture_count": 0,
+      "dimensions": []
+    },
+    {
+      "name": "Procedural__Crystal_Tip_Material",
+      "textures": [],
+      "texture_count": 0,
+      "dimensions": []
+    }
+  ],
+  "output": {
+    "glb": "crystal-growth.glb",
+    "report": "report.json",
+    "bytes": 879388,
+    "sha256": "fc82c884d69c4d4a8fdcef9b287cfb283970c11c981567b597c608f9f67cc4a1"
+  },
+  "provenance": {
+    "catalogue_entry": "crystal-growth",
+    "source": "JavaScript procedural generator; Blender remains an alternative source implementation",
+    "deterministic_prng": "xorshift32 with an explicit seed",
+    "source_units": "scene units",
+    "web_output_is_derived": true
+  },
+  "handoff": {
+    "next_pipeline": "3d-asset-pipeline",
+    "unchanged": true,
+    "contract": "inspect -> validate -> optimize -> inspect -> validate",
+    "note": "The existing handoff owns optimization; this generator only produces the source GLB."
+  }
+}

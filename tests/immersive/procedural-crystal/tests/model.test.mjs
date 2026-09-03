@@ -48,11 +48,12 @@ test('the raw and optimized pre/post reports both exist and report PASS', () => 
 
 test('the summary budget is parsed from the optimized artifact, not the generator report', () => {
   const summary = JSON.parse(readFileSync(join(root, 'reports', 'model', 'summary.json'), 'utf8'))
-  // Decoded stats must come from the optimized post-inspect (not the 30-mesh
-  // raw generator count). The optimizer merges to 2 meshes / 2 materials /
-  // 532 triangles — these are the OPTIMIZED readings.
+  // Decoded stats must come from the optimized post-inspect (not the JS
+  // generator's 48,384 source-triangle count). The optimizer keeps 2 meshes /
+  // 2 materials and reports the optimized triangle count here.
   assert.equal(summary.optimized.meshes, 2, 'optimized must report 2 meshes')
   assert.equal(summary.optimized.materials, 2, 'optimized must report 2 materials')
-  assert.equal(summary.optimized.triangles, 532, 'optimized must report 532 triangles')
+  assert.ok(summary.optimized.triangles >= 20_000, 'optimized JS crystal must retain at least 20,000 triangles')
+  assert.ok(summary.optimized.triangles < 500_000, 'optimized triangles must stay under desktop budget')
   assert.notEqual(summary.raw.bytes, summary.optimized.bytes, 'raw and optimized byte sizes must differ')
 })
