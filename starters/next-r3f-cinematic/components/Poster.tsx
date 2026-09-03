@@ -22,11 +22,12 @@ interface PosterProps {
 
 /**
  * The art-directed 2D fallback (IP-05C). One composed SVG per viewport class,
- * mirroring the live composition — matte torus knot on a pedestal, same
- * palette, same accent light — so the fallback is a composition, never a
- * blank frame. The poster is decorative: text and controls stay in the DOM
- * (3d-art-direction: "Keep text and CTA in the DOM; bake only decorative
- * typography into the poster" — this poster bakes none).
+ * mirroring the live composition — a faceted procedural crystal on a dark
+ * stage, the same palette, key light, shadow, and environment reflection — so
+ * the fallback is a composition, never a blank frame. The poster is decorative:
+ * text and controls stay in the DOM (3d-art-direction: "Keep text and CTA in
+ * the DOM; bake only decorative typography into the poster" — this poster bakes
+ * none).
  */
 export function Poster({ variant, visible }: PosterProps) {
   return (
