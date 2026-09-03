@@ -1,6 +1,6 @@
 # Shader module index
 
-Seventeen modules exist as running code in the lab. This index is the entry
+Eighteen modules exist as running code in the lab. This index is the entry
 point: read the row, then read the shader. Nothing here is reconstructed from
 prose, and a job that needs a frost transition opens
 `templates/shaders/transition-interaction.frag` instead of inventing one.
@@ -246,6 +246,19 @@ Gate owner: `gpu-particle-systems`.
 No GLSL to mirror: the module is a TypeScript canvas overlay over DOM text.
 
 Gate owner: `canvas-first-architecture`.
+
+#### Production shader text (MSDF/Troika with DOM twin)` (`shader-text`)
+
+| Field | Value |
+|---|---|
+| Renderer support | WebGL2 |
+| Cost class | low |
+| Reduced motion | Scramble, glitch, and dissolve amplitudes freeze at 0; DOM selection, focus, translation, and activation remain live. |
+| Colour space | MSDF atlas is linear RGB unencoded distance data; the premultiplied decorative overlay is composed before tone mapping. DOM text remains the visual authority. |
+| Fixture | `repo:lab/src/experiments/shaders/shader-text.ts` |
+| Copy from | `templates/shader-text/dom-text-template.ts` and `templates/shader-text/text-effects-uniforms.ts` |
+
+Gate owner: `shader-text`.
 
 #### Canvas-only prohibition list (primary actions, forms, legal copy, pricing)` (`canvas-only-prohibition`)
 

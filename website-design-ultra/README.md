@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 2.0.1 contains 24 skills and 6 Claude commands. It enforces anti-slop
+Version 2.0.1 contains 25 skills and 6 Claude commands. It enforces anti-slop
 rules on generated copy and on visual defaults, with a deterministic English and
 German copy linter that reads a whole repository at one register per file. It
 carries evidence-led content, a declared 2D composition contract, per-direction
@@ -15,15 +15,16 @@ capture, three-gate telemetry, and declared interaction checkpoints.
 Seven skills are negative-gated and stay unloaded until a brief names their
 condition: `procedural-3d`, `canvas-first-architecture`, `render-graph`,
 `loading-choreography`, `spatial-audio`, `gpu-particle-systems`, and
-`reference-intake`. Six of them sit behind an already-loaded 3D stack;
-`reference-intake` is the exception, gated on supplied reference frames rather
-than on the stack. Needing one says nothing about the others.
+`reference-intake`. `shader-text` is an eighth negative-gated add-on for
+shader-driven text with a DOM twin. Seven of them sit behind an already-loaded
+3D stack; `reference-intake` is the exception, gated on supplied reference
+frames rather than on the stack. Needing one says nothing about the others.
 
 Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
-24 skills under `skills/`, 6 commands under `commands/`, the validators and the
+25 skills under `skills/`, 6 commands under `commands/`, the validators and the
 browser adapter under `scripts/`, and the files a project copies under
 `templates/`. Each skill is one `SKILL.md` plus one level of `references/`.
 
@@ -61,12 +62,15 @@ exact provider, case, and tree):
   `core-rules/references/baseline-comparison.schema.json` plus
   `core-rules/references/determinism.md` §8; a diff score is evidence,
   never an aesthetic verdict.
+- Shader-driven text with MSDF/Troika and a semantic DOM twin → `shader-text` plus its production contract and templates.
 - A shader effect that already exists → `shaders-tsl/references/module-index.md`
   plus the one file it names under `templates/shaders/`.
 - 3D hero on a normal page → the three mandatory 3D skills only.
 
 The complete list of routing contracts is in
-[docs/structure.md](docs/structure.md).
+[docs/structure.md](docs/structure.md). Shader-driven text is a deliberate
+add-on: plain DOM text, CSS effects, and ordinary 3D labels do not activate
+`shader-text`.
 
 ## Contracts
 

@@ -435,19 +435,20 @@ async function main() {
       }
     }
 
-    // 6f. No apply-all path + SDF/MSDF still deferred + noCombine
+    // 6f. No apply-all path + the shipped SDF/MSDF module stays scoped
     {
-      const manifest = readFileSync(join(LAB_ROOT, 'src/modules/manifest.ts'), 'utf8');
+      const sourceManifest = readFileSync(join(LAB_ROOT, 'src/modules/manifest.ts'), 'utf8');
+      const manifest = sourceManifest;
       const hasApplyAll = /applyAll|apply_all|combineAll/i.test(manifest);
       check('no apply-all export in manifest/modules', !hasApplyAll);
-      const allModules = readdirSync(join(LAB_ROOT, 'src/modules')).filter((f) => f.endsWith('.ts')).map((f) => readFileSync(join(LAB_ROOT, 'src/modules', f), 'utf8')).join('\n');
-      check('no SDF/MSDF introduced', !/SDF/i.test(allModules) || false === /SDF.*module/i.test(allModules) ? true : !allModules.includes('SDF') );
-      // Simpler: ensure no SDF/MSDF string appears in module dir except this harness check
-      const sdfViolation = /SDF|MSDF/.test(allModules) && !allModules.includes('deferred');
+      const sdfModule = readFileSync(join(LAB_ROOT, 'src/modules', 'sdf-text.ts'), 'utf8');
+      const allModules = readdirSync(join(LAB_ROOT, 'src/modules')).filter((f) => f.endsWith('.ts') && f !== 'sdf-text.ts' && f !== 'manifest.ts' && f !== 'shader-text.ts').map((f) => readFileSync(join(LAB_ROOT, 'src/modules', f), 'utf8')).join('\n');
+      check('no SDF/MSDF outside dedicated module', !/SDF|MSDF/i.test(allModules));
+      check('SDF/MSDF implementation is owned by the dedicated sdf-text module', /SDF|MSDF/i.test(sdfModule));
       // Allow only the word in comments about deferral is not a module introduction
       const moduleSansComments = allModules.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
-      check('SDF/MSDF deferred — no module implements it', !/SDF|MSDF/i.test(moduleSansComments));
-      const noCombineCount = (manifest.match(/noCombine:\s*true/g) ?? []).length;
+      check('non-commented non-SDF modules stay free of SDF/MSDF', !/SDF|MSDF/i.test(moduleSansComments));
+      const noCombineCount = (sourceManifest.match(/noCombine:\s*true/g) ?? []).length;
       check('all manifest entries are noCombine:true', noCombineCount >= 13);
     }
 
@@ -687,7 +688,10 @@ async function main() {
 
     // 7f. Manifest noCombine and forbidden paths
     {
-      const manifest = readFileSync(join(LAB_ROOT, 'src/modules/manifest.ts'), 'utf8');
+      const sourceManifest = readFileSync(join(LAB_ROOT, 'src/modules/manifest.ts'), 'utf8');
+      const gpuStart = sourceManifest.indexOf("id: 'gpu-particles'");
+      const gpuEnd = sourceManifest.indexOf('  },', gpuStart) + 4;
+      const manifest = sourceManifest.slice(gpuStart, gpuEnd);
       check('manifest contains gpu-particles with noCombine', manifest.includes('gpu-particles') && manifest.includes('noCombine: true'));
       check('no apply-all/SDF/timeline introduced in gpu scope', !/applyAll/i.test(manifest) && !/SDF/.test(manifest.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '')));
       const toy = readFileSync(join(LAB_ROOT, 'src/experiments/particle-toy.ts'), 'utf8');
@@ -804,6 +808,79 @@ async function main() {
       }
     } else {
       check('IP-11B two deterministic browser captures have identical PNG hashes', 'UNAVAILABLE', playwrightCli ? 'Vite server unavailable' : 'WDU_PLAYWRIGHT_CLI is not configured');
+    }
+
+    console.log('\n═══ 8. J-D5 shader-text production gates ═══');
+    {
+      const pluginRoot = resolve(LAB_ROOT, '..', 'website-design-ultra');
+      const skillPath = join(pluginRoot, 'skills', 'shader-text', 'SKILL.md');
+      const skill = existsSync(skillPath) ? readFileSync(skillPath, 'utf8') : '';
+      const atlasScript = join(pluginRoot, 'templates', 'shader-text', 'msdf-atlas.mjs');
+      const licenseManifest = join(pluginRoot, 'templates', 'shader-text', 'license-manifest.json');
+      const domTemplate = join(pluginRoot, 'templates', 'shader-text', 'dom-text-template.ts');
+      const uniformTemplate = join(pluginRoot, 'templates', 'shader-text', 'text-effects-uniforms.ts');
+      check('shader-text production skill exists and stays ≤ 5 KB', existsSync(skillPath) && Buffer.byteLength(skill, 'utf8') <= 5000);
+      check('shader-text skill keeps the negative gate', existsSync(skillPath) && /Use only when/i.test(readFileSync(skillPath, 'utf8')) && skill.includes('does not activate this skill'));
+      check('shader-text templates exist (atlas, DOM, uniforms, Troika)', [atlasScript, licenseManifest, domTemplate, uniformTemplate, join(pluginRoot, 'templates', 'shader-text', 'troika-alternative.md')].every(existsSync));
+      if (existsSync(atlasScript) && existsSync(licenseManifest)) {
+        const atlasCheck = run(process.execPath, [atlasScript, '--check', licenseManifest], { timeout: 30_000 });
+        check('MSDF license manifest validates before generation', atlasCheck.status === 0, atlasCheck.output.slice(0, 500));
+      } else {
+        check('MSDF license manifest validates before generation', false, 'atlas script or manifest missing');
+      }
+
+      const experimentPath = join(LAB_ROOT, 'src', 'experiments', 'shaders', 'shader-text.ts');
+      const screenreaderPath = join(LAB_ROOT, 'src', 'fixtures', 'shader-text-screenreader.ts');
+      const screenreaderManifestPath = join(LAB_ROOT, 'src', 'fixtures', 'shader-text-screenreader.json');
+      const experiment = readFileSync(experimentPath, 'utf8');
+      const screenreaderFixture = existsSync(screenreaderPath) ? readFileSync(screenreaderPath, 'utf8') : '';
+      const screenreaderManifest = existsSync(screenreaderManifestPath) ? JSON.parse(readFileSync(screenreaderManifestPath, 'utf8')) : {};
+      check('shader-text lab headline keeps DOM twin and separate uniforms', experiment.includes("createElement('h1')") && /user-select:text/.test(experiment) && /aria-hidden', 'true'/.test(experiment) && /pointer-events:none/.test(experiment) && /uScramble/.test(experiment) && /uGlitch/.test(experiment) && /uDissolve/.test(experiment));
+      check('screenreader fixture declares a DOM-only translation path', screenreaderFixture.includes('tabIndex = 0') && screenreaderFixture.includes("setAttribute('translate', 'yes')") && screenreaderManifest.webglDependency === false);
+      const prohibitionPath = join(pluginRoot, 'templates', 'runtime', 'canvas-only-prohibition.ts');
+      const prohibition = readFileSync(prohibitionPath, 'utf8');
+      check('canvas-only prohibition list remains four categories', /primary-action/.test(prohibition) && /form/.test(prohibition) && /legal-copy/.test(prohibition) && /pricing/.test(prohibition) && !/shader-text/.test(prohibition));
+
+      if (playwrightCli && serverReady) {
+        const screenreaderBrowser = await labBrowserCheck(
+          playwrightCli,
+          baseUrl,
+          'shader-text-screenreader',
+          '#shader-text-screenreader-headline',
+          "(() => { const h = document.querySelector('#shader-text-screenreader-headline'); const c = document.querySelector('canvas'); const b = document.querySelector('button[type=button]'); return Boolean(h && h.tagName === 'H1' && h.tabIndex === 0 && h.getAttribute('lang') === 'en' && h.getAttribute('translate') === 'yes' && h.textContent && c?.getAttribute('aria-hidden') === 'true' && c?.getAttribute('role') === 'presentation' && b); })()",
+        );
+        check('screenreader fixture DOM is reachable without WebGL', screenreaderBrowser);
+        const headlineBrowser = await labBrowserCheck(
+          playwrightCli,
+          baseUrl,
+          'shader-text',
+          '#shader-text-lab-headline',
+          "(() => { const h = document.querySelector('#shader-text-lab-headline'); const c = document.querySelector('#shader-text-decorative-canvas'); const style = h ? getComputedStyle(h) : null; return Boolean(h && h.tagName === 'H1' && h.tabIndex === 0 && h.getAttribute('lang') === 'en' && h.getAttribute('translate') === 'yes' && style?.userSelect === 'text' && c?.getAttribute('aria-hidden') === 'true' && c?.style.pointerEvents === 'none'); })()",
+        );
+        check('shader-text lab headline has a selectable DOM twin', headlineBrowser);
+
+        const firstDir = mkdtempSync(join(LAB_ROOT, '.tmp-jd5-'));
+        const secondDir = mkdtempSync(join(LAB_ROOT, '.tmp-jd5-'));
+        try {
+          const first = await labScreenshot(playwrightCli, baseUrl, 'shader-text-deterministic', join(firstDir, 'first.png'), 'WDU_DETERMINISTIC=1');
+          const second = await labScreenshot(playwrightCli, baseUrl, 'shader-text-deterministic', join(secondDir, 'second.png'), 'WDU_DETERMINISTIC=1');
+          if (first && second) {
+            const firstHash = createHash('sha256').update(readFileSync(first)).digest('hex');
+            const secondHash = createHash('sha256').update(readFileSync(second)).digest('hex');
+            check('shader-text deterministic captures have identical PNG hashes', firstHash === secondHash, `${firstHash} vs ${secondHash}`);
+          } else {
+            check('shader-text deterministic captures have identical PNG hashes', 'UNAVAILABLE', 'one or more screenshots could not be captured');
+          }
+        } finally {
+          rmSync(firstDir, { force: true, recursive: true });
+          rmSync(secondDir, { force: true, recursive: true });
+        }
+      } else {
+        const detail = playwrightCli ? 'Vite server unavailable' : 'WDU_PLAYWRIGHT_CLI is not configured';
+        check('screenreader fixture DOM is reachable without WebGL', 'UNAVAILABLE', detail);
+        check('shader-text lab headline has a selectable DOM twin', 'UNAVAILABLE', detail);
+        check('shader-text deterministic captures have identical PNG hashes', 'UNAVAILABLE', detail);
+      }
     }
   } finally {
     await stopServer(serverProcess);

@@ -12,8 +12,10 @@ skill can name a path the reader can actually open.
   in the DOM.
 
 - `shaders/` — the GLSL the lab's shader modules are built from. Read
-  `skills/shaders-tsl/references/module-index.md` first: it says which file
-  carries which effect, at what cost, on which backend.
+  `skills/shaders-tsl/references/module-index.md` first: it says which file carries which effect, at what cost, on which backend.
+
+- `shader-text/` — copyable license-first MSDF atlas, Troika decision, DOM twin,
+  and separate effect-uniform references for production shader text.
 
 `compare-baselines.mjs` reads its declaration contract from the sibling
 `baseline-comparison.ts`, so it needs a Node that strips TypeScript types:

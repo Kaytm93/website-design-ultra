@@ -65,7 +65,14 @@ export const mirroredFiles = [
 ]
 
 /** Files the plugin owns outright: they document the tree, they do not mirror it. */
-const pluginOwnedTemplates = new Set(['README.md'])
+const pluginOwnedTemplates = new Set([
+  'README.md',
+  'shader-text/dom-text-template.ts',
+  'shader-text/license-manifest.json',
+  'shader-text/msdf-atlas.mjs',
+  'shader-text/text-effects-uniforms.ts',
+  'shader-text/troika-alternative.md',
+])
 
 function readSource(entry) {
   const absolute = path.join(repoRoot, entry.source)
@@ -150,7 +157,7 @@ test('the shader module index matches the lab manifest', () => {
     .split(/\n  \},/)
     .filter((block) => block.includes('id:'))
 
-  assert.equal(blocks.length, 17, 'manifest entry count changed; regenerate the index')
+  assert.equal(blocks.length, 18, 'manifest entry count changed; regenerate the index')
 
   for (const block of blocks) {
     const id = block.match(/id: '([^']+)'/)[1]
