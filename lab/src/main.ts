@@ -90,6 +90,8 @@ const EXPERIMENTS: Record<string, () => Promise<ExperimentModule>> = {
   'dom-text-effects-deterministic': () => import('./fixtures/dom-text-effects-deterministic.js'),
   'canvas-only-prohibition': () => import('./experiments/shaders/canvas-only-prohibition.js'),
   'canvas-only-prohibition-deterministic': () => import('./fixtures/canvas-only-prohibition-deterministic.js'),
+  'site-reconnaissance': () => import('./experiments/site-reconnaissance.js'),
+  'site-reconnaissance-deterministic': () => import('./fixtures/site-reconnaissance-deterministic.js'),
 };
 
 async function loadExperiment(name: string): Promise<void> {

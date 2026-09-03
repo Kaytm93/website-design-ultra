@@ -37,6 +37,14 @@ jobs:
       - name: Test offline reference intake
         run: node --test tests/immersive/reference-intake/reference-intake.test.mjs
 
+      - name: Test site reconnaissance ledger and description gate
+        run: |
+          node --check automation/site-reconnaissance/validate-site-reconnaissance.mjs
+          node --check automation/site-reconnaissance/validate-description.mjs
+          node automation/site-reconnaissance/validate-site-reconnaissance.mjs tests/immersive/site-reconnaissance/fixtures/site-reconnaissance.valid.json
+          node automation/site-reconnaissance/validate-description.mjs
+          node --test tests/immersive/site-reconnaissance/site-reconnaissance.test.mjs
+
       - name: Test immersive telemetry calculations and status handling
         run: node --test tests/immersive/telemetry/telemetry-schema.test.mjs tests/immersive/telemetry/performance-summary.test.mjs tests/immersive/telemetry/ip-03c-status.test.mjs
 
