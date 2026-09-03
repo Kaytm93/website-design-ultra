@@ -35,6 +35,10 @@ export const mirroredFiles = [
   { source: 'references/cinematic-timeline.ts', target: 'runtime/cinematic-timeline.ts' },
   { source: 'references/package.json', target: 'runtime/package.json' },
   {
+    source: 'lab/src/modules/material-lookdev.ts',
+    target: 'material-lookdev/material-lookdev.ts',
+  },
+  {
     source: 'lab/src/modules/canvas-only-prohibition.ts',
     target: 'runtime/canvas-only-prohibition.ts',
   },

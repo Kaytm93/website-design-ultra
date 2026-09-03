@@ -15,6 +15,10 @@ skill can name a path the reader can actually open.
   `skills/shaders-tsl/references/module-index.md` first: it says which file
   carries which effect, at what cost, on which backend.
 
+- `material-lookdev/` — the dependency-free TypeScript material contract. Copy
+  `material-lookdev/material-lookdev.ts` into a project for the five recipes,
+  explicit physical fields, environment tiers, and the material-class gate.
+
 `compare-baselines.mjs` reads its declaration contract from the sibling
 `baseline-comparison.ts`, so it needs a Node that strips TypeScript types:
 Node 23 and newer run it as written, Node 22 needs `--experimental-strip-types`.

@@ -68,6 +68,7 @@ others.
 | The brief requires | Add | Load skill |
 |---|---|---|
 | A custom look: gradients, organic deformation, WebGPU node materials | TSL/GLSL shader | `shaders-tsl` |
+| Authored physical surface response: transmission, refraction, clearcoat, iridescence, attenuation, or environment tiers | PBR material look development | `material-lookdev` |
 | The experience is told through scrolling | Lenis/ScrollTrigger/ScrollControls | `scroll-immersion` |
 | Meshes the user clicks, hovers, inspects, or configures | R3F events + camera rig | `r3f-interaction` |
 | Custom models or textures that must be prepared first | Blender/Spline → glTF | `3d-asset-pipeline` |
@@ -167,6 +168,7 @@ For production or complex scenes → `r3f-patterns`.
 - Tiers, adaptive shadows/LOD/PostFX/particles/DPR, hysteresis, offscreen pause → **`3d-runtime-quality`**
 - React production → **`r3f-patterns`**
 - Shader / custom material / WebGPU → **`shaders-tsl`**
+- Authored physical material response or reflection-environment tier → **`material-lookdev`**
 - Scroll-driven story → **`scroll-immersion`**
 - Click/hover interaction, hotspots, configurator, animation clips, 3D text → **`r3f-interaction`**
 - Custom models/textures → **`3d-asset-pipeline`**

@@ -39,8 +39,8 @@ Rank materials by visual importance and runtime cost:
 | 3 | Interaction accent | Controlled emission or color change, not permanently maxed |
 | 4 | Environment/stage | Matte, simple materials; supports the silhouette |
 
-- Use `MeshStandardMaterial` as the PBR base and `MeshPhysicalMaterial` only for physical features you need.
-- Apply transmission, clearcoat, iridescence, and strong emission selectively.
+- Use `MeshStandardMaterial` as the PBR base; for authored physical response, load `material-lookdev` and its [physical fields](../../material-lookdev/references/physical-fields.md).
+- `material-lookdev` owns transmission, clearcoat, iridescence, attenuation, and environment tiers; do not infer a physics feature from base color alone.
 - Avoid multiple transparent layers and large transmission surfaces on mobile.
 - Keep roughness differences large enough that the hierarchy remains readable without color.
 - Use a neutral diagnostic light to separate wrong normals, roughness, and color-space problems from look development.
