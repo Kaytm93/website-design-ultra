@@ -60,6 +60,7 @@ export const mirroredFiles = [
   { source: 'lab/src/experiments/shaders/particle-toy-render.frag', target: 'shaders/particle-toy-render.frag' },
   { source: 'lab/src/experiments/shaders/particle-toy-render.vert', target: 'shaders/particle-toy-render.vert' },
   { source: 'lab/src/experiments/shaders/particle-toy-update.frag', target: 'shaders/particle-toy-update.frag' },
+  { source: 'references/particles/compute-particles.ts', target: 'particles/compute-particles.ts' },
   { source: 'lab/src/experiments/shader-fullscreen.frag', target: 'shaders/shader-fullscreen.frag' },
   { source: 'lab/src/experiments/shader-fullscreen.vert', target: 'shaders/shader-fullscreen.vert' },
 ]

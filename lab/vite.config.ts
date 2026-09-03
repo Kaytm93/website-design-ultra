@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 
 const labRoot = path.dirname(fileURLToPath(import.meta.url));
 const referencesRoot = path.resolve(labRoot, '../references');
+const pluginTemplatesRoot = path.resolve(labRoot, '../website-design-ultra/templates');
+const threeRoot = path.resolve(labRoot, 'node_modules/three');
 
 /**
  * IP-08A lab harness configuration.
@@ -22,13 +24,16 @@ export default defineConfig({
   resolve: {
     alias: {
       '@wdu-references': referencesRoot,
+      '@wdu-templates': pluginTemplatesRoot,
+      'three/webgpu': path.join(threeRoot, 'build/three.webgpu.js'),
+      'three/tsl': path.join(threeRoot, 'build/three.tsl.js'),
     },
   },
   server: {
     port: 5173,
     strictPort: false,
     fs: {
-      allow: [labRoot, referencesRoot],
+      allow: [labRoot, referencesRoot, pluginTemplatesRoot],
     },
   },
   build: {
