@@ -62,6 +62,30 @@ Answering the step from this file alone leaves it unfilled.
 7. Choose the poster frame from the same composition. It may read as a deliberate key visual, never as a loading error.
 8. Hand measurable quality hooks to `3d-runtime-quality` without changing the visual ranking of the scene.
 
+## Look-loop: live frame against the poster target
+
+A poster is a target, not proof that the live scene matches it. After scene code
+exists, run the smallest reproducible loop:
+
+1. Capture the live hero frame in the declared desktop shot.
+2. Run `verify-browser.mjs --target <poster-target.png>` against that frame. The
+   verifier writes `target-comparison.json` and `target-diff.png` beside the
+   capture; the report records the target, live-frame hashes, dimensions, score,
+   tolerance, and iteration label.
+3. Treat the score and Diff-PNG as evidence of visual change, never as an
+   aesthetic verdict. Name the changed decision (for example key-light
+   direction), make one correction, and capture again.
+4. Keep a short iteration log: `iteration`, changed decision, score, diff
+   artifact, and the reason for the next correction. A correction is better only
+   when its measured distance to the target decreases; do not claim improvement
+   from prose alone.
+
+An implemented scene cannot finish with an unmeasured look claim. `/immersive`
+ends with the comparison artifact, or with `NOT_APPLICABLE` and a concrete
+plan-only or out-of-scope reason; browser/GPU/tool unavailability remains
+`UNAVAILABLE` and unverified. Ordinary 2D work and an ordinary 3D hero do not
+load an advanced immersive module merely because this evidence procedure exists.
+
 ## Invariants
 
 - Keep exactly one camera source per state. Scroll, controls, and focus rig must not write simultaneously.
@@ -93,5 +117,8 @@ Deliver:
 - [ ] Color spaces, tone mapping, and exposure are fixed.
 - [ ] Spatial text stays readable and semantically present in the DOM.
 - [ ] Poster, reduced motion, and the live scene tell the same statement.
+- [ ] An implemented scene records at least one target comparison iteration with
+      `target-comparison.json` and `target-diff.png`, or states a concrete
+      `NOT_APPLICABLE` reason.
 - [ ] When `reference-intake` ran, every field still cites a source frame or is
       `unknown`, and the poster target existed before scene code.

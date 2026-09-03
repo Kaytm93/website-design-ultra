@@ -6,6 +6,10 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import {
+  compareTargetFrame,
+} from './target-comparison.mjs'
+
 export const TELEMETRY_SURFACE_GLOBAL = '__WDU_IMMERSIVE_TELEMETRY__'
 export const TELEMETRY_SURFACE_GLOBAL_ALIASES = [
   TELEMETRY_SURFACE_GLOBAL,
@@ -1255,6 +1259,8 @@ function parseArguments(argv) {
     includeFallback: true,
     timeoutMs: 120000,
     checkpoints: null,
+    target: null,
+    iteration: null,
   }
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index]
@@ -1271,6 +1277,16 @@ function parseArguments(argv) {
     } else if (argument === '--checkpoints') {
       options.checkpoints = path.resolve(argv[index + 1])
       index += 1
+    } else if (argument === '--target') {
+      const target = argv[index + 1]
+      if (!target || target.startsWith('--')) fail('--target requires a poster-target PNG path')
+      options.target = path.resolve(target)
+      index += 1
+    } else if (argument === '--iteration') {
+      const iteration = argv[index + 1]
+      if (!iteration || iteration.startsWith('--')) fail('--iteration requires a non-empty label')
+      options.iteration = iteration
+      index += 1
     } else if (argument === '--timeout-ms') {
       options.timeoutMs = Number.parseInt(argv[index + 1], 10)
       index += 1
@@ -1284,6 +1300,10 @@ function parseArguments(argv) {
   node scripts/verify-browser.mjs --url http://127.0.0.1:3000
                                   --checkpoints /absolute/path/interaction-checkpoints.json
                                   [--out /absolute/output/directory]
+  node scripts/verify-browser.mjs --url http://127.0.0.1:3000
+                                  --target /absolute/path/poster-target.png
+                                  [--iteration light-shift]
+                                  [--out /absolute/output/directory]
 
 --checkpoints switches to checkpoint capture mode: every checkpoint declared
 in the manifest is captured under deterministic mode into
@@ -1293,7 +1313,13 @@ here; the manifest is the project's declaration. Generic drivers cover
 hover/click/scroll/focus/keyboard/touch/loading/ready/failure, plus audio
 locked/enabled/muted/returning only when the manifest declares sound. The
 standard desktop/mobile/reduced/fallback matrix and telemetry summary are
-skipped in this mode.
+skipped in this mode. --target requires the page to resolve deterministic mode,
+captures the first declared 3D hero or canvas as live-frame.png, compares it to
+the supplied 8-bit PNG poster target, and writes target-comparison.json plus
+target-diff.png. --iteration labels the
+report (or WDU_LOOK_LOOP_ITERATION supplies the label); a target mismatch exits
+1 with evidence for the next look-loop iteration; missing or undecodable
+comparison inputs exit 2 as UNAVAILABLE.
 
 Exit codes: 0 = capture PASS, 1 = capture FAIL, 2 = browser, GPU, telemetry, or
 deterministic-mode capability UNAVAILABLE. Set WDU_PLAYWRIGHT_CLI to an explicit executable
@@ -1312,6 +1338,9 @@ to override discovery.`)
   }
   if (options.checkpoints && !fs.existsSync(options.checkpoints)) {
     fail(`--checkpoints manifest does not exist: ${options.checkpoints}`)
+  }
+  if (options.checkpoints && options.target) {
+    fail('--checkpoints and --target are mutually exclusive capture modes')
   }
   return options
 }
@@ -1449,6 +1478,19 @@ function writeBrowserUnavailableArtifacts(options, attempts) {
       2,
     )}\n`,
   )
+  if (options.target) {
+    const targetResult = compareTargetFrame({
+      targetPath: options.target,
+      liveFramePath: path.join(outputDirectory, 'live-frame.png'),
+      out: outputDirectory,
+      iteration: options.iteration ?? process.env.WDU_LOOK_LOOP_ITERATION ?? null,
+    })
+    targetResult.report.reason = `browser CLI unavailable: ${attempts.join('; ')}`
+    fs.writeFileSync(
+      path.join(outputDirectory, 'target-comparison.json'),
+      `${JSON.stringify(targetResult.report, null, 2)}\n`,
+    )
+  }
   return outputDirectory
 }
 
@@ -2107,6 +2149,95 @@ function main() {
     console.log(
       `VERIFY_RUNTIME: PASS checkpoint-mode captured=${checkpointResult.counts.captured} artifacts=${outputDirectory}`,
     )
+    return
+  }
+
+  if (options.target) {
+    const liveFramePath = path.join(outputDirectory, 'live-frame.png')
+    let targetResult
+    let captureFailure = null
+    try {
+      invoke('wdu-target', 'open', options.url)
+      invoke('wdu-target', 'resize', '1440', '1000')
+      invoke('wdu-target', 'run-code', settle)
+      invoke(
+        'wdu-target',
+        'run-code',
+        `async (page) => {
+  await page.waitForSelector('html[data-wdu-mode="deterministic"]', { timeout: 30000 })
+  const hero = page.locator('[data-verify-3d], [data-verify-hero], canvas').first()
+  if (!(await hero.count())) throw new Error('target comparison requires a visible 3D hero or canvas')
+  await hero.screenshot({ path: ${quoted(liveFramePath)} })
+}`,
+      )
+      targetResult = compareTargetFrame({
+        targetPath: options.target,
+        liveFramePath,
+        out: outputDirectory,
+        iteration: options.iteration ?? process.env.WDU_LOOK_LOOP_ITERATION ?? null,
+      })
+      fs.writeFileSync(
+        path.join(outputDirectory, 'capture.json'),
+        `${JSON.stringify(
+          {
+            status: targetResult.report.status,
+            verificationStatus: targetResult.report.status,
+            mode: 'target',
+            url: options.url,
+            backend: backend.name,
+            target: options.target,
+            liveFrame: 'live-frame.png',
+            targetComparison: 'target-comparison.json',
+            diffArtifact: targetResult.report.diffArtifact,
+            outputDirectory,
+            commands,
+          },
+          null,
+          2,
+        )}\n`,
+      )
+    } catch (error) {
+      captureFailure = error
+      targetResult = compareTargetFrame({
+        targetPath: options.target,
+        liveFramePath,
+        out: outputDirectory,
+        iteration: options.iteration ?? process.env.WDU_LOOK_LOOP_ITERATION ?? null,
+      })
+      fs.writeFileSync(
+        path.join(outputDirectory, 'capture-error.json'),
+        `${JSON.stringify(
+          {
+            status: 'FAIL',
+            mode: 'target',
+            error: error instanceof Error ? error.message : String(error),
+            targetComparison: 'target-comparison.json',
+            commands,
+          },
+          null,
+          2,
+        )}\n`,
+      )
+    } finally {
+      for (const session of sessions) {
+        run(backend, [`-s=${session}`, 'close'], Math.min(options.timeoutMs, 30000))
+      }
+    }
+
+    if (captureFailure) {
+      const message = captureFailure instanceof Error ? captureFailure.message : String(captureFailure)
+      fail(
+        `target capture failed: ${message}; partial artifacts: ${outputDirectory}`,
+        /(?:deterministic mode|data-wdu-mode)/i.test(message) ? 2 : 1,
+      )
+    }
+    if (targetResult.report.status === 'UNAVAILABLE') {
+      fail(`target comparison UNAVAILABLE; artifacts: ${outputDirectory}`, 2)
+    }
+    if (targetResult.report.status === 'FAIL') {
+      fail(`target comparison FAIL; artifacts: ${outputDirectory}`)
+    }
+    console.log(`VERIFY_RUNTIME: PASS target comparison artifacts=${outputDirectory}`)
     return
   }
 
