@@ -72,6 +72,76 @@ test('ProductModel wires DRACOLoader.setDecoderPath to the local /draco/ directo
   assert.ok(text.includes("setDecoderPath('/draco/')"), 'decoder path must be the committed /draco/ directory')
 })
 
+test('the manifest marks the decoder and the model for parse-time preload', () => {
+  const manifest = JSON.parse(readFileSync(join(root, 'lib', 'asset-manifest.json'), 'utf8'))
+  const preloaded = manifest.assets.filter((asset) => asset.preload === true)
+  const urls = preloaded.map((asset) => asset.url).sort()
+  assert.deepEqual(
+    urls,
+    ['/draco/draco_decoder.wasm', '/draco/draco_wasm_wrapper.js', '/model/procedural-crystal.glb'],
+    'the decoder the model cannot be read without, and the model itself, must start at parse time',
+  )
+  for (const asset of preloaded) {
+    assert.equal(asset.preloadAs, 'fetch', `${asset.id} is fetched by three's FileLoader`)
+  }
+})
+
+test('the layout emits one preload link per marked asset, critical bucket first', () => {
+  const text = readFileSync(join(root, 'app', 'layout.tsx'), 'utf8')
+  assert.ok(text.includes("rel=\"preload\""), 'the layout must emit preload links')
+  assert.ok(
+    text.includes('assetManifest.assets'),
+    'the preload set must be derived from the one asset manifest, never a hand-written URL list',
+  )
+  assert.ok(
+    text.includes('assetManifest.buckets.indexOf'),
+    'preload order must follow the manifest buckets: critical decoder before progressive model',
+  )
+  const manifest = JSON.parse(readFileSync(join(root, 'lib', 'asset-manifest.json'), 'utf8'))
+  for (const asset of manifest.assets.filter((entry) => entry.preload === true)) {
+    assert.ok(
+      !text.includes(asset.url),
+      `${asset.url} must come from the manifest, not be written into the layout`,
+    )
+  }
+})
+
+test('one Draco decoder is created at module scope and preloaded', () => {
+  const text = readFileSync(join(root, 'components', 'ProductModel.tsx'), 'utf8')
+  assert.ok(text.includes('.preload()'), 'the decoder must be warmed, not left until the GLB is parsed')
+  const constructions = text.match(/new DRACOLoader\(\)/g) ?? []
+  assert.equal(
+    constructions.length,
+    1,
+    'exactly one DRACOLoader: a per-mount instance spawns a fresh decoder worker every remount',
+  )
+  const loaderBody = text.slice(text.indexOf('useLoader(GLTFLoader'))
+  assert.ok(
+    !/new DRACOLoader\(\)/.test(loaderBody),
+    'the loader extension must reuse the warm decoder, never construct one',
+  )
+})
+
+test('the one DPR writer restates the decision after every resize', () => {
+  const text = readFileSync(join(root, 'components', 'QualityRuntime.tsx'), 'utf8')
+  const writes = text.match(/setPixelRatio\(/g) ?? []
+  assert.equal(writes.length, 1, 'exactly one setPixelRatio call site: the controller owns DPR')
+  assert.ok(
+    /const applyDpr = useCallback\(/.test(text),
+    'the DPR write must live in one named applier both effects can call',
+  )
+  const sizeEffect = text.slice(text.indexOf('quality.resetMeasurement()'))
+  const effectBody = sizeEffect.slice(0, sizeEffect.indexOf('])') + 2)
+  assert.ok(
+    effectBody.includes('applyDpr()'),
+    'a resize must restate the DPR: R3F re-applies its own viewport.dpr when it measures the canvas at a new size',
+  )
+  assert.ok(
+    effectBody.includes('size.width') && effectBody.includes('size.height'),
+    'the restating effect must depend on the measured canvas size',
+  )
+})
+
 test('no Vite starter, no particle template, no remote fetches in the fixture', () => {
   const files = relativePaths()
   assert.ok(!files.some((file) => /vite\.config/.test(file)), 'no vite.config may exist')

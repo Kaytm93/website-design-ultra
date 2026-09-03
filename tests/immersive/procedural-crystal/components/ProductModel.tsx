@@ -9,6 +9,28 @@ import { useSceneRuntime } from './SceneRuntime.tsx'
 import { MODEL_ASSET_URL, crystalRotationY } from '../lib/scene-config.ts'
 
 /**
+ * The one Draco decoder for this fixture, created and warmed when the
+ * client-only scene chunk evaluates rather than when the GLB response
+ * reveals its KHR_draco_mesh_compression extension. setDecoderPath('/draco/')
+ * is the committed local decoder directory; the runtime fetches no external
+ * URL. preload() starts the decoder module immediately, so fetching and
+ * instantiating it overlaps the model download instead of queueing behind it
+ * — the decoder is declared critical in lib/asset-manifest.json and the
+ * matching <link rel="preload"> in app/layout.tsx has already put its bytes
+ * in the cache by the time this runs.
+ *
+ * One instance, created once: a per-mount DRACOLoader would spawn a fresh
+ * decoder worker on every remount and pay the whole instantiation cost again.
+ */
+const dracoLoader = (() => {
+  if (typeof window === 'undefined') return null
+  const loader = new DRACOLoader()
+  loader.setDecoderPath('/draco/')
+  loader.preload()
+  return loader
+})()
+
+/**
  * The one optimized model (IP-10C). The GLB is a committed,
  * Draco-compressed asset produced by scripts/build-model.mjs through the
  * documented inspect/validate/optimize pipeline. DRACOLoader's decoder
@@ -33,12 +55,10 @@ export function ProductModel() {
   }
 
   // useLoader suspends until the committed Draco-compressed GLB is fetched
-  // and decoded; the loader extension configures the DRACO decoder once per
-  // load, pointing at the committed local decoder files under /draco/.
+  // and decoded; the loader extension hands it the already-warm decoder
+  // above, so no decoder work starts here.
   const gltf = useLoader(GLTFLoader, MODEL_ASSET_URL, (loader) => {
-    const draco = new DRACOLoader()
-    draco.setDecoderPath('/draco/')
-    loader.setDRACOLoader(draco)
+    if (dracoLoader) loader.setDRACOLoader(dracoLoader)
   })
 
   // Report asset readiness only after the model resolved (this component
