@@ -746,3 +746,61 @@ test('every shard uploads its evidence under its own artifact name', () => {
   // One required check stands for the whole sharded suite.
   assert.match(workflow, /immersive-evaluation-gate:/)
 })
+
+// ── Checkpoint capture that never finished ───────────────────────────────────
+//
+// The capture writes checkpoints.json only after its last entry, so a capture
+// killed at its time budget leaves PNGs and no manifest. Both gates are then
+// correctly UNAVAILABLE, but the reason has to survive: without it the CI log
+// says only "did not run", which is indistinguishable from a fixture that
+// declares no manifest and gives nobody anything to act on.
+
+test('checkpoint gates: a capture killed at its budget reports the budget and how far it got', () => {
+  const { context } = greenContext()
+  const directory = context.checkpoints.directory
+  context.checkpoints = {
+    exitCode: 2,
+    directory,
+    metadata: null,
+    capturedCount: 11,
+    logPath: path.join(directory, 'capture.log'),
+    unavailableReason:
+      'checkpoint capture exceeded its 1800s budget after 11 captured checkpoint(s); ' +
+      'see checkpoints/capture.log',
+  }
+  const { gates } = evaluateGates(context)
+  for (const gateId of ['interaction-checkpoints', 'keyboard']) {
+    assert.equal(gates[gateId].status, 'UNAVAILABLE')
+    assert.match(gates[gateId].reason, /exceeded its 1800s budget/)
+    assert.match(gates[gateId].reason, /11 captured checkpoint\(s\)/)
+    assert.ok(
+      gates[gateId].evidence.some((entry) => entry.endsWith('capture.log')),
+      'the capture log is named as evidence',
+    )
+  }
+})
+
+test('checkpoint gates: an unreadable checkpoints.json reports the parse error, not a generic miss', () => {
+  const { context } = greenContext()
+  const directory = context.checkpoints.directory
+  context.checkpoints = {
+    exitCode: 0,
+    directory,
+    metadata: null,
+    capturedCount: 20,
+    logPath: path.join(directory, 'capture.log'),
+    metadataError: 'Unexpected end of JSON input',
+  }
+  const { gates } = evaluateGates(context)
+  assert.equal(gates['interaction-checkpoints'].status, 'UNAVAILABLE')
+  assert.match(gates['interaction-checkpoints'].reason, /Unexpected end of JSON input/)
+  assert.match(gates['interaction-checkpoints'].reason, /20 captured checkpoint\(s\)/)
+})
+
+test('checkpoint gates: a capture that never ran still says so plainly', () => {
+  const { context } = greenContext()
+  context.checkpoints = null
+  const { gates } = evaluateGates(context)
+  assert.equal(gates.keyboard.status, 'UNAVAILABLE')
+  assert.equal(gates.keyboard.reason, 'checkpoint capture did not run')
+})

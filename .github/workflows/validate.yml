@@ -204,9 +204,15 @@ jobs:
   # fail-fast is off on purpose: one fixture failing must not hide the verdict
   # of the other thirteen, and the deliberate failing fixtures each prove a
   # different gate.
+  #
+  # The shard budget follows the slowest phase rather than the other way round.
+  # The checkpoint capture walks the whole manifest and is allowed 30m by
+  # run-implementation-evaluation.mjs; build, install and the three
+  # single-state captures add about two more, so a shard that uses its full
+  # budget needs roughly 35m. 45 leaves headroom without hiding a hang.
   immersive-evaluation:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:

@@ -87,6 +87,19 @@ const VERIFIER = path.join(
   'verify-browser.mjs',
 )
 
+// One capture of a single page state costs about a minute. The checkpoint
+// capture instead walks every entry of the fixture's manifest, so its cost
+// scales with the manifest and is by far the longest phase: measured at 498s
+// for product-hero's twenty checkpoints and, per checkpoint, roughly three
+// times that for procedural-crystal. Both fixtures were being SIGTERMed at the
+// blanket 900s ceiling — product-hero after writing all twenty PNGs but before
+// writing checkpoints.json, procedural-crystal after eleven of twenty — and
+// the two interaction gates then reported UNAVAILABLE, which is never PASS.
+// The checkpoint budget is therefore stated separately from the single-state
+// one, with headroom over the slowest observed fixture.
+const SINGLE_STATE_CAPTURE_TIMEOUT_MS = 900_000
+const CHECKPOINT_CAPTURE_TIMEOUT_MS = 1_800_000
+
 export const GATE_IDS = [
   'build',
   'runtime',
@@ -548,10 +561,19 @@ export function evaluateGates(context) {
     }
     const checkpoints = context.checkpoints
     if (checkpoints === null || checkpoints.metadata === null) {
+      // Whatever the capture did manage to write is the evidence for why this
+      // gate is UNAVAILABLE, so it is named here instead of being dropped.
+      const evidence = checkpoints?.logPath ? [checkpoints.logPath] : []
       gates[gateId] = gateResult(
         'UNAVAILABLE',
-        [],
-        'checkpoint capture did not run or wrote no checkpoints.json',
+        evidence,
+        checkpoints === null
+          ? 'checkpoint capture did not run'
+          : (checkpoints.unavailableReason ??
+              (checkpoints.metadataError
+                ? `checkpoint capture wrote no readable checkpoints.json after ` +
+                  `${checkpoints.capturedCount ?? 0} captured checkpoint(s): ${checkpoints.metadataError}`
+                : 'checkpoint capture wrote no checkpoints.json')),
       )
       continue
     }
@@ -863,7 +885,12 @@ function resolveServedAttribute(html, attribute) {
   return match ? match[1] : null
 }
 
-function runVerifier(url, outputDirectory, checkpointsManifest = null) {
+function runVerifier(
+  url,
+  outputDirectory,
+  checkpointsManifest = null,
+  timeoutMs = SINGLE_STATE_CAPTURE_TIMEOUT_MS,
+) {
   const args = [
     VERIFIER,
     '--url',
@@ -874,10 +901,16 @@ function runVerifier(url, outputDirectory, checkpointsManifest = null) {
   if (checkpointsManifest !== null) {
     args.push('--checkpoints', checkpointsManifest)
   }
-  const result = run(process.execPath, args, { timeout: 900_000 })
+  const result = run(process.execPath, args, { timeout: timeoutMs })
+  // spawnSync reports a killed child as an error with no status, which reads
+  // the same as a spawn failure. The two need different remedies, so the
+  // distinction is carried out of here rather than collapsed into one message.
+  const timedOut = Boolean(result.error) && result.signal !== null
   return {
     exitCode: result.error ? null : result.status,
     error: result.error ? result.error.message : null,
+    timedOut,
+    timeoutMs,
     output: combinedOutput(result),
   }
 }
@@ -1033,24 +1066,63 @@ async function runCheckpointCapture(declaration, fixtureDirectory, port, outputD
     `http://127.0.0.1:${port}`,
     checkpointDirectory,
     manifestPath,
+    CHECKPOINT_CAPTURE_TIMEOUT_MS,
   )
   phases.checkpointCaptureMs = Date.now() - startedAt
+
+  // The build gate keeps a log; this one did not, so a capture that died left
+  // no record of why anywhere — not in the artifact and not in the CI output.
+  const logPath = path.join(checkpointDirectory, 'capture.log')
+  fs.writeFileSync(
+    logPath,
+    `[checkpoint-capture] exit=${result.exitCode ?? 'killed'} timedOut=${result.timedOut} ` +
+      `budgetMs=${result.timeoutMs} elapsedMs=${phases.checkpointCaptureMs}\n` +
+      `${result.error ? `error=${result.error}\n` : ''}${result.output}\n`,
+  )
+
   const metadataPath = path.join(checkpointDirectory, 'checkpoints.json')
   let metadata = null
+  let metadataError = null
   try {
     metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'))
-  } catch {
+  } catch (error) {
     metadata = null
+    metadataError = error instanceof Error ? error.message : String(error)
   }
-  if (result.exitCode === 2 || (result.exitCode === null && result.error)) {
+
+  // The verifier writes checkpoints.json only after the last entry, so a
+  // killed capture leaves PNGs and no manifest. Counting them says how far it
+  // got, which is the difference between "too slow" and "broken at entry N".
+  let capturedCount = null
+  try {
+    capturedCount = fs
+      .readdirSync(path.join(checkpointDirectory, 'checkpoints'))
+      .filter((entry) => entry.endsWith('.png')).length
+  } catch {
+    capturedCount = 0
+  }
+
+  if (result.timedOut || result.exitCode === 2 || (result.exitCode === null && result.error)) {
     return {
       exitCode: 2,
       directory: checkpointDirectory,
       metadata,
-      unavailableReason: result.error ?? 'checkpoint capture UNAVAILABLE',
+      capturedCount,
+      logPath,
+      unavailableReason: result.timedOut
+        ? `checkpoint capture exceeded its ${Math.round(result.timeoutMs / 1000)}s budget after ` +
+          `${capturedCount} captured checkpoint(s); see checkpoints/capture.log`
+        : (result.error ?? 'checkpoint capture UNAVAILABLE'),
     }
   }
-  return { exitCode: result.exitCode, directory: checkpointDirectory, metadata }
+  return {
+    exitCode: result.exitCode,
+    directory: checkpointDirectory,
+    metadata,
+    capturedCount,
+    logPath,
+    metadataError,
+  }
 }
 
 async function fetchPosterAssets(port, posters) {
