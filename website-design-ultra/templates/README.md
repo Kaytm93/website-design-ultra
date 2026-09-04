@@ -15,6 +15,11 @@ skill can name a path the reader can actually open.
   `skills/shaders-tsl/references/module-index.md` first: it says which file
   carries which effect, at what cost, on which backend.
 
+- `assets/` — the licensed environment map the immersive starters light with,
+  so a run has a real HDRI without reaching the network. `assets/README.md`
+  beside it carries the publisher, the upstream URL, the licence and the
+  source hash.
+
 `compare-baselines.mjs` reads its declaration contract from the sibling
 `baseline-comparison.ts`, so it needs a Node that strips TypeScript types:
 Node 23 and newer run it as written, Node 22 needs `--experimental-strip-types`.
@@ -24,5 +29,7 @@ Copy them into a project. Do not import them from here and do not turn this
 directory into a package: the plugin ships one version of a contract, and a
 project that copies it owns its own copy from that moment on.
 
-Every file is byte-identical to the repository source it mirrors, and
-`repo:tests/templates/sync.test.mjs` fails if the two ever drift apart.
+Every file here except this README and `assets/README.md` is byte-identical to
+the repository source it mirrors, and `repo:tests/templates/sync.test.mjs`
+fails if a pair ever drifts apart. Those two READMEs describe this tree rather
+than copy anything into it, so they are declared as plugin-owned instead.
