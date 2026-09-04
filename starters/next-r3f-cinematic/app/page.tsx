@@ -92,11 +92,12 @@ export default function Page() {
           <div>
             <dt>Art-directed poster</dt>
             <dd>
-              Two composed SVG variants, desktop and portrait, mirror the live
-              composition: a faceted procedural crystal on a dark stage with
-              the same palette, key light, shadow, and environment reflection.
-              The poster is the fallback behind loading, the poster quality
-              tier, and context loss — never a blank frame.
+              Two captures of this scene, desktop and portrait, each taken from
+              the camera station that composes for its crop and rendered through
+              the deterministic entry point. The poster is the fallback behind
+              loading, the poster quality tier, and context loss — never a blank
+              frame, and never a drawing of a scene that has since moved on.
+              <code>npm run capture:poster</code> regenerates both.
             </dd>
           </div>
           <div>

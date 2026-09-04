@@ -74,9 +74,18 @@ test('both poster variants are declared in the asset manifest and exist on disk'
     assert.ok(poster.url.startsWith('/'), `${poster.id} url must be root-relative`)
     const file = join(root, 'public', poster.url.replace(/^\//, ''))
     assert.ok(existsSync(file), `missing poster on disk: ${poster.url}`)
-    const svg = readFileSync(file, 'utf8')
-    assert.ok(svg.includes('<svg'), `${poster.id} is a real SVG document`)
-    assert.doesNotMatch(svg, /<text|<foreignObject/, 'posters bake no text into the SVG')
+    // A capture of the scene, not a drawing of it: the file is a PNG the
+    // browser wrote, and the manifest carries the hash of the bytes on disk.
+    const bytes = readFileSync(file)
+    assert.deepEqual(
+      [...bytes.subarray(0, 8)],
+      [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
+      `${poster.id} is a real PNG capture`,
+    )
+    assert.ok(
+      bytes.length > 20_000,
+      `${poster.id} is ${bytes.length} bytes — too small to be a rendered frame`,
+    )
   }
 })
 
