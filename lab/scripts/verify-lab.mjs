@@ -25,6 +25,7 @@ import {
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { setTimeout as sleep } from 'node:timers/promises';
+import { webgpuClaimProblem } from './webgpu-claim.mjs';
 
 const LAB_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const NPM = process.platform === 'win32' ? 'npm.cmd' : 'npm';
@@ -624,8 +625,15 @@ async function main() {
         const entry = matrix.modules.find((m) => m.id === 'gpu-particles');
         check('gpu-particles matrix entry exists', Boolean(entry));
         if (entry) {
-          // WebGPU must stay UNAVAILABLE without real WGSL/TSL device
-          check('gpu-particles webgpu UNAVAILABLE never PASS without WGSL/TSL', entry.webgpu.status === 'UNAVAILABLE' && /WGSL\/TSL|WebGPU.*PASS/i.test(entry.webgpu.reason ?? ''));
+          // Two shapes and nothing else: UNAVAILABLE carrying a reason, or
+          // PASS carrying evidence from a run that actually happened. A bare
+          // PASS, or one whose evidence is missing a field, fails here.
+          const webgpuProblem = webgpuClaimProblem(entry.webgpu);
+          check(
+            'gpu-particles webgpu is UNAVAILABLE with a reason or PASS with run evidence',
+            webgpuProblem === null,
+            webgpuProblem ?? '',
+          );
 
           // WebGL2 honesty: PASS only with real browser float-target init + update draw + render + non-blank
           const hasEvidence = particleBrowserEvidence && particleBrowserEvidence.dataset;

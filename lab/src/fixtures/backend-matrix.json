@@ -4,7 +4,26 @@
     {
       "id": "gpu-particles",
       "webgl2": { "status": "PASS", "source": "particle-toy update/render (GLSL 300 es, RGBA16F HalfFloat, NearestFilter, NoColorSpace, no depth/stencil, ping-pong read/write swap) browser-verified float render target init (4) + update draws (6) + render (3) + non-blank capture, data-wdu-particle-* evidence", "executed": "browser-required" },
-      "webgpu": { "status": "PASS", "source": "templates/particles/compute-particles.ts (TSL storage buffers, Fn, instanceIndex, computeKernel, velocity color, A/B morph) with lab/src/experiments/compute-particles.ts", "executed": "lab/scripts/verify-compute-webgpu.mjs — Chromium headless --enable-unsafe-webgpu; GPUDevice=true, compute dispatch=true, render=true, errors=[]" }
+      "webgpu": {
+        "status": "PASS",
+        "source": "templates/particles/compute-particles.ts (TSL storage buffers, Fn, instanceIndex, computeKernel, velocity color, A/B morph) with lab/src/experiments/compute-particles.ts",
+        "executed": "lab/scripts/verify-compute-webgpu.mjs — one observed run on a developer host, recorded field by field under `evidence`; not a CI result",
+        "evidence": {
+          "probe": "lab/scripts/verify-compute-webgpu.mjs",
+          "command": "npm run verify:compute",
+          "origin": "developer-host",
+          "host": "darwin arm64 — Darwin 25.5.0 (Apple T8103), Node v26.7.0",
+          "browser": "Chromium 140.0.7339.16 headless (playwright 1.55.0, build 1187) with --enable-unsafe-webgpu",
+          "observedAt": "2026-09-04",
+          "artifact": "/tmp/wdu-compute-particles-webgpu.png",
+          "artifactBytes": 3303,
+          "device": true,
+          "dispatch": true,
+          "render": true,
+          "errors": [],
+          "note": "A developer-host observation, not a CI result, and the artifact is not committed — /tmp is the probe's default output. A GitHub-hosted runner has no GPU, so the validate.yml lab job reports UNAVAILABLE there; that UNAVAILABLE is never folded into this PASS, and this PASS is never presented as CI evidence."
+        }
+      }
     },
     {
       "id": "video-texture",

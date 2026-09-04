@@ -3,6 +3,11 @@ import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
+import {
+  WEBGPU_EVIDENCE_FACTS,
+  WEBGPU_EVIDENCE_TEXT_FIELDS,
+  webgpuClaimProblem,
+} from '../scripts/webgpu-claim.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const PLUGIN_ROOT = resolve(ROOT, '..', 'website-design-ultra');
@@ -224,17 +229,72 @@ test('backend matrix has honest WebGL2 fallback and WebGPU compute evidence', ()
     assert.equal(entry.webgl2.status, 'UNAVAILABLE');
     assert.match(entry.webgl2.reason ?? '', /browser.*float.*evidence|float.*render.*target|No browser.*float/i);
   }
+  // The WebGPU claim is judged by the shared contract, not by prose regexes
+  // over `source`/`executed`. Those regexes accepted any string that recited
+  // the right outcome, which is exactly what a typed-in PASS looks like.
+  assert.equal(
+    webgpuClaimProblem(entry.webgpu),
+    null,
+    `gpu-particles webgpu claim is not well formed: ${webgpuClaimProblem(entry.webgpu)}`,
+  );
   if (entry.webgpu.status === 'PASS') {
-    const evidence = `${entry.webgpu.source ?? ''} ${entry.webgpu.executed ?? ''}`;
-    assert.match(evidence, /compute-particles\.ts/);
-    assert.match(evidence, /Chromium headless.*enable-unsafe-webgpu/i);
-    assert.match(evidence, /GPUDevice=true.*compute dispatch=true.*render=true/i);
-  } else {
-    assert.equal(entry.webgpu.status, 'UNAVAILABLE');
-    assert.match(entry.webgpu.reason ?? '', /WGSL\/TSL|WebGPU.*PASS/i);
+    assert.match(
+      `${entry.webgpu.source ?? ''} ${entry.webgpu.evidence?.probe ?? ''}`,
+      /compute-particles\.ts/,
+    );
   }
   // ensure contract marks raw GLSL never webgpu pass
   assert.equal(matrix.contract.rawGLSLisNotWebGPUPass, true);
+});
+
+test('a bare WebGPU PASS is refused and an evidence field cannot be dropped', () => {
+  const matrix = JSON.parse(read(resolve(ROOT, 'src/fixtures/backend-matrix.json')));
+  const entry = matrix.modules.find((m: { id: string }) => m.id === 'gpu-particles');
+  assert.equal(webgpuClaimProblem(entry.webgpu), null, 'committed claim should be well formed');
+
+  assert.match(
+    webgpuClaimProblem({ status: 'PASS' }) ?? '',
+    /carries no evidence object/,
+    'a bare PASS must be refused',
+  );
+  assert.match(
+    webgpuClaimProblem({ status: 'UNAVAILABLE' }) ?? '',
+    /carries no reason/,
+    'an UNAVAILABLE without a reason must be refused',
+  );
+  assert.equal(
+    webgpuClaimProblem({ status: 'UNAVAILABLE', reason: 'no device on this host' }),
+    null,
+    'UNAVAILABLE with a reason stays the honest default',
+  );
+
+  // Every declared evidence field is load-bearing: drop one and the claim fails.
+  for (const field of [
+    ...WEBGPU_EVIDENCE_TEXT_FIELDS,
+    ...WEBGPU_EVIDENCE_FACTS,
+    'origin',
+    'observedAt',
+    'artifactBytes',
+    'errors',
+  ]) {
+    const mutated = {
+      ...entry.webgpu,
+      evidence: { ...entry.webgpu.evidence },
+    };
+    delete mutated.evidence[field];
+    assert.match(
+      webgpuClaimProblem(mutated) ?? '',
+      new RegExp(`evidence\\.${field}`),
+      `dropping evidence.${field} must fail the claim`,
+    );
+  }
+
+  // An outcome asserted as a string is not the same as an observed boolean.
+  const stringy = {
+    ...entry.webgpu,
+    evidence: { ...entry.webgpu.evidence, device: 'true' },
+  };
+  assert.match(webgpuClaimProblem(stringy) ?? '', /evidence\.device must be boolean true/);
 });
 
 test('manifest contains gpu particle entry and noCombine, no apply-all, no SDF inside particle scope', () => {

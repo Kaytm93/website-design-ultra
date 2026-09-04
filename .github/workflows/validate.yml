@@ -120,7 +120,11 @@ jobs:
 
   lab:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
+    env:
+      # verify-lab.mjs pins this CLI version internally; the job installs the
+      # same one rather than letting it fall back to an npx lookup per command.
+      WDU_PLAYWRIGHT_CLI_VERSION: 0.1.17
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
 
@@ -145,6 +149,48 @@ jobs:
       - name: Install Chromium for the WebGPU probe
         working-directory: lab
         run: ./node_modules/.bin/playwright install --with-deps chromium
+
+      # verify-lab.mjs drives the browser through the @playwright/cli wrapper,
+      # not through the playwright package. Installing it once outside the
+      # repository and exporting the path keeps the pinned version and avoids
+      # an npx resolution per browser command.
+      - name: Install pinned Playwright CLI for the lab harness
+        run: |
+          npm install --prefix "${{ runner.temp }}/wdu-lab-playwright-cli" --no-save --no-package-lock --ignore-scripts @playwright/cli@${{ env.WDU_PLAYWRIGHT_CLI_VERSION }}
+          echo "WDU_PLAYWRIGHT_CLI=${{ runner.temp }}/wdu-lab-playwright-cli/node_modules/.bin/playwright-cli" >> "$GITHUB_ENV"
+          npx --yes --package @playwright/cli@${{ env.WDU_PLAYWRIGHT_CLI_VERSION }} playwright-cli install-browser --with-deps chromium
+
+      # `node scripts/verify-lab.mjs` is the lab's own acceptance harness and
+      # it ran in no workflow at all. That is why backend-matrix.json could
+      # claim a WebGPU PASS while the harness asserted the opposite: nothing
+      # ever put the two in the same room. An assertion nobody executes is
+      # decoration, so it runs here.
+      #
+      # Exit codes follow the same reading as the WebGPU probe below: 0 is a
+      # pass, 2 means required browser evidence was unavailable on this runner
+      # and is declared rather than converted into either verdict, and 1 or
+      # anything else is a real failed assertion and fails the build.
+      - name: Lab acceptance harness
+        working-directory: lab
+        run: |
+          set +e
+          node scripts/verify-lab.mjs
+          code=$?
+          set -e
+          case "$code" in
+            0)
+              echo "PASS capability=lab-harness — every lab acceptance check passed"
+              echo "PASS capability=lab-harness — every lab acceptance check passed" >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            2)
+              echo "::warning title=Lab harness evidence UNAVAILABLE::Required browser evidence was unavailable — the lab harness is unverified, not passed (ADR-010)."
+              echo "UNAVAILABLE capability=lab-harness — required browser evidence was unavailable on this runner; it is NOT a pass (ADR-010)." >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            *)
+              echo "::error title=Lab harness failed::verify-lab.mjs exited with code=$code (0=PASS 1=FAIL 2=UNAVAILABLE). See the FAIL lines above."
+              exit 1
+              ;;
+          esac
 
       # J-D4's acceptance is "a real WebGPU device is PASS, no device is
       # UNAVAILABLE", and until now nothing executed it — the probe was
