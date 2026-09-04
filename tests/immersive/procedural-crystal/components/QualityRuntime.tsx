@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useSceneRuntime } from './SceneRuntime.tsx'
 
@@ -20,7 +20,19 @@ import { useSceneRuntime } from './SceneRuntime.tsx'
  *   reports the declared frame-time input, and the capture is reproducible.
  * - On tier/DPR changes it applies the decided DPR imperatively through
  *   gl.setPixelRatio. There is no `dpr` prop on the Canvas and no other
- *   setPixelRatio call: this is the only DPR writer.
+ *   setPixelRatio call: applyDpr is the only DPR writer.
+ *
+ *   The decision has to be restated after every resize, which is why
+ *   applyDpr is called from the size effect too. R3F re-applies its own
+ *   viewport.dpr — the Canvas default, not the controller's tier ceiling —
+ *   to the renderer whenever it measures the canvas at a new size, so an
+ *   imperative pixel ratio written once survives only until the next
+ *   resize. That is not a hypothetical here: the verifier's full-page
+ *   captures collapse the viewport to 1x1 and restore it, which resizes the
+ *   canvas twice per screenshot. A dropped pixel ratio re-rasterises the
+ *   frozen reduced-motion still at a different resolution between two shots,
+ *   and the reduced-motion gate reads that, correctly, as a page still
+ *   changing under prefers-reduced-motion.
  * - On offscreen/hidden pause it stops the render loop via setFrameloop. The
  *   controller owns the visible/paused decision; this component only executes
  *   it.
@@ -35,8 +47,8 @@ import { useSceneRuntime } from './SceneRuntime.tsx'
  */
 export function QualityRuntime() {
   const { quality, telemetry, clock, mode, stableFrameReached } = useSceneRuntime()
-  const gl = useThree((state) => state.gl)
   const setFrameloop = useThree((state) => state.setFrameloop)
+  const gl = useThree((state) => state.gl)
   const size = useThree((state) => state.size)
   const canvas = gl.domElement
   const stablePausedRef = useRef(false)
@@ -64,23 +76,33 @@ export function QualityRuntime() {
     setFrameloop('never')
   }, -1)
 
+  // The one DPR write: every place that needs the decided pixel ratio on the
+  // renderer calls this, so there is a single call site to keep honest.
+  const applyDpr = useCallback(() => {
+    gl.setPixelRatio(quality.qualityState().dpr.value)
+  }, [gl, quality])
+
   // Apply controller decisions: DPR and render-loop pause. Fires only on
   // change, never per frame.
   useEffect(() => {
     const apply = () => {
-      gl.setPixelRatio(quality.qualityState().dpr.value)
+      applyDpr()
       const frozen = mode === 'deterministic' && stablePausedRef.current
       setFrameloop(quality.snapshot().paused || frozen ? 'never' : 'always')
     }
     apply()
     return quality.onChange(apply)
-  }, [gl, setFrameloop, quality, mode])
+  }, [applyDpr, setFrameloop, quality, mode])
 
   // A resize invalidates the measurement window: samples collected at the old
-  // size must not decide the new one (adaptive-runtime.md, discard list).
+  // size must not decide the new one (adaptive-runtime.md, discard list). It
+  // also re-runs the one DPR write, because R3F sizes the renderer from
+  // whatever pixel ratio it holds at that moment — the decision has to be
+  // restated for the new size, not inherited from it.
   useEffect(() => {
     quality.resetMeasurement()
-  }, [quality, size.width, size.height])
+    applyDpr()
+  }, [applyDpr, quality, size.width, size.height])
 
   // Offscreen and document-hidden pause, owned by the controller.
   useEffect(() => {
