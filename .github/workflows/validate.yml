@@ -120,7 +120,7 @@ jobs:
 
   lab:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
 
@@ -137,6 +137,61 @@ jobs:
       - name: Lab suite
         working-directory: lab
         run: npm test
+
+      # The lab's own pinned Playwright (package-lock.json) installs the
+      # matching Chromium. The probe imports `playwright` out of lab's
+      # node_modules, so the browser has to come from that same install
+      # rather than from a separately versioned npx package.
+      - name: Install Chromium for the WebGPU probe
+        working-directory: lab
+        run: ./node_modules/.bin/playwright install --with-deps chromium
+
+      # J-D4's acceptance is "a real WebGPU device is PASS, no device is
+      # UNAVAILABLE", and until now nothing executed it — the probe was
+      # reachable only through `npm run verify:compute` by hand.
+      #
+      # ADR-010 applies in the Blender shape, not the immersive-evaluation
+      # shape. The immersive suite hard-fails on exit 2 because that job
+      # installs the browser capability itself and a gap there is a broken
+      # install. A GPU is different: a GitHub-hosted runner has none and no
+      # step can add one, so exit 2 here is the acceptance's own declared
+      # outcome. It is stated in the log and in the job summary and is never
+      # printed as PASS; failing the build for absent hardware would make
+      # every pull request red for a reason no author can fix, which is how a
+      # gate gets ignored. Only exit 0 claims the compute path ran.
+      #
+      # Nothing else is tolerated: exit 1 is a device that ran and produced
+      # wrong evidence, and any other code is an unhandled state. Both fail.
+      - name: Verify the TSL compute path on a real WebGPU device
+        working-directory: lab
+        run: |
+          set +e
+          node scripts/verify-compute-webgpu.mjs
+          code=$?
+          set -e
+          case "$code" in
+            0)
+              echo "PASS capability=webgpu — compute dispatch and render ran on a real GPUDevice"
+              echo "PASS capability=webgpu — compute dispatch and render ran on a real GPUDevice" >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            2)
+              echo "::warning title=WebGPU UNAVAILABLE::No WebGPU device on this runner — the TSL compute path is unverified, not passed (ADR-010)."
+              echo "UNAVAILABLE capability=webgpu — the TSL compute path is unverified on this runner; it is NOT a pass (ADR-010). Run \`npm run verify:compute\` in lab/ on a host with a GPU." >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            *)
+              echo "::error title=WebGPU compute gate failed::verify-compute-webgpu.mjs exited with code=$code (0=PASS 1=FAIL 2=UNAVAILABLE)."
+              exit 1
+              ;;
+          esac
+
+      - name: Archive WebGPU compute evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: compute-particles-webgpu
+          path: /tmp/wdu-compute-particles-webgpu.png
+          if-no-files-found: ignore
+          retention-days: 14
 
   starter:
     runs-on: ubuntu-latest
