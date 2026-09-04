@@ -11,5 +11,14 @@ out/
 # TypeScript build info
 *.tsbuildinfo
 
+# IP-07A evidence: re-allow the committed pipeline reports under
+# reports/model/ even though the root .gitignore *.log rule would otherwise
+# drop them. These three log files are the durable acceptance evidence;
+# the structure test demands they be present on a clean checkout. (Inspect
+# reports are *.txt and are unaffected by the *.log rule.)
+!reports/model/pre-validate.log
+!reports/model/optimize.log
+!reports/model/post-validate.log
+
 # macOS
 .DS_Store

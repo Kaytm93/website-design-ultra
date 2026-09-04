@@ -46,6 +46,88 @@ test('the raw and optimized pre/post reports both exist and report PASS', () => 
   assert.ok(postValidate.includes('No errors found'), 'post-validate must report no errors')
 })
 
+test('committed pipeline reports are portable evidence (no host paths, no objc warnings, no stage timings, no trailing whitespace)', () => {
+  // The sanitizer in scripts/build-model.mjs guarantees every committed
+  // pipeline report file under reports/model/ is reproducible across
+  // reruns on any host. These assertions double as a regression net: if a
+  // future change drops the sanitizer, leaks a contributor path, or lets
+  // nondeterministic timing tokens through, the contract fails here.
+  const files = [
+    'pre-inspect.txt',
+    'pre-validate.log',
+    'optimize.log',
+    'post-inspect.txt',
+    'post-validate.log',
+  ]
+  // Host path patterns the sanitizer must scrub:
+  //   - /Users/<anything>      (macOS contributor home)
+  //   - /home/<anything>       (Linux contributor home)
+  //   - /private/<anything>    (macOS /private prefix on sensitive files)
+  //   - Windows drive-letter absolute paths (C:\..., D:\..., ...)
+  //   - the old `website-design-ultra-pr*` worktree marker that briefly
+  //     leaked from a sibling checkout
+  const hostPathPatterns = [
+    /\/Users\//,
+    /\/home\//,
+    /\/private\//,
+    /[A-Za-z]:\\/,
+    /website-design-ultra-pr/,
+  ]
+  // Per-stage timing tokens like ` 5ms` or ` 1.25ms` at line ends.
+  const timingToken = /\s+\d+(?:\.\d+)?ms[ \t]*$/
+  const objcWarning = /^objc\[\d+\]: /
+  const trailingWhitespace = /[ \t]+$/
+
+  for (const file of files) {
+    const path = join(root, 'reports', 'model', file)
+    const text = readFileSync(path, 'utf8')
+    const lines = text.split('\n')
+
+    for (const pattern of hostPathPatterns) {
+      const offender = lines.findIndex((line) => pattern.test(line))
+      assert.equal(
+        offender,
+        -1,
+        `${file}: line ${offender + 1} leaks a host path; the sanitizer must scrub PROJECT_ROOT and strip macOS objc warnings`,
+      )
+    }
+
+    const objcLine = lines.findIndex((line) => objcWarning.test(line))
+    assert.equal(
+      objcLine,
+      -1,
+      `${file}: line ${objcLine + 1} carries an objc[PID] warning; the sanitizer must drop these`,
+    )
+
+    const timingLine = lines.findIndex((line) => timingToken.test(line))
+    assert.equal(
+      timingLine,
+      -1,
+      `${file}: line ${timingLine + 1} carries a raw stage timing token; the sanitizer must replace it with <timing omitted>`,
+    )
+
+    const trailingLine = lines.findIndex((line) => trailingWhitespace.test(line))
+    assert.equal(
+      trailingLine,
+      -1,
+      `${file}: line ${trailingLine + 1} has trailing whitespace; the sanitizer must strip it`,
+    )
+
+    assert.ok(
+      text.endsWith('\n') && !text.endsWith('\n\n'),
+      `${file}: must end with exactly one newline`,
+    )
+  }
+
+  // The optimize.log specifically must contain the stable marker so the
+  // sanitizer is actually exercised (not a no-op regex with no matchers).
+  const optimizeLog = readFileSync(join(root, 'reports', 'model', 'optimize.log'), 'utf8')
+  assert.ok(
+    optimizeLog.includes('<timing omitted>'),
+    'optimize.log must contain the stable <timing omitted> marker so the sanitizer is exercised',
+  )
+})
+
 test('the summary budget is parsed from the optimized artifact, not the generator report', () => {
   const summary = JSON.parse(readFileSync(join(root, 'reports', 'model', 'summary.json'), 'utf8'))
   // Decoded stats must come from the optimized post-inspect (not the 30-mesh

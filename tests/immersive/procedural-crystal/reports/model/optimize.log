@@ -1,24 +1,24 @@
 ❯ dedup
-✔ dedup                2ms
+✔ dedup <timing omitted>
 ❯ instance
-✔ instance             1ms
+✔ instance <timing omitted>
 ❯ palette
-✔ palette              1ms
+✔ palette <timing omitted>
 ❯ flatten
-✔ flatten              1ms
+✔ flatten <timing omitted>
 ❯ join
-✔ join                 6ms
+✔ join <timing omitted>
 ❯ weld
-✔ weld                 2ms
+✔ weld <timing omitted>
 ❯ simplify
-✔ simplify             1ms
+✔ simplify <timing omitted>
 ❯ resample
-✔ resample             0ms
+✔ resample <timing omitted>
 ❯ prune
-✔ prune                1ms
+✔ prune <timing omitted>
 ❯ sparse
-✔ sparse               1ms
+✔ sparse <timing omitted>
 ❯ draco
-✔ draco                2ms
+✔ draco <timing omitted>
 
 info: procedural-crystal-raw.glb (49.54 KB) → procedural-crystal.glb (6.36 KB)

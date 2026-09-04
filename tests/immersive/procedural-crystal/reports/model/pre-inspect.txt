@@ -26,7 +26,7 @@ OVERVIEW
   pass, without considering the vertex cache.
 
 ² Expected number of vertices uploaded to GPU, assuming each Accessor
-  is uploaded only once. Actual number uploaded may be higher, 
+  is uploaded only once. Actual number uploaded may be higher,
   dependent on the implementation and vertex buffer layout.
 
 ³ Expected number of vertices uploaded to GPU, assuming each Primitive

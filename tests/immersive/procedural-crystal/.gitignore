@@ -15,9 +15,10 @@ out/
 
 # IP-10C evidence: re-allow the committed pipeline reports under
 # reports/model/ even though the root .gitignore *.log rule would otherwise
-# drop them. These four files are the durable acceptance evidence; the
-# validate/optimize logs are the output of build-model.mjs and the
-# structure test demands they be present on a clean checkout.
+# drop them. These three log files are the durable acceptance evidence;
+# the validate/optimize logs are the output of build-model.mjs and the
+# structure test demands they be present on a clean checkout. (Inspect
+# reports are *.txt and are unaffected by the *.log rule.)
 !reports/model/pre-validate.log
 !reports/model/post-validate.log
 !reports/model/optimize.log
