@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useSceneRuntime } from './SceneRuntime.tsx'
 
@@ -58,42 +58,30 @@ export function QualityRuntime() {
     setFrameloop('never')
   }, -1)
 
+  // R3F restores its viewport DPR on resize. Restate the controller's value
+  // through this single writer after both size and quality changes.
+  const applyDpr = useCallback(() => {
+    gl.setPixelRatio(quality.qualityState().dpr.value)
+  }, [gl, quality])
+
   // Apply controller decisions: DPR and render-loop pause. Fires only on
   // change, never per frame.
   useEffect(() => {
     const apply = () => {
-      gl.setPixelRatio(quality.qualityState().dpr.value)
+      applyDpr()
       const frozen = mode === 'deterministic' && stablePausedRef.current
       setFrameloop(quality.snapshot().paused || frozen ? 'never' : 'always')
     }
     apply()
     return quality.onChange(apply)
-  }, [gl, setFrameloop, quality, mode])
+  }, [applyDpr, setFrameloop, quality, mode])
 
   // A resize invalidates the measurement window: samples collected at the old
   // size must not decide the new one (adaptive-runtime.md, discard list).
-  //
-  // Exception: once the deterministic-mode stable frame has been reached, the
-  // canvas is intentionally frozen. The reduced-motion gate in
-  // tests/immersive/evaluation expects byte-identical full-page screenshots
-  // taken ~750ms apart, and the capture path performs a transient 1x1
-  // viewport collapse + restore between shots. Each collapse/resume counts
-  // as a resize here. Calling resetMeasurement() would discard the p95
-  // window, could shift the adaptive tier and re-rasterise the frozen still
-  // at a different DPR, producing different PNG bytes for an animation that
-  // is, by contract, no longer running.
-  //
-  // We therefore keep applyDpr() (so the canvas still gets the correct
-  // pixel ratio for the new size) but skip the measurement reset once the
-  // deterministic freeze has engaged. applyDpr is invoked unconditionally
-  // because gl.setPixelRatio is the only DPR writer and must follow the
-  // viewport change regardless of mode.
   useEffect(() => {
-    if (mode !== 'deterministic' || !stablePausedRef.current) {
-      quality.resetMeasurement()
-    }
-    gl.setPixelRatio(quality.qualityState().dpr.value)
-  }, [quality, size.width, size.height, mode, gl])
+    quality.resetMeasurement()
+    applyDpr()
+  }, [applyDpr, quality, size.width, size.height])
 
   // Offscreen and document-hidden pause, owned by the controller.
   useEffect(() => {
