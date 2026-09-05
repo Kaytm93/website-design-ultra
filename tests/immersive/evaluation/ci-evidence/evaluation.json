@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "acceptance": "ip-07c-immersive-evaluation-ci",
+  "status": "PASS",
+  "sourceCommit": "48b1fb8c8e8f0f2320e987586c5a352527145cb5",
+  "durationMs": 305729,
+  "externalServices": "none",
+  "fixtures": [
+    {
+      "fixture": "product-hero",
+      "status": "PASS",
+      "expectationMet": true,
+      "gates": {
+        "build": "PASS",
+        "runtime": "PASS",
+        "mobile": "PASS",
+        "reduced-motion": "PASS",
+        "fallback": "PASS",
+        "interaction-checkpoints": "PASS",
+        "keyboard": "PASS",
+        "telemetry-warm-gpu-frame-time": "PASS",
+        "telemetry-first-meaningful-frame": "PASS",
+        "telemetry-transfer-before-first-meaningful-frame": "PASS"
+      },
+      "durationMs": 305681
+    },
+    {
+      "fixture": "procedural-crystal",
+      "status": "PASS",
+      "expectationMet": true,
+      "gates": {
+        "build": "PASS",
+        "runtime": "PASS",
+        "mobile": "PASS",
+        "reduced-motion": "PASS",
+        "fallback": "PASS",
+        "interaction-checkpoints": "PASS",
+        "keyboard": "PASS",
+        "telemetry-warm-gpu-frame-time": "PASS",
+        "telemetry-first-meaningful-frame": "PASS",
+        "telemetry-transfer-before-first-meaningful-frame": "PASS"
+      },
+      "durationMs": 478763
+    }
+  ],
+  "note": "archived from a local live run of tests/immersive/evaluation/run-implementation-evaluation.mjs; PNG matrices and build logs stay untracked and are archived by CI"
+}

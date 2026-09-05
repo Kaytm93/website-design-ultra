@@ -1,0 +1,127 @@
+{
+  "fixture": "procedural-crystal",
+  "kind": "next-app",
+  "status": "PASS",
+  "expected": {
+    "status": "PASS"
+  },
+  "expectationMet": true,
+  "gates": {
+    "build": {
+      "status": "PASS",
+      "evidence": [
+        "gates/build.log",
+        ".next/BUILD_ID"
+      ]
+    },
+    "runtime": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/capture.json",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/performance-summary.json",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/desktop-full.png",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/desktop-snapshot.txt",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/console-errors.txt",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/console-errors.txt",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/desktop-hero.png",
+        "served-html:data-wdu-station",
+        "performance-summary:firstMeaningfulFrame.observed"
+      ]
+    },
+    "mobile": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/mobile-full.png",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/mobile-hero.png",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-portrait/capture.json",
+        "served-html:data-wdu-station (portrait)"
+      ]
+    },
+    "reduced-motion": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-reduced-motion/reduced-motion-a.png",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-reduced-motion/reduced-motion-b.png",
+        "reduced-motion-a.png == reduced-motion-b.png (bytes)",
+        "served-html:data-wdu-motion"
+      ]
+    },
+    "fallback": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/fallback-full.png",
+        "fallback-hero.png (declared absent)",
+        "poster-fetch:/poster-desktop.svg",
+        "poster-fetch:/poster-portrait.svg"
+      ]
+    },
+    "interaction-checkpoints": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/checkpoints/checkpoints.json",
+        "checkpoints/scene-ready.png",
+        "checkpoints/scene-failure.png",
+        "checkpoints/hover-before.png",
+        "checkpoints/hover-during.png",
+        "checkpoints/hover-after.png",
+        "checkpoints/click-before.png",
+        "checkpoints/click-peak.png",
+        "checkpoints/click-recovered.png",
+        "checkpoints/focus-before.png",
+        "checkpoints/focus-during.png",
+        "checkpoints/focus-after.png",
+        "checkpoints/touch-before.png",
+        "checkpoints/touch-peak.png",
+        "checkpoints/touch-recovered.png",
+        "checkpoints/page-scroll-0.png",
+        "checkpoints/page-scroll-50.png",
+        "checkpoints/page-scroll-100.png"
+      ]
+    },
+    "keyboard": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/checkpoints/checkpoints.json",
+        "checkpoints/keyboard-before.png",
+        "checkpoints/keyboard-peak.png",
+        "checkpoints/keyboard-recovered.png",
+        "keyboard-peak.waitFor === click-peak.waitFor"
+      ]
+    },
+    "telemetry-warm-gpu-frame-time": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/performance-summary.json",
+        "performance-summary:comparison.gates.warm-gpu-frame-time.status"
+      ]
+    },
+    "telemetry-first-meaningful-frame": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/performance-summary.json",
+        "performance-summary:comparison.gates.first-meaningful-frame.status"
+      ]
+    },
+    "telemetry-transfer-before-first-meaningful-frame": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/performance-summary.json",
+        "performance-summary:comparison.gates.transfer-before-first-meaningful-frame.status"
+      ]
+    }
+  },
+  "cost": {
+    "durationMs": 478763,
+    "phasesMs": {
+      "installMs": 9812,
+      "buildMs": 32675,
+      "standardCaptureMs": 66453,
+      "reducedCaptureMs": 55975,
+      "portraitCaptureMs": 60889,
+      "checkpointCaptureMs": 249567,
+      "evaluationMs": 2
+    },
+    "externalServices": "none",
+    "browserBackend": "explicit"
+  }
+}

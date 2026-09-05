@@ -46,6 +46,9 @@ jobs:
       - name: Test offline implementation evaluation
         run: node --test tests/immersive/evaluation/evaluation.test.mjs
 
+      - name: Test checkpoint browser lifecycle
+        run: node --test tests/immersive/interaction-capture/checkpoint-session-lifecycle.test.mjs
+
       - name: Test plugin template sync
         run: node --test tests/templates/sync.test.mjs
 

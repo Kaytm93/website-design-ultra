@@ -1,5 +1,12 @@
 # website-design-ultra
 
+## Unreleased — Checkpoint browser lifecycle (2026-09-05)
+
+Close each checkpoint browser before starting the next, including failed and
+unavailable captures. Retain CLI action journals and verifier process logs so
+a timed-out suite preserves its actual cause. Keep the existing input
+assertions and capture budgets. Live integration evidence is pending.
+
 ## 2.0.1 — Evidence Audit and Portable Suites (2026-08-31)
 
 A post-release audit of 2.0.0 on a clean checkout. No skill, command, or

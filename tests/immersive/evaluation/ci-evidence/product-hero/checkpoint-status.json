@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "counts": {
+    "captured": 20,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "entries": [
+    {
+      "id": "hero-hover-before",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "hero-hover-during",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "hero-hover-after",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "hero-click-before",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "hero-click-peak",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "hero-click-recovered",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "page-scroll-0",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "page-scroll-50",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "page-scroll-100",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "scene-ready",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "scene-failure",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "hero-focus-before",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "hero-focus-during",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "hero-focus-after",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "hero-keyboard-before",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "hero-keyboard-peak",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "hero-keyboard-recovered",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "hero-touch-before",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "hero-touch-peak",
+      "status": "CAPTURED",
+      "reason": null
+    },
+    {
+      "id": "hero-touch-recovered",
+      "status": "CAPTURED",
+      "reason": null
+    }
+  ]
+}

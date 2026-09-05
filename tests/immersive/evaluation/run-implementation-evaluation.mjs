@@ -547,11 +547,11 @@ export function evaluateGates(context) {
       continue
     }
     const checkpoints = context.checkpoints
-    if (checkpoints === null || checkpoints.metadata === null) {
+    if (checkpoints === null || checkpoints.metadata === null || checkpoints.exitCode === 2) {
       gates[gateId] = gateResult(
         'UNAVAILABLE',
         [],
-        'checkpoint capture did not run or wrote no checkpoints.json',
+        checkpoints?.unavailableReason ?? 'checkpoint capture did not run or wrote no checkpoints.json',
       )
       continue
     }
@@ -875,6 +875,12 @@ function runVerifier(url, outputDirectory, checkpointsManifest = null) {
     args.push('--checkpoints', checkpointsManifest)
   }
   const result = run(process.execPath, args, { timeout: 900_000 })
+  fs.writeFileSync(path.join(outputDirectory, 'verifier.log'), combinedOutput(result))
+  fs.writeFileSync(path.join(outputDirectory, 'verifier-execution.json'), `${JSON.stringify({
+    exitCode: result.status,
+    signal: result.signal,
+    error: result.error?.message ?? null,
+  }, null, 2)}\n`)
   return {
     exitCode: result.error ? null : result.status,
     error: result.error ? result.error.message : null,
