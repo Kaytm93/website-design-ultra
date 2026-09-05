@@ -14,7 +14,9 @@
  */
 
 import assert from 'node:assert/strict'
+import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
@@ -121,6 +123,32 @@ test('no mirrored source has gone missing from the repository', () => {
   for (const entry of mirroredFiles) {
     const absolute = path.join(repoRoot, entry.source)
     assert.ok(fs.existsSync(absolute), `${entry.source}: source removed while templates/${entry.target} still ships it`)
+  }
+})
+
+test('the documented runtime paths work from an isolated plugin installation', () => {
+  const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'wdu-plugin-install-'))
+  const installed = path.join(parent, 'website-design-ultra')
+  try {
+    fs.cpSync(path.join(repoRoot, 'website-design-ultra'), installed, {
+      recursive: true,
+      filter: (source) => !source.includes(`${path.sep}.DS_Store`),
+    })
+
+    const comparator = path.join(installed, 'templates/runtime/compare-baselines.mjs')
+    const result = spawnSync(process.execPath, [
+      '--experimental-strip-types', comparator, '--help',
+    ], { encoding: 'utf8' })
+    assert.equal(result.status, 0, result.stderr || result.stdout)
+    assert.match(result.stdout, /Usage:\s+node compare-baselines\.mjs/)
+
+    const moduleProbe = spawnSync(process.execPath, [
+      '--experimental-strip-types', '--input-type=module', '-e',
+      `import ${JSON.stringify(path.join(installed, 'templates/runtime/quality-controller.ts'))}`,
+    ], { encoding: 'utf8' })
+    assert.equal(moduleProbe.status, 0, moduleProbe.stderr || moduleProbe.stdout)
+  } finally {
+    fs.rmSync(parent, { recursive: true, force: true })
   }
 })
 
