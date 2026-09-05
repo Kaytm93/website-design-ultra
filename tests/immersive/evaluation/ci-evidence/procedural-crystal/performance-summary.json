@@ -1,0 +1,837 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "capabilities": {
+    "browser": {
+      "status": "AVAILABLE",
+      "reason": null,
+      "backend": "explicit",
+      "evidence": "capability-checked browser CLI"
+    },
+    "gpu": {
+      "status": "AVAILABLE",
+      "reason": null,
+      "renderer": "webgl2",
+      "evidence": {
+        "webgpu": false,
+        "webgl2": true,
+        "webgl": true
+      }
+    },
+    "telemetry": {
+      "status": "AVAILABLE",
+      "reason": null,
+      "evidence": {
+        "global": "__WDU_IMMERSIVE_TELEMETRY__",
+        "collectionMethod": "surface.collect"
+      }
+    }
+  },
+  "failureEvidence": {
+    "resourceFailures": [],
+    "shaderCompileErrors": [],
+    "runtimeErrors": [],
+    "longFrames": {
+      "count": {
+        "value": 0,
+        "unit": "count"
+      },
+      "detected": false
+    },
+    "contextLoss": {
+      "count": {
+        "value": 0,
+        "unit": "count"
+      },
+      "events": []
+    }
+  },
+  "evidenceSource": "window.__WDU_IMMERSIVE_TELEMETRY__",
+  "deviceProfile": {
+    "id": "wdu-procedural-crystal-static-desktop",
+    "class": "desktop",
+    "browser": "chromium",
+    "browserVersion": "declared",
+    "renderer": "webgl2",
+    "viewport": {
+      "width": {
+        "value": 1440,
+        "unit": "css-px"
+      },
+      "height": {
+        "value": 1000,
+        "unit": "css-px"
+      }
+    },
+    "deviceScaleFactor": {
+      "value": 1,
+      "unit": "ratio"
+    },
+    "network": "offline"
+  },
+  "budget": {
+    "frameTarget": {
+      "rate": {
+        "value": 60,
+        "unit": "fps"
+      },
+      "frameTime": {
+        "value": 16.7,
+        "unit": "ms"
+      },
+      "justification": "immersive-3d §3: set a frame-time target matching the display; the fixture declares a 60 Hz desktop target, stated in ms and never derived from fps."
+    },
+    "gates": [
+      {
+        "class": "warm-gpu-frame-time",
+        "comparison": "less-than-or-equal",
+        "targets": {
+          "median": {
+            "value": 16.7,
+            "unit": "ms"
+          },
+          "p95": {
+            "value": 16.7,
+            "unit": "ms"
+          }
+        },
+        "warmup": {
+          "value": 60,
+          "unit": "frames"
+        },
+        "sampleWindow": {
+          "value": 120,
+          "unit": "frames"
+        },
+        "justification": "the declared 60 Hz target from immersive-3d §3 on the fixture desktop profile; the scene renders one optimized model (30 segments merged to 2 meshes by the pipeline) far below the §3 ceilings (under 100 draw calls, under 500k visible triangles)."
+      },
+      {
+        "class": "first-meaningful-frame",
+        "comparison": "less-than-or-equal",
+        "marker": "html[data-wdu-ready=\"true\"]",
+        "target": {
+          "value": 5000,
+          "unit": "ms"
+        },
+        "justification": "the ready marker fires after the stable frame with the committed local model loaded, the station applied, and the named streams initialized; the Draco-compressed GLB is ~6 kB, so 5 s bounds a cold desktop load without a network."
+      },
+      {
+        "class": "transfer-before-first-meaningful-frame",
+        "comparison": "less-than-or-equal",
+        "boundary": "first-meaningful-frame",
+        "target": {
+          "value": 3000000,
+          "unit": "bytes"
+        },
+        "justification": "the fixture fetches only its own committed assets — Next chunks, two posters, the brand mark, the Draco decoder (draco_decoder.js + draco_decoder.wasm + draco_wasm_wrapper.js), and one optimized Draco-compressed GLB; 3 MB bounds that offline desktop load with headroom."
+      }
+    ]
+  },
+  "observed": {
+    "warmGpuFrameTime": {
+      "warmup": {
+        "value": 60,
+        "unit": "frames"
+      },
+      "sampleWindow": {
+        "value": 120,
+        "unit": "frames"
+      },
+      "collected": {
+        "value": 120,
+        "unit": "frames"
+      },
+      "samples": [
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        },
+        {
+          "value": 16.666666666666668,
+          "unit": "ms"
+        }
+      ],
+      "median": {
+        "value": 16.666666666666668,
+        "unit": "ms"
+      },
+      "p95": {
+        "value": 16.666666666666668,
+        "unit": "ms"
+      }
+    },
+    "firstMeaningfulFrame": {
+      "marker": "html[data-wdu-ready=\"true\"]",
+      "observed": {
+        "value": 199.99999999999997,
+        "unit": "ms"
+      }
+    },
+    "transferBeforeFirstMeaningfulFrame": {
+      "boundary": "first-meaningful-frame",
+      "observed": {
+        "value": 217443,
+        "unit": "bytes"
+      }
+    }
+  },
+  "comparison": {
+    "status": "PASS",
+    "gates": {
+      "warm-gpu-frame-time": {
+        "class": "warm-gpu-frame-time",
+        "comparison": "less-than-or-equal",
+        "budget": {
+          "class": "warm-gpu-frame-time",
+          "comparison": "less-than-or-equal",
+          "targets": {
+            "median": {
+              "value": 16.7,
+              "unit": "ms"
+            },
+            "p95": {
+              "value": 16.7,
+              "unit": "ms"
+            }
+          },
+          "warmup": {
+            "value": 60,
+            "unit": "frames"
+          },
+          "sampleWindow": {
+            "value": 120,
+            "unit": "frames"
+          },
+          "justification": "the declared 60 Hz target from immersive-3d §3 on the fixture desktop profile; the scene renders one optimized model (30 segments merged to 2 meshes by the pipeline) far below the §3 ceilings (under 100 draw calls, under 500k visible triangles)."
+        },
+        "observed": {
+          "median": {
+            "value": 16.666666666666668,
+            "unit": "ms"
+          },
+          "p95": {
+            "value": 16.666666666666668,
+            "unit": "ms"
+          }
+        },
+        "status": "PASS",
+        "unavailableReason": null
+      },
+      "first-meaningful-frame": {
+        "class": "first-meaningful-frame",
+        "comparison": "less-than-or-equal",
+        "budget": {
+          "class": "first-meaningful-frame",
+          "comparison": "less-than-or-equal",
+          "marker": "html[data-wdu-ready=\"true\"]",
+          "target": {
+            "value": 5000,
+            "unit": "ms"
+          },
+          "justification": "the ready marker fires after the stable frame with the committed local model loaded, the station applied, and the named streams initialized; the Draco-compressed GLB is ~6 kB, so 5 s bounds a cold desktop load without a network."
+        },
+        "observed": {
+          "value": 199.99999999999997,
+          "unit": "ms"
+        },
+        "status": "PASS",
+        "unavailableReason": null
+      },
+      "transfer-before-first-meaningful-frame": {
+        "class": "transfer-before-first-meaningful-frame",
+        "comparison": "less-than-or-equal",
+        "budget": {
+          "class": "transfer-before-first-meaningful-frame",
+          "comparison": "less-than-or-equal",
+          "boundary": "first-meaningful-frame",
+          "target": {
+            "value": 3000000,
+            "unit": "bytes"
+          },
+          "justification": "the fixture fetches only its own committed assets — Next chunks, two posters, the brand mark, the Draco decoder (draco_decoder.js + draco_decoder.wasm + draco_wasm_wrapper.js), and one optimized Draco-compressed GLB; 3 MB bounds that offline desktop load with headroom."
+        },
+        "observed": {
+          "value": 217443,
+          "unit": "bytes"
+        },
+        "status": "PASS",
+        "unavailableReason": null
+      }
+    }
+  },
+  "evidence": {
+    "source": "window.__WDU_IMMERSIVE_TELEMETRY__",
+    "collection": {
+      "method": "surface.collect",
+      "warmupFrames": 60,
+      "sampleWindow": 120
+    },
+    "rendererInfo": {
+      "memory": {
+        "geometries": 2,
+        "textures": 1
+      },
+      "render": {
+        "frame": 31,
+        "calls": 2,
+        "triangles": 532,
+        "points": 0,
+        "lines": 0
+      },
+      "programs": [
+        {
+          "type": "MeshStandardMaterial",
+          "name": "Procedural__Crystal_Material",
+          "id": 0,
+          "cacheKey": "physical,STANDARD,,highp,srgb,false,,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,,false,false,0,,2,1,0,0,0,0,0,0,0,0,0,2,4,0,0,0,8388608,8521730,srgb,onBeforeCompile(){}",
+          "usedTimes": 2,
+          "program": {},
+          "vertexShader": {},
+          "fragmentShader": {}
+        }
+      ],
+      "autoReset": true
+    },
+    "renderer": {
+      "api": "webgl2",
+      "counters": {
+        "drawCalls": {
+          "value": 2,
+          "unit": "count"
+        },
+        "visibleTriangles": {
+          "value": 532,
+          "unit": "count"
+        },
+        "textures": {
+          "value": 1,
+          "unit": "count"
+        },
+        "geometries": {
+          "value": 2,
+          "unit": "count"
+        },
+        "programs": {
+          "value": 1,
+          "unit": "count"
+        }
+      }
+    },
+    "quality": {
+      "tier": "medium",
+      "dpr": {
+        "value": 1.5,
+        "unit": "ratio"
+      }
+    },
+    "longFrameCount": {
+      "value": 0,
+      "unit": "count"
+    },
+    "errors": [],
+    "contextLoss": {
+      "count": {
+        "value": 0,
+        "unit": "count"
+      },
+      "events": []
+    },
+    "transfer": {
+      "boundary": "first-meaningful-frame",
+      "markerAt": {
+        "value": 199.99999999999997,
+        "unit": "ms"
+      },
+      "resourcesConsidered": 11,
+      "resourcesIgnoredAfterMarker": 6
+    }
+  },
+  "unavailable": {
+    "browser": null,
+    "gpu": null,
+    "telemetry": null,
+    "surface": null,
+    "budget": null,
+    "warmGpuFrameTime": null,
+    "firstMeaningfulFrame": null,
+    "transferBeforeFirstMeaningfulFrame": null,
+    "rendererInfo": null,
+    "renderer": null,
+    "quality": null,
+    "longFrameCount": null,
+    "errors": null,
+    "contextLoss": null
+  }
+}

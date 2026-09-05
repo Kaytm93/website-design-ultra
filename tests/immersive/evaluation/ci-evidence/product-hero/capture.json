@@ -1,0 +1,217 @@
+{
+  "status": "captured-not-yet-inspected",
+  "verificationStatus": "PASS",
+  "generatedAt": "2026-09-05T19:08:12.773Z",
+  "url": "http://127.0.0.1:3212",
+  "backend": "explicit",
+  "fallbackIncluded": true,
+  "commands": [
+    {
+      "session": "wdu-desktop",
+      "action": "open",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Browser `wdu-desktop` opened with pid 3351.\n### Ran Playwright code\n```js\nawait page.goto('http://127.0.0.1:3212');\n```\n### Page\n- Page URL: http://127.0.0.1:3212/\n- Page Title: Orbit One · wdu-product-hero evaluation fixture\n### Snapshot\n- [Snapshot](.playwright-cli/page-2026-09-05T19-07-45-868Z.yml)",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-desktop",
+      "action": "resize",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Ran Playwright code\n```js\nawait page.setViewportSize({ width: 1440, height: 1000 });\n```\n### Page\n- Page URL: http://127.0.0.1:3212/\n- Page Title: Orbit One · wdu-product-hero evaluation fixture\n- Console: 0 errors, 2 warnings\n### Events\n- New console entries: .playwright-cli/console-2026-09-05T19-07-44-046Z.log#L1-L2",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-desktop",
+      "action": "run-code",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Ran Playwright code\n```js\nawait (async (page) => {\n    await page.waitForLoadState('domcontentloaded')\n    await page.evaluate(async () => {\n      if (document.fonts && document.fonts.ready) await document.fonts.ready\n      await Promise.all([...document.images].filter((image) => !image.complete).map(\n        (image) => new Promise((resolve) => {\n          image.addEventListener('load', resolve, { once: true })\n          image.addEventListener('error', resolve, { once: true })\n        }),\n      ))\n    })\n    await page.waitForTimeout(150)\n  })(page);\n```\n### Page\n- Page URL: http://127.0.0.1:3212/\n- Page Title: Orbit One · wdu-product-hero evaluation fixture\n- Console: 0 errors, 5 warnings\n### Events\n- New console entries: .playwright-cli/console-2026-09-05T19-07-44-046Z.log#L3-L5",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-desktop",
+      "action": "run-code",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "{\"document\":{\"schemaVersion\":1,\"surface\":\"wdu.immersive-telemetry\",\"deviceProfile\":{\"id\":\"wdu-product-hero-desktop-1440x1000\",\"class\":\"desktop\",\"browser\":\"chromium\",\"browserVersion\":\"declared\",\"renderer\":\"webgl2\",\"viewport\":{\"width\":{\"value\":1440,\"unit\":\"css-px\"},\"height\":{\"value\":1000,\"unit\":\"css-px\"}},\"deviceScaleFactor\":{\"value\":1,\"unit\":\"ratio\"},\"network\":\"offline\"},\"budget\":{\"frameTarget\":{\"rate\":{\"value\":60,\"unit\":\"fps\"},\"frameTime\":{\"value\":16.7,\"unit\":\"ms\"},\"justification\":\"immersive-3d §3: set a frame-time target matching the display; the fixture declares a 60 Hz desktop target, stated in ms and never derived from fps.\"},\"gates\":[{\"class\":\"warm-gpu-frame-time\",\"comparison\":\"less-than-or-equal\",\"targets\":{\"median\":{\"value\":16.7,\"unit\":\"ms\"},\"p95\":{\"value\":16.7,\"unit\":\"ms\"}},\"warmup\":{\"value\":60,\"unit\":\"frames\"},\"sampleWindow\":{\"value\":120,\"unit\":\"frames\"},\"justification\":\"the declared 60 Hz target from immersive-3d §3 on the fixture desktop profile; the scene renders one optimized model (5 authored materials merged to 2 by the pipeline) far below the §3 ceilings (under 100 draw calls, under 500k visible triangles).\"},{\"class\":\"first-meaningful-frame\",\"comparison\":\"less-than-or-equal\",\"marker\":\"html[data-wdu-ready=\\\"true\\\"]\",\"target\":{\"value\":5000,\"unit\":\"ms\"},\"justification\":\"the ready marker fires after the stable frame with the committed local model loaded, the station applied, and the named streams initialized; the model is a few kilobytes, so 5 s bounds a cold desktop load without a network.\"},{\"class\":\"transfer-before-first-meaningful-frame\",\"comparison\":\"less-than-or-equal\",\"boundary\":\"first-meaningful-frame\",\"target\":{\"value\":3000000,\"unit\":\"bytes\"},\"justification\":\"the fixture fetches only its own committed assets — Next chunks, two posters, the brand mark, and one optimized GLB; 3 MB bounds that offline desktop load with headroom.\"}]},\"runtime\":{\"frame\":{\"warmGpu\":{\"samples\":[{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"},{\"value\":16.666666666666668,\"unit\":\"ms\"}],\"median\":{\"value\":16.666666666666668,\"unit\":\"ms\"},\"p95\":{\"value\":16.666666666666668,\"unit\":\"ms\"}},\"firstMeaningfulFrame\":{\"marker\":\"html[data-wdu-ready=\\\"true\\\"]\",\"observed\":{\"value\":199.99999999999997,\"unit\":\"ms\"}},\"transfer\":{\"boundary\":\"first-meaningful-frame\",\"observed\":{\"value\":0,\"unit\":\"bytes\"}},\"longFrameCount\":{\"value\":0,\"unit\":\"count\"}},\"renderer\":{\"api\":\"webgl2\",\"counters\":{\"drawCalls\":{\"value\":2,\"unit\":\"count\"},\"visibleTriangles\":{\"value\":3122,\"unit\":\"count\"},\"textures\":{\"value\":3,\"unit\":\"count\"},\"geometries\":{\"value\":2,\"unit\":\"count\"},\"programs\":{\"value\":1,\"unit\":\"count\"}}},\"quality\":{\"tier\":\"medium\",\"dpr\":{\"value\":1.5,\"unit\":\"ratio\"}},\"errors\":[],\"contextLoss\":{\"count\":{\"value\":0,\"unit\":\"count\"},\"events\":[]}}},\"rendererInfo\":{\"memory\":{\"geometries\":2,\"textures\":3},\"render\":{\"frame\":29,\"calls\":2,\"triangles\":3122,\"points\":0,\"lines\":0},\"programs\":[{\"type\":\"MeshStandardMaterial\",\"name\":\"PaletteMaterial001\",\"id\":0,\"cacheKey\":\"physical,STANDARD,,highp,srgb,false,,uv,false,false,false,false,false,false,false,uv,uv,false,false,false,false,false,false,false,false,false,false,false,false,false,,false,false,0,,2,1,0,0,0,0,0,0,0,0,0,2,4,0,0,0,8388608,8519682,srgb,onBeforeCompile(){}\",\"usedTimes\":2,\"program\":{},\"vertexShader\":{},\"fragmentShader\":{}}],\"autoReset\":true},\"evidenceSource\":\"window.__WDU_IMMERSIVE_TELEMETRY__\",\"capabilities\":{\"gpu\":{\"status\":\"AVAILABLE\",\"reason\":null,\"renderer\":\"webgl2\",\"evidence\":{\"webgpu\":false,\"webgl2\":true,\"webgl\":true}},\"telemetry\":{\"status\":\"AVAILABLE\",\"reason\":null,\"evidence\":{\"global\":\"__WDU_IMMERSIVE_TELEMETRY__\",\"collectionMethod\":\"surface.collect\"}}},\"collection\":{\"method\":\"surface.collect\",\"warmupFrames\":60,\"sampleWindow\":120,\"status\":\"AVAILABLE\",\"reason\":null},\"transferObservation\":{\"observed\":{\"value\":0,\"unit\":\"bytes\"},\"markerAt\":{\"value\":199.99999999999997,\"unit\":\"ms\"},\"resourcesConsidered\":0,\"resourcesIgnoredAfterMarker\":15,\"unavailableReason\":null}}",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-desktop",
+      "action": "snapshot",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Page\n- Page URL: http://127.0.0.1:3212/\n- Page Title: Orbit One · wdu-product-hero evaluation fixture\n- Console: 0 errors, 6 warnings\n### Snapshot\n```yaml\n- generic [active] [ref=e1]:\n  - main [ref=e2]:\n    - generic [ref=e3]:\n      - link \"Skip to the scene\" [ref=e4] [cursor=pointer]:\n        - /url: \"#scene-heading\"\n      - generic [ref=e5]: Orbit One\n    - region [ref=e6]:\n      - paragraph [ref=e7]: wdu-product-hero · immersive evaluation fixture\n      - 'heading \"Orbit One: a 380 g speaker that plays 14 hours on one charge.\" [level=1] [ref=e8]'\n      - paragraph [ref=e9]: This fixture evaluates the shared immersive contracts on one optimized model. Next.js renders this copy as HTML; the client-only canvas leaf loads a single meshopt-compressed GLB declared in the asset manifest and renders it under the injected clock, the one camera owner, and the copied quality controller. The runtime fetches nothing that the manifest does not declare, so a fresh checkout installs and builds offline, and the page loads without further fetches.\n    - region [ref=e10]:\n      - heading \"What stays where\" [level=2] [ref=e11]\n      - generic [ref=e12]:\n        - generic [ref=e13]:\n          - term [ref=e14]: Server-rendered page\n          - definition [ref=e15]: This copy and the motion control ship in the initial HTML. The canvas mounts only in the browser.\n        - generic [ref=e16]:\n          - term [ref=e17]: One optimized model\n          - definition [ref=e18]: public/model/orbit-one.glb is the output of the documented inspect/validate/optimize pipeline (scripts/build-model.mjs), meshopt-compressed with three's bundled JS decoder, and validated by gltf-transform. The ready marker gates on its load, so readiness proves the model rendered.\n        - generic [ref=e19]:\n          - term [ref=e20]: One camera owner\n          - definition [ref=e21]: CameraRig applies the selected camera station before every render. No other component writes camera position, target, or field of view.\n        - generic [ref=e22]:\n          - term [ref=e23]: One clock\n          - definition [ref=e24]: Every animation reads the injected SceneClock. Deterministic mode advances a fixed 1/60 s step per rendered frame.\n        - generic [ref=e25]:\n          - term [ref=e26]: One asset manifest\n          - definition [ref=e27]: \"lib/asset-manifest.json lists every runtime asset: the brand mark, the two poster variants, and the model.\"\n        - generic [ref=e28]:\n          - term [ref=e29]: Wired determinism\n          - definition [ref=e30]: WDU_DETERMINISTIC=1 freezes the clock, seeds every named random stream, applies the requested camera station, and sets html[data-wdu-ready=\"true\"] only after the stable frame renders, then freezes the loop so captures are byte-identical.\n        - generic [ref=e31]:\n          - term [ref=e32]: Art-directed poster\n          - definition [ref=e33]: \"Two composed SVG variants, desktop and portrait, mirror the live composition: the Orbit One on its base, the same palette, the same accent light. The poster is the fallback behind loading, the poster quality tier, missing WebGL, and context loss: never a blank frame.\"\n        - generic [ref=e34]:\n          - term [ref=e35]: Reduced motion\n          - definition [ref=e36]: The motion control in the DOM switches between the full rotation and the seeded static pose. WDU_REDUCED_MOTION=1 locks the same state for capture; the static shot keeps the subject, the controls, and the quality layer usable.\n        - generic [ref=e37]:\n          - term [ref=e38]: Portrait reframe\n          - definition [ref=e39]: A named hero-portrait station reframes the product for tall viewports. Live mode selects it by orientation; deterministic capture requests it by id (WDU_STATION=hero-portrait).\n        - generic [ref=e40]:\n          - term [ref=e41]: Quality and telemetry surfaces\n          - definition [ref=e42]: The copied quality controller owns Poster/Low/Medium/High and DPR; the telemetry surface exposes the IP-03 document on window.__WDU_IMMERSIVE_TELEMETRY__, and the plugin verifier reads the same three budget gates the controller reports.\n        - generic [ref=e43]:\n          - term [ref=e44]: Context-loss recovery\n          - definition [ref=e45]: When the WebGL context is lost, the poster and a restore action appear over the frame; the action mounts a fresh canvas.\n    - region [ref=e46]:\n      - heading \"The scene\" [level=2] [ref=e47]\n      - paragraph [ref=e48]: \"The subject is the Orbit One speaker model: a lathe body, a grille band, a copper control ring, an LED, and a base. Five authored materials merge to two in the pipeline, with 3,122 visible triangles and two draw calls, far below the immersive-3d budget of 100 desktop draw calls and 500k visible triangles. Its rotation phase comes from the seeded product-motion stream; reduced motion holds that static pose while full motion advances it from the injected clock, so identical frames are a pure function of the same commit, seed, station, and motion.\"\n      - generic [ref=e50]:\n        - generic [ref=e51]:\n          - button \"Press the hero\" [ref=e52] [cursor=pointer]\n          - paragraph [ref=e53]: Keyboard and touch reach the same pressed pose as pointing at the hero.\n        - group \"Motion\" [ref=e54]:\n          - generic [ref=e56]:\n            - button \"Full\" [disabled] [pressed] [ref=e57] [cursor=pointer]\n            - button \"Reduced\" [disabled] [ref=e58] [cursor=pointer]\n          - paragraph [ref=e59]: \"Deterministic mode: the reduced-motion capture state is locked.\"\n        - paragraph [ref=e60]:\n          - text: \"Station:\"\n          - code [ref=e61]: hero-wide\n    - region [ref=e65]:\n      - heading \"Run it\" [level=2] [ref=e66]\n      - list [ref=e67]:\n        - listitem [ref=e68]:\n          - code [ref=e69]: npm ci\n          - text: installs the exact locked dependency set.\n        - listitem [ref=e70]:\n          - code [ref=e71]: npm run build\n          - text: produces the production bundle; the model and posters are committed, so the build needs no network.\n        - listitem [ref=e72]:\n          - code [ref=e73]: WDU_DETERMINISTIC=1 npm run start\n          - text: \"is the capture entry point: fixed clock, seeded streams, named station.\"\n        - listitem [ref=e74]:\n          - code [ref=e75]: npm run verify:fixture -- --out /tmp/wdu-product-hero\n          - text: builds, starts the deterministic server, and runs the plugin verifier's desktop, mobile, reduced-motion, fallback, and telemetry-gate captures.\n    - region [ref=e76]:\n      - heading \"Pinned dependency matrix\" [level=2] [ref=e77]\n      - table [ref=e78]:\n        - rowgroup [ref=e79]:\n          - row [ref=e80]:\n            - columnheader \"Package\" [ref=e81]\n            - columnheader \"Version\" [ref=e82]\n        - rowgroup [ref=e83]:\n          - row [ref=e84]:\n            - cell \"Next.js\" [ref=e85]\n            - cell \"15.5.24\" [ref=e86]\n          - row [ref=e87]:\n            - cell \"React\" [ref=e88]\n            - cell \"19.2.8\" [ref=e89]\n          - row [ref=e90]:\n            - cell \"three\" [ref=e91]\n            - cell \"0.185.1\" [ref=e92]\n          - row [ref=e93]:\n            - cell \"@react-three/fiber\" [ref=e94]\n            - cell \"9.7.0\" [ref=e95]\n          - row [ref=e96]:\n            - cell \"@gltf-transform/cli\" [ref=e97]\n            - cell \"4.4.2\" [ref=e98]\n          - row [ref=e99]:\n            - cell \"TypeScript\" [ref=e100]\n            - cell \"5.9.3\" [ref=e101]\n          - row [ref=e102]:\n            - cell \"Node.js\" [ref=e103]\n            - cell \"22.18 or newer, for type-stripped tests\" [ref=e104]\n  - alert [ref=e105]\n```",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-desktop",
+      "action": "screenshot",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Result\n- [Screenshot of full page](../../_temp/wdu-immersive-evaluation/product-hero/capture-standard/desktop-full.png)\n### Ran Playwright code\n```js\n// Screenshot full page and save it as ../../_temp/wdu-immersive-evaluation/product-hero/capture-standard/desktop-full.png\nawait page.screenshot({\n  fullPage: true,\n  path: '../../_temp/wdu-immersive-evaluation/product-hero/capture-standard/desktop-full.png',\n  scale: 'css',\n  type: 'png'\n});\n```",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-desktop",
+      "action": "run-code",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Ran Playwright code\n```js\nawait (async (page) => {\n        const target = page.locator('[data-verify-3d], [data-verify-hero], canvas').first()\n        if (await target.count()) await target.screenshot({ path: \"/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/desktop-hero.png\" })\n      })(page);\n```",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-mobile",
+      "action": "open",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Browser `wdu-mobile` opened with pid 3561.\n### Ran Playwright code\n```js\nawait page.goto('http://127.0.0.1:3212');\n```\n### Page\n- Page URL: http://127.0.0.1:3212/\n- Page Title: Orbit One · wdu-product-hero evaluation fixture\n### Snapshot\n- [Snapshot](.playwright-cli/page-2026-09-05T19-07-52-702Z.yml)",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-mobile",
+      "action": "resize",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Ran Playwright code\n```js\nawait page.setViewportSize({ width: 390, height: 844 });\n```\n### Page\n- Page URL: http://127.0.0.1:3212/\n- Page Title: Orbit One · wdu-product-hero evaluation fixture\n- Console: 0 errors, 2 warnings\n### Events\n- New console entries: .playwright-cli/console-2026-09-05T19-07-52-247Z.log#L1-L2",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-mobile",
+      "action": "run-code",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Ran Playwright code\n```js\nawait (async (page) => {\n    await page.waitForLoadState('domcontentloaded')\n    await page.evaluate(async () => {\n      if (document.fonts && document.fonts.ready) await document.fonts.ready\n      await Promise.all([...document.images].filter((image) => !image.complete).map(\n        (image) => new Promise((resolve) => {\n          image.addEventListener('load', resolve, { once: true })\n          image.addEventListener('error', resolve, { once: true })\n        }),\n      ))\n    })\n    await page.waitForTimeout(150)\n  })(page);\n```\n### Page\n- Page URL: http://127.0.0.1:3212/\n- Page Title: Orbit One · wdu-product-hero evaluation fixture\n- Console: 0 errors, 5 warnings\n### Events\n- New console entries: .playwright-cli/console-2026-09-05T19-07-52-247Z.log#L3-L5",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-mobile",
+      "action": "screenshot",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Result\n- [Screenshot of full page](../../_temp/wdu-immersive-evaluation/product-hero/capture-standard/mobile-full.png)\n### Ran Playwright code\n```js\n// Screenshot full page and save it as ../../_temp/wdu-immersive-evaluation/product-hero/capture-standard/mobile-full.png\nawait page.screenshot({\n  fullPage: true,\n  path: '../../_temp/wdu-immersive-evaluation/product-hero/capture-standard/mobile-full.png',\n  scale: 'css',\n  type: 'png'\n});\n```",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-mobile",
+      "action": "run-code",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Ran Playwright code\n```js\nawait (async (page) => {\n        const target = page.locator('[data-verify-3d], [data-verify-hero], canvas').first()\n        if (await target.count()) await target.screenshot({ path: \"/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/mobile-hero.png\" })\n      })(page);\n```",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-reduce",
+      "action": "open",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Browser `wdu-reduce` opened with pid 3745.\n### Ran Playwright code\n```js\nawait page.goto('http://127.0.0.1:3212');\n```\n### Page\n- Page URL: http://127.0.0.1:3212/\n- Page Title: Orbit One · wdu-product-hero evaluation fixture\n### Snapshot\n- [Snapshot](.playwright-cli/page-2026-09-05T19-07-58-656Z.yml)",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-reduce",
+      "action": "run-code",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Ran Playwright code\n```js\nawait (async (page) => {\n        await page.emulateMedia({ reducedMotion: 'reduce' })\n        await page.reload({ waitUntil: 'domcontentloaded' })\n        \n    await page.waitForLoadState('domcontentloaded')\n    await page.evaluate(async () => {\n      if (document.fonts && document.fonts.ready) await document.fonts.ready\n      await Promise.all([...document.images].filter((image) => !image.complete).map(\n        (image) => new Promise((resolve) => {\n          image.addEventListener('load', resolve, { once: true })\n          image.addEventListener('error', resolve, { once: true })\n        }),\n      ))\n    })\n    await page.waitForTimeout(150)\n  \n      })(page);\n```\n### Page\n- Page URL: http://127.0.0.1:3212/\n- Page Title: Orbit One · wdu-product-hero evaluation fixture\n- Console: 0 errors, 2 warnings\n### Events\n- New console entries: .playwright-cli/console-2026-09-05T19-07-57-963Z.log#L1-L4",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-reduce",
+      "action": "screenshot",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Result\n- [Screenshot of full page](../../_temp/wdu-immersive-evaluation/product-hero/capture-standard/reduced-motion-a.png)\n### Ran Playwright code\n```js\n// Screenshot full page and save it as ../../_temp/wdu-immersive-evaluation/product-hero/capture-standard/reduced-motion-a.png\nawait page.screenshot({\n  fullPage: true,\n  path: '../../_temp/wdu-immersive-evaluation/product-hero/capture-standard/reduced-motion-a.png',\n  scale: 'css',\n  type: 'png'\n});\n```\n### Page\n- Page URL: http://127.0.0.1:3212/\n- Page Title: Orbit One · wdu-product-hero evaluation fixture\n- Console: 0 errors, 4 warnings\n### Events\n- New console entries: .playwright-cli/console-2026-09-05T19-07-57-963Z.log#L5-L6",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-reduce",
+      "action": "run-code",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Ran Playwright code\n```js\nawait (async (page) => { await page.waitForTimeout(750) })(page);\n```",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-reduce",
+      "action": "screenshot",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Result\n- [Screenshot of full page](../../_temp/wdu-immersive-evaluation/product-hero/capture-standard/reduced-motion-b.png)\n### Ran Playwright code\n```js\n// Screenshot full page and save it as ../../_temp/wdu-immersive-evaluation/product-hero/capture-standard/reduced-motion-b.png\nawait page.screenshot({\n  fullPage: true,\n  path: '../../_temp/wdu-immersive-evaluation/product-hero/capture-standard/reduced-motion-b.png',\n  scale: 'css',\n  type: 'png'\n});\n```",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-fallback",
+      "action": "open",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Browser `wdu-fallback` opened with pid 3933.\n### Ran Playwright code\n```js\nawait page.goto('http://127.0.0.1:3212');\n```\n### Page\n- Page URL: http://127.0.0.1:3212/\n- Page Title: Orbit One · wdu-product-hero evaluation fixture\n### Snapshot\n- [Snapshot](.playwright-cli/page-2026-09-05T19-08-07-059Z.yml)",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-fallback",
+      "action": "run-code",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Ran Playwright code\n```js\nawait (async (page) => {\n          await page.addInitScript(() => {\n            try {\n              Object.defineProperty(navigator, 'gpu', {\n                configurable: true,\n                get: () => undefined,\n              })\n            } catch {}\n            const original = HTMLCanvasElement.prototype.getContext\n            HTMLCanvasElement.prototype.getContext = function(type, ...args) {\n              return ['webgpu', 'webgl', 'webgl2', 'experimental-webgl'].includes(type)\n                ? null\n                : original.call(this, type, ...args)\n            }\n          })\n          await page.reload({ waitUntil: 'domcontentloaded' })\n          await page.waitForTimeout(150)\n        })(page);\n```\n### Events\n- New console entries: .playwright-cli/console-2026-09-05T19-08-06-277Z.log#L1-L3",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-fallback",
+      "action": "screenshot",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Result\n- [Screenshot of full page](../../_temp/wdu-immersive-evaluation/product-hero/capture-standard/fallback-full.png)\n### Ran Playwright code\n```js\n// Screenshot full page and save it as ../../_temp/wdu-immersive-evaluation/product-hero/capture-standard/fallback-full.png\nawait page.screenshot({\n  fullPage: true,\n  path: '../../_temp/wdu-immersive-evaluation/product-hero/capture-standard/fallback-full.png',\n  scale: 'css',\n  type: 'png'\n});\n```",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-fallback",
+      "action": "run-code",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Ran Playwright code\n```js\nawait (async (page) => {\n        const target = page.locator('[data-verify-3d], [data-verify-hero], canvas').first()\n        if (await target.count()) await target.screenshot({ path: \"/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/fallback-hero.png\" })\n      })(page);\n```",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-desktop",
+      "action": "console",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Result\nTotal messages: 6 (Errors: 0, Warnings: 6)\nReturning 0 messages for level \"error\"",
+      "stderr": ""
+    },
+    {
+      "session": "wdu-desktop",
+      "action": "requests",
+      "status": 0,
+      "pending": false,
+      "error": null,
+      "stdout": "### Result\n16. [GET] http://127.0.0.1:3212/model/orbit-one.glb => [200] OK\n17. [GET] blob:http://127.0.0.1:3212/d588b1ec-084d-4894-b4ed-ebdee7476836 => [200] OK\n18. [GET] blob:http://127.0.0.1:3212/4b58514a-d5e0-466f-9ae8-db83fff4f59a => [200] OK\n\nNote: 16 static requests not shown, run with --static option to see them.",
+      "stderr": ""
+    }
+  ]
+}

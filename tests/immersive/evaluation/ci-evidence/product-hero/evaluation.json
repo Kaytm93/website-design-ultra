@@ -1,0 +1,127 @@
+{
+  "fixture": "product-hero",
+  "kind": "next-app",
+  "status": "PASS",
+  "expected": {
+    "status": "PASS"
+  },
+  "expectationMet": true,
+  "gates": {
+    "build": {
+      "status": "PASS",
+      "evidence": [
+        "gates/build.log",
+        ".next/BUILD_ID"
+      ]
+    },
+    "runtime": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/capture.json",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/performance-summary.json",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/desktop-full.png",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/desktop-snapshot.txt",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/console-errors.txt",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/console-errors.txt",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/desktop-hero.png",
+        "served-html:data-wdu-station",
+        "performance-summary:firstMeaningfulFrame.observed"
+      ]
+    },
+    "mobile": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/mobile-full.png",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/mobile-hero.png",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-portrait/capture.json",
+        "served-html:data-wdu-station (portrait)"
+      ]
+    },
+    "reduced-motion": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-reduced-motion/reduced-motion-a.png",
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-reduced-motion/reduced-motion-b.png",
+        "reduced-motion-a.png == reduced-motion-b.png (bytes)",
+        "served-html:data-wdu-motion"
+      ]
+    },
+    "fallback": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/fallback-full.png",
+        "fallback-hero.png (declared absent)",
+        "poster-fetch:/poster-desktop.svg",
+        "poster-fetch:/poster-portrait.svg"
+      ]
+    },
+    "interaction-checkpoints": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/checkpoints/checkpoints.json",
+        "checkpoints/hero-hover-before.png",
+        "checkpoints/hero-hover-during.png",
+        "checkpoints/hero-hover-after.png",
+        "checkpoints/hero-click-before.png",
+        "checkpoints/hero-click-peak.png",
+        "checkpoints/hero-click-recovered.png",
+        "checkpoints/page-scroll-0.png",
+        "checkpoints/page-scroll-50.png",
+        "checkpoints/page-scroll-100.png",
+        "checkpoints/scene-ready.png",
+        "checkpoints/scene-failure.png",
+        "checkpoints/hero-focus-before.png",
+        "checkpoints/hero-focus-during.png",
+        "checkpoints/hero-focus-after.png",
+        "checkpoints/hero-touch-before.png",
+        "checkpoints/hero-touch-peak.png",
+        "checkpoints/hero-touch-recovered.png"
+      ]
+    },
+    "keyboard": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/checkpoints/checkpoints.json",
+        "checkpoints/hero-keyboard-before.png",
+        "checkpoints/hero-keyboard-peak.png",
+        "checkpoints/hero-keyboard-recovered.png",
+        "keyboard-peak.waitFor === click-peak.waitFor"
+      ]
+    },
+    "telemetry-warm-gpu-frame-time": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/performance-summary.json",
+        "performance-summary:comparison.gates.warm-gpu-frame-time.status"
+      ]
+    },
+    "telemetry-first-meaningful-frame": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/performance-summary.json",
+        "performance-summary:comparison.gates.first-meaningful-frame.status"
+      ]
+    },
+    "telemetry-transfer-before-first-meaningful-frame": {
+      "status": "PASS",
+      "evidence": [
+        "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero/capture-standard/performance-summary.json",
+        "performance-summary:comparison.gates.transfer-before-first-meaningful-frame.status"
+      ]
+    }
+  },
+  "cost": {
+    "durationMs": 268358,
+    "phasesMs": {
+      "installMs": 7069,
+      "buildMs": 14484,
+      "standardCaptureMs": 36800,
+      "reducedCaptureMs": 28564,
+      "portraitCaptureMs": 28665,
+      "checkpointCaptureMs": 149495,
+      "evaluationMs": 1
+    },
+    "externalServices": "none",
+    "browserBackend": "explicit"
+  }
+}
