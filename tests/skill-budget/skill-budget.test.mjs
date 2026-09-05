@@ -5,6 +5,8 @@ import test from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import crypto from 'node:crypto'
+import os from 'node:os'
+import { auditClaudeTrace, auditCodexTrace, evaluateTrace } from '../../website-design-ultra/scripts/forward-trace.mjs'
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const pluginRoot = path.join(repoRoot, 'website-design-ultra')
@@ -149,4 +151,44 @@ test('non-hero cases do not inherit the 3D byte cap', () => {
   })
   assert.equal(result.status, 0, result.stderr || result.stdout)
   assert.match(result.stdout, /no byte cap declared/i)
+})
+
+test('the tweak command enforces its installed baseline budget, including the command', () => {
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'wdu-tweak-budget-'))
+  try {
+    for (const relative of ['scripts/measure-path.mjs', 'commands/tweak.md', 'skills/core-rules/SKILL.md']) {
+      const destination = path.join(temporary, relative)
+      fs.mkdirSync(path.dirname(destination), { recursive: true })
+      fs.copyFileSync(path.join(pluginRoot, relative), destination)
+    }
+    const run = () => spawnSync(process.execPath, ['scripts/measure-path.mjs', '--command', 'tweak'], {
+      cwd: temporary, encoding: 'utf8',
+    })
+    assert.equal(run().status, 0)
+    fs.appendFileSync(path.join(temporary, 'commands/tweak.md'), 'x'.repeat(8000))
+    assert.equal(run().status, 1, 'an oversized command must fail even when the router fits')
+    assert.ok(fs.statSync(path.join(skillRoot, 'core-rules/SKILL.md')).size <= 6000)
+  } finally {
+    fs.rmSync(temporary, { recursive: true, force: true })
+  }
+})
+
+test('provider traces count repeated owner reads without double-counting path matches', () => {
+  const file = 'skills/core-rules/SKILL.md'
+  const command = `cat '${path.join(pluginRoot, file)}'`
+  const codexEvent = (id) => ({ type: 'item.completed', item: { id, type: 'command_execution', command } })
+  const claudeEvent = (id) => ({ type: 'assistant', message: { content: [{ type: 'tool_use', id, name: 'Read', input: { file_path: path.join(pluginRoot, file) } }] } })
+  const testCase = {
+    requiredSkills: ['core-rules'],
+    trace: { allowedSkills: ['core-rules'], allowedReferences: [], maxReferenceFiles: 0,
+      maxEstimatedPluginTokens: 15000, maxFileReads: { [file]: 1 } },
+  }
+  for (const [audit, event] of [[auditCodexTrace, codexEvent], [auditClaudeTrace, claudeEvent]]) {
+    const single = audit([event('a')], pluginRoot)
+    assert.equal(single.readCounts[file], 1)
+    assert.deepEqual(evaluateTrace(testCase, { skills: ['core-rules'] }, single), [])
+    const repeated = audit([event('a'), event('b')], pluginRoot)
+    assert.equal(repeated.readCounts[file], 2)
+    assert.ok(evaluateTrace(testCase, { skills: ['core-rules'] }, repeated).some((failure) => failure.includes('read count')))
+  }
 })

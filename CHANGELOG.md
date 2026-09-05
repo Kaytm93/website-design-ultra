@@ -39,6 +39,20 @@ Runtime imports, the comparator, copy lint and forward-contract replay also run
 from the installed payload. This is installation evidence, not a live-model or
 release claim.
 
+## Unreleased — Integration and task-scoped routing (2026-09-05)
+
+- Final main run `33988137459` at `c09f63d` confirms all ten gates on both
+  immersive examples and all twelve negative-fixture expectations. The JSON
+  evidence index now records this main run. PR #28 is superseded by #38.
+- J-B5 moves visual defaults into anti-slop and the page profile/composition
+  defaults into their owner reference. The router is 5,497 bytes; the ordinary
+  tweak path is 7,906 bytes. No case budget was raised.
+- Commands reuse the owner rules. Provider traces now count owner reads; cases
+  reject repeated core-rules loads. Copy-only state labels no longer activate
+  the UI-state behavior router. Live acceptance is still in progress.
+- PR #37 retains the missing starter DPR resize integration, with two runtime
+  effect regressions. Its local full suite contains 69 tests (the earlier
+  implementation commit's body incorrectly said 84), plus typecheck and build.
 
 ## Unreleased — Checkpoint browser lifecycle (2026-09-05)
 

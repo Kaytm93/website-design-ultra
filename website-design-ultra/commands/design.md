@@ -41,8 +41,9 @@ scene, use `/immersive` instead.
    part of the direction. Calibrate with `MOTION_INTENSITY`.
 7. **Pattern** — `component-patterns` only for a concrete recipe the system
    has not already decided.
-8. **States** — `ui-states` only for components with data, mutation,
-   validation, or interaction.
+8. **States** — `ui-states` when data, mutation, validation or interaction
+   behavior is designed or changed. Copy-only work on a label or empty-state
+   sentence uses `content-design` microcopy; it does not load the state router.
 9. **Verification** — `scripts/verify-browser.mjs` or real host browser
    automation following `/verify`. Inspect desktop, mobile, reduced motion.
 
@@ -70,4 +71,4 @@ If nothing is given: ask what we are building and in which context.
 
 ## Pre-flight
 
-Load `core-rules` §7 and fix every ✗ before delivering.
+Apply the already-read `core-rules` §7; fix failed checks without reloading it.

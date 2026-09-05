@@ -39,7 +39,7 @@ uniform grid at thumbnail size, which is what the squint test in `anti-slop`
 design tells catches after the fact.
 
 **`asymmetry`.** The deliberate imbalance, named as a ratio or a placement, plus
-what fills the shorter side. `DESIGN_VARIANCE` in `core-rules` §1 is verified
+what fills the shorter side. `DESIGN_VARIANCE` in the working profile below is verified
 here and by the uniformity budget. Symmetry is a valid answer when the direction
 declares it, as Apple-like precision and Swiss both do, provided it is the
 declared answer rather than the residue.
@@ -80,3 +80,25 @@ is empty, the page is competent and forgettable, and that is a finding.
       respects.
 - [ ] Thesis and signature move survive the narrow shot, or the recomposition
       says which one it replaces and with what.
+
+## Working profile
+
+Defaults unless the brief or system implies otherwise. Each names what verifies
+it; an unverified value is decoration and gets deleted.
+
+| Value | Default | Verified by |
+|---|---|---|
+| `DESIGN_VARIANCE` | 7 / asymmetrical, composed | ≥ 2 deliberate grid breaks per page, plus the ≤ 60% uniformity budget in `anti-slop` design tells |
+| `MOTION_INTENSITY` | 6 / expressive, not loud | the profile and duration table in `motion-system` |
+| `VISUAL_DENSITY` | 4 / spacious, not empty | `space-scale` and `section-padding` in the direction token block; at 4, hero padding ≥ 2× CTA |
+
+Task decisions, not values to edit here. Lowering one lowers its check: state the
+new number, keep the artifact.
+
+## Component composition defaults
+
+- Create a clear visual focal point and reading order.
+- Use one dominant action color; secondary palette colors may be decorative or semantic when the chosen direction defines them.
+- Use semantic design tokens rather than scattered literal values.
+- Recompose asymmetrical desktop layouts intentionally on mobile; use the responsive reference for priority, source order, replacement, reframing, and interaction changes.
+- Prefer whitespace, dividers, and grouping before adding cards.

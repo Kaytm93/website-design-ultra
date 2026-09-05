@@ -134,7 +134,7 @@ The fixes stay with their owner:
 - fabricated claims, evidence ladder, state microcopy → `content-design`
 - font bans and their documented exceptions → `typography`
 - palette, gradients, contrast tokens → `color-palettes`
-- generic hero, equal card rows, cursor and layout defaults → `core-rules` §5
+- generic hero, equal card rows, cursor and layout defaults → `skills/anti-slop/references/design-tells.md`
 - rotating cube, aimless particles, rigid loops → `immersive-3d` §4
 - identical fade-ins, snapping buttons, timing ownership → `motion-system`
 - three-cards-by-reflex versus a real pattern choice → `component-patterns`

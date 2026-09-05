@@ -4,9 +4,7 @@ description: Changes one existing component without loading the full design stac
 
 # /tweak
 
-You will change one existing component. Direction, palette, type, and pattern are
-already decided somewhere in the project; this command exists so a scoped edit
-does not pay for a full page briefing.
+Change one existing component using its established direction, palette, type and pattern.
 
 ## When /tweak, and when not
 
@@ -17,43 +15,33 @@ Use it when all four hold:
 - at most three user-visible text surfaces change,
 - no async, validation, or mutation state appears that was not there before.
 
-If any one fails, use `/design`. A new section, a changed direction, or a fourth
-changed string is not a tweak, and treating it as one is how a scoped edit turns
-into an unreviewed redesign.
+If any condition fails, use `/design` and state the scope change.
 
 ## Workflow
 
 1. **Read the component and its tokens.** Nothing else. If it imports a token
    file, read that file; do not walk the design system.
 
-2. **Load `core-rules` and check §1, §4, and §7.** Invariants apply at every
-   size. The §3 routing table does not fire here, because this command has
-   already made the routing decision.
+2. **Use `core-rules` §4 and §7 once.** This command selects the scoped-tweak
+   task class; skip the page profile and page routing. Reuse already-read rules.
 
-3. **Skip by default:** `style-directions`, `color-palettes`, and
-   `component-patterns`. Each answers a page-level question the existing
-   component already answers. Load exactly one when the tweak is about that
-   decision, and say which.
+3. **Conditional choices:** Load `style-directions`, `color-palettes` or
+   `component-patterns` only if that exact decision changes.
 
-4. **Copy.** With at most three changed text surfaces, run the linter instead of
-   reading the tell catalogue. Determine the plugin root of this file and run the
-   bundled linter; `scripts/` ships with the plugin, not with the project being
-   linted:
+4. **Copy.** For up to three changed text surfaces, run the bundled linter.
+   Resolve its path from this plugin, not the project being linted:
 
    ```bash
    node "<plugin-root>/scripts/lint-copy.mjs" --path <file> --profile marketing
    ```
 
-   The register is explicit here on purpose: a changed text surface is shipped
-   copy whatever file holds it, so the per-file default must not relax it.
+   Use the marketing register for changed UI copy regardless of file type.
 
-   This is a shift from reading to execution, not a relaxed standard: the linter
-   fires 12 of the 16 English Tier-1 tells and both Tier-3 gates deterministically
-   and with rule ids. It does not cover the four tells that carry no id (the
-   fake-profound kicker, both-sides hedging, synonym cycling, invented concept
-   labels) or the specificity floor. So a changed H1, hero subhead, or feature
-   blurb loads `anti-slop` and its prose reference as usual, and a label, tooltip,
-   or state message does not. Exit code 2 is `NO-COPY`, never a pass.
+   The linter covers 12 of 16 English Tier-1 tells and both Tier-3 gates;
+   four uncodified tells and the specificity floor need a reader. A changed H1,
+   hero subhead or feature blurb therefore loads `anti-slop` and its prose
+   reference; labels, tooltips and state messages use the linter. Exit code 2
+   is `NO-COPY`, never a pass.
 
 5. **States and motion.** Load `ui-states` only when a state appears that did not
    exist before. Load `motion-system` only when timing changes; otherwise reuse

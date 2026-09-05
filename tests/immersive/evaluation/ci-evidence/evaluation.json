@@ -2,31 +2,167 @@
   "schemaVersion": 1,
   "acceptance": "ip-07c-immersive-evaluation-ci",
   "status": "PASS",
-  "sourceCommit": "48b1fb8c8e8f0f2320e987586c5a352527145cb5",
-  "durationMs": 305729,
+  "sourceCommit": "c09f63dd88f8714d42ae076a9f927644ad7c8ae8",
+  "runId": 33988137459,
+  "runUrl": "https://github.com/Kaytm93/website-design-ultra/actions/runs/33988137459",
   "externalServices": "none",
   "fixtures": [
     {
-      "fixture": "product-hero",
-      "status": "PASS",
+      "fixture": "build-fail",
+      "status": "FAIL",
+      "expected": {
+        "status": "FAIL",
+        "gates": [
+          "build"
+        ]
+      },
       "expectationMet": true,
       "gates": {
-        "build": "PASS",
+        "build": "FAIL",
+        "runtime": "NOT_APPLICABLE",
+        "mobile": "NOT_APPLICABLE",
+        "reduced-motion": "NOT_APPLICABLE",
+        "fallback": "NOT_APPLICABLE",
+        "interaction-checkpoints": "NOT_APPLICABLE",
+        "keyboard": "NOT_APPLICABLE",
+        "telemetry-warm-gpu-frame-time": "NOT_APPLICABLE",
+        "telemetry-first-meaningful-frame": "NOT_APPLICABLE",
+        "telemetry-transfer-before-first-meaningful-frame": "NOT_APPLICABLE"
+      },
+      "durationMs": 11435,
+      "artifacts": "/home/runner/work/_temp/wdu-immersive-evaluation/build-fail"
+    },
+    {
+      "fixture": "failed-resource",
+      "status": "FAIL",
+      "expected": {
+        "status": "FAIL",
+        "gates": [
+          "runtime"
+        ]
+      },
+      "expectationMet": true,
+      "gates": {
+        "build": "NOT_APPLICABLE",
+        "runtime": "FAIL",
+        "mobile": "PASS",
+        "reduced-motion": "PASS",
+        "fallback": "PASS",
+        "interaction-checkpoints": "NOT_APPLICABLE",
+        "keyboard": "NOT_APPLICABLE",
+        "telemetry-warm-gpu-frame-time": "PASS",
+        "telemetry-first-meaningful-frame": "PASS",
+        "telemetry-transfer-before-first-meaningful-frame": "PASS"
+      },
+      "durationMs": 32175,
+      "artifacts": "/home/runner/work/_temp/wdu-immersive-evaluation/failed-resource"
+    },
+    {
+      "fixture": "fallback-fail",
+      "status": "FAIL",
+      "expected": {
+        "status": "FAIL",
+        "gates": [
+          "fallback"
+        ]
+      },
+      "expectationMet": true,
+      "gates": {
+        "build": "NOT_APPLICABLE",
+        "runtime": "PASS",
+        "mobile": "PASS",
+        "reduced-motion": "PASS",
+        "fallback": "FAIL",
+        "interaction-checkpoints": "NOT_APPLICABLE",
+        "keyboard": "NOT_APPLICABLE",
+        "telemetry-warm-gpu-frame-time": "PASS",
+        "telemetry-first-meaningful-frame": "PASS",
+        "telemetry-transfer-before-first-meaningful-frame": "PASS"
+      },
+      "durationMs": 27907,
+      "artifacts": "/home/runner/work/_temp/wdu-immersive-evaluation/fallback-fail"
+    },
+    {
+      "fixture": "interaction-fail",
+      "status": "FAIL",
+      "expected": {
+        "status": "FAIL",
+        "gates": [
+          "interaction-checkpoints"
+        ]
+      },
+      "expectationMet": true,
+      "gates": {
+        "build": "NOT_APPLICABLE",
         "runtime": "PASS",
         "mobile": "PASS",
         "reduced-motion": "PASS",
         "fallback": "PASS",
-        "interaction-checkpoints": "PASS",
+        "interaction-checkpoints": "FAIL",
         "keyboard": "PASS",
         "telemetry-warm-gpu-frame-time": "PASS",
         "telemetry-first-meaningful-frame": "PASS",
         "telemetry-transfer-before-first-meaningful-frame": "PASS"
       },
-      "durationMs": 305681
+      "durationMs": 178092,
+      "artifacts": "/home/runner/work/_temp/wdu-immersive-evaluation/interaction-fail"
+    },
+    {
+      "fixture": "keyboard-fail",
+      "status": "FAIL",
+      "expected": {
+        "status": "FAIL",
+        "gates": [
+          "keyboard"
+        ]
+      },
+      "expectationMet": true,
+      "gates": {
+        "build": "NOT_APPLICABLE",
+        "runtime": "PASS",
+        "mobile": "PASS",
+        "reduced-motion": "PASS",
+        "fallback": "PASS",
+        "interaction-checkpoints": "PASS",
+        "keyboard": "FAIL",
+        "telemetry-warm-gpu-frame-time": "PASS",
+        "telemetry-first-meaningful-frame": "PASS",
+        "telemetry-transfer-before-first-meaningful-frame": "PASS"
+      },
+      "durationMs": 148862,
+      "artifacts": "/home/runner/work/_temp/wdu-immersive-evaluation/keyboard-fail"
+    },
+    {
+      "fixture": "mobile-fail",
+      "status": "FAIL",
+      "expected": {
+        "status": "FAIL",
+        "gates": [
+          "mobile"
+        ]
+      },
+      "expectationMet": true,
+      "gates": {
+        "build": "NOT_APPLICABLE",
+        "runtime": "PASS",
+        "mobile": "FAIL",
+        "reduced-motion": "PASS",
+        "fallback": "PASS",
+        "interaction-checkpoints": "NOT_APPLICABLE",
+        "keyboard": "NOT_APPLICABLE",
+        "telemetry-warm-gpu-frame-time": "PASS",
+        "telemetry-first-meaningful-frame": "PASS",
+        "telemetry-transfer-before-first-meaningful-frame": "PASS"
+      },
+      "durationMs": 22555,
+      "artifacts": "/home/runner/work/_temp/wdu-immersive-evaluation/mobile-fail"
     },
     {
       "fixture": "procedural-crystal",
       "status": "PASS",
+      "expected": {
+        "status": "PASS"
+      },
       "expectationMet": true,
       "gates": {
         "build": "PASS",
@@ -40,8 +176,181 @@
         "telemetry-first-meaningful-frame": "PASS",
         "telemetry-transfer-before-first-meaningful-frame": "PASS"
       },
-      "durationMs": 478763
+      "durationMs": 457588,
+      "artifacts": "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal"
+    },
+    {
+      "fixture": "product-hero",
+      "status": "PASS",
+      "expected": {
+        "status": "PASS"
+      },
+      "expectationMet": true,
+      "gates": {
+        "build": "PASS",
+        "runtime": "PASS",
+        "mobile": "PASS",
+        "reduced-motion": "PASS",
+        "fallback": "PASS",
+        "interaction-checkpoints": "PASS",
+        "keyboard": "PASS",
+        "telemetry-warm-gpu-frame-time": "PASS",
+        "telemetry-first-meaningful-frame": "PASS",
+        "telemetry-transfer-before-first-meaningful-frame": "PASS"
+      },
+      "durationMs": 346442,
+      "artifacts": "/home/runner/work/_temp/wdu-immersive-evaluation/product-hero"
+    },
+    {
+      "fixture": "reduced-motion-fail",
+      "status": "FAIL",
+      "expected": {
+        "status": "FAIL",
+        "gates": [
+          "reduced-motion"
+        ]
+      },
+      "expectationMet": true,
+      "gates": {
+        "build": "NOT_APPLICABLE",
+        "runtime": "PASS",
+        "mobile": "PASS",
+        "reduced-motion": "FAIL",
+        "fallback": "PASS",
+        "interaction-checkpoints": "NOT_APPLICABLE",
+        "keyboard": "NOT_APPLICABLE",
+        "telemetry-warm-gpu-frame-time": "PASS",
+        "telemetry-first-meaningful-frame": "PASS",
+        "telemetry-transfer-before-first-meaningful-frame": "PASS"
+      },
+      "durationMs": 33314,
+      "artifacts": "/home/runner/work/_temp/wdu-immersive-evaluation/reduced-motion-fail"
+    },
+    {
+      "fixture": "runtime-console-error",
+      "status": "FAIL",
+      "expected": {
+        "status": "FAIL",
+        "gates": [
+          "runtime"
+        ]
+      },
+      "expectationMet": true,
+      "gates": {
+        "build": "NOT_APPLICABLE",
+        "runtime": "FAIL",
+        "mobile": "PASS",
+        "reduced-motion": "PASS",
+        "fallback": "PASS",
+        "interaction-checkpoints": "NOT_APPLICABLE",
+        "keyboard": "NOT_APPLICABLE",
+        "telemetry-warm-gpu-frame-time": "PASS",
+        "telemetry-first-meaningful-frame": "PASS",
+        "telemetry-transfer-before-first-meaningful-frame": "PASS"
+      },
+      "durationMs": 29904,
+      "artifacts": "/home/runner/work/_temp/wdu-immersive-evaluation/runtime-console-error"
+    },
+    {
+      "fixture": "shader-error",
+      "status": "FAIL",
+      "expected": {
+        "status": "FAIL",
+        "gates": [
+          "runtime"
+        ]
+      },
+      "expectationMet": true,
+      "gates": {
+        "build": "NOT_APPLICABLE",
+        "runtime": "FAIL",
+        "mobile": "PASS",
+        "reduced-motion": "PASS",
+        "fallback": "PASS",
+        "interaction-checkpoints": "NOT_APPLICABLE",
+        "keyboard": "NOT_APPLICABLE",
+        "telemetry-warm-gpu-frame-time": "PASS",
+        "telemetry-first-meaningful-frame": "PASS",
+        "telemetry-transfer-before-first-meaningful-frame": "PASS"
+      },
+      "durationMs": 20141,
+      "artifacts": "/home/runner/work/_temp/wdu-immersive-evaluation/shader-error"
+    },
+    {
+      "fixture": "telemetry-first-frame-fail",
+      "status": "FAIL",
+      "expected": {
+        "status": "FAIL",
+        "gates": [
+          "telemetry-first-meaningful-frame"
+        ]
+      },
+      "expectationMet": true,
+      "gates": {
+        "build": "NOT_APPLICABLE",
+        "runtime": "PASS",
+        "mobile": "PASS",
+        "reduced-motion": "PASS",
+        "fallback": "PASS",
+        "interaction-checkpoints": "NOT_APPLICABLE",
+        "keyboard": "NOT_APPLICABLE",
+        "telemetry-warm-gpu-frame-time": "PASS",
+        "telemetry-first-meaningful-frame": "FAIL",
+        "telemetry-transfer-before-first-meaningful-frame": "PASS"
+      },
+      "durationMs": 28844,
+      "artifacts": "/home/runner/work/_temp/wdu-immersive-evaluation/telemetry-first-frame-fail"
+    },
+    {
+      "fixture": "telemetry-transfer-fail",
+      "status": "FAIL",
+      "expected": {
+        "status": "FAIL",
+        "gates": [
+          "telemetry-transfer-before-first-meaningful-frame"
+        ]
+      },
+      "expectationMet": true,
+      "gates": {
+        "build": "NOT_APPLICABLE",
+        "runtime": "PASS",
+        "mobile": "PASS",
+        "reduced-motion": "PASS",
+        "fallback": "PASS",
+        "interaction-checkpoints": "NOT_APPLICABLE",
+        "keyboard": "NOT_APPLICABLE",
+        "telemetry-warm-gpu-frame-time": "PASS",
+        "telemetry-first-meaningful-frame": "PASS",
+        "telemetry-transfer-before-first-meaningful-frame": "FAIL"
+      },
+      "durationMs": 32068,
+      "artifacts": "/home/runner/work/_temp/wdu-immersive-evaluation/telemetry-transfer-fail"
+    },
+    {
+      "fixture": "telemetry-warm-gpu-fail",
+      "status": "FAIL",
+      "expected": {
+        "status": "FAIL",
+        "gates": [
+          "telemetry-warm-gpu-frame-time"
+        ]
+      },
+      "expectationMet": true,
+      "gates": {
+        "build": "NOT_APPLICABLE",
+        "runtime": "PASS",
+        "mobile": "PASS",
+        "reduced-motion": "PASS",
+        "fallback": "PASS",
+        "interaction-checkpoints": "NOT_APPLICABLE",
+        "keyboard": "NOT_APPLICABLE",
+        "telemetry-warm-gpu-frame-time": "FAIL",
+        "telemetry-first-meaningful-frame": "PASS",
+        "telemetry-transfer-before-first-meaningful-frame": "PASS"
+      },
+      "durationMs": 30648,
+      "artifacts": "/home/runner/work/_temp/wdu-immersive-evaluation/telemetry-warm-gpu-fail"
     }
   ],
-  "note": "archived from a local live run of tests/immersive/evaluation/run-implementation-evaluation.mjs; PNG matrices and build logs stay untracked and are archived by CI"
+  "note": "Archived from the final main GitHub Actions shards. Positive gates and negative expectations are separate; screenshots and raw build logs remain in the linked CI artifacts."
 }

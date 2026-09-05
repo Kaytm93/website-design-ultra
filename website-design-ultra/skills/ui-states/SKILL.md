@@ -1,6 +1,6 @@
 ---
 name: ui-states
-description: Design and verify applicable interface states for components with data, validation, mutations, or interaction. Use for loading, empty, error, success, disabled, active, focus, accessibility, reduced motion, forms, toasts, or async UI. Load only the reference matching the component’s state type.
+description: Design and verify applicable interface states for components with data, validation, mutations, or interaction. Use for loading, empty, error, success, disabled, active, focus, accessibility, reduced motion, forms, toasts, or async UI. Copy-only edits to state labels do not activate this skill. Load only the reference matching the component’s state type.
 ---
 
 # UI State Router

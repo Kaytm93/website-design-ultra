@@ -1,11 +1,22 @@
 # Design Tells — Visual Defaults
 
-This file contains only the tells that no other skill owns. The long-standing
-defaults — centered marketing hero, equal three-card rows, a card around every
-block, arbitrary glass, AI purple/pink gradients, uncontrolled glow, pure black,
-Inter as a display face, custom cursors — stay in `core-rules` §5 and
-`typography`. 3D versions stay in `immersive-3d` §4. Motion sameness stays in
-`motion-system`.
+Standing visual defaults live here; typography, content truth, and motion keep
+their specialist contracts. Read this reference for visual composition work or
+a visual-default audit; copy-only work reads prose-tells.md instead.
+
+## Standing defaults
+
+These are defaults, not universal prohibitions. A selected direction may
+override a default with a reason, but never an accessibility or content invariant.
+
+- Avoid generic centered marketing heroes, equal three-card rows, card containers around every block, and arbitrary glass panels.
+- Avoid default AI purple/pink gradients, uncontrolled neon glow, and unrelated accent colors.
+- Prefer off-black over pure black unless the selected direction defines an exception.
+- Prefer distinctive, licensed or open fonts; do not use Inter/Roboto/Arial/system-ui as a premium display default. See `typography` for allowed body use and fallbacks.
+- Avoid invented company claims, fake testimonials, fake precision, placeholder brand names, and vague copy. Use `content-design` for the claim ledger and approved placeholders.
+- Use project assets first. Use deterministic placeholder imagery only for prototypes and label it as placeholder content.
+- Do not use custom cursors. Native `cursor: pointer` is fine.
+- Do not animate layout properties when an equivalent transform solution exists.
 
 ## Tier 1 — Structural, always rewrite
 
@@ -103,7 +114,7 @@ accessibility or performance invariant.
 
 Grouping order before reaching for a border: whitespace first, then a 3–5%
 background-lightness shift, then soft elevation. Add a line only when all three
-fail. This extends `core-rules` §6, which prefers whitespace and grouping over
+fail. This follows the composition contract, which prefers whitespace and grouping over
 cards.
 
 ## The squint test

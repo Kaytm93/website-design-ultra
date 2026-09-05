@@ -13,6 +13,22 @@ maschinenlesbar wie `automation/immersive-production-v2/QUEUE.md`:
 
 Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
 
+## Integrationsstand 2026-09-05
+
+PR #38 ist in `main` an `c09f63d` integriert. Main-CI `33988137459`:
+beide positiven 3D-Fixtures bestehen alle zehn Gates; zwölf negative Fixtures
+melden die vorgesehenen Fehler. PR #28 ist nach Patch-Abgleich als ersetzt geschlossen.
+PR #37 ist auf `main` aktualisiert und enthält nur den separaten Starter-DPR-Fix
+plus zwei ausführbare Regressionen. Lokal: Typprüfung, 69 Tests und Build PASS.
+
+J-B4-Prosa und Budgets sind integriert; das Häkchen bleibt bis zur wiederholten
+Live-Abnahme offen. J-B5 ist implementiert und in Live-Prüfung: `core-rules`
+5.497 Bytes, `/tweak`-Basis 7.906 Bytes, minimaler `3d-hero`-Pfad 49.504 Bytes /
+12.376 geschätzte Plugin-Tokens. Die maximale Fallgrenze bleibt 15.000.
+Ein erster Slop-Lauf lud fälschlich `ui-states` für reine Empty-State-Copy;
+Task-Gates unterscheiden jetzt Copy von Verhaltensänderungen. Die Abnahme läuft
+auf diesem korrigierten Baum. Veröffentlichung und 2.2/2.3 bleiben offen.
+
 ## PR 1 — PR A: Erreichbarkeit und Routing — 2.1.0 Teil 1
 
 - [x] `J-A1` **Kopierbare Runtime-Dateien ins Plugin legen** — S

@@ -189,6 +189,18 @@ function emptyTarget() {
     missing: new Set(),
     broadReads: new Set(),
     foreignSkills: new Set(),
+    readCounts: new Map(),
+  }
+}
+
+// One operation may name an absolute file twice through different regexes.
+// Count its resolved set once; separate provider operations remain observable.
+function mergeRead(target, operation) {
+  for (const key of ['files', 'offRoot', 'missing', 'broadReads', 'foreignSkills']) {
+    for (const value of operation[key]) target[key].add(value)
+  }
+  for (const file of operation.files) {
+    target.readCounts.set(file, (target.readCounts.get(file) ?? 0) + 1)
   }
 }
 
@@ -214,6 +226,8 @@ function summarizeTrace(target, pluginRoot, providerUsage = {}) {
     missingFiles: [...target.missing].sort(),
     foreignSkills: [...target.foreignSkills].sort(),
     observedBytes,
+    readCounts: Object.fromEntries([...target.readCounts].sort()),
+    repeatedReads: [...target.readCounts].filter(([, count]) => count > 1).map(([file, count]) => ({ file, count })),
     estimatedPluginTokens: Math.ceil(observedBytes / 4),
     providerUsage,
   }
@@ -226,7 +240,9 @@ export function auditCodexTrace(events, pluginRoot) {
   for (const event of events) {
     if (event.type === 'item.completed' && event.item?.type === 'command_execution') {
       const command = event.item.command ?? ''
-      filesFromCommand(command, pluginRoot, target)
+      const operation = emptyTarget()
+      filesFromCommand(command, pluginRoot, operation)
+      mergeRead(target, operation)
       if (isBroadContentRead(command)) target.broadReads.add(command)
     }
     if (event.type === 'turn.completed' && event.usage) providerUsage = event.usage
@@ -246,12 +262,13 @@ export function auditClaudeTrace(events, pluginRoot) {
         if (block.type !== 'tool_use') continue
         const toolName = block.name?.toLowerCase()
         const input = block.input ?? {}
+        const operation = emptyTarget()
 
         if (toolName === 'read') {
-          collect(target, resolvePluginFile(input.file_path ?? input.path, pluginRoot))
+          collect(operation, resolvePluginFile(input.file_path ?? input.path, pluginRoot))
         } else if (toolName === 'grep') {
           const resolution = resolvePluginFile(input.path, pluginRoot)
-          collect(target, resolution)
+          collect(operation, resolution)
           if (
             input.output_mode === 'content' &&
             resolution.status !== 'in-root' &&
@@ -261,7 +278,7 @@ export function auditClaudeTrace(events, pluginRoot) {
           }
         } else if (toolName === 'bash') {
           const command = input.command ?? ''
-          filesFromCommand(command, pluginRoot, target)
+          filesFromCommand(command, pluginRoot, operation)
           if (isBroadContentRead(command)) target.broadReads.add(command)
         } else if (toolName === 'skill') {
           const invocation = skillFileFromInvocation(
@@ -269,9 +286,10 @@ export function auditClaudeTrace(events, pluginRoot) {
             pluginRoot,
             pluginName,
           )
-          if (invocation.status === 'in-root') target.files.add(invocation.relativePath)
+          if (invocation.status === 'in-root') operation.files.add(invocation.relativePath)
           else if (invocation.status === 'foreign') target.foreignSkills.add(invocation.skill)
         }
+        mergeRead(target, operation)
       }
     }
     if (event.type === 'result' && event.usage) providerUsage = event.usage
@@ -317,6 +335,13 @@ export function evaluateTrace(testCase, result, trace) {
   const reportedSkills = new Set(result.skills ?? [])
   const allowedSkills = new Set(contract.allowedSkills ?? testCase.requiredSkills)
   const allowedReferences = new Set(contract.allowedReferences ?? [])
+
+  for (const [file, maximum] of Object.entries(contract.maxFileReads ?? {})) {
+    const count = trace.readCounts?.[file]
+    if (count === undefined || count > maximum) {
+      failures.push(`trace read count for "${file}" is ${count ?? 'unavailable'}; maximum is ${maximum}`)
+    }
+  }
 
   for (const file of contract.requiredFiles ?? []) {
     if (!accessed.has(file)) failures.push(`trace did not observe required file "${file}"`)

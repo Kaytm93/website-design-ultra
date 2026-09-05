@@ -642,7 +642,7 @@
     "transferBeforeFirstMeaningfulFrame": {
       "boundary": "first-meaningful-frame",
       "observed": {
-        "value": 110032,
+        "value": 217443,
         "unit": "bytes"
       }
     }
@@ -723,7 +723,7 @@
           "justification": "the fixture fetches only its own committed assets — Next chunks, two posters, the brand mark, the Draco decoder (draco_decoder.js + draco_decoder.wasm + draco_wasm_wrapper.js), and one optimized Draco-compressed GLB; 3 MB bounds that offline desktop load with headroom."
         },
         "observed": {
-          "value": 110032,
+          "value": 217443,
           "unit": "bytes"
         },
         "status": "PASS",
@@ -814,8 +814,8 @@
         "value": 199.99999999999997,
         "unit": "ms"
       },
-      "resourcesConsidered": 7,
-      "resourcesIgnoredAfterMarker": 10
+      "resourcesConsidered": 11,
+      "resourcesIgnoredAfterMarker": 6
     }
   },
   "unavailable": {

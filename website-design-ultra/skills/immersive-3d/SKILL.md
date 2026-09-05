@@ -85,7 +85,7 @@ CTA, and states remain available. Lazy-load the canvas with viewport detection.
 Read the Vanilla baseline reference for non-React wiring.
 
 Route camera/light/material/type to `3d-art-direction`, tiers/DPR/LOD/PostFX and
-pause to `3d-runtime-quality`, and run the `core-rules` pre-flight plus the
-capability-checked `scripts/verify-browser.mjs` launch gate. Report why 3D is
+pause to `3d-runtime-quality`. Apply the already-read `core-rules` §3/§4
+without reloading that owner; check selected contracts and the capability-checked `scripts/verify-browser.mjs` launch gate. Report why 3D is
 justified, the selected layer, contract, budget/tier matrix, fallback, and
 verification status (`PASS`, `FAIL`, `UNAVAILABLE`, or `NOT_APPLICABLE`).

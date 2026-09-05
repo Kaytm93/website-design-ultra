@@ -13,17 +13,16 @@ function fail(message) {
   process.exitCode = 1
 }
 
-function parseCase(argv) {
-  const index = argv.indexOf('--case')
-  if (index === -1 || !argv[index + 1]) {
-    fail('usage: node scripts/measure-path.mjs --case <case-id>')
+function parseSelection(argv) {
+  if (argv.length !== 2 || !['--case', '--command'].includes(argv[0])) {
+    fail('usage: node scripts/measure-path.mjs --case <case-id> | --command tweak')
     return null
   }
-  if (argv.length !== 2 || index !== 0) {
-    fail('only --case <case-id> is supported')
+  if (argv[0] === '--command' && argv[1] !== 'tweak') {
+    fail(`unknown command "${argv[1]}"`)
     return null
   }
-  return argv[index + 1]
+  return { mode: argv[0], id: argv[1] }
 }
 
 function caseFiles(testCase) {
@@ -46,8 +45,25 @@ function measure(files) {
   return { bytes, tokens: Math.ceil(bytes / 4), entries }
 }
 
-const caseId = parseCase(process.argv.slice(2))
-if (!caseId) process.exit()
+const selection = parseSelection(process.argv.slice(2))
+if (!selection) process.exit()
+
+if (selection.mode === '--command') {
+  try {
+    const result = measure(['commands/tweak.md', 'skills/core-rules/SKILL.md'])
+    console.log(`tweak: ${result.entries.length} files (existing design; no new font, motion or headline contract)`)
+    console.log(`Plugin path: ${result.bytes} bytes <= 8000: ${result.bytes <= 8000 ? 'PASS' : 'FAIL'}`)
+    console.log(`Estimated plugin tokens: ${result.tokens}`)
+    for (const entry of result.entries) console.log(`- ${entry.bytes} ${entry.relative}`)
+    console.log('Conditional domain reads add to this baseline; linter execution does not read its source into context.')
+    if (result.bytes > 8000) process.exitCode = 1
+  } catch (error) {
+    fail(error.message)
+  }
+  process.exit()
+}
+
+const caseId = selection.id
 
 let cases
 try {
