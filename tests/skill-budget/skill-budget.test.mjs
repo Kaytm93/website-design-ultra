@@ -49,7 +49,7 @@ const baselineHashes = {
     check: '7976ee6e0a',
   },
   'gpu-particle-systems': {
-    check: 'f89884f613',
+    check: 'a25e163029',
   },
   'procedural-3d': {
     check: '84cefbd72f',
