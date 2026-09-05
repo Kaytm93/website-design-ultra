@@ -1,5 +1,19 @@
 # website-design-ultra
 
+## Unreleased — Wait for the settled scene before capture (2026-09-05)
+
+Main run `33989821430` caught a procedural-crystal reduced-motion capture
+race: the first image still contained the loading poster behind the rendered
+model, while the second image did not. The generic 150 ms settle did not wait
+for the decoded scene. Deterministic desktop, mobile and reduced-motion
+captures now await the declared ready marker and its DOM paint before taking
+the settled image. The static image comparison and all negative fixtures stay
+strict. Three regressions cover delayed readiness, missing readiness and
+ordinary pages without a scene contract.
+
+The root README adds installation commands and short 2D/3D starting flows.
+Repeated live-model acceptance is still open; no 2.1 release is claimed.
+
 ## Unreleased — Installed-validator path repair (2026-09-05)
 
 A fresh Codex CLI installation exposed six false validator failures below the

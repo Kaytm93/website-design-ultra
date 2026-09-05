@@ -37,6 +37,34 @@ export const CHECKPOINT_ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/
 export const CHECKPOINT_MODE_INPUT = 'WDU_DETERMINISTIC=1'
 export const CHECKPOINT_VIEWPORT = { width: 1440, height: 1000 }
 
+// Serialized into the browser CLI. Deterministic scenes declare their ready
+// contract on the server-rendered html element; fonts/images alone do not cover
+// the lazy canvas or decoded model. Generic pages keep the ordinary settle path.
+export async function settlePage(page) {
+  await page.waitForLoadState('domcontentloaded')
+  const deterministic = await page.evaluate(() =>
+    document.documentElement.getAttribute('data-wdu-mode') === 'deterministic',
+  )
+  if (deterministic) {
+    await page.waitForSelector('html[data-wdu-ready="true"]', { state: 'attached', timeout: 10_000 })
+    // The marker fires from the scene; let its DOM observer remove the loading
+    // poster before recording the settled state. This does not stop animation.
+    await page.evaluate(() => new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve))
+    }))
+  }
+  await page.evaluate(async () => {
+    if (document.fonts?.ready) await document.fonts.ready
+    await Promise.all([...document.images].filter((image) => !image.complete).map(
+      (image) => new Promise((resolve) => {
+        image.addEventListener('load', resolve, { once: true })
+        image.addEventListener('error', resolve, { once: true })
+      }),
+    ))
+  })
+  await page.waitForTimeout(150)
+}
+
 const TELEMETRY_GATE_CLASSES = [
   'warm-gpu-frame-time',
   'first-meaningful-frame',
@@ -1509,19 +1537,7 @@ function main() {
     return invoke(session, action, ...args, '--raw')
   }
 
-  const settle = `async (page) => {
-    await page.waitForLoadState('domcontentloaded')
-    await page.evaluate(async () => {
-      if (document.fonts && document.fonts.ready) await document.fonts.ready
-      await Promise.all([...document.images].filter((image) => !image.complete).map(
-        (image) => new Promise((resolve) => {
-          image.addEventListener('load', resolve, { once: true })
-          image.addEventListener('error', resolve, { once: true })
-        }),
-      ))
-    })
-    await page.waitForTimeout(150)
-  }`
+  const settle = settlePage.toString()
 
   function captureHero(session, filename) {
     const target = path.join(outputDirectory, filename)
@@ -2221,7 +2237,7 @@ function main() {
       `async (page) => {
         await page.emulateMedia({ reducedMotion: 'reduce' })
         await page.reload({ waitUntil: 'domcontentloaded' })
-        ${settle.replace(/^async \(page\) => \{|\}$/g, '')}
+        await (${settle})(page)
       }`,
     )
     invoke(
