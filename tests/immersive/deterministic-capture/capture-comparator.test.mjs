@@ -423,7 +423,7 @@ test('CI installs the pinned browser and runs the deterministic gate', () => {
       {
         revision: 'd23441a48e516b6c34aea4fa41551a30e30af803',
         version: 'v6.1.0',
-        occurrences: 7,
+        occurrences: 8,
       },
     ],
     [
@@ -431,7 +431,7 @@ test('CI installs the pinned browser and runs the deterministic gate', () => {
       {
         revision: '249970729cb0ef3589644e2896645e5dc5ba9c38',
         version: 'v6.5.0',
-        occurrences: 7,
+        occurrences: 8,
       },
     ],
     [
@@ -457,7 +457,18 @@ test('CI installs the pinned browser and runs the deterministic gate', () => {
     ),
   ].map((match) => ({ action: match[1], revision: match[2], version: match[3] }))
 
-  assert.equal(actionUses.length, 17, 'every official action use must have a version comment')
+  // What this guards is that no official action is used without a SHA pin and a
+  // version comment. A hardcoded total states that as a number that every new
+  // job has to be told about, and a stale number fails a job that did nothing
+  // wrong. Comparing the strict matches against every `uses: actions/...` line
+  // says the same thing and maintains itself.
+  const allOfficialUses = [...workflow.matchAll(/^\s*(?:-\s+)?uses:\s+actions\//gm)]
+  assert.equal(
+    actionUses.length,
+    allOfficialUses.length,
+    'every official action use must be SHA-pinned with a version comment',
+  )
+  assert.ok(actionUses.length > 0, 'the workflow uses no official action at all')
   assert.doesNotMatch(workflow, /uses:\s+actions\/[\w-]+@v\d/)
   for (const [action, expectedPin] of expectedActionPins) {
     const uses = actionUses.filter((entry) => entry.action === action)
