@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url'
 
 import { PROFILES, TIER1, TIER2, extract } from './lint-copy.mjs'
 import { strictObjectSchemaFailures } from './forward-schema.mjs'
+import { countLabSources, isGeneratedVendorPath } from './root-surfaces.mjs'
 
 const pluginRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const skillsRoot = path.join(pluginRoot, 'skills')
@@ -1316,48 +1317,6 @@ if (!selfLint) {
 const repoRoot = path.resolve(pluginRoot, '..')
 
 /**
- * Generated and vendor output is declared, not discovered. Reading
- * `next-env.d.ts` or a lockfile reports a NO-COPY warning for text that was
- * never written as copy, and build output holds whole copies of the
- * repository. The linter's own walk already skips dot-directories and the
- * build-output directory set; this list is the explicit contract the
- * root-surface discovery asserts: none of these paths may ever appear in a
- * starter's lint report.
- */
-const GENERATED_VENDOR_DIRECTORIES = new Set([
-  'node_modules',
-  'dist',
-  'build',
-  'out',
-  'output',
-  'coverage',
-  'vendor',
-])
-const GENERATED_VENDOR_FILES = new Set([
-  'next-env.d.ts',
-  'package-lock.json',
-  'npm-shrinkwrap.json',
-  'yarn.lock',
-  'pnpm-lock.yaml',
-])
-
-function isGeneratedVendorPath(file, surfaceRoot) {
-  // Only descendants of the selected surface are excluded. The installation
-  // itself may legitimately live inside .codex, .claude, or a vendor folder.
-  const normalized = path.relative(surfaceRoot, path.resolve(file)).replaceAll('\\', '/')
-  const segments = normalized.split('/')
-  const base = segments[segments.length - 1]
-  if (GENERATED_VENDOR_FILES.has(base) || base.endsWith('.tsbuildinfo')) return true
-  // Dot-directories are skipped by the linter's own walk. `.` and `..` are
-  // cwd-relative path artifacts, not walked directories, so they never count.
-  return segments.some(
-    (segment) =>
-      (segment.startsWith('.') && segment !== '.' && segment !== '..') ||
-      GENERATED_VENDOR_DIRECTORIES.has(segment),
-  )
-}
-
-/**
  * The copy a visitor reads, reduced to the same extracted surface the linter
  * judges. The markers are deliberately narrow: `content-design` permits
  * explicit placeholders where a fact is unknown, so this gate must name the
@@ -1474,24 +1433,6 @@ function checkStarterSurface(surface, options = {}) {
     }
   }
   return { surfacePaths, report, placeholders, excludedSeen }
-}
-
-/** Count the lab's own source files without descending into generated output. */
-function countLabSources(labRoot) {
-  let count = 0
-  const walk = (directory) => {
-    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
-      const target = path.join(directory, entry.name)
-      if (entry.isDirectory()) {
-        if (isGeneratedVendorPath(target, labRoot)) continue
-        walk(target)
-      } else if (entry.isFile() && !isGeneratedVendorPath(target, labRoot)) {
-        count += 1
-      }
-    }
-  }
-  walk(labRoot)
-  return count
 }
 
 const starterSurfaceSummaries = []

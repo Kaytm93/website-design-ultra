@@ -52,6 +52,13 @@ jobs:
       - name: Test plugin template sync
         run: node --test tests/templates/sync.test.mjs
 
+      # The root-surface walk is the one gate whose bug CI could not see: it
+      # only appeared when the checkout itself sat under a dot-directory, and
+      # a runner checks out to a normal path. These cases synthesize that
+      # shape, so the regression is catchable here.
+      - name: Test root-surface path classification
+        run: node --test tests/root-surfaces/root-surfaces.test.mjs
+
       - name: Run the shipped comparator from the plugin tree
         run: node --experimental-strip-types website-design-ultra/templates/runtime/compare-baselines.mjs --help
 
