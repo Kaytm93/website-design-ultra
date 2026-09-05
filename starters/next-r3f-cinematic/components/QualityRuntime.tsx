@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useSceneRuntime } from './SceneRuntime.tsx'
 
@@ -58,23 +58,30 @@ export function QualityRuntime() {
     setFrameloop('never')
   }, -1)
 
+  // R3F restores its viewport DPR on resize. Restate the controller's value
+  // through this single writer after both size and quality changes.
+  const applyDpr = useCallback(() => {
+    gl.setPixelRatio(quality.qualityState().dpr.value)
+  }, [gl, quality])
+
   // Apply controller decisions: DPR and render-loop pause. Fires only on
   // change, never per frame.
   useEffect(() => {
     const apply = () => {
-      gl.setPixelRatio(quality.qualityState().dpr.value)
+      applyDpr()
       const frozen = mode === 'deterministic' && stablePausedRef.current
       setFrameloop(quality.snapshot().paused || frozen ? 'never' : 'always')
     }
     apply()
     return quality.onChange(apply)
-  }, [gl, setFrameloop, quality, mode])
+  }, [applyDpr, setFrameloop, quality, mode])
 
   // A resize invalidates the measurement window: samples collected at the old
   // size must not decide the new one (adaptive-runtime.md, discard list).
   useEffect(() => {
     quality.resetMeasurement()
-  }, [quality, size.width, size.height])
+    applyDpr()
+  }, [applyDpr, quality, size.width, size.height])
 
   // Offscreen and document-hidden pause, owned by the controller.
   useEffect(() => {
