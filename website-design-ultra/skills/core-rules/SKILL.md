@@ -12,6 +12,7 @@ description: Route pages, components, UI audits and 3D work by task scope. Prese
 - **Tweak:** command route and §4/§7; inherit direction, palette, type and pattern.
 - **3D:** §3/§4 once, then `immersive-3d`; no owner reload at handoff/pre-flight.
 - **Audit/copy/plan:** only requested evidence or decisions; no implied code task.
+  Name direction, palette and type in prose; load none.
 
 Invariants outrank defaults. Direction exceptions need a reason and preserve
 correctness, accessibility and the brief. Visual defaults live in
@@ -32,7 +33,7 @@ A gate fires on a concrete decision, not on a topic. Load only selected files.
 | User-visible copy is written or audited, including plan-only lines | `anti-slop` prose reference; locale annex for non-English |
 | Visual composition is created or audited | `anti-slop` design tells |
 | Hierarchy, claims, CTAs, state copy or localization change | `content-design` |
-| Style exploration requested, or no brand/system/product cue gives a direction | `style-directions` |
+| Style exploration requested, or visual output is produced and no brand/system/product cue gives a direction | `style-directions` |
 | Colors selected or audited | `color-palettes` |
 | Font family, license/loading, language coverage, type scale or wrapping changes | `typography` |
 | Page or signature section crosses viewports | `references/composition-contract.md` and `references/responsive-recomposition.md` |
@@ -47,18 +48,18 @@ A gate fires on a concrete decision, not on a topic. Load only selected files.
 | Live 3D reference URL plus an explicit runtime-recon request | `site-reconnaissance`, behind `immersive-3d` |
 
 Copy and claims gates are independent. Copy-only edits to a state label do not
-activate `ui-states`; its gate requires behavior or transition decisions. Named direction is input, not exploration.
+activate `ui-states`; its gate requires behavior or transition decisions. A named
+direction is input, not exploration.
 Generic content/layout hierarchy activates no font or recipe choice. Ordinary
 heroes/plans skip determinism without runnable capture. Text-only briefs skip
 reference intake.
 
 ### Routing protocol
 
-Cross-skill mentions are selection pointers, not recursive dependencies. Decide
-before reading; load each selected SKILL.md once, then only its relevant
-references. Do not reread owners or load siblings for context. An owner reference
-can be read directly without reloading its skill. Keep a file ledger; provider
-access traces, not a self-declared route, prove what loaded.
+Cross-skill mentions are pointers, not recursive dependencies. Read each selected
+SKILL.md once, then relevant references only. Never reload owners or siblings for
+context. Read owner references directly. Keep a file ledger; provider access traces,
+not self-declared routes, prove reads.
 Target four domain skills and one reference per family in 2D; independent
 requirements justify more. 3D follows its master.
 

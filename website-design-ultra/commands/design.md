@@ -20,8 +20,11 @@ scene, use `/immersive` instead.
    does not suspend it: deciding what a headline, CTA, or state message says
    is writing it. Add the locale annex for non-English.
 3. **Direction** — `style-directions` only for requested exploration, or when
-   no brand, system, or product cue yields a direction. A direction the
-   briefing names is an input, not a request to explore.
+   visual output is produced and no brand, system, or product cue yields a
+   direction. A direction the briefing names is an input, not a request to
+   explore, and a plan-only brief names its direction in prose rather than
+   exploring one: missing brand evidence is an unknown to state, not a reason
+   to go looking. The same holds for step 4.
 
    **Divergence before commitment** — For a page or signature section, name
    three variants before choosing, whether or not `style-directions` loaded.
