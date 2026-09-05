@@ -642,7 +642,7 @@
     "transferBeforeFirstMeaningfulFrame": {
       "boundary": "first-meaningful-frame",
       "observed": {
-        "value": 217443,
+        "value": 110032,
         "unit": "bytes"
       }
     }
@@ -723,7 +723,7 @@
           "justification": "the fixture fetches only its own committed assets — Next chunks, two posters, the brand mark, the Draco decoder (draco_decoder.js + draco_decoder.wasm + draco_wasm_wrapper.js), and one optimized Draco-compressed GLB; 3 MB bounds that offline desktop load with headroom."
         },
         "observed": {
-          "value": 217443,
+          "value": 110032,
           "unit": "bytes"
         },
         "status": "PASS",
@@ -744,7 +744,7 @@
         "textures": 1
       },
       "render": {
-        "frame": 31,
+        "frame": 30,
         "calls": 2,
         "triangles": 532,
         "points": 0,
@@ -753,7 +753,7 @@
       "programs": [
         {
           "type": "MeshStandardMaterial",
-          "name": "Procedural__Crystal_Material",
+          "name": "Procedural__Crystal_Tip_Material",
           "id": 0,
           "cacheKey": "physical,STANDARD,,highp,srgb,false,,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,,false,false,0,,2,1,0,0,0,0,0,0,0,0,0,2,4,0,0,0,8388608,8521730,srgb,onBeforeCompile(){}",
           "usedTimes": 2,
@@ -814,8 +814,8 @@
         "value": 199.99999999999997,
         "unit": "ms"
       },
-      "resourcesConsidered": 11,
-      "resourcesIgnoredAfterMarker": 6
+      "resourcesConsidered": 7,
+      "resourcesIgnoredAfterMarker": 10
     }
   },
   "unavailable": {

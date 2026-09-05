@@ -111,14 +111,14 @@
     }
   },
   "cost": {
-    "durationMs": 463766,
+    "durationMs": 478763,
     "phasesMs": {
-      "installMs": 10121,
-      "buildMs": 32551,
-      "standardCaptureMs": 57116,
-      "reducedCaptureMs": 55425,
-      "portraitCaptureMs": 61159,
-      "checkpointCaptureMs": 244014,
+      "installMs": 9812,
+      "buildMs": 32675,
+      "standardCaptureMs": 66453,
+      "reducedCaptureMs": 55975,
+      "portraitCaptureMs": 60889,
+      "checkpointCaptureMs": 249567,
       "evaluationMs": 2
     },
     "externalServices": "none",

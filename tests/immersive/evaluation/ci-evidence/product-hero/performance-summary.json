@@ -642,7 +642,7 @@
     "transferBeforeFirstMeaningfulFrame": {
       "boundary": "first-meaningful-frame",
       "observed": {
-        "value": 0,
+        "value": 111829,
         "unit": "bytes"
       }
     }
@@ -723,7 +723,7 @@
           "justification": "the fixture fetches only its own committed assets — Next chunks, two posters, the brand mark, and one optimized GLB; 3 MB bounds that offline desktop load with headroom."
         },
         "observed": {
-          "value": 0,
+          "value": 111829,
           "unit": "bytes"
         },
         "status": "PASS",
@@ -744,7 +744,7 @@
         "textures": 3
       },
       "render": {
-        "frame": 29,
+        "frame": 32,
         "calls": 2,
         "triangles": 3122,
         "points": 0,
@@ -814,8 +814,8 @@
         "value": 199.99999999999997,
         "unit": "ms"
       },
-      "resourcesConsidered": 0,
-      "resourcesIgnoredAfterMarker": 15
+      "resourcesConsidered": 8,
+      "resourcesIgnoredAfterMarker": 7
     }
   },
   "unavailable": {

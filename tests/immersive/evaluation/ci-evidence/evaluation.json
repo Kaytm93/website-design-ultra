@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "acceptance": "ip-07c-immersive-evaluation-ci",
   "status": "PASS",
-  "sourceCommit": "9e50f50d7f753dcaae8b13811ae63be8ec4808ed",
-  "durationMs": 268393,
+  "sourceCommit": "48b1fb8c8e8f0f2320e987586c5a352527145cb5",
+  "durationMs": 305729,
   "externalServices": "none",
   "fixtures": [
     {
@@ -22,7 +22,7 @@
         "telemetry-first-meaningful-frame": "PASS",
         "telemetry-transfer-before-first-meaningful-frame": "PASS"
       },
-      "durationMs": 268358
+      "durationMs": 305681
     },
     {
       "fixture": "procedural-crystal",
@@ -40,7 +40,7 @@
         "telemetry-first-meaningful-frame": "PASS",
         "telemetry-transfer-before-first-meaningful-frame": "PASS"
       },
-      "durationMs": 463766
+      "durationMs": 478763
     }
   ],
   "note": "archived from a local live run of tests/immersive/evaluation/run-implementation-evaluation.mjs; PNG matrices and build logs stay untracked and are archived by CI"
