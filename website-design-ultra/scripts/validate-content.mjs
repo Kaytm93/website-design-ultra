@@ -127,8 +127,8 @@ const skillDirectories = fs
   .readdirSync(skillsRoot, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
 
-if (skillDirectories.length !== 24) {
-  fail(`expected 24 skills, found ${skillDirectories.length}`)
+if (skillDirectories.length !== 25) {
+  fail(`expected 25 skills, found ${skillDirectories.length}`)
 }
 
 for (const directory of skillDirectories) {
@@ -983,6 +983,7 @@ const negativeGatedSkills = [
   'reference-intake',
   'render-graph',
   'spatial-audio',
+  'vanilla-three-production',
 ]
 
 for (const name of negativeGatedSkills) {

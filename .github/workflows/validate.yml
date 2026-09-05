@@ -160,6 +160,29 @@ jobs:
         working-directory: starters/next-r3f-cinematic
         run: npm run verify
 
+  # The second starter runs the same gate as the first. The claim `immersive-3d`
+  # makes is that the vanilla layer is a production peer of R3F, and a peer that
+  # is not held to the same check is a claim without evidence.
+  starter-vanilla:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: starters/vite-three-canvas/package-lock.json
+
+      - name: Install starter (exact lockfile)
+        working-directory: starters/vite-three-canvas
+        run: npm ci
+
+      - name: Typecheck, test, build
+        working-directory: starters/vite-three-canvas
+        run: npm run verify
+
   deterministic-capture:
     runs-on: ubuntu-latest
     timeout-minutes: 10

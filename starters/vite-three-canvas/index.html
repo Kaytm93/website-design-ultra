@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vite + Three canvas starter</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --ink: #eef2f8;
+        --ink-dim: #9aa7bb;
+        --ground: #0a0b10;
+        --line: #22293a;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--ground);
+        color: var(--ink);
+        font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      .stage {
+        position: relative;
+        min-height: 100svh;
+        display: grid;
+        grid-template-rows: 1fr auto;
+      }
+      .stage canvas,
+      .stage [data-scene-poster] {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      [data-scene-poster] {
+        object-fit: cover;
+        background: var(--ground);
+      }
+      [data-scene-poster][hidden] { display: none; }
+      .copy {
+        position: relative;
+        z-index: 1;
+        max-width: 34rem;
+        padding: clamp(1.5rem, 5vw, 4rem);
+        align-self: start;
+      }
+      h1 {
+        margin: 0 0 0.75rem;
+        font-size: clamp(2rem, 5vw, 3.25rem);
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+      }
+      p { margin: 0 0 1rem; color: var(--ink-dim); }
+      .controls {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: clamp(1rem, 4vw, 2rem);
+        border-top: 1px solid var(--line);
+        background: color-mix(in srgb, var(--ground) 82%, transparent);
+      }
+      button {
+        font: inherit;
+        color: var(--ink);
+        background: transparent;
+        border: 1px solid var(--line);
+        border-radius: 0.5rem;
+        padding: 0.45rem 0.9rem;
+        cursor: pointer;
+      }
+      button[aria-pressed='true'] { border-color: var(--ink); }
+      button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+      .controls > span { color: var(--ink-dim); align-self: center; margin-right: 0.25rem; }
+      @media (prefers-reduced-motion: reduce) {
+        * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+      Everything below renders without JavaScript and stays in the document once
+      the canvas mounts. The heading, the copy and both controls are the DOM
+      parallel layer: the canvas is an upgrade of this page, never a replacement
+      for it, and a run with no WebGL simply leaves the poster visible.
+    -->
+    <main class="stage" data-scene-root data-scene-state="poster">
+      <canvas data-scene-canvas aria-hidden="true"></canvas>
+      <img
+        data-scene-poster
+        src="./poster-desktop.png"
+        alt="A cluster of faceted shards lit from the upper left against a dark ground."
+      />
+
+      <div class="copy">
+        <h1>Seeded shards, one renderer, no framework</h1>
+        <p>
+          The geometry is generated from a root seed rather than loaded, so the
+          same seed produces the same bytes and a deterministic capture of this
+          page means something.
+        </p>
+        <p>
+          The scene stops when the tab is hidden, when it scrolls out of view,
+          and when the GPU context is lost. Each of those is a separate reason,
+          and the loop resumes only when none of them holds.
+        </p>
+      </div>
+
+      <div class="controls">
+        <span>Camera</span>
+        <span data-station-controls></span>
+        <button type="button" data-motion-toggle aria-pressed="false">Motion: full</button>
+      </div>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
