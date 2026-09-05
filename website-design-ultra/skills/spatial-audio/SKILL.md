@@ -5,21 +5,13 @@ description: Ship sound in a web experience — layer inventory, the gesture tha
 
 # Spatial Audio
 
-Sound is the layer that most often ships without a contract, because it is added
-last and reviewed on one machine with headphones. Decide the inventory, the
-unlock, the mix, and the opt-out before the first file is loaded.
+Open only when the page itself controls audio. Native media controls, an existing
+player, and a silent 3D scene do not activate it. Decide inventory, unlock, mix,
+and opt-out before loading files.
 
-## 1. Gate
+## Sound contract
 
-This skill activates when the deliverable plays audio the page itself controls.
-It does not activate for a `<video>` or `<audio>` element with native controls,
-for an existing player component, or because a 3D scene exists and sound would
-suit it. `immersive-3d` does not imply this skill.
-
-## 2. Sound contract
-
-Fill before the first file is loaded. The block is the schema; the values are
-one filled example.
+Fill before the first file is loaded; values below are examples.
 
 ```yaml
 default-state: "muted on arrival"
@@ -36,76 +28,30 @@ reduced-motion-relationship: "stated, because it is not automatic"
 offscreen: "suspend on hidden and offscreen"
 ```
 
-Read [references/graph-and-mixing.md](references/graph-and-mixing.md) to build
-the graph, and [references/event-sound-design.md](references/event-sound-design.md)
-to decide which moments get a sound at all.
+Read [references/graph-and-mixing.md](references/graph-and-mixing.md) for buses,
+gains, ducking, and positional audio, and [references/event-sound-design.md](references/event-sound-design.md)
+for moments, variation, and loudness.
 
-## 3. Unlock and default state
+## Rules
 
-Browsers start an audio context suspended until a user gesture, and the policies
-differ between engines and change between releases. Two consequences:
+Build context, buses, and gains during loading; resume only on the first qualifying
+pointer/key gesture. Default to silence, persist explicit consent, and keep a
+blocked resume as a visible normal state. Sound is never the only channel:
+state changes and errors also appear visually. Continuous audio over three seconds
+has a pause/stop or independent volume control, satisfying WCAG 2.2 SC 1.4.2.
+The DOM control is persistent, named, keyboard-reachable, and announces state;
+canvas painting is
+not a control. Motion and sound have separate opt-outs. Fade gain changes,
+limit voices, set retrigger windows, vary repeated one-shots, and suspend on
+hidden/offscreen. Declare audio's weight and defer ambient beds; test a fallback
+encode on every named browser.
 
-- **Build the graph early, resume it late.** Create the context, buses, and
-  gains during loading, then resume on the first qualifying gesture. A graph
-  built inside the gesture handler is a graph built while the visitor waits.
-- **Default to silence.** Autoplaying sound on arrival is blocked in most
-  configurations and unwelcome in the rest. A returning visitor who enabled
-  sound may hear it again, from stored consent, after their gesture.
+## Routing and output
 
-Treat a failed resume as a normal state, not an error: the control stays
-visible, and the experience stays complete without sound.
-
-## 4. Accessibility invariants
-
-- **Sound is never the only channel.** Every confirmation, state change, and
-  error that a sound reports also reports visually. A sound is reinforcement.
-- **Anything that plays automatically for more than a few seconds needs a
-  control.** WCAG 2.2 Success Criterion 1.4.2 sets that boundary at three
-  seconds at Level A, and it is satisfied by a pause or stop mechanism, or by an
-  independent volume control. An ambient bed is exactly this case.
-- **The control is real.** Persistent, reachable by keyboard, with an accessible
-  name and an announced state. In a canvas-first build it lives in the DOM
-  parallel layer; a painted icon is not a control.
-- **Reduced motion does not cover audio.** A visitor who suppressed motion has
-  said nothing about sound, and a visitor who muted sound has said nothing about
-  motion. Two preferences, two controls, and the relationship between them
-  stated in the contract rather than assumed.
-- **No sudden loudness.** Fade in and out over a perceptible ramp; an abrupt
-  gain change is unpleasant on headphones and reads as a defect.
-
-## 5. Mix discipline
-
-- One master gain, one gain per layer, and nothing writing gain outside them.
-- Duck the bed under events rather than raising events over the bed. The mix
-  stays inside its headroom that way.
-- Limit concurrent voices per event type, and set a retrigger window. Without
-  both, a fast pointer produces a burst that no single sample survives.
-- Vary repeated one-shots by sample or by a small pitch offset. An identical
-  sample fired thirty times is the audible form of the uniformity budget
-  `anti-slop` measures visually.
-- Suspend the context on `document.hidden` and when the experience is offscreen.
-  `3d-runtime-quality` already requires audio to pause with the render loop.
-
-## 6. Weight and format
-
-Audio is competing with the geometry and texture budget from `immersive-3d` §3,
-so declare its share rather than letting it grow into the remainder. Ambient
-beds are the largest files and the least urgent: they belong in a deferred
-bucket, and the experience starts without them.
-
-Container and codec support differs between engines and changes between
-releases. Verify decode support for the chosen container on every target browser
-and ship one fallback encode. Do not copy a support matrix from this file or any
-other; test it against the browsers the project actually names.
-
-## 7. Routing
-
-- Graph, buses, ducking, positional audio → **[references/graph-and-mixing.md](references/graph-and-mixing.md)**
-- Which moments get a sound, variation, loudness → **[references/event-sound-design.md](references/event-sound-design.md)**
-- The DOM control and its focus behavior → **`canvas-first-architecture`**
-- Loading the beds without delaying the reveal → **`loading-choreography`**
-- Pause on hidden and offscreen → **`3d-runtime-quality`**
-- The control's label and its state copy → **`content-design`**, then **`anti-slop`**
+DOM/focus → `canvas-first-architecture`; loading → `loading-choreography`;
+pause → `3d-runtime-quality`; label/state copy → `content-design` then
+`anti-slop`. Deliver the filled contract, graph, event inventory, controls,
+weight/codec evidence, and verification state.
 
 ## Check
 

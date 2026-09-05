@@ -5,26 +5,18 @@ description: Design and implement stable runtime quality for Three.js, R3F, WebG
 
 # 3D Runtime Quality
 
-Preserve the visual statement from `3d-art-direction` within the budget from `immersive-3d`. Treat quality as one central state machine, not as a collection of independent auto-optimizations.
+Keep the visual statement from `3d-art-direction` inside the budget from
+`immersive-3d`. One controller owns quality; it is not a pile of independent
+auto-optimizers.
 
 ## Runtime contract
 
-Define before implementation. The block below is the schema, not the values.
-The versioned project budget and shared renderer/controller/verifier evidence
-surface live in [references/telemetry-contract.md](references/telemetry-contract.md),
-[references/telemetry-schema.json](references/telemetry-schema.json), and the
-verifier protocol in [references/telemetry-collection.md](references/telemetry-collection.md).
-Copy the repository-root `references/immersive-telemetry.ts` reference into a project; do not infer a
-frame-time threshold from fps or promote context counters into universal gates.
-The copyable zero-dependency mechanism for tier transitions, DPR steps,
-hysteresis, offscreen pause, and thermal backoff is the repository-root
-`references/quality-controller.ts`; it owns no quality values — those stay in
-`references/tier-matrix.md` and this skill.
-`initial-tier` and the window lengths are one filled example; the concrete
-Poster, Low, Medium, and High profiles live in
-[references/tier-matrix.md](references/tier-matrix.md), and `immersive-3d` §3
-points here for exactly those numbers. A contract filled from this block alone
-carries no tier definitions at all.
+Define before implementation. Values below are an example; concrete profiles live
+in [references/tier-matrix.md](references/tier-matrix.md). The shared telemetry
+surface is in [references/telemetry-contract.md](references/telemetry-contract.md),
+[references/telemetry-schema.json](references/telemetry-schema.json), and
+[references/telemetry-collection.md](references/telemetry-collection.md). Copy
+the zero-dependency controller from `templates/runtime/quality-controller.ts`.
 
 ```yaml
 initial-tier: "medium"
@@ -38,70 +30,36 @@ pause-when: [offscreen, document-hidden]
 quality-owner: "QualityController"
 ```
 
-Derive the initial tier from conservative signals, but correct it only from measured runtime. Never use user agent, `deviceMemory`, `hardwareConcurrency`, or DPR alone as a source of truth.
+Do not infer truth from user agent, memory, cores, or DPR alone; correct from
+measured runtime. Report `PASS`, `FAIL`, `UNAVAILABLE`, or `NOT_APPLICABLE` as
+`core-rules/references/verification-status.md` defines them.
 
 ## Workflow
 
-A step that names a reference requires it before that step can be answered.
-Answering the step from this file alone leaves it unfilled.
+1. Take the scene budget from `immersive-3d`.
+2. Fill Poster/Low/Medium/High in `references/tier-matrix.md`.
+3. Assign one owner and a fixed degradation order.
+4. Measure frame time after warm-up, excluding compile, resize, hidden time, and
+   navigation; retain the three telemetry gates and context as evidence.
+5. Change one step at a time with hysteresis, cooldown, and persistence. Read
+   [references/adaptive-runtime.md](references/adaptive-runtime.md).
+6. Pause render, mixer, controls, particles, and measurement offscreen/hidden.
+7. Check desktop, mobile, reduced motion, poster, and fallback in a real browser
+   with `scripts/verify-browser.mjs` as the launch gate; unavailable hardware
+   stays unverified.
 
-1. Set the overall budget in `immersive-3d`.
-2. Define concrete Poster/Low/Medium/High profiles. Read [references/tier-matrix.md](references/tier-matrix.md).
-3. Assign one quality owner and a fixed degradation order.
-4. Measure frame time after warm-up; ignore asset compile, resize, background tabs, and navigation.
-5. Change at most one step per decision and prevent oscillation with hysteresis, cooldown, and session persistence. Read [references/adaptive-runtime.md](references/adaptive-runtime.md).
-6. Pause render loop, mixer, controls, particles, and measurement in the offscreen or hidden state.
-7. Check every tier in a real browser on desktop, mobile, reduced motion, and
-   poster/fallback. Use the capability-checked `scripts/verify-browser.mjs`
-   adapter from the plugin, or real host browser automation with the same state
-   matrix. A slash command or a Codex path is not a prerequisite.
+## Ownership and degradation
 
-With a runnable target, the mandatory step ends in `PASS`, `FAIL`, or
-`UNAVAILABLE`. `UNAVAILABLE` applies when the required browser, GPU, or telemetry
-capability is missing, or the target cannot be reached. Run build/typecheck plus
-static poster, DOM, and reduced-motion checks, hand over the experience explicitly
-as **unverified**, and leave the launch gate open. These checks do not replace
-visual or telemetry verification.
-For a pure plan/contract without a runnable target, use `NOT_APPLICABLE
-(plan-only)` plus the planned capture matrix; as soon as an implementation runs,
-the check becomes the launch gate.
+Store `tier` centrally and derive DPR, shadows, LOD, PostFX, particles, and loop
+state from it. Do not alter camera, brand color, tone mapping, or content order
+between tiers. Use poster as a real no-canvas state and keep the DOM alternative.
+A suitable subject-specific order is: secondary particles/PostFX, shadow cost,
+small DPR steps, LOD/material complexity, then poster. A `render-graph` supplies
+pass-level order; this controller alone decides the tier.
 
-## Quality ownership
-
-- Store `tier` centrally; derive DPR, shadows, LOD, PostFX, particles, and render loop from it.
-- Avoid multiple adaptive systems that change DPR or effects at the same time.
-- Switch expensive shader/PostFX variants rarely, because material recompiles can themselves cause stutter.
-- Do not change camera, brand color, tone-mapping curve, or content order between tiers.
-- Use poster as a real state: do not mount the canvas, or stop it completely.
-
-## Degradation order
-
-Choose the order by subject and document it. A sensible starting point:
-
-1. reduce non-content particles and secondary PostFX,
-2. lower shadow resolution/update frequency or switch to blob/baked,
-3. lower DPR in small steps,
-4. reduce LOD and material complexity,
-5. switch to poster when interaction or stability would otherwise become unreliable.
-
-When a `render-graph` chain is present, its declared pass-level order supplies
-steps 1 and 2. This controller decides the tier; the chain decides which pass
-that tier drops and at which resolution scale. Two systems deciding that
-independently is the oscillation this skill exists to prevent.
-
-Never remove the DOM alternative, selection states, or CTA functionality.
-
-## Output
-
-Deliver:
-
-1. the tier matrix,
-2. measurement windows, thresholds, cooldown, and persistence,
-3. offscreen/visibility behavior,
-4. the renderer-specific PostFX decision,
-5. the poster/fallback path and verification artifacts,
-6. verification status, backend, and on `UNAVAILABLE` or `NOT_APPLICABLE` the
-   open capture matrix.
+Deliver the matrix, thresholds/windows/cooldown/persistence, pause behavior,
+renderer-specific PostFX choice, fallback artifacts, and honest verification
+status including the open capture matrix whenever status requires it.
 
 ## Check
 

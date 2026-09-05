@@ -112,7 +112,7 @@ useGLTF.preload('/models/product.glb')
 - Decorative scene with equivalent DOM content: mark the Canvas wrapper `aria-hidden="true"`.
 - Informative scene: provide a concise accessible description adjacent to the Canvas.
 - Interactive scene: provide equivalent DOM controls and state announcements via `r3f-interaction`.
-- On `webglcontextlost`, show the poster/fallback; attach and remove listeners with cleanup.
+- Handle `webglcontextlost` with `immersive-3d` §5's fallback; attach and remove the listener with cleanup.
 - Do not put interactive DOM controls inside an ancestor with `role="img"`.
 
 ## Check

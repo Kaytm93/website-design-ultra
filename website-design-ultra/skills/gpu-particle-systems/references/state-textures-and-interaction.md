@@ -41,11 +41,11 @@ render(stateWrite, read=ping) → swap → read=pong / write=ping
 - **Channel A (`posLife` - Position/Life):** `xyz = position`, `w = life` in `[0,1]` (or age normalized). Life drives spawn/reset per texel.
 - **Channel B (`velSpawn` - Velocity/Spawn or Seed):** `xyz = velocity`, `w = spawnSeed or stable random seed` (alternatively a separate `Seed` channel). The seed survives resets and keeps per-particle variation deterministic.
 
-The lab experiments in `lab/src/experiments/shaders/particle-toy-update.frag` use `posLife = (x,y,z,life)` and `velSeed = (vx,vy,vz,seed)` - the same layout that every production copy must preserve.
+The lab experiments in `repo:lab/src/experiments/shaders/particle-toy-update.frag` use `posLife = (x,y,z,life)` and `velSeed = (vx,vy,vz,seed)` - the same layout that every production copy must preserve.
 
 ### 1.4 Deterministic initialization and stable seeding
 
-Every random source takes a named seed via the injected `RandomStreams` contract from `references/determinism-runtime.ts`.
+Every random source takes a named seed via the injected `RandomStreams` contract from `templates/runtime/determinism-runtime.ts`.
 
 - Spawn determinism uses the namespace **`particles/spawn`** - that exact string, not `spawn` alone, not `particle/spawn`. Call `streams.stream('particles/spawn')` to seed initial position/velocity/life/seed channels.
 - Any additional randomness (curl variation, turbulence offset, morph jitter) uses a **separate named stream** - for example `particles/field` or `particles/turbulence`. Never reuse the `particles/spawn` stream for field noise so adding a field does not change spawn order.
@@ -72,7 +72,7 @@ const y = clamp(1 - (clientY - rect.top) / rect.height, 0, 1); // invert Y: canv
 - `y` is inverted (`1 - …`) because DOM Y grows downward and simulation/NDC Y grows upward; omitting that inversion is a shipped bug - the field trails mirrored vertically.
 - The result is passed as `uniform vec2 uPointer;` (normalized). The shader never receives raw pixel coordinates.
 
-The reference implementation in `lab/src/experiments/particle-toy.ts` performs this exact clamp-and-invert exactly once per normalized update; the shader receives only `uPointer`.
+The reference implementation in `repo:lab/src/experiments/particle-toy.ts` performs this exact clamp-and-invert exactly once per normalized update; the shader receives only `uPointer`.
 
 ### 2.2 Shader radial field and falloff
 
@@ -93,7 +93,7 @@ vec2 field = normalize(toP + 1e-4) * falloff * 0.04; // 0.04 is the capped stren
 - The falloff is Gaussian `exp(-d²/(2σ²))` with a `smoothstep` outer cutoff so the field is exactly zero beyond a bounded disc. No unbounded `1/(d+ε)` field that influences every particle.
 - The field never runs per-particle React state. The host writes one uniform; the shader loops only in GLSL.
 
-The lab's `particle-toy-update.frag` documents this falloff verbatim and the test `lab/tests/gpu-particles.test.ts` asserts that the source contains the Gaussian expression and a capped radius check.
+The lab's `particle-toy-update.frag` documents this falloff verbatim and the test `repo:lab/tests/gpu-particles.test.ts` asserts that the source contains the Gaussian expression and a capped radius check.
 
 ## 3. Click impulse - one record, recovering over time, then inactive
 
@@ -147,7 +147,7 @@ The lab's `particle-toy.ts` mutates refs and writes uniforms; the test asserts t
 A non-empty composition is mandatory in three situations. A blank canvas, a transparent clear, or a missing poster asset is never a fallback.
 
 - **Reduced motion (`prefers-reduced-motion: reduce`):** the simulation freezes. `uTime` is held at `0`, pointer field strength becomes `0`, impulse is immediately inactive, `Points` attributes hold their last composition. The poster still image remains meaningful - it is the reduced-motion representation, not an empty container. Any toggle that restores motion must be a visible, keyboard-reachable control - a media-query-only freeze without a control is incomplete.
-- **Poster:** the quality tier `Poster` is a composition, not a blank fallback color. Use `immersive-3d`'s poster contract and `3d-runtime-quality`'s tier definition. The particle lab renders a static `Points` snapshot for poster captures; `lab/src/fixtures/gpu-particles-deterministic.ts` fires `data-wdu-ready` once that composition is stable.
+- **Poster:** the quality tier `Poster` is a composition, not a blank fallback color. Use `immersive-3d`'s poster contract and `3d-runtime-quality`'s tier definition. The particle lab renders a static `Points` snapshot for poster captures; `repo:lab/src/fixtures/gpu-particles-deterministic.ts` fires `data-wdu-ready` once that composition is stable.
 - **Capability fallback:** when float render targets / `half-float` are unavailable or `WebGL2` context creation fails, the lab renders the poster composition and the Canvas falls back to the DOM headline/CTA without requiring GPU simulation. The capability signal is a readable device probe (see §6), not a try/catch that blanks silently.
 
 ## 6. Renderer matrix - what counts as evidence
@@ -158,7 +158,7 @@ A **PASS** may only be recorded after **real browser execution** with a **float 
 
 ### WebGPU
 
-**UNAVAILABLE, never PASS**, unless all of these co-occur: a live `GPUDevice` was acquired, a WGSL/TSL implementation of the state update and the particle render was submitted and executed, and an artifact or screenshot tied to that run was recorded. Raw GLSL - even via `three.webgpu`'s compatibility fallback - that has not been rewritten as WGSL/TSL and executed on a `GPUDevice` is declaratively not a WebGPU PASS. The backend matrix (`lab/src/fixtures/backend-matrix.json`) stores `gpu-particles` as `webgpu: UNAVAILABLE` with the reason citing "No WGSL/TSL device execution; raw GLSL is never WebGPU PASS" when that condition holds.
+**UNAVAILABLE, never PASS**, unless all of these co-occur: a live `GPUDevice` was acquired, a WGSL/TSL implementation of the state update and the particle render was submitted and executed, and an artifact or screenshot tied to that run was recorded. Raw GLSL - even via `three.webgpu`'s compatibility fallback - that has not been rewritten as WGSL/TSL and executed on a `GPUDevice` is declaratively not a WebGPU PASS. The backend matrix (`repo:lab/src/fixtures/backend-matrix.json`) stores `gpu-particles` as `webgpu: UNAVAILABLE` with the reason citing "No WGSL/TSL device execution; raw GLSL is never WebGPU PASS" when that condition holds.
 
 The contract field `webgpuRequires` records exactly that sentence so tooling can match it:
 
@@ -173,7 +173,7 @@ The same two-source rule binds the plugin validator and the lab harness: a `PASS
 When copying this contract into a project:
 
 1. Copy this file and `SKILL.md` §1's gate answer into the project's evidence directory.
-2. Import the injected `SceneClock` and `RandomStreams` (`determinism-runtime.ts`) - the simulation never reads `performance.now()` or `Math.random()` directly while `WDU_DETERMINISTIC=1`.
+2. Import the injected `SceneClock` and `RandomStreams` (`templates/runtime/determinism-runtime.ts`) - the simulation never reads `performance.now()` or `Math.random()` directly while `WDU_DETERMINISTIC=1`.
 3. Allocate `qualityProfile.particles` count (from `3d-runtime-quality`) as a square or near-square texture dimension `ceil(sqrt(N))`; the lab's small fixture dimension stays labeled `fixture/test size only`.
 4. Never copy the fixture dimension into the production profiles.
 

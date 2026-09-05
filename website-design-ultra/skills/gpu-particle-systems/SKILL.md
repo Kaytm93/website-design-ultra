@@ -5,67 +5,37 @@ description: Simulate thousands of GPU particles with persistent texture state, 
 
 # GPU Particle Systems
 
-Persistent GPU simulation is a cost class, not a default decoration. This skill owns the texture-based ping-pong contract only when the brief establishes a field the particles inhabit across frames.
+This is a cost class, not default decoration. Open only when the brief requires
+thousands of particles, persistent state across frames, and a spatial field,
+trails/history, or volume morphing. State which predicate applies.
 
-## 1. Gate - selection and negative gating
+Decorative dust, sparkle, tens/hundreds of instanced particles, a one-shot burst,
+or a standalone click shockwave stay in `r3f-patterns`/`shaders-tsl`. A shockwave
+here must be a recovering impulse inside persistent ping-pong simulation.
+Particle counts belong to `3d-runtime-quality` (`qualityProfile.particles`), not
+this skill or its reference.
 
-This skill opens only when **all** of these hold:
+## Contract and workflow
 
-1. The brief requires **thousands** of particles in a spatial field - not dozens or a handful.
-2. The simulation carries **persistent state across frames** - each particle's position/velocity is integrated from the previous frame, not recreated per frame.
-3. At least one is true: a **spatial field** displaces particles, **trails/history** is sampled across frames, or **volume morphing** interpolates between shapes.
+Before simulation code, read [references/state-textures-and-interaction.md](references/state-textures-and-interaction.md).
+It owns the two RGBA16F/HalfFloat targets, precision/filter/color-space/depth
+settings, one read/write/swap owner, reset, seeded streams, normalized pointer
+field, bounded recovering impulse, no per-particle React state, and renderer
+matrix. WebGL2 is PASS only after real float-target execution; WebGPU is
+UNAVAILABLE without a real WGSL/TSL device. Fallbacks are non-empty.
 
-If the answer to any row below is in the right column, this skill does not open. Use `r3f-patterns` instead.
+1. Answer the gate and select the quality profile.
+2. Allocate two targets with no per-frame reallocation and one simulation owner.
+3. Wire normalized pointer and one recovering impulse from the injected clock.
+4. Seed spawn/reset through `particles/spawn` and named streams.
+5. Provide reduced-motion, poster, and capability fallback compositions.
+6. Verify the declared WebGL2 path honestly; leave unsupported WebGPU unverified.
 
-| Brief asks for | This skill | Not this skill → |
-|---|---|---|
-| Decorative dust drifting over a surface | - | `r3f-patterns` with a small `InstancedMesh` or `Points` |
-| Sparkle or glitter on an object | - | `r3f-patterns` |
-| Small instanced particles (tens–hundreds, buffer-driven) | - | `r3f-patterns` |
-| A short burst (one-shot emission, no persistent state) | - | `r3f-patterns` |
-| A single click shockwave without persistent particle state | - | `r3f-patterns` or `shaders-tsl` |
+## Routing
 
-A single click shockwave **factor** - the generic radial displacement without persistent textured particle history - stays in `r3f-patterns` / `shaders-tsl`. This skill's click is a **recovering impulse inside a persistent ping-pong simulation**, not a standalone effect.
-
-State the gate answer in the deliverable. A scene that cannot state which of field / trail / morph it carries took the expensive texture simulation by accident.
-
-Particle counts per tier are not in this skill or its reference. They are owned by `3d-runtime-quality` and consumed as `qualityProfile.particles`. The lab may carry a fixture texture dimension explicitly marked as a test size only.
-
-## 2. Contract - what the reference owns
-
-Technical precision, sampling, ownership, seeding, pointer normalization, falloff, impulse shape, and the WebGL2/WebGPU renderer matrix are not in this file. Read [references/state-textures-and-interaction.md](references/state-textures-and-interaction.md) before any simulation code is written. Answering this step from the gate alone leaves the simulation unsound.
-
-That reference is the single copyable contract for:
-
-- two separate RGBA16F / HalfFloat state targets (`highp`, `NearestFilter`, `NoColorSpace`, no depth/stencil),
-- one simulation owner for read / write / swap, never sampling the currently bound write target,
-- reset by reinitializing both targets (no per-frame reallocation),
-- position/life and velocity/spawn-or-seed channels,
-- deterministic seeding via the injected `RandomStreams` namespace `particles/spawn` and separate named streams for additional randomness,
-- normalized pointer field and capped radial falloff,
-- one recovering click impulse with origin / radius / strength / startTime-or-age decaying via the injected clock,
-- the rule that no per-particle React state and no React state setter exists in the render loop,
-- WebGL2 requires real float-render-target execution for PASS; WebGPU is UNAVAILABLE without an actual WGSL/TSL implementation and WebGPU device; and the non-empty reduced-motion / poster / capability fallback.
-
-Do not copy particle counts from a fixture or example into production; read the quality profile.
-
-## 3. Workflow
-
-1. Answer the §1 gate and cite which of field / trails / morph supplied the third predicate.
-2. Read `references/state-textures-and-interaction.md` and the tiered particle allowance from `3d-runtime-quality` (`qualityProfile.particles`).
-3. Allocate the two state targets and the simulation owner. No per-frame reallocation.
-4. Wire the normalized pointer field and the one-shot recovering impulse from the contract - never per-particle React state.
-5. Implement deterministic spawn/reset from `particles/spawn` and any additional named streams.
-6. Produce the mandatory fallbacks: a reduced-motion composition, a poster tier, and a capability fallback that is never a blank canvas - each is a non-empty composition.
-7. Verify on the declared WebGL2 path with a real browser float-target execution before claiming PASS; leave WebGPU as UNAVAILABLE when no WGSL/TSL device execution exists.
-
-## 4. Routing
-
-- Concrete counts per tier → **`3d-runtime-quality` (`references/tier-matrix.md`, `qualityProfile.particles`)**
-- Single-pass decorative dust / sparkle / short burst → **`r3f-patterns`**
-- TSL / WebGPU node material choice and WebGL2 fallback → **`shaders-tsl`**
-- Multi-pass chains that read earlier buffers → **`render-graph`**
-- Deterministic clock / streams / `data-wdu-ready` → **`core-rules/references/determinism.md`**
+Counts → `3d-runtime-quality`; decorative particles → `r3f-patterns`; TSL and
+backend fallback → `shaders-tsl`; buffer chains → `render-graph`; deterministic
+clock/streams → `core-rules/references/determinism.md`.
 
 ## Check
 
