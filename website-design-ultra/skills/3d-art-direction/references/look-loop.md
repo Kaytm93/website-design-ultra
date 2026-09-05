@@ -2,7 +2,7 @@
 
 A poster is a target, not proof that the live scene matches it. The loop below
 turns a look claim into a measured distance. It is read when a scene has been
-implemented and its image is being corrected — not when the poster is first
+implemented and its image is being corrected, not when the poster is first
 composed.
 
 ## The loop
@@ -38,7 +38,7 @@ regression with a story attached.
 
 The target and the live frame must share dimensions; a comparison across two
 shapes measures the resize, not the image. Tolerance is a property of the shot,
-not of the run — record it in the report rather than tightening it after seeing
+not of the run. Record it in the report rather than tightening it after seeing
 a score.
 
 ## Status

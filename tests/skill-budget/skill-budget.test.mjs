@@ -25,36 +25,45 @@ const compressed3dSkills = [
 
 const baselineHashes = {
   '3d-art-direction': {
+    items: 9,
     yaml: 'add6c8b994',
-    check: '3e3aa2fa3e',
+    check: 'bef083483e',
   },
   '3d-runtime-quality': {
+    items: 8,
     yaml: '83b2e96b3f',
     check: '92d7137fc5',
   },
   'canvas-first-architecture': {
+    items: 9,
     yaml: 'e91077458a',
     check: 'cdc4027bd8',
   },
   'render-graph': {
+    items: 8,
     yaml: '8fb5b27742',
     check: 'ca27a788bb',
   },
   'loading-choreography': {
+    items: 8,
     yaml: '0c27d7369b',
     check: '6bf36e6a46',
   },
   'spatial-audio': {
+    items: 10,
     yaml: '759a80f86b',
     check: '7976ee6e0a',
   },
   'gpu-particle-systems': {
+    items: 9,
     check: 'f89884f613',
   },
   'procedural-3d': {
+    items: 6,
     check: '84cefbd72f',
   },
   'reference-intake': {
+    items: 7,
     check: 'c9d7db20bd',
   },
 }
@@ -84,6 +93,14 @@ test('contract YAML and checklists preserve their baseline bytes', () => {
       assert.equal(actual.yaml.length, 1, `${name} YAML block count changed`)
       assert.equal(digest(actual.yaml[0]), expected.yaml, `${name} YAML changed`)
     }
+    // The hash is the byte contract; the count is what the hash is *for*.
+    // Re-baselining a hash after an intended addition is routine, and a hash
+    // alone cannot tell an addition from a deletion — so a dropped item has to
+    // fail a second, independently stated assertion.
+    assert.ok(
+      (actual.check ?? '').match(/^- \[ \]/gm)?.length >= expected.items,
+      `${name} lost a checklist item`,
+    )
     assert.equal(digest(actual.check ?? ''), expected.check, `${name} checklist changed`)
   }
 })
