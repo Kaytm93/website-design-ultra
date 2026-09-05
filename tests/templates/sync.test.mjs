@@ -128,12 +128,19 @@ test('no mirrored source has gone missing from the repository', () => {
 
 test('the documented runtime paths work from an isolated plugin installation', () => {
   const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'wdu-plugin-install-'))
-  const installed = path.join(parent, 'website-design-ultra')
+  // Real Codex installations live below a dot-directory. Ancestor names must
+  // not make the explicitly selected plugin's own files look like vendor output.
+  const installed = path.join(parent, '.codex/plugins/cache/vendor/website-design-ultra')
   try {
     fs.cpSync(path.join(repoRoot, 'website-design-ultra'), installed, {
       recursive: true,
       filter: (source) => !source.includes(`${path.sep}.DS_Store`),
     })
+
+    const validation = spawnSync(process.execPath, [path.join(installed, 'scripts/validate-content.mjs')], {
+      encoding: 'utf8',
+    })
+    assert.equal(validation.status, 0, validation.stderr || validation.stdout)
 
     const comparator = path.join(installed, 'templates/runtime/compare-baselines.mjs')
     const result = spawnSync(process.execPath, [

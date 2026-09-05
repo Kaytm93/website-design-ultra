@@ -1,5 +1,17 @@
 # website-design-ultra
 
+## Unreleased — Installed-validator path repair (2026-09-05)
+
+A fresh Codex CLI installation exposed six false validator failures below the
+`.codex/plugins/cache/` directory. Generated/vendor exclusions now apply within
+the selected starter or lab surface, so installation ancestors do not hide
+source files. The isolated-install regression reproduces the original failure
+and validates the corrected payload below both `.codex` and `vendor` ancestors.
+Runtime imports, the comparator, copy lint and forward-contract replay also run
+from the installed payload. This is installation evidence, not a live-model or
+release claim.
+
+
 ## Unreleased — Checkpoint browser lifecycle (2026-09-05)
 
 Close each checkpoint browser before starting the next, including failed and

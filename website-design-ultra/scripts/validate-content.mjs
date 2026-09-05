@@ -1341,8 +1341,10 @@ const GENERATED_VENDOR_FILES = new Set([
   'pnpm-lock.yaml',
 ])
 
-function isGeneratedVendorPath(file) {
-  const normalized = String(file).replaceAll('\\', '/')
+function isGeneratedVendorPath(file, surfaceRoot) {
+  // Only descendants of the selected surface are excluded. The installation
+  // itself may legitimately live inside .codex, .claude, or a vendor folder.
+  const normalized = path.relative(surfaceRoot, path.resolve(file)).replaceAll('\\', '/')
   const segments = normalized.split('/')
   const base = segments[segments.length - 1]
   if (GENERATED_VENDOR_FILES.has(base) || base.endsWith('.tsbuildinfo')) return true
@@ -1423,7 +1425,7 @@ function lintStarterCopy(surface) {
     ...Object.keys(report.measurements ?? {}),
     ...(report.filesWithoutCopy ?? []),
   ])) {
-    if (isGeneratedVendorPath(file)) excludedSeen.push(file)
+    if (isGeneratedVendorPath(file, surface.root)) excludedSeen.push(file)
   }
   for (const file of Object.keys(report.measurements ?? {})) {
     const absolute = path.resolve(file)
@@ -1481,9 +1483,9 @@ function countLabSources(labRoot) {
     for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
       const target = path.join(directory, entry.name)
       if (entry.isDirectory()) {
-        if (isGeneratedVendorPath(target)) continue
+        if (isGeneratedVendorPath(target, labRoot)) continue
         walk(target)
-      } else if (entry.isFile() && !isGeneratedVendorPath(target)) {
+      } else if (entry.isFile() && !isGeneratedVendorPath(target, labRoot)) {
         count += 1
       }
     }
