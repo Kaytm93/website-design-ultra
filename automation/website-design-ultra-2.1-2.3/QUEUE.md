@@ -15,25 +15,25 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
 
 ## PR 1 — PR A: Erreichbarkeit und Routing — 2.1.0 Teil 1
 
-- [ ] `J-A1` **Kopierbare Runtime-Dateien ins Plugin legen** — S
+- [x] `J-A1` **Kopierbare Runtime-Dateien ins Plugin legen** — S
   - **Depends on:** none
   - **Deliver:** `website-design-ultra/templates/runtime/` mit byte-identischen Kopien der sechs Runtime-Referenzen aus `references/`; `tests/templates/sync.test.mjs`.
   - **Acceptance:** Runtime-Skills und `/verify` zeigen auf Plugin-Templates; kein installierter Pfad fehlt.
   - **Verify:** Backtick-Pfad-Regel in `validate-content.mjs`, Sync-Test, `claude plugin validate website-design-ultra --strict`.
 
-- [ ] `J-A2` **Comparator und Prohibition-Validator ins Plugin** — S
+- [x] `J-A2` **Comparator und Prohibition-Validator ins Plugin** — S
   - **Depends on:** J-A1
   - **Deliver:** `templates/runtime/compare-baselines.mjs` und `templates/runtime/canvas-only-prohibition.ts`, dependency-frei; Sync-Test erweitert.
   - **Acceptance:** `commands/verify.md` und `canvas-first-architecture` verweisen auf Plugin-Pfade; Comparator-Help läuft ohne Repo-Checkout.
   - **Verify:** Sync-Test, Pfad-Validator, `node <plugin-root>/templates/runtime/compare-baselines.mjs --help`.
 
-- [ ] `J-A3` **Router-Lücke schließen** — S
+- [x] `J-A3` **Router-Lücke schließen** — S
   - **Depends on:** none
   - **Deliver:** `gpu-particle-systems` und `procedural-3d` in `immersive-3d`-Add-on-Tabelle/Routing und als `core-rules`-Gate-Zeilen.
   - **Acceptance:** Jeder Skill wird genau einmal von `core-rules` oder `immersive-3d` genannt; beide Add-ons bleiben in den drei 3D-Forward-Cases verboten.
   - **Verify:** Router-Vollständigkeitsregel, `run-forward-tests.mjs --dry-run`.
 
-- [ ] `J-A4` **Lab-Module aus `shaders-tsl` referenzieren** — M
+- [x] `J-A4` **Lab-Module aus `shaders-tsl` referenzieren** — M
   - **Depends on:** J-A1
   - **Deliver:** `shaders-tsl/references/module-index.md` mit allen elf Modulen, fünf T2.2-Feldern, Fixture- und Copy-Pfad; GLSL nach `templates/shaders/` spiegeln.
   - **Acceptance:** Conditional References nennen den Index; jede Indexzeile zeigt auf eine existierende Template-Datei.
@@ -41,19 +41,19 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
 
 ## PR 2 — PR B: Effizienz — 2.1.0 Teil 2
 
-- [ ] `J-B1` **Eine Quelle für den Verifikationsstatus** — S
+- [x] `J-B1` **Eine Quelle für den Verifikationsstatus** — S
   - **Depends on:** none
   - **Deliver:** `core-rules/references/verification-status.md` ≤ 1,5 KB; sechs Statuskopien auf Pointer-Sätze reduzieren.
   - **Acceptance:** Statuswerte werden nur einmal definiert; `UNAVAILABLE`-Treffer ≤ 14.
   - **Verify:** Byte-Diff der sechs Dateien und `validate-content.mjs`.
 
-- [ ] `J-B2` **Fallback-Regeln nur in `immersive-3d` §5** — S
+- [x] `J-B2` **Fallback-Regeln nur in `immersive-3d` §5** — S
   - **Depends on:** J-B1
   - **Deliver:** Fallback-Wiederholungen in `core-rules`, `r3f-patterns`, `3d-runtime-quality` und `/immersive` auf Pointer reduzieren.
   - **Acceptance:** Reduced-Motion-, Poster- und Context-Loss-Regeln stehen nur in `immersive-3d` §5.
   - **Verify:** `prefers-reduced-motion`-Treffer ≤ 5.
 
-- [ ] `J-B3` **Commands entkoppeln** — M
+- [x] `J-B3` **Commands entkoppeln** — M
   - **Depends on:** J-B1, J-B2
   - **Deliver:** `commands/immersive.md` ≤ 3,5 KB und `commands/design.md` ≤ 3,5 KB; keine duplizierten Skill-Absätze.
   - **Acceptance:** Command-Dateien ≤ 4 KB; Touch-Fragen zeigen auf `r3f-interaction/references/touch-and-gestures.md`.
@@ -71,7 +71,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
   - **Acceptance:** `/tweak` ≤ 8 KB Plugin; `/immersive` liest `core-rules` nur über §3/§4.
   - **Verify:** `measure-path.mjs --command tweak`, Slop-Case `--repeat 3`.
 
-- [ ] `J-B6` **README auf Plugin-Größe** — S
+- [x] `J-B6` **README auf Plugin-Größe** — S
   - **Depends on:** none
   - **Deliver:** README ≤ 12 KB ohne eigenen Versionsabschnitt; Add-on-Zählung vereinheitlichen; `agents/openai.yaml` konsistent in allen oder keinem Skill.
   - **Acceptance:** `release.mjs --strict` grün und README nennt keine Version außer `plugin.json`.

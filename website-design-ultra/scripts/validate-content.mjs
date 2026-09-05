@@ -171,6 +171,115 @@ if (commandDirectories.length !== 6) {
   fail(`expected 6 commands, found ${commandDirectories.length}`)
 }
 
+/**
+ * A command is a running order, not a second copy of the rules.
+ *
+ * Every kilobyte a command spends restating a skill is a kilobyte read twice
+ * on every invocation, and a place the two copies can disagree. The cap is
+ * what keeps a command pointing instead of repeating.
+ *
+ * `verify.md` and `audit.md` are named exceptions, not silent ones: they are
+ * procedure documents that have not been cut yet. The exception is listed so
+ * the debt is visible, and the cap holds for everything else.
+ */
+const commandSizeLimit = 4096
+const uncutCommands = new Set(['verify.md', 'audit.md'])
+for (const name of commandDirectories) {
+  if (uncutCommands.has(name)) continue
+  const size = fs.statSync(path.join(pluginRoot, 'commands', name)).size
+  if (size > commandSizeLimit) {
+    fail(`commands/${name}: ${size} bytes exceeds the ${commandSizeLimit}-byte command budget`)
+  }
+}
+
+/**
+ * A path a skill names has to be a path the reader can open.
+ *
+ * An installation is the plugin directory and nothing else: `references/*.ts`,
+ * `lab/`, and the root test suites are not there. Naming one of them without
+ * saying so hands the reader a dead path, which is the failure this rule
+ * exists to catch. Every backtick span that looks like a file — it contains a
+ * slash and ends in a known extension — must resolve inside the installed
+ * tree, or carry the `repo:` prefix that marks it as source-repository-only.
+ *
+ * Spans holding `<` or `*` are templates for a name, not names.
+ */
+const documentedPathExtensions = [
+  '.md', '.mjs', '.js', '.ts', '.tsx', '.json', '.yaml', '.yml',
+  '.frag', '.vert', '.glsl', '.py', '.png', '.svg', '.glb', '.wduv',
+]
+
+function looksLikeDocumentedPath(span) {
+  if (!span.includes('/')) return false
+  if (/[\s<>*()`]/.test(span)) return false
+  return documentedPathExtensions.some((extension) => span.endsWith(extension))
+}
+
+const repositoryRoot = path.resolve(pluginRoot, '..')
+const repositoryRootPresent = fs.existsSync(path.join(repositoryRoot, '.git'))
+let documentedPathCount = 0
+
+for (const directory of ['skills', 'commands', 'docs']) {
+  for (const file of walkFiles(path.join(pluginRoot, directory))) {
+    if (!file.endsWith('.md')) continue
+    const markdown = read(file)
+    for (const match of markdown.matchAll(/`([^`\n]+)`/g)) {
+      const span = match[1].trim()
+      if (!looksLikeDocumentedPath(span)) continue
+      documentedPathCount += 1
+
+      if (span.startsWith('repo:')) {
+        const target = span.slice('repo:'.length)
+        if (target.startsWith('/') || target.startsWith('.')) {
+          fail(`${relative(file)}: repo: path "${target}" must be repository-root relative`)
+        } else if (repositoryRootPresent && !fs.existsSync(path.join(repositoryRoot, target))) {
+          fail(`${relative(file)}: repo: path "${target}" does not exist in this repository`)
+        }
+        continue
+      }
+
+      const candidates = [
+        path.join(pluginRoot, span),
+        path.join(skillsRoot, span),
+        path.join(path.dirname(file), span),
+      ]
+      if (!candidates.some((candidate) => fs.existsSync(candidate))) {
+        fail(
+          `${relative(file)}: documented path "${span}" is missing from the installed plugin; ` +
+            'point it at a plugin file or mark it `repo:` when it only exists in the source repository',
+        )
+      }
+    }
+  }
+}
+
+/**
+ * A skill no router names is a skill nobody reaches.
+ *
+ * Routing here is deliberate and negative: a skill loads because a gate fired,
+ * never because it looked topical. That only works while every skill has a
+ * gate somewhere. `gpu-particle-systems` and `procedural-3d` shipped without
+ * one and were reachable only by guessing, which is the failure mode the
+ * routing model exists to prevent.
+ *
+ * Being named is not being loaded. A forward case may still forbid a skill
+ * whose gate is written down here.
+ */
+const routerFiles = ['skills/core-rules/SKILL.md', 'skills/immersive-3d/SKILL.md']
+const routerText = routerFiles
+  .map((file) => read(path.join(pluginRoot, file)))
+  .join('\n')
+
+for (const directory of skillDirectories) {
+  if (routerFiles.some((file) => file === `skills/${directory.name}/SKILL.md`)) continue
+  if (!routerText.includes(directory.name)) {
+    fail(
+      `skills/${directory.name}: named by neither ${routerFiles.join(' nor ')}; ` +
+        'a skill no router names cannot be reached by a gate',
+    )
+  }
+}
+
 const priorityOneContracts = [
   [
     'skills/3d-art-direction/SKILL.md',
@@ -187,6 +296,24 @@ const priorityOneContracts = [
   [
     'skills/shaders-tsl/references/webgpu-feature-matrix.md',
     ['WebGPU', 'WebGL2 fallback', 'TSL postprocessing', 'Compute dependency', 'Known limitations'],
+  ],
+  // A module list without the five fields is the prose list T2.2 forbids.
+  [
+    'skills/shaders-tsl/references/module-index.md',
+    [
+      '| Renderer support |',
+      '| Cost class |',
+      '| Reduced motion |',
+      '| Colour space |',
+      '| Fixture |',
+      '| Copy from |',
+      'templates/shaders/',
+      'noCombine',
+    ],
+  ],
+  [
+    'skills/shaders-tsl/SKILL.md',
+    ['references/module-index.md'],
   ],
   [
     'commands/verify.md',
@@ -811,7 +938,15 @@ const canvasFirstContracts = [
   // The add-ons only stay optional while their owners point at them by name.
   [
     'skills/immersive-3d/SKILL.md',
-    ['canvas-first-architecture', 'render-graph', 'loading-choreography', 'spatial-audio', 'Budget class'],
+    [
+      'canvas-first-architecture',
+      'render-graph',
+      'loading-choreography',
+      'spatial-audio',
+      'gpu-particle-systems',
+      'procedural-3d',
+      'Budget class',
+    ],
   ],
   [
     'skills/core-rules/SKILL.md',
@@ -1440,6 +1575,31 @@ for (const testCase of forwardCases) {
   }
 }
 
+/**
+ * Keep the measured path budget executable. The case contract owns the limit;
+ * measure-path.mjs owns how the selected skills and references are counted.
+ * A declared budget that is never run is documentation, not a gate.
+ */
+const pathMeasureScript = path.join(pluginRoot, 'scripts', 'measure-path.mjs')
+if (!fs.existsSync(pathMeasureScript)) {
+  fail('scripts/measure-path.mjs: missing path-budget validator')
+} else {
+  for (const testCase of forwardCases) {
+    if (!Number.isInteger(testCase.trace?.maxEstimatedPluginTokens)) continue
+    const result = spawnSync(
+      process.execPath,
+      [pathMeasureScript, '--case', testCase.id],
+      { encoding: 'utf8' },
+    )
+    if (result.error || result.status !== 0) {
+      const detail = (
+        result.stderr || result.stdout || result.error?.message || `exit ${result.status}`
+      ).trim()
+      fail(`tests/forward/cases.json: ${testCase.id} path budget check failed: ${detail}`)
+    }
+  }
+}
+
 const determinismReference = 'skills/core-rules/references/determinism.md'
 for (const testCase of forwardCases) {
   if (!testCase.trace?.forbiddenFiles?.includes(determinismReference)) {
@@ -1603,6 +1763,20 @@ if (readmeVersion !== claudeManifest.version) {
   fail(
     `README.md: lead version ${readmeVersion ?? 'missing'} differs from manifest ${claudeManifest.version}`,
   )
+}
+
+/**
+ * The README is the first thing an installation reads, and it was 52 KB: a
+ * changelog copy, the full file tree, and every contract in longhand. Detail
+ * belongs in docs/, where nobody pays for it before they want it.
+ */
+const readmeSizeLimit = 12 * 1024
+const readmeSize = fs.statSync(readmePath).size
+if (readmeSize > readmeSizeLimit) {
+  fail(`README.md: ${readmeSize} bytes exceeds the ${readmeSizeLimit}-byte budget; move detail into docs/`)
+}
+if (/\n## Version\n/.test(readme)) {
+  fail('README.md: version history belongs in CHANGELOG.md, not in a second copy here')
 }
 
 const readmeIntroduction = readme.split('\n## Structure')[0]
@@ -1804,6 +1978,7 @@ if (paletteCount !== 20) {
 }
 
 notes.push(`${skillDirectories.length} skills`)
+notes.push(`${documentedPathCount} documented paths resolved`)
 notes.push(`${negativeGatedSkills.length} negative-gated skills`)
 notes.push(`${commandDirectories.length} commands`)
 notes.push(`${paletteCount} palettes / ${contrastCheckCount} state contrast checks`)

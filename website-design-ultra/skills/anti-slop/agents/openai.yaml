@@ -1,4 +1,0 @@
-interface:
-  display_name: "Anti-Slop"
-  short_description: "Tiered slop detection for copy and visual defaults"
-  default_prompt: "Use $anti-slop to detect and repair AI-slop in this page's copy and visual defaults, and report the tier findings with measurements."

@@ -32,9 +32,9 @@ named sessions, `run-code`, and screenshots. It tries in this order:
 3. `playwright-cli` from `PATH`,
 4. `npx --yes --package @playwright/cli@0.1.17 playwright-cli`.
 
-A merely existing path or package name is not enough. When the adapter reports
-`UNAVAILABLE` but the host provides real browser automation, run the same state
-matrix with that host tool. This applies in particular to Claude Cowork: use its
+A merely existing path or package name is not enough. When the adapter has no
+usable backend but the host provides real browser automation, run the same
+state matrix with that host tool. This applies in particular to Claude Cowork: use its
 browser capability directly instead of imitating a Codex path.
 
 ## 3. Deterministic capture
@@ -101,10 +101,11 @@ checkpoints in the script.
 When a committed baseline capture set exists, compare the new run offline
 instead of judging pixels by eye. Read `core-rules/references/determinism.md`
 section 8 and `core-rules/references/baseline-comparison.schema.json`, then
-run the root-only comparator with the two capture-set directories:
+run the comparator that ships with this plugin, with the two capture-set
+directories:
 
 ```bash
-node tests/immersive/interaction-capture/compare-baselines.mjs \
+node <plugin-root>/templates/runtime/compare-baselines.mjs \
   --baseline "$BASELINE_RUN" \
   --candidate "$VERIFY_OUT" \
   --declaration "$PROJECT/baseline-comparison.json" \
@@ -119,6 +120,12 @@ deterministic capture metadata, and its `comparison.json` names every
 mask/tolerance and its source and labels every score as evidence, never an
 aesthetic verdict, taste, or approval. A score is never approval: report it
 as evidence and decide on the product outcome separately.
+
+The comparator reads its declaration contract from the sibling
+`templates/runtime/baseline-comparison.ts`, so it needs a Node that strips
+TypeScript types: Node 23 and newer run it as written, Node 22 needs
+`--experimental-strip-types`. Nothing else is required — no install, no
+repository checkout.
 
 The adapter closes sessions even after failures. With a host tool, produce the
 same named artifacts:
@@ -169,12 +176,9 @@ Next concrete fix:
 
 FAIL on an empty canvas/fallback, an obscured primary CTA, mobile overflow, a missing DOM alternative, active nonessential reduced-motion movement, or runtime errors that damage the experience.
 
-`UNAVAILABLE` is permitted when the executable target lacks the required
-browser, GPU, or telemetry capability, or the target is externally unreachable.
-When the adapter reports an unavailable browser capability but the host provides
-real host browser automation, run the same state matrix with that host tool. For a
-missing GPU or telemetry surface, document the capability evidence and leave the
-launch gate open. Additionally run build/typecheck and static fallback/DOM/
-reduced-motion checks, but never call them a visual or telemetry substitute and
-never report `PASS`. The implementation may be handed over as **unverified**;
-a release/launch gate stays open until real browser and telemetry evidence.
+The four status values and what each one obliges are defined in
+`core-rules/references/verification-status.md`. Two things this command adds:
+when the adapter has no usable browser backend but the host provides real
+host browser automation, run the same state matrix with that host tool instead
+of degrading; and for a missing GPU or telemetry surface, document the capability
+evidence in the report.

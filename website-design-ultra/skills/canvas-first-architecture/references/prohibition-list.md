@@ -9,7 +9,7 @@ shape, the four categories, the signature map, and the runtime observer.
 
 ## Module
 
-`lab/src/modules/canvas-only-prohibition.ts` exports:
+`templates/runtime/canvas-only-prohibition.ts` exports:
 
 | Export | Shape | Role |
 |---|---|---|
@@ -110,7 +110,7 @@ not about the presence of a surface.
 
 ## Test binding
 
-The list is exercised by `lab/tests/canvas-only-prohibition.test.ts`:
+The list is exercised by `repo:lab/tests/canvas-only-prohibition.test.ts`:
 
 - One mirrored-interface test confirms every category has a DOM twin
   and a decorative canvas surface.

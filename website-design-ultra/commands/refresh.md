@@ -14,7 +14,7 @@ You will refresh existing frontend into a new direction. Functionality stays, th
 
 2. **Load only the relevant skills/references**:
    - `style-directions` — the chosen direction family, its token block, and one
-     signature move from `references/signature-moves.md`. A refresh that changes
+     signature move from `style-directions/references/signature-moves.md`. A refresh that changes
      the palette and keeps the old grid, rhythm, and radii is a recolor
    - `content-design` — when hierarchy, claims, CTA, state, or locale copy changes
    - `anti-slop` — design tells for the new direction always; the prose reference

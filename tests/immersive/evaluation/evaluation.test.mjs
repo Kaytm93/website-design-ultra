@@ -491,6 +491,20 @@ test('fallback gate: an unexpected fallback hero canvas fails when declared abse
   assert.match(gates.fallback.reason, /declares a canvas-free fallback/)
 })
 
+test('interrupted checkpoint capture preserves the exact unavailable reason', () => {
+  const { context } = greenContext()
+  context.checkpoints.exitCode = 2
+  context.checkpoints.unavailableReason = 'spawnSync node ETIMEDOUT'
+  for (const metadata of [context.checkpoints.metadata, null]) {
+    context.checkpoints.metadata = metadata
+    const { gates } = evaluateGates(context)
+    for (const id of ['interaction-checkpoints', 'keyboard']) {
+      assert.equal(gates[id].status, 'UNAVAILABLE')
+      assert.equal(gates[id].reason, 'spawnSync node ETIMEDOUT')
+    }
+  }
+})
+
 test('keyboard gate: a keyboard checkpoint that was not captured fails', () => {
   const { context } = greenContext()
   const keyboardPeak = context.checkpoints.metadata.entries.find(

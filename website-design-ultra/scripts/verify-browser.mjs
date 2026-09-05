@@ -1481,14 +1481,21 @@ function main() {
 
   function invoke(session, action, ...args) {
     sessions.add(session)
+    // Keep the last attempted action even if the parent evaluation times out
+    // before capture.json can be written. This is diagnostic, not gate evidence.
+    const command = { session, action, status: null, pending: true }
+    commands.push(command)
+    const journal = path.join(outputDirectory, 'browser-commands.json')
+    fs.writeFileSync(journal, `${JSON.stringify(commands, null, 2)}\n`)
     const result = run(backend, [`-s=${session}`, action, ...args], options.timeoutMs)
-    commands.push({
-      session,
-      action,
+    Object.assign(command, {
       status: result.status,
+      pending: false,
+      error: result.error?.message ?? null,
       stdout: result.stdout?.trim(),
       stderr: result.stderr?.trim(),
     })
+    fs.writeFileSync(journal, `${JSON.stringify(commands, null, 2)}\n`)
     const cliOutput = `${result.stdout ?? ''}\n${result.stderr ?? ''}`.trim()
     if (result.error || result.status !== 0 || hasBrowserCliError(cliOutput)) {
       throw new Error(
@@ -2024,6 +2031,16 @@ function main() {
           record.status = 'FAIL'
           record.reason = error instanceof Error ? error.message : String(error)
           entries.push(record)
+        } finally {
+          // Every entry starts in a fresh browser. Release it here, including
+          // failed captures and the non-deterministic early-continue path.
+          // Keeping all GPU contexts alive until suite end starves later input
+          // checkpoints and can exhaust the parent's 15-minute capture budget.
+          const closed = run(backend, [`-s=${session}`, 'close'], Math.min(options.timeoutMs, 30000))
+          if (!closed.error && closed.status === 0 &&
+              !hasBrowserCliError(`${closed.stdout ?? ''}\n${closed.stderr ?? ''}`)) {
+            sessions.delete(session)
+          }
         }
       }
     } finally {
