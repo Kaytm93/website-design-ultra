@@ -58,6 +58,11 @@ The four canvas-only categories are `primary-action`, `form`, `legal-copy`, and
 and keep the overlay decorative (`aria-hidden`, `pointer-events:none`, or
 `data-wdu-canvas-decorative`). A missing twin is a violation, not a silent pass.
 
+The validator runs statically via `validateDeclaration(declaration, root)` and
+at runtime via `createProhibitionObserver(declaration, root)`; both share one
+surface and one violation vocabulary. The full category list, signature shape,
+and validator wiring live in `references/prohibition-list.md`.
+
 ## Check
 
 - [ ] The §1 gate was answered, and the answer is in the deliverable.
