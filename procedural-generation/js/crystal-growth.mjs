@@ -1,18 +1,27 @@
 #!/usr/bin/env node
 
 /**
- * Deterministic, dependency-free crystal-growth generator for the procedural
- * geometry source stage. It writes a standards-compliant glTF 2.0 binary and a
- * provenance report; the existing 3d-asset-pipeline still owns inspect,
- * validate, and optimize after this file has finished.
+ * Deterministic, dependency-pinned crystal-growth generator for the procedural
+ * geometry source stage. It uses three for seeded vector geometry and
+ * @gltf-transform/core for the in-memory glTF document and GLB serialization.
+ * The existing 3d-asset-pipeline still owns inspect, validate, and optimize
+ * after this file has finished.
  */
 
 import { createHash } from 'node:crypto'
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import {
+  Accessor,
+  Document,
+  NodeIO,
+  Primitive,
+  VERSION as GLTF_TRANSFORM_VERSION,
+} from '@gltf-transform/core'
+import { REVISION as THREE_REVISION, Vector3 } from 'three'
 
-export const SCRIPT_VERSION = '1.0.0'
+export const SCRIPT_VERSION = '1.1.0'
 export const COLLECTION_NAME = 'Procedural__Crystal'
 export const DEFAULT_OPTIONS = Object.freeze({
   shape: 'crystal',
@@ -118,7 +127,7 @@ function requiredValue(argv, index, inline, option) {
   return [next, index + 1]
 }
 
-/** Parse the standalone generator CLI without relying on a package. */
+/** Parse the standalone generator CLI without relying on a parser package. */
 export function parseOptions(argv = []) {
   const options = { ...DEFAULT_OPTIONS }
   for (let index = 0; index < argv.length; index += 1) {
@@ -185,47 +194,24 @@ class RandomStream {
   }
 }
 
-function add(a, b) {
-  return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]
-}
-
-function scale(vector, amount) {
-  return [vector[0] * amount, vector[1] * amount, vector[2] * amount]
-}
-
-function subtract(a, b) {
-  return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]
-}
-
-function dot(a, b) {
-  return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
-}
-
-function cross(a, b) {
-  return [
-    a[1] * b[2] - a[2] * b[1],
-    a[2] * b[0] - a[0] * b[2],
-    a[0] * b[1] - a[1] * b[0],
-  ]
-}
-
-function length(vector) {
-  return Math.sqrt(dot(vector, vector))
-}
-
-function unit(vector) {
-  const magnitude = length(vector)
-  if (magnitude < 1e-12) return [0, 0, 1]
-  return scale(vector, 1 / magnitude)
+function vector(values) {
+  return new Vector3(values[0], values[1], values[2])
 }
 
 function rotateGrowthDirection(direction, spread, azimuth) {
-  const d = unit(direction)
-  const reference = Math.abs(d[2]) > 0.94 ? [1, 0, 0] : [0, 0, 1]
-  const axisX = unit(cross(d, reference))
-  const axisY = unit(cross(axisX, d))
-  const radial = add(scale(axisX, Math.cos(azimuth)), scale(axisY, Math.sin(azimuth)))
-  return unit(add(scale(d, Math.cos(spread)), scale(radial, Math.sin(spread))))
+  const d = vector(direction).normalize()
+  const reference = new Vector3(0, 0, 1)
+  if (Math.abs(d.z) > 0.94) reference.set(1, 0, 0)
+  const axisX = d.clone().cross(reference).normalize()
+  const axisY = axisX.clone().cross(d).normalize()
+  const radial = axisX.multiplyScalar(Math.cos(azimuth)).add(
+    axisY.multiplyScalar(Math.sin(azimuth)),
+  )
+  return d
+    .multiplyScalar(Math.cos(spread))
+    .add(radial.multiplyScalar(Math.sin(spread)))
+    .normalize()
+    .toArray()
 }
 
 class PrimitiveBuilder {
@@ -245,24 +231,36 @@ class PrimitiveBuilder {
   }
 
   addSegment(start, direction, segmentLength, radiusBase, radiusTip, facets, phase) {
-    const d = unit(direction)
-    const reference = Math.abs(d[2]) > 0.94 ? [1, 0, 0] : [0, 0, 1]
-    const axisX = unit(cross(d, reference))
-    const axisY = unit(cross(axisX, d))
-    const end = add(start, scale(d, segmentLength))
-    const baseCenter = this.addVertex(start, scale(d, -1))
+    const d = vector(direction).normalize()
+    const reference = new Vector3(0, 0, 1)
+    if (Math.abs(d.z) > 0.94) reference.set(1, 0, 0)
+    const axisX = d.clone().cross(reference).normalize()
+    const axisY = axisX.clone().cross(d).normalize()
+    const startVector = vector(start)
+    const end = startVector.clone().add(d.clone().multiplyScalar(segmentLength))
+    const baseCenter = this.addVertex(start, d.clone().multiplyScalar(-1).toArray())
     const baseRing = []
     const tipRing = []
 
     for (let facet = 0; facet < facets; facet += 1) {
       const angle = phase + (Math.PI * 2 * facet) / facets
-      const radial = unit(add(scale(axisX, Math.cos(angle)), scale(axisY, Math.sin(angle))))
-      const sideNormal = unit(add(scale(radial, 0.96), scale(d, 0.12)))
-      baseRing.push(this.addVertex(add(start, scale(radial, radiusBase)), sideNormal))
-      tipRing.push(this.addVertex(add(end, scale(radial, radiusTip)), sideNormal))
+      const radial = axisX.clone().multiplyScalar(Math.cos(angle)).add(
+        axisY.clone().multiplyScalar(Math.sin(angle)),
+      ).normalize()
+      const sideNormal = radial.clone().multiplyScalar(0.96).add(
+        d.clone().multiplyScalar(0.12),
+      ).normalize()
+      baseRing.push(this.addVertex(
+        startVector.clone().add(radial.clone().multiplyScalar(radiusBase)).toArray(),
+        sideNormal.toArray(),
+      ))
+      tipRing.push(this.addVertex(
+        end.clone().add(radial.clone().multiplyScalar(radiusTip)).toArray(),
+        sideNormal.toArray(),
+      ))
     }
 
-    const tipCenter = this.addVertex(end, d)
+    const tipCenter = this.addVertex(end.toArray(), d.toArray())
     for (let facet = 0; facet < facets; facet += 1) {
       const next = (facet + 1) % facets
       const baseA = baseRing[facet]
@@ -278,7 +276,7 @@ class PrimitiveBuilder {
       this.indices.push(tipCenter, tipA, tipB)
     }
     this.segmentCount += 1
-    return end
+    return end.toArray()
   }
 
   get vertexCount() {
@@ -292,18 +290,6 @@ class PrimitiveBuilder {
 
 function nonEmptyBuilders(builders) {
   return builders.filter((builder) => builder.triangleCount > 0)
-}
-
-function calculateBounds(values) {
-  const minimum = [Infinity, Infinity, Infinity]
-  const maximum = [-Infinity, -Infinity, -Infinity]
-  for (let index = 0; index < values.length; index += 3) {
-    for (let axis = 0; axis < 3; axis += 1) {
-      minimum[axis] = Math.min(minimum[axis], values[index + axis])
-      maximum[axis] = Math.max(maximum[axis], values[index + axis])
-    }
-  }
-  return { minimum, maximum }
 }
 
 function hashText(value) {
@@ -380,7 +366,11 @@ function createReport(parameters, builders, glbBuffer = null) {
     status: 'PASS',
     generator: {
       script: 'procedural-generation/js/crystal-growth.mjs',
-      implementation: 'node-standard-library',
+      implementation: 'three + @gltf-transform/core',
+      versions: {
+        three_revision: THREE_REVISION,
+        gltf_transform_core: GLTF_TRANSFORM_VERSION,
+      },
       version: SCRIPT_VERSION,
     },
     input_contract: {
@@ -435,169 +425,68 @@ function createReport(parameters, builders, glbBuffer = null) {
   return report
 }
 
-class BinaryPacker {
-  constructor() {
-    this.parts = []
-    this.length = 0
-  }
+function buildDocument(builders, parameters) {
+  const document = new Document()
+  const buffer = document.createBuffer('crystal-growth.bin')
+  const materials = [
+    document.createMaterial('Procedural__Crystal_Material')
+      .setDoubleSided(true)
+      .setBaseColorFactor([0.16, 0.48, 0.92, 1])
+      .setMetallicFactor(0.18)
+      .setRoughnessFactor(0.26),
+    document.createMaterial('Procedural__Crystal_Tip_Material')
+      .setDoubleSided(true)
+      .setBaseColorFactor([0.62, 0.86, 1, 1])
+      .setMetallicFactor(0.08)
+      .setRoughnessFactor(0.2),
+  ]
+  const collection = document.createNode(COLLECTION_NAME).setExtras({
+    procedural: true,
+    algorithm: 'crystal-growth',
+    shape: parameters.shape,
+    seed: parameters.seed,
+    iterations: parameters.iterations,
+    facets: parameters.facets,
+  })
 
-  add(typedArray, target) {
-    const alignment = (4 - (this.length % 4)) % 4
-    if (alignment) {
-      this.parts.push(Buffer.alloc(alignment))
-      this.length += alignment
-    }
-    const bytes = Buffer.from(typedArray.buffer, typedArray.byteOffset, typedArray.byteLength)
-    const view = {
-      byteOffset: this.length,
-      byteLength: bytes.length,
-      target,
-    }
-    this.parts.push(bytes)
-    this.length += bytes.length
-    return view
-  }
-
-  toBuffer() {
-    return Buffer.concat(this.parts, this.length)
-  }
-}
-
-function addBufferView(bufferViews, packer, typedArray, target) {
-  const view = packer.add(typedArray, target)
-  bufferViews.push({ buffer: 0, ...view })
-  return bufferViews.length - 1
-}
-
-function addAccessor(accessors, bufferView, componentType, count, type, bounds = null) {
-  const accessor = { bufferView, componentType, count, type }
-  if (bounds) {
-    accessor.min = bounds.minimum
-    accessor.max = bounds.maximum
-  }
-  accessors.push(accessor)
-  return accessors.length - 1
-}
-
-function addBuilderToGltf(builder, bufferViews, accessors, packer) {
-  const positions = new Float32Array(builder.positions)
-  const normals = new Float32Array(builder.normals)
-  const maxIndex = builder.indices.reduce((maximum, index) => Math.max(maximum, index), 0)
-  const indices = maxIndex > 65535
-    ? new Uint32Array(builder.indices)
-    : new Uint16Array(builder.indices)
-  const positionView = addBufferView(bufferViews, packer, positions, 34962)
-  const normalView = addBufferView(bufferViews, packer, normals, 34962)
-  const indexView = addBufferView(bufferViews, packer, indices, 34963)
-  const positionAccessor = addAccessor(
-    accessors,
-    positionView,
-    5126,
-    builder.vertexCount,
-    'VEC3',
-    calculateBounds(builder.positions),
-  )
-  const normalAccessor = addAccessor(accessors, normalView, 5126, builder.vertexCount, 'VEC3')
-  const indexAccessor = addAccessor(
-    accessors,
-    indexView,
-    maxIndex > 65535 ? 5125 : 5123,
-    indices.length,
-    'SCALAR',
-  )
-  return {
-    name: builder.name,
-    primitives: [{
-      attributes: { POSITION: positionAccessor, NORMAL: normalAccessor },
-      indices: indexAccessor,
-      material: builder.materialIndex,
-      mode: 4,
-    }],
-  }
-}
-
-function paddedChunk(bytes, paddingByte) {
-  const padding = (4 - (bytes.length % 4)) % 4
-  if (!padding) return bytes
-  return Buffer.concat([bytes, Buffer.alloc(padding, paddingByte)])
-}
-
-function buildGlb(builders, parameters) {
-  const packer = new BinaryPacker()
-  const bufferViews = []
-  const accessors = []
-  const meshes = []
   for (const builder of builders) {
-    meshes.push(addBuilderToGltf(builder, bufferViews, accessors, packer))
+    const positions = document.createAccessor(`${builder.name}_Positions`)
+      .setArray(new Float32Array(builder.positions))
+      .setType(Accessor.Type.VEC3)
+      .setBuffer(buffer)
+    const normals = document.createAccessor(`${builder.name}_Normals`)
+      .setArray(new Float32Array(builder.normals))
+      .setType(Accessor.Type.VEC3)
+      .setBuffer(buffer)
+    const maxIndex = builder.indices.reduce((maximum, index) => Math.max(maximum, index), 0)
+    const indices = maxIndex > 65535
+      ? new Uint32Array(builder.indices)
+      : new Uint16Array(builder.indices)
+    const indexAccessor = document.createAccessor(`${builder.name}_Indices`)
+      .setArray(indices)
+      .setType(Accessor.Type.SCALAR)
+      .setBuffer(buffer)
+    const primitive = document.createPrimitive()
+      .setMode(Primitive.Mode.TRIANGLES)
+      .setAttribute('POSITION', positions)
+      .setAttribute('NORMAL', normals)
+      .setIndices(indexAccessor)
+      .setMaterial(materials[builder.materialIndex])
+    const mesh = document.createMesh(builder.name).addPrimitive(primitive)
+    collection.addChild(document.createNode(builder.name.replace(/_Mesh$/, '')).setMesh(mesh))
   }
-  const children = meshes.map((mesh, index) => ({
-    name: mesh.name.replace(/_Mesh$/, ''),
-    mesh: index,
-  }))
-  const gltf = {
-    asset: {
-      version: '2.0',
-      generator: 'website-design-ultra procedural-generation/js',
-    },
-    scene: 0,
-    scenes: [{ name: COLLECTION_NAME, nodes: [0] }],
-    nodes: [{
-      name: COLLECTION_NAME,
-      children: children.map((_child, index) => index + 1),
-      extras: {
-        procedural: true,
-        algorithm: 'crystal-growth',
-        shape: parameters.shape,
-        seed: parameters.seed,
-        iterations: parameters.iterations,
-        facets: parameters.facets,
-      },
-    }, ...children],
-    meshes,
-    materials: [
-      {
-        name: 'Procedural__Crystal_Material',
-        doubleSided: true,
-        pbrMetallicRoughness: {
-          baseColorFactor: [0.16, 0.48, 0.92, 1],
-          metallicFactor: 0.18,
-          roughnessFactor: 0.26,
-        },
-      },
-      {
-        name: 'Procedural__Crystal_Tip_Material',
-        doubleSided: true,
-        pbrMetallicRoughness: {
-          baseColorFactor: [0.62, 0.86, 1, 1],
-          metallicFactor: 0.08,
-          roughnessFactor: 0.2,
-        },
-      },
-    ],
-    accessors,
-    bufferViews,
-    buffers: [{ byteLength: packer.length }],
-  }
-  const json = paddedChunk(Buffer.from(JSON.stringify(gltf), 'utf8'), 0x20)
-  const binary = paddedChunk(packer.toBuffer(), 0)
-  const totalLength = 12 + 8 + json.length + 8 + binary.length
-  const header = Buffer.alloc(12)
-  header.writeUInt32LE(0x46546c67, 0)
-  header.writeUInt32LE(2, 4)
-  header.writeUInt32LE(totalLength, 8)
-  const jsonHeader = Buffer.alloc(8)
-  jsonHeader.writeUInt32LE(json.length, 0)
-  jsonHeader.writeUInt32LE(0x4e4f534a, 4)
-  const binaryHeader = Buffer.alloc(8)
-  binaryHeader.writeUInt32LE(binary.length, 0)
-  binaryHeader.writeUInt32LE(0x004e4942, 4)
-  return {
-    buffer: Buffer.concat([header, jsonHeader, json, binaryHeader, binary]),
-    gltf,
-  }
+
+  const scene = document.createScene(COLLECTION_NAME).addChild(collection)
+  document.getRoot().setDefaultScene(scene)
+  document.getRoot().getAsset().generator = 'website-design-ultra procedural-generation/js'
+  return document
 }
 
-/** Build deterministic geometry and the GLB in memory. */
+async function serializeDocument(document) {
+  return Buffer.from(await new NodeIO().writeBinary(document))
+}
+
+/** Build deterministic geometry and a glTF Transform document in memory. */
 export function generateCrystal(input = {}) {
   const parameters = normalizeOptions(input)
   const profile = SHAPE_PROFILES[parameters.shape]
@@ -642,14 +531,13 @@ export function generateCrystal(input = {}) {
   if (geometry.triangle_count < 1) {
     throw new Error('crystal-growth produced no triangles')
   }
-  const glb = buildGlb(builders, parameters)
-  const report = createReport(parameters, builders, glb.buffer)
+  const document = buildDocument(builders, parameters)
+  const report = createReport(parameters, builders)
   return {
     parameters,
     builders,
     geometry,
-    glb: glb.buffer,
-    gltf: glb.gltf,
+    document,
     report,
   }
 }
@@ -673,22 +561,23 @@ export async function writeGeneration(input = {}) {
   const options = normalizeOptions(input)
   const paths = resolveOutputPaths(options)
   const generated = generateCrystal(options)
+  const glb = await serializeDocument(generated.document)
   const report = {
-    ...generated.report,
+    ...createReport(options, generated.builders, glb),
     output: {
       ...generated.report.output,
       glb: path.basename(paths.glbPath),
       report: path.basename(paths.reportPath),
-      bytes: generated.glb.length,
-      sha256: createHash('sha256').update(generated.glb).digest('hex'),
+      bytes: glb.length,
+      sha256: createHash('sha256').update(glb).digest('hex'),
     },
   }
   await mkdir(paths.outputDir, { recursive: true })
   await mkdir(path.dirname(paths.glbPath), { recursive: true })
   await mkdir(path.dirname(paths.reportPath), { recursive: true })
-  await writeFile(paths.glbPath, generated.glb)
+  await writeFile(paths.glbPath, glb)
   await writeFile(paths.reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8')
-  return { ...generated, report, ...paths }
+  return { ...generated, glb, report, ...paths }
 }
 
 export function usage() {

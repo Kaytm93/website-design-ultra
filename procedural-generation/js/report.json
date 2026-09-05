@@ -3,8 +3,12 @@
   "status": "PASS",
   "generator": {
     "script": "procedural-generation/js/crystal-growth.mjs",
-    "implementation": "node-standard-library",
-    "version": "1.0.0"
+    "implementation": "three + @gltf-transform/core",
+    "versions": {
+      "three_revision": "185",
+      "gltf_transform_core": "v4.4.2"
+    },
+    "version": "1.1.0"
   },
   "input_contract": {
     "algorithm": "crystal-growth",
@@ -76,8 +80,8 @@
   "output": {
     "glb": "crystal-growth.glb",
     "report": "report.json",
-    "bytes": 879152,
-    "sha256": "8ac233c68a5ad47ca927603efe35e81f8d3c52e12121fb95ee6627aeb8d1f792"
+    "bytes": 879388,
+    "sha256": "fc82c884d69c4d4a8fdcef9b287cfb283970c11c981567b597c608f9f67cc4a1"
   },
   "provenance": {
     "catalogue_entry": "crystal-growth",

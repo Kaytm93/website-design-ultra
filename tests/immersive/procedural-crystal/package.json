@@ -2,7 +2,7 @@
   "name": "wdu-procedural-crystal",
   "version": "0.1.0",
   "private": true,
-  "description": "website-design-ultra immersive evaluation fixture (IP-10C): a procedurally generated Draco-compressed GLB (crystal-growth via dependency-free Node.js) loaded by R3F with a committed local Draco decoder (no CDN, no runtime fetch), semantic DOM, art-directed poster fallback, reduced-motion, context-loss recovery, mobile composition, and the shared quality/telemetry surfaces.",
+  "description": "website-design-ultra immersive evaluation fixture (IP-10C): a procedurally generated Draco-compressed GLB (crystal-growth via dependency-pinned Node.js using three and glTF-Transform core) loaded by R3F with a committed local Draco decoder (no CDN, no runtime fetch), semantic DOM, art-directed poster fallback, reduced-motion, context-loss recovery, mobile composition, and the shared quality/telemetry surfaces.",
   "license": "MIT",
   "type": "module",
   "engines": {

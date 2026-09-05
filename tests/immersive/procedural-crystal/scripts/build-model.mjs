@@ -11,7 +11,8 @@
  * through `npm ci` first; no npx, no registry fetch at runtime.
  *
  * The raw output GLB is generated separately by
- * procedural-generation/js/crystal-growth.mjs (dependency-free Node.js,
+ * procedural-generation/js/crystal-growth.mjs (dependency-pinned Node.js using three and
+ * glTF-Transform core,
  * crystal-growth); this script only consumes it. The runtime asset is the
  * optimized output of scripts/build-model.mjs, never this raw export. The
  * four committed pipeline reports under reports/model/ are the durable evidence.
