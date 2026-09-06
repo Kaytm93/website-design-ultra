@@ -59,7 +59,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
   - **Acceptance:** Command-Dateien ≤ 4 KB; Touch-Fragen zeigen auf `r3f-interaction/references/touch-and-gestures.md`.
   - **Verify:** Command-Größen-Validator und Forward `--repeat 3` für `3d-hero`/`configurator`.
 
-- [ ] `J-B4` **Prosa-Kompression der 3D-Skills** — L
+- [x] `J-B4` **Prosa-Kompression der 3D-Skills** — L
   - **Depends on:** J-B3
   - **Deliver:** die zehn benannten 3D-SKILL.md auf ≤ 5 KB; optionale Begründungen in nicht geroutete References; Vanilla-Kontrakt aus `immersive-3d` §6 auslagern.
   - **Acceptance:** Minimum-3D-Pfad ≤ 57 KB; Checklisten und Kontrakt-YAML byte-identisch; `3d-hero` ≤ 15.000 geschätzte Plugin-Tokens.
@@ -79,13 +79,13 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
 
 ## PR 3 — PR C: Ein echtes Bild — 2.2.0
 
-- [ ] `J-C1` **Starter-Hero ersetzen** — L
+- [x] `J-C1` **Starter-Hero ersetzen** — L
   - **Depends on:** J-A1
   - **Deliver:** GLB aus `procedural-crystal`, `MeshPhysicalMaterial`, Key-Light mit Schatten, lizenziertes HDRI aus `templates/assets/`, neue Poster aus derselben Komposition.
   - **Acceptance:** kein `torusKnot` in `starters/`; deterministische, Checkpoint- und Telemetrie-Tests bleiben grün.
   - **Verify:** Starter-`npm run verify`, Deterministic Capture und Immersive Evaluation.
 
-- [ ] `J-C2` **Look-Loop: Live-Frame gegen Poster-Target** — L
+- [x] `J-C2` **Look-Loop: Live-Frame gegen Poster-Target** — L
   - **Depends on:** J-A2
   - **Deliver:** `verify-browser.mjs --target`, `target-comparison.json`, Diff-PNG und Iterationsabschnitt in `3d-art-direction`.
   - **Acceptance:** `/immersive` endet nur mit Vergleichsartefakt oder begründetem `NOT_APPLICABLE`; Fixture beweist Lichtverschiebung schlechter und Korrektur besser.
@@ -111,7 +111,7 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
 
 ## PR 4 — PR D: igloo-Bausteine — 2.3.0
 
-- [ ] `J-D1` **Skill `vanilla-three-production`** — L
+- [x] `J-D1` **Skill `vanilla-three-production`** — L
   - **Depends on:** J-B4
   - **Deliver:** negativ gated Skill ≤ 5 KB, kopierbare Produktionsmodule, Vite/Three-Starter `starters/vite-three-canvas/`, gleiche Gates wie R3F.
   - **Acceptance:** immersive §2 nennt R3F und Vanilla gleichwertig mit Entscheidungskriterium; beide Starter bestehen dieselben Gates.
@@ -158,6 +158,34 @@ Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
   - **Deliver:** `templates/assets/manifest.json` für 2 HDRIs, 4 Texturen und 1 OFL-MSDF-Atlas; Hash-gesicherter Fetch ohne Commit der Assets.
   - **Acceptance:** jeder Lauf hat lizenziertes Environment; `3d-asset-pipeline` zeigt auf Manifest; Lizenzfelder vollständig.
   - **Verify:** Hash-Test und Lizenzfeld-Pflicht-Validator.
+
+## Stand der Live-Verifikation (2026-09-06)
+
+Die Forward-Suite lief zum ersten Mal live gegen einen authentifizierten
+Claude-CLI, sieben Cases × fünf Versuche, `--min-pass-rate 0.6`. Ergebnis auf
+dem J-B5-Baum mit der Plan-Gate-Korrektur:
+
+| Case | gewertet | Rate | Hauptursache |
+|---|---|---|---|
+| `named-direction-no-references` | 3/3 | 100 % | — |
+| `dashboard` | 2/5 | 40 % | `component-patterns` 3× |
+| `editorial` | 1/4 | 25 % | `color-palettes`, `style-directions` |
+| `3d-hero` | 1/5 | 20 % | `r3f-interaction` 4× |
+| `saas` | 0/5 | 0 % | siehe unten |
+| `configurator` | 0/0 | — | Ausgabelimit erreicht |
+| `slop` | 0/0 | — | Ausgabelimit erreicht |
+
+Zwei Befunde, die nicht das Routing betreffen:
+
+1. **Die Fixtures sind unvollständig.** `core-rules` §7 weist den Lesevorgang
+   `references/verification-status.md` an, und **kein** Case führt diese Datei
+   in `allowedReferences`. J-B1 hat den Status zu einer eigenen gerouteten
+   Datei gemacht, ohne die Cases nachzuziehen. Bei `saas` ist das in drei von
+   fünf Versuchen der einzige Fehlergrund.
+2. **Zwei Cases wurden nie gemessen**, weil das Konto sein Ausgabelimit
+   erreichte. Ein nicht gemessener Case ist kein bestandener Case.
+
+J-B5 bleibt offen, bis diese Suite auf dem endgültigen Baum die Schwelle hält.
 
 ## Definition of done für 2.3.0
 
