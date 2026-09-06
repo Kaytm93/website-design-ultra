@@ -435,43 +435,49 @@ async function main() {
       }
     }
 
-    // 6f. No apply-all path + SDF/MSDF confined to its IP-11A module + noCombine
+    // 6f. No apply-all path + SDF/MSDF confined to the text modules + noCombine
     {
       const manifest = readFileSync(join(LAB_ROOT, 'src/modules/manifest.ts'), 'utf8');
       const hasApplyAll = /applyAll|apply_all|combineAll/i.test(manifest);
       check('no apply-all export in manifest/modules', !hasApplyAll);
-      // IP-11A shipped src/modules/sdf-text.ts, so SDF/MSDF is no longer
-      // deferred: it is owned by that module and by its own manifest entry,
-      // and every other module must stay free of it. Same rule as
+      // SDF/MSDF is implemented in exactly one module, src/modules/sdf-text.ts.
+      // Every other module stays free of it. Two things are allowed to *name*
+      // it without implementing it: J-D5's production text module, whose
+      // subject is text rendering, and the manifest entries that describe
+      // those two modules. Same containment rule as
       // lab/tests/gpu-particles.test.ts.
       const stripComments = (s) => s.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
-      // Two modules legitimately name SDF/MSDF: the IP-11A lab experiment and
-      // J-D5's production text module. Containment is still the rule — every
-      // other module stays free of it — so the constant is a set, not a name.
-      const SDF_OWNERS = ['sdf-text.ts', 'shader-text.ts'];
-      // Cut the sdf-text entry out of the manifest so the remaining entries
-      // are still held to the no-SDF rule.
+      const SDF_OWNER = 'sdf-text.ts';
+      const TEXT_MODULES = [SDF_OWNER, 'shader-text.ts'];
+      const TEXT_ENTRY_IDS = ['sdf-text', 'shader-text'];
+
+      // Judge the manifest line by line, attributing each line to the nearest
+      // preceding entry id. Slicing the file into segments looked equivalent
+      // and was not: the `sdfTextManifest` export sits after the last entry,
+      // so it fell inside that entry's range and was judged as if it belonged
+      // to `canvas-only-prohibition`.
       const manifestSansComments = stripComments(manifest);
-      const sdfEntryStart = manifestSansComments.indexOf("id: 'sdf-text'");
-      const sdfEntryEnd = sdfEntryStart >= 0 ? manifestSansComments.indexOf("id: '", sdfEntryStart + 1) : -1;
-      const manifestOutsideSdfEntry = sdfEntryStart < 0
-        ? manifestSansComments
-        : manifestSansComments.slice(0, sdfEntryStart) + (sdfEntryEnd >= 0 ? manifestSansComments.slice(sdfEntryEnd) : '');
-      // Outside its own entry the manifest may still name SDF, but only
-      // where it is selecting the sdf-text module itself — the
-      // `sdfTextManifest` export, parallel to `mediaPostManifest`.
-      const manifestNamesStraySdf = manifestOutsideSdfEntry
-        .split('\n')
-        .some((line) => /SDF|MSDF/i.test(line) && !/sdf-text|sdfText/.test(line));
+      let currentEntry = null;
+      const manifestNamesStraySdf = manifestSansComments.split('\n').some((line) => {
+        const idMatch = /id: '([a-z0-9-]+)'/.exec(line);
+        if (idMatch) currentEntry = idMatch[1];
+        if (!/SDF|MSDF/i.test(line)) return false;
+        // Allowed either because the line names a text module itself — the
+        // selector exports do — or because it sits inside a text entry.
+        if (/sdf-text|sdfText|shader-text|shaderText/.test(line)) return false;
+        return !TEXT_ENTRY_IDS.includes(currentEntry);
+      });
+
       const sdfStrays = readdirSync(join(LAB_ROOT, 'src/modules'))
-        .filter((f) => f.endsWith('.ts') && !SDF_OWNERS.includes(f))
+        .filter((f) => f.endsWith('.ts') && !TEXT_MODULES.includes(f))
         .filter((f) => (f === 'manifest.ts'
           ? manifestNamesStraySdf
           : /SDF|MSDF/i.test(stripComments(readFileSync(join(LAB_ROOT, 'src/modules', f), 'utf8')))));
-      check('SDF/MSDF confined to its owning modules', sdfStrays.length === 0, sdfStrays.length ? `SDF/MSDF outside ${SDF_OWNERS.join(', ')}: ${sdfStrays.join(', ')}` : `owned by ${SDF_OWNERS.join(' + ')}`);
-      const missingOwners = SDF_OWNERS.filter((f) => !existsSync(join(LAB_ROOT, 'src/modules', f)));
-      const silentOwners = SDF_OWNERS.filter((f) => !missingOwners.includes(f) && !/SDF|MSDF/i.test(stripComments(readFileSync(join(LAB_ROOT, 'src/modules', f), 'utf8'))));
-      check('each owning module implements SDF/MSDF', missingOwners.length === 0 && silentOwners.length === 0, [missingOwners.length ? `missing: ${missingOwners.join(', ')}` : '', silentOwners.length ? `names no SDF/MSDF: ${silentOwners.join(', ')}` : ''].filter(Boolean).join('; '));
+      check('SDF/MSDF confined to the text modules', sdfStrays.length === 0, sdfStrays.length ? `SDF/MSDF outside ${TEXT_MODULES.join(', ')}: ${sdfStrays.join(', ')}` : `owned by ${SDF_OWNER}`);
+
+      const ownerPath = join(LAB_ROOT, 'src/modules', SDF_OWNER);
+      const ownerExists = existsSync(ownerPath);
+      check('the sdf-text module implements SDF/MSDF', ownerExists && /SDF|MSDF/i.test(stripComments(readFileSync(ownerPath, 'utf8'))), ownerExists ? '' : `missing src/modules/${SDF_OWNER}`);
       const noCombineCount = (manifest.match(/noCombine:\s*true/g) ?? []).length;
       check('all manifest entries are noCombine:true', noCombineCount >= 13);
     }
