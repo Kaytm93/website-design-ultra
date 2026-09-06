@@ -15,15 +15,12 @@ owns the order and the shape of the answer.
 2. **Reconnaissance** — Inside a repo, read `package.json` instead of assuming
    the stack.
 
-   **Reference evidence gate** — Only when the briefing supplies
-   six to ten exported PNG and SVG frames plus a written token block, load
-   `reference-intake`: finish its traced ledger and poster target
-   before scene code, then hand both to `3d-art-direction`.
-
-   **Site-reconnaissance gate** — Only when the briefing names a public live 3D
-   reference URL and explicitly requests implementation/runtime reconnaissance,
-   load `site-reconnaissance` and finish its bundle, network, `renderer.info`,
-   Inspector, and shader ledger. A screenshot alone does not load it.
+   **Evidence gates** — Each fires on supplied material, never on a topic, and
+   each finishes its ledger before scene code. Six to ten exported PNG/SVG
+   frames plus a written token block → `reference-intake`, whose ledger and
+   poster target hand to `3d-art-direction`. A live 3D reference URL *and* an
+   explicit request for runtime reconnaissance → `site-reconnaissance`. A mood
+   label or a screenshot fires neither.
 3. **Art direction** — `3d-art-direction`, delivered as a contract.
 4. **Content and copy** — `content-design` for the claim. `anti-slop` the
    moment any user-visible line is written, plan-only included: deciding what
@@ -34,21 +31,21 @@ owns the order and the shape of the answer.
    unclear; `color-palettes` only when colors are chosen.
 7. **Responsive contract (REQUIRED)** — Read
    `core-rules/references/responsive-recomposition.md`. A scene on a page
-   crosses viewports by definition, so this one is not conditional. The canvas
-   is not exempt: name what the portrait shot drops or reframes.
+   crosses viewports by definition, so this is not conditional. The canvas is
+   not exempt: name what the portrait shot drops or reframes.
 8. **Budget and tiers** — `immersive-3d` §3 with `3d-runtime-quality`.
 9. **Fallbacks (MANDATORY)** — `immersive-3d` §5.
 10. **Interaction** — `r3f-interaction` as soon as the scene is clickable or
-    draggable; every canvas action needs a DOM equivalent. For a pointer-driven
-    scene, answer the six questions in
-    `r3f-interaction/references/touch-and-gestures.md` separately and report
-    them as six entries, not as one sentence about "touch support".
+    draggable; every canvas action needs a DOM equivalent. A pointer-driven
+    scene answers the six questions in
+    `r3f-interaction/references/touch-and-gestures.md` as six entries, not as
+    one sentence about "touch support".
 11. **Pre-flight** — `core-rules` §7.
 12. **Render verification** — `scripts/verify-browser.mjs` or real host
-    browser automation with the `/verify` state matrix. Inspect the images. For
-    implemented scenes, finish with `target-comparison.json` and its Diff-PNG;
-    only a plan-only or out-of-scope run with a concrete reason may finish as
-    `NOT_APPLICABLE (reason)`. Browser/GPU/tool unavailability remains
+    browser automation with the `/verify` state matrix. Inspect the images. An
+    implemented scene finishes with `target-comparison.json` and its Diff-PNG;
+    only a plan-only or out-of-scope run with a concrete reason finishes as
+    `NOT_APPLICABLE (reason)`. Browser/GPU/tool unavailability stays
     `UNAVAILABLE` and unverified.
 
 ## Output format
@@ -63,10 +60,7 @@ owns the order and the shape of the answer.
 6. Budget plus the tier table
 7. For interactive scenes: the keyboard solution and all six touch answers as
    separate entries
-8. Verification status, backend, and artifact folder; an implemented scene also
-   names `target-comparison.json` and its Diff-PNG, while a plan-only or
-   out-of-scope run with a concrete reason names `NOT_APPLICABLE (reason)`.
-   Browser/GPU/tool unavailability names `UNAVAILABLE` and stays unverified.
+8. Verification status, backend, and artifact folder, per step 12
 9. Customization hooks
 
 Plan-only briefs deliver the contracts, tiers, fallbacks, and interaction
