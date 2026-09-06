@@ -56,6 +56,8 @@ not activation and add-ons are not a checklist:
 - passes read earlier buffers or ordered effects exceed two → `render-graph`;
 - staged assets or an art-directed arrival → `loading-choreography`;
 - sound ships → `spatial-audio`;
+- a public live 3D reference URL is supplied and runtime reconnaissance is
+  explicitly requested → `site-reconnaissance`; a screenshot alone does not;
 - thousands of particles with persistent state, field, trails, or morph →
   `gpu-particle-systems`;
 - parameter-generated or algorithmically grown geometry → `procedural-3d`,

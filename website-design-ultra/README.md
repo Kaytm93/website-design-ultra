@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 2.0.1 contains 24 skills and 6 Claude commands. It enforces anti-slop
+Version 2.0.1 contains 25 skills and 6 Claude commands. It enforces anti-slop
 rules on generated copy and on visual defaults, with a deterministic English and
 German copy linter that reads a whole repository at one register per file. It
 carries evidence-led content, a declared 2D composition contract, per-direction
@@ -12,18 +12,19 @@ traceable reference intake, cinematic direction, adaptive runtime quality, touch
 gestures, host-neutral browser verification, deterministic byte-identical
 capture, three-gate telemetry, and declared interaction checkpoints.
 
-Seven skills are negative-gated and stay unloaded until a brief names their
+Eight skills are negative-gated and stay unloaded until a brief names their
 condition: `procedural-3d`, `canvas-first-architecture`, `render-graph`,
-`loading-choreography`, `spatial-audio`, `gpu-particle-systems`, and
-`reference-intake`. Six of them sit behind an already-loaded 3D stack;
-`reference-intake` is the exception, gated on supplied reference frames rather
-than on the stack. Needing one says nothing about the others.
+`loading-choreography`, `spatial-audio`, `gpu-particle-systems`,
+`reference-intake`, and `site-reconnaissance`. Seven of them sit behind an
+already-loaded 3D stack; `reference-intake` is gated on supplied reference
+frames, while `site-reconnaissance` is gated on a public URL plus runtime
+evidence. Needing one says nothing about the others.
 
 Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
-24 skills under `skills/`, 6 commands under `commands/`, the validators and the
+25 skills under `skills/`, 6 commands under `commands/`, the validators and the
 browser adapter under `scripts/`, and the files a project copies under
 `templates/`. Each skill is one `SKILL.md` plus one level of `references/`.
 
@@ -53,6 +54,8 @@ exact provider, case, and tree):
 - Reproducible dynamic capture, a visual baseline, a poster/checkpoint frame, or
   scene bug reproduction → `core-rules/references/determinism.md`; ordinary 2D
   work and an ordinary 3D hero do not load it.
+- A public live 3D reference URL with an explicit runtime-reconnaissance request
+  → `site-reconnaissance/SKILL.md`; a screenshot alone does not load it.
 - Declared interaction checkpoints under deterministic capture →
   `core-rules/references/interaction-checkpoints.schema.json` plus
   `core-rules/references/determinism.md` §7; the manifest is the project's
@@ -103,7 +106,7 @@ composition and direction tokens, typography licensing, state contrast) are in
 - Procedural geometry that must be generated from parameters → `procedural-3d` before `3d-asset-pipeline`; it generates the GLB that the pipeline then inspects, validates, and optimizes. Ordinary imported GLB inspection alone does not activate it.
 - Imported Blender/Spline/glTF/KTX2 asset that only needs inspection, validation, or optimization → `3d-asset-pipeline`.
 
-Five further layers exist and stay unloaded until the brief names their
+Six further layers exist and stay unloaded until the brief names their
 condition. Needing one says nothing about the others:
 
 - The canvas is the page, sections are scene states, no DOM page behind it →
@@ -114,6 +117,8 @@ condition. Needing one says nothing about the others:
 - The first meaningful frame depends on staged assets → `loading-choreography`.
 - The deliverable plays sound → `spatial-audio`.
 - Thousands of particles with persistent texture state, spatial fields, trails, or volume morphing → `gpu-particle-systems`; decorative dust, sparkle, small instanced particles, a short burst, or a single click shockwave stays in `r3f-patterns` and does not activate it.
+- A public live 3D reference URL with an explicit implementation-reconnaissance
+  request → `site-reconnaissance`; a screenshot alone does not activate it.
 
 WebGLRenderer is the mature default. WebGPURenderer is selected for a concrete TSL/WebGPU benefit and uses renderer-compatible postprocessing.
 
