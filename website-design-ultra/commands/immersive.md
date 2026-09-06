@@ -40,7 +40,11 @@ owns the order and the shape of the answer.
     them as six entries, not as one sentence about "touch support".
 11. **Pre-flight** — `core-rules` §7.
 12. **Render verification** — `scripts/verify-browser.mjs` or real host
-    browser automation with the `/verify` state matrix. Inspect the images.
+    browser automation with the `/verify` state matrix. Inspect the images. For
+    implemented scenes, finish with `target-comparison.json` and its Diff-PNG;
+    only a plan-only or out-of-scope run with a concrete reason may finish as
+    `NOT_APPLICABLE (reason)`. Browser/GPU/tool unavailability remains
+    `UNAVAILABLE` and unverified.
 
 ## Output format
 
@@ -53,7 +57,10 @@ owns the order and the shape of the answer.
 6. Budget plus the tier table
 7. For interactive scenes: the keyboard solution and all six touch answers as
    separate entries
-8. Verification status, backend, and artifact folder
+8. Verification status, backend, and artifact folder; an implemented scene also
+   names `target-comparison.json` and its Diff-PNG, while a plan-only or
+   out-of-scope run with a concrete reason names `NOT_APPLICABLE (reason)`.
+   Browser/GPU/tool unavailability names `UNAVAILABLE` and stays unverified.
 9. Customization hooks
 
 Plan-only briefs deliver the contracts, tiers, fallbacks, and interaction

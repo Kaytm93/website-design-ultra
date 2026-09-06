@@ -201,7 +201,8 @@
       "Medium",
       "High",
       "fallback",
-      "portrait"
+      "portrait",
+      "iteration"
     ],
     "trace": {
       "allowedSkills": [
