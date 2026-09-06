@@ -51,8 +51,20 @@ function outputDirectory(argv) {
   return directory
 }
 
-function startFixtureServer(html) {
+export const TRANSFER_PROBE_PATH = '/telemetry-probe.bin'
+export const TRANSFER_PROBE_BYTES = 64
+
+export function startFixtureServer(html) {
   const server = http.createServer((request, response) => {
+    if (request.url === TRANSFER_PROBE_PATH) {
+      response.writeHead(200, {
+        'content-type': 'application/octet-stream',
+        'content-length': TRANSFER_PROBE_BYTES,
+        'cache-control': 'no-store',
+      })
+      response.end(Buffer.alloc(TRANSFER_PROBE_BYTES, 1))
+      return
+    }
     if (request.url !== '/fixture.html' && request.url !== '/') {
       response.writeHead(404)
       response.end()
@@ -127,7 +139,7 @@ function assertSummary(out) {
   assert.equal(summary.observed.warmGpuFrameTime.collected.value, 5)
   assert.equal(summary.observed.warmGpuFrameTime.median.value, 18)
   assert.equal(summary.observed.warmGpuFrameTime.p95.value, 21)
-  assert.equal(summary.observed.transferBeforeFirstMeaningfulFrame.observed.value, 300)
+  assert.equal(summary.observed.transferBeforeFirstMeaningfulFrame.observed.value, 300 + TRANSFER_PROBE_BYTES)
   assert.equal(summary.evidence.transfer.resourcesConsidered, 1)
   assert.equal(summary.evidence.rendererInfo.render.calls, 42)
   return summary
@@ -138,6 +150,7 @@ async function main() {
   const expected = validateExpectedMetadata(
     JSON.parse(fs.readFileSync(EXPECTED_METADATA, 'utf8')),
   )
+  expected.telemetry.transferProbeUrl = TRANSFER_PROBE_PATH
   const html = buildFixtureHtml({
     expected,
     runtimeSource: fs.readFileSync(RUNTIME_SOURCE, 'utf8'),
@@ -165,7 +178,9 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(`IP03B_CAPTURE: FAIL ${error instanceof Error ? error.message : String(error)}`)
-  process.exitCode = 1
-})
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((error) => {
+    console.error(`IP03B_CAPTURE: FAIL ${error instanceof Error ? error.message : String(error)}`)
+    process.exitCode = 1
+  })
+}
