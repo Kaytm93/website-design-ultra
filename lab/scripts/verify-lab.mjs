@@ -435,18 +435,39 @@ async function main() {
       }
     }
 
-    // 6f. No apply-all path + SDF/MSDF still deferred + noCombine
+    // 6f. No apply-all path + SDF/MSDF confined to its IP-11A module + noCombine
     {
       const manifest = readFileSync(join(LAB_ROOT, 'src/modules/manifest.ts'), 'utf8');
       const hasApplyAll = /applyAll|apply_all|combineAll/i.test(manifest);
       check('no apply-all export in manifest/modules', !hasApplyAll);
-      const allModules = readdirSync(join(LAB_ROOT, 'src/modules')).filter((f) => f.endsWith('.ts')).map((f) => readFileSync(join(LAB_ROOT, 'src/modules', f), 'utf8')).join('\n');
-      check('no SDF/MSDF introduced', !/SDF/i.test(allModules) || false === /SDF.*module/i.test(allModules) ? true : !allModules.includes('SDF') );
-      // Simpler: ensure no SDF/MSDF string appears in module dir except this harness check
-      const sdfViolation = /SDF|MSDF/.test(allModules) && !allModules.includes('deferred');
-      // Allow only the word in comments about deferral is not a module introduction
-      const moduleSansComments = allModules.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
-      check('SDF/MSDF deferred — no module implements it', !/SDF|MSDF/i.test(moduleSansComments));
+      // IP-11A shipped src/modules/sdf-text.ts, so SDF/MSDF is no longer
+      // deferred: it is owned by that module and by its own manifest entry,
+      // and every other module must stay free of it. Same rule as
+      // lab/tests/gpu-particles.test.ts.
+      const stripComments = (s) => s.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+      const SDF_OWNER = 'sdf-text.ts';
+      // Cut the sdf-text entry out of the manifest so the remaining entries
+      // are still held to the no-SDF rule.
+      const manifestSansComments = stripComments(manifest);
+      const sdfEntryStart = manifestSansComments.indexOf("id: 'sdf-text'");
+      const sdfEntryEnd = sdfEntryStart >= 0 ? manifestSansComments.indexOf("id: '", sdfEntryStart + 1) : -1;
+      const manifestOutsideSdfEntry = sdfEntryStart < 0
+        ? manifestSansComments
+        : manifestSansComments.slice(0, sdfEntryStart) + (sdfEntryEnd >= 0 ? manifestSansComments.slice(sdfEntryEnd) : '');
+      // Outside its own entry the manifest may still name SDF, but only
+      // where it is selecting the sdf-text module itself — the
+      // `sdfTextManifest` export, parallel to `mediaPostManifest`.
+      const manifestNamesStraySdf = manifestOutsideSdfEntry
+        .split('\n')
+        .some((line) => /SDF|MSDF/i.test(line) && !/sdf-text|sdfText/.test(line));
+      const sdfStrays = readdirSync(join(LAB_ROOT, 'src/modules'))
+        .filter((f) => f.endsWith('.ts') && f !== SDF_OWNER)
+        .filter((f) => (f === 'manifest.ts'
+          ? manifestNamesStraySdf
+          : /SDF|MSDF/i.test(stripComments(readFileSync(join(LAB_ROOT, 'src/modules', f), 'utf8')))));
+      check('SDF/MSDF confined to the dedicated IP-11A module', sdfStrays.length === 0, sdfStrays.length ? `SDF/MSDF outside ${SDF_OWNER}: ${sdfStrays.join(', ')}` : `owned by ${SDF_OWNER}`);
+      const sdfOwnerExists = existsSync(join(LAB_ROOT, 'src/modules', SDF_OWNER));
+      check('IP-11A sdf-text module implements SDF/MSDF', sdfOwnerExists && /SDF|MSDF/i.test(stripComments(readFileSync(join(LAB_ROOT, 'src/modules', SDF_OWNER), 'utf8'))), sdfOwnerExists ? '' : `missing src/modules/${SDF_OWNER}`);
       const noCombineCount = (manifest.match(/noCombine:\s*true/g) ?? []).length;
       check('all manifest entries are noCombine:true', noCombineCount >= 13);
     }
@@ -689,7 +710,16 @@ async function main() {
     {
       const manifest = readFileSync(join(LAB_ROOT, 'src/modules/manifest.ts'), 'utf8');
       check('manifest contains gpu-particles with noCombine', manifest.includes('gpu-particles') && manifest.includes('noCombine: true'));
-      check('no apply-all/SDF/timeline introduced in gpu scope', !/applyAll/i.test(manifest) && !/SDF/.test(manifest.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '')));
+      // apply-all stays banned across the whole manifest. The SDF half is
+      // scoped to the gpu-particles section: IP-11A's sdf-text entry sits
+      // later in the same file and is allowed to name SDF/MSDF.
+      const particleScopeEnd = manifest.indexOf('sdf-text');
+      const particleScope = manifest.slice(
+        manifest.indexOf('gpu-particles'),
+        particleScopeEnd > 0 ? particleScopeEnd : manifest.length,
+      );
+      const particleScopeSansComments = particleScope.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+      check('no apply-all in manifest, no SDF in the gpu-particles scope', !/applyAll/i.test(manifest) && !/SDF|MSDF/i.test(particleScopeSansComments));
       const toy = readFileSync(join(LAB_ROOT, 'src/experiments/particle-toy.ts'), 'utf8');
       const upd = readFileSync(join(LAB_ROOT, 'src/experiments/shaders/particle-toy-update.frag'), 'utf8');
       check('no timeline morph cycles introduced beyond gated field/trail', !/cinematic.*timeline/i.test(toy + upd));

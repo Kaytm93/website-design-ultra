@@ -25,6 +25,7 @@ website-design-ultra/
 ├── scripts/
 │   ├── validate-content.mjs        # structure + contrast + linter regression
 │   ├── lint-copy.mjs               # deterministic copy linter (tiers, profiles)
+│   ├── root-surfaces.mjs           # starter/lab path classification for the walk
 │   ├── forward-trace.mjs           # provider read-trace audit + tree digest
 │   ├── run-forward-tests.mjs       # isolated live plugin evals
 │   ├── release.mjs                 # release provenance gate
