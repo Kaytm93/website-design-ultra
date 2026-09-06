@@ -1,0 +1,29 @@
+{
+  "name": "vite-three-canvas",
+  "version": "0.1.0",
+  "private": true,
+  "description": "website-design-ultra vanilla starter: a Vite + Three.js scene held to the same budget, fallback and lifecycle contract as the R3F starter, with no framework between the DOM and the renderer.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"tests/*.test.mjs\"",
+    "verify": "npm run typecheck && npm test && npm run build",
+    "capture:poster": "node scripts/capture-poster.mjs"
+  },
+  "dependencies": {
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "@types/three": "0.185.1",
+    "typescript": "5.9.3",
+    "vite": "6.3.5"
+  }
+}

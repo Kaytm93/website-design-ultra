@@ -30,12 +30,14 @@ Select exactly one implementation layer only when writing code:
 
 | Situation | Layer |
 |---|---|
-| React/Next production scene | `r3f-patterns` (R3F + drei) |
-| Plain HTML, embed, or quick demo | `r3f-patterns/references/vanilla-three.md` |
+| Inside a React or Next tree | `r3f-patterns` (R3F + drei) |
+| Plain HTML, embed, single file, non-React host | `vanilla-three-production` |
 
-When unclear, React means R3F and plain HTML means Vanilla Three.js. WebGL is the
-mature default; use WebGPU only for a concrete TSL/compute benefit and preserve
-the compatible WebGL2 fallback.
+The criterion is the host, not the ambition. Both layers are production paths and
+both starters pass the same gate; a scene is never "too complex for vanilla", it
+is either inside a React tree or it is not. WebGL is the mature default; use
+WebGPU only for a concrete TSL/compute benefit and preserve the compatible
+WebGL2 fallback.
 
 ### Budget class
 

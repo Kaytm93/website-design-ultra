@@ -105,13 +105,23 @@ test('contract YAML and checklists preserve their baseline bytes', () => {
   }
 })
 
-test('the vanilla contract is a routed reference, not master-skill prose', () => {
+test('the vanilla contract is routed, not master-skill prose', () => {
   const skill = fs.readFileSync(path.join(skillRoot, 'immersive-3d', 'SKILL.md'), 'utf8')
+  // J-B4 lifted the contract out of §6 into a reference; J-D1 promoted it to a
+  // skill with a runnable starter behind it. What the test is for is unchanged:
+  // the master skill routes to the contract and does not restate it. Either
+  // destination satisfies that; inline prose satisfies neither.
   const reference = path.join(skillRoot, 'r3f-patterns', 'references', 'vanilla-three.md')
-  assert.ok(fs.existsSync(reference), 'vanilla baseline reference is missing')
-  assert.match(skill, /r3f-patterns\/references\/vanilla-three\.md/)
+  const skillTarget = path.join(skillRoot, 'vanilla-three-production', 'SKILL.md')
+  assert.ok(
+    fs.existsSync(reference) || fs.existsSync(skillTarget),
+    'the vanilla baseline exists as neither a reference nor a skill',
+  )
+  assert.match(skill, /r3f-patterns\/references\/vanilla-three\.md|`vanilla-three-production`/)
   assert.doesNotMatch(skill, /vanilla-three-baseline\.md/)
   assert.doesNotMatch(skill, /## 6\. Vanilla Three\.js baseline/)
+  // The contract's own obligations must not have leaked back into the master.
+  assert.doesNotMatch(skill, /setAnimationLoop|IntersectionObserver|matchMedia/)
 })
 
 test('the path measurement command enforces the 3D hero bounds', () => {
