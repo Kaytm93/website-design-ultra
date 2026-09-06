@@ -1601,6 +1601,8 @@ const responseSchema = JSON.parse(
 for (const failure of strictObjectSchemaFailures(responseSchema)) {
   fail(`tests/forward/response.schema.json: ${failure}`)
 }
+const STATUS_REFERENCE = 'skills/core-rules/references/verification-status.md'
+
 for (const testCase of forwardCases) {
   if (
     !testCase.trace?.allowedSkills?.length ||
@@ -1611,6 +1613,23 @@ for (const testCase of forwardCases) {
     !Number.isInteger(testCase.trace.maxEstimatedPluginTokens)
   ) {
     fail(`tests/forward/cases.json: ${testCase.id} missing complete trace budget`)
+  }
+  // The budget describes the allowed set; it is not a second, independent
+  // number. Letting them drift apart means either a file that may be read but
+  // does not fit, or headroom for a file nothing names.
+  if (testCase.trace.maxReferenceFiles !== testCase.trace.allowedReferences.length) {
+    fail(
+      `tests/forward/cases.json: ${testCase.id} maxReferenceFiles ${testCase.trace.maxReferenceFiles} does not match its ${testCase.trace.allowedReferences.length} allowed references`,
+    )
+  }
+  // core-rules §7 ends by pointing at the status vocabulary, so every case
+  // that reads core-rules is instructed to read this file. A case that then
+  // scores that read as an unexpected reference is testing the fixture, not
+  // the routing.
+  if (!testCase.trace.allowedReferences.includes(STATUS_REFERENCE)) {
+    fail(
+      `tests/forward/cases.json: ${testCase.id} does not allow ${STATUS_REFERENCE}, which core-rules instructs`,
+    )
   }
 }
 

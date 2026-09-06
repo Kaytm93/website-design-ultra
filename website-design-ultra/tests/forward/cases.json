@@ -35,7 +35,8 @@
         "skills/anti-slop/references/prose-tells.md",
         "skills/anti-slop/references/operations.md",
         "skills/anti-slop/references/design-tells.md",
-        "skills/core-rules/references/accessibility.md"
+        "skills/core-rules/references/accessibility.md",
+        "skills/core-rules/references/verification-status.md"
       ],
       "requiredFiles": [
         "skills/core-rules/references/responsive-recomposition.md",
@@ -53,7 +54,7 @@
         "skills/procedural-3d/SKILL.md",
         "skills/site-reconnaissance/SKILL.md"
       ],
-      "maxReferenceFiles": 9,
+      "maxReferenceFiles": 10,
       "maxEstimatedPluginTokens": 16112
     }
   },
@@ -95,7 +96,8 @@
         "skills/anti-slop/references/operations.md",
         "skills/anti-slop/references/locale-de.md",
         "skills/anti-slop/references/design-tells.md",
-        "skills/core-rules/references/accessibility.md"
+        "skills/core-rules/references/accessibility.md",
+        "skills/core-rules/references/verification-status.md"
       ],
       "requiredFiles": [
         "skills/core-rules/references/responsive-recomposition.md",
@@ -114,7 +116,7 @@
         "skills/procedural-3d/SKILL.md",
         "skills/site-reconnaissance/SKILL.md"
       ],
-      "maxReferenceFiles": 12,
+      "maxReferenceFiles": 13,
       "maxEstimatedPluginTokens": 19863
     }
   },
@@ -160,7 +162,8 @@
         "skills/anti-slop/references/prose-tells.md",
         "skills/anti-slop/references/operations.md",
         "skills/anti-slop/references/design-tells.md",
-        "skills/core-rules/references/accessibility.md"
+        "skills/core-rules/references/accessibility.md",
+        "skills/core-rules/references/verification-status.md"
       ],
       "requiredFiles": [
         "skills/core-rules/references/responsive-recomposition.md",
@@ -178,7 +181,7 @@
         "skills/procedural-3d/SKILL.md",
         "skills/site-reconnaissance/SKILL.md"
       ],
-      "maxReferenceFiles": 12,
+      "maxReferenceFiles": 13,
       "maxEstimatedPluginTokens": 18455
     }
   },
@@ -228,7 +231,8 @@
         "skills/anti-slop/references/prose-tells.md",
         "skills/anti-slop/references/operations.md",
         "skills/anti-slop/references/design-tells.md",
-        "skills/core-rules/references/accessibility.md"
+        "skills/core-rules/references/accessibility.md",
+        "skills/core-rules/references/verification-status.md"
       ],
       "requiredFiles": [
         "skills/core-rules/references/responsive-recomposition.md",
@@ -253,7 +257,7 @@
         "skills/procedural-3d/SKILL.md",
         "skills/site-reconnaissance/SKILL.md"
       ],
-      "maxReferenceFiles": 12,
+      "maxReferenceFiles": 13,
       "maxEstimatedPluginTokens": 15000
     }
   },
@@ -303,7 +307,8 @@
         "skills/anti-slop/references/prose-tells.md",
         "skills/anti-slop/references/operations.md",
         "skills/anti-slop/references/design-tells.md",
-        "skills/core-rules/references/accessibility.md"
+        "skills/core-rules/references/accessibility.md",
+        "skills/core-rules/references/verification-status.md"
       ],
       "requiredFiles": [
         "skills/core-rules/references/responsive-recomposition.md",
@@ -328,7 +333,7 @@
         "skills/procedural-3d/SKILL.md",
         "skills/site-reconnaissance/SKILL.md"
       ],
-      "maxReferenceFiles": 12,
+      "maxReferenceFiles": 13,
       "maxEstimatedPluginTokens": 23045
     }
   },
@@ -384,7 +389,8 @@
         "skills/anti-slop/references/prose-tells.md",
         "skills/anti-slop/references/operations.md",
         "skills/anti-slop/references/design-tells.md",
-        "skills/core-rules/references/accessibility.md"
+        "skills/core-rules/references/accessibility.md",
+        "skills/core-rules/references/verification-status.md"
       ],
       "requiredFiles": [
         "skills/core-rules/references/responsive-recomposition.md",
@@ -408,7 +414,7 @@
         "skills/procedural-3d/SKILL.md",
         "skills/site-reconnaissance/SKILL.md"
       ],
-      "maxReferenceFiles": 16,
+      "maxReferenceFiles": 17,
       "maxEstimatedPluginTokens": 26399
     },
     "maxBudgetUsd": 1.2
@@ -462,7 +468,8 @@
         "skills/content-design/references/microcopy.md",
         "skills/core-rules/references/responsive-recomposition.md",
         "skills/core-rules/references/composition-contract.md",
-        "skills/core-rules/references/accessibility.md"
+        "skills/core-rules/references/accessibility.md",
+        "skills/core-rules/references/verification-status.md"
       ],
       "requiredFiles": [
         "skills/anti-slop/references/prose-tells.md",
@@ -479,7 +486,7 @@
         "skills/procedural-3d/SKILL.md",
         "skills/site-reconnaissance/SKILL.md"
       ],
-      "maxReferenceFiles": 9,
+      "maxReferenceFiles": 10,
       "maxEstimatedPluginTokens": 14921
     },
     "lintCopy": {
