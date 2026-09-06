@@ -55,7 +55,10 @@
         "skills/site-reconnaissance/SKILL.md"
       ],
       "maxReferenceFiles": 10,
-      "maxEstimatedPluginTokens": 16112
+      "maxEstimatedPluginTokens": 16112,
+      "maxFileReads": {
+        "skills/core-rules/SKILL.md": 1
+      }
     }
   },
   {
@@ -117,7 +120,10 @@
         "skills/site-reconnaissance/SKILL.md"
       ],
       "maxReferenceFiles": 13,
-      "maxEstimatedPluginTokens": 19863
+      "maxEstimatedPluginTokens": 19863,
+      "maxFileReads": {
+        "skills/core-rules/SKILL.md": 1
+      }
     }
   },
   {
@@ -182,7 +188,10 @@
         "skills/site-reconnaissance/SKILL.md"
       ],
       "maxReferenceFiles": 13,
-      "maxEstimatedPluginTokens": 18455
+      "maxEstimatedPluginTokens": 18455,
+      "maxFileReads": {
+        "skills/core-rules/SKILL.md": 1
+      }
     }
   },
   {
@@ -258,7 +267,10 @@
         "skills/site-reconnaissance/SKILL.md"
       ],
       "maxReferenceFiles": 13,
-      "maxEstimatedPluginTokens": 15000
+      "maxEstimatedPluginTokens": 15000,
+      "maxFileReads": {
+        "skills/core-rules/SKILL.md": 1
+      }
     }
   },
   {
@@ -334,7 +346,10 @@
         "skills/site-reconnaissance/SKILL.md"
       ],
       "maxReferenceFiles": 13,
-      "maxEstimatedPluginTokens": 23045
+      "maxEstimatedPluginTokens": 23045,
+      "maxFileReads": {
+        "skills/core-rules/SKILL.md": 1
+      }
     }
   },
   {
@@ -415,7 +430,10 @@
         "skills/site-reconnaissance/SKILL.md"
       ],
       "maxReferenceFiles": 17,
-      "maxEstimatedPluginTokens": 26399
+      "maxEstimatedPluginTokens": 26399,
+      "maxFileReads": {
+        "skills/core-rules/SKILL.md": 1
+      }
     },
     "maxBudgetUsd": 1.2
   },
@@ -487,7 +505,10 @@
         "skills/site-reconnaissance/SKILL.md"
       ],
       "maxReferenceFiles": 10,
-      "maxEstimatedPluginTokens": 14921
+      "maxEstimatedPluginTokens": 14921,
+      "maxFileReads": {
+        "skills/core-rules/SKILL.md": 1
+      }
     },
     "lintCopy": {
       "path": "copy.lines",

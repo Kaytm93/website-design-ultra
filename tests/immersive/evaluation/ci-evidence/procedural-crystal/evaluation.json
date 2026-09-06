@@ -1,4 +1,6 @@
 {
+  "schemaVersion": 1,
+  "acceptance": "ip-07b-implementation-evaluation",
   "fixture": "procedural-crystal",
   "kind": "next-app",
   "status": "PASS",
@@ -6,13 +8,17 @@
     "status": "PASS"
   },
   "expectationMet": true,
+  "expectationReason": null,
+  "unavailable": false,
+  "sourceCommit": "c09f63dd88f8714d42ae076a9f927644ad7c8ae8",
   "gates": {
     "build": {
       "status": "PASS",
       "evidence": [
         "gates/build.log",
         ".next/BUILD_ID"
-      ]
+      ],
+      "reason": null
     },
     "runtime": {
       "status": "PASS",
@@ -26,7 +32,8 @@
         "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/desktop-hero.png",
         "served-html:data-wdu-station",
         "performance-summary:firstMeaningfulFrame.observed"
-      ]
+      ],
+      "reason": null
     },
     "mobile": {
       "status": "PASS",
@@ -35,7 +42,8 @@
         "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/mobile-hero.png",
         "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-portrait/capture.json",
         "served-html:data-wdu-station (portrait)"
-      ]
+      ],
+      "reason": null
     },
     "reduced-motion": {
       "status": "PASS",
@@ -44,7 +52,8 @@
         "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-reduced-motion/reduced-motion-b.png",
         "reduced-motion-a.png == reduced-motion-b.png (bytes)",
         "served-html:data-wdu-motion"
-      ]
+      ],
+      "reason": null
     },
     "fallback": {
       "status": "PASS",
@@ -53,7 +62,8 @@
         "fallback-hero.png (declared absent)",
         "poster-fetch:/poster-desktop.svg",
         "poster-fetch:/poster-portrait.svg"
-      ]
+      ],
+      "reason": null
     },
     "interaction-checkpoints": {
       "status": "PASS",
@@ -76,7 +86,8 @@
         "checkpoints/page-scroll-0.png",
         "checkpoints/page-scroll-50.png",
         "checkpoints/page-scroll-100.png"
-      ]
+      ],
+      "reason": null
     },
     "keyboard": {
       "status": "PASS",
@@ -86,42 +97,48 @@
         "checkpoints/keyboard-peak.png",
         "checkpoints/keyboard-recovered.png",
         "keyboard-peak.waitFor === click-peak.waitFor"
-      ]
+      ],
+      "reason": null
     },
     "telemetry-warm-gpu-frame-time": {
       "status": "PASS",
       "evidence": [
         "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/performance-summary.json",
         "performance-summary:comparison.gates.warm-gpu-frame-time.status"
-      ]
+      ],
+      "reason": null
     },
     "telemetry-first-meaningful-frame": {
       "status": "PASS",
       "evidence": [
         "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/performance-summary.json",
         "performance-summary:comparison.gates.first-meaningful-frame.status"
-      ]
+      ],
+      "reason": null
     },
     "telemetry-transfer-before-first-meaningful-frame": {
       "status": "PASS",
       "evidence": [
         "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal/capture-standard/performance-summary.json",
         "performance-summary:comparison.gates.transfer-before-first-meaningful-frame.status"
-      ]
+      ],
+      "reason": null
     }
   },
   "cost": {
-    "durationMs": 478763,
+    "durationMs": 457588,
     "phasesMs": {
-      "installMs": 9812,
-      "buildMs": 32675,
-      "standardCaptureMs": 66453,
-      "reducedCaptureMs": 55975,
-      "portraitCaptureMs": 60889,
-      "checkpointCaptureMs": 249567,
-      "evaluationMs": 2
+      "installMs": 9634,
+      "buildMs": 31779,
+      "standardCaptureMs": 63655,
+      "reducedCaptureMs": 53433,
+      "portraitCaptureMs": 50601,
+      "checkpointCaptureMs": 245108,
+      "evaluationMs": 1
     },
     "externalServices": "none",
-    "browserBackend": "explicit"
-  }
+    "browserBackend": "explicit",
+    "note": "local browser CLI only; no paid or external service is used, and the browser CLI may fetch its npm package on first use"
+  },
+  "artifacts": "/home/runner/work/_temp/wdu-immersive-evaluation/procedural-crystal"
 }

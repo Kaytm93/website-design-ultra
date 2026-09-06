@@ -920,6 +920,7 @@ for (const [file, markers] of antiSlopContracts) {
 }
 
 const compositionContracts = [
+  ['skills/core-rules/references/composition-contract.md', ['DESIGN_VARIANCE', 'MOTION_INTENSITY', 'VISUAL_DENSITY']],
   [
     'skills/core-rules/references/composition-contract.md',
     [
@@ -938,7 +939,7 @@ const compositionContracts = [
   ],
   [
     'skills/core-rules/SKILL.md',
-    ['composition-contract.md', 'DESIGN_VARIANCE', 'MOTION_INTENSITY', 'VISUAL_DENSITY'],
+    ['composition-contract.md'],
   ],
   [
     'skills/style-directions/SKILL.md',
@@ -1639,9 +1640,14 @@ for (const testCase of forwardCases) {
  * A declared budget that is never run is documentation, not a gate.
  */
 const pathMeasureScript = path.join(pluginRoot, 'scripts', 'measure-path.mjs')
+if (fs.statSync(path.join(pluginRoot, 'skills/core-rules/SKILL.md')).size > 6000) {
+  fail('skills/core-rules/SKILL.md: exceeds the 6000-byte task-router budget')
+}
 if (!fs.existsSync(pathMeasureScript)) {
   fail('scripts/measure-path.mjs: missing path-budget validator')
 } else {
+  const tweak = spawnSync(process.execPath, [pathMeasureScript, '--command', 'tweak'], { encoding: 'utf8' })
+  if (tweak.error || tweak.status !== 0) fail(`tweak path budget: ${tweak.stderr || tweak.stdout || tweak.error?.message}`)
   for (const testCase of forwardCases) {
     if (!Number.isInteger(testCase.trace?.maxEstimatedPluginTokens)) continue
     const result = spawnSync(

@@ -67,6 +67,9 @@ jobs:
       - name: Test root-surface path classification
         run: node --test tests/root-surfaces/root-surfaces.test.mjs
 
+      - name: Test skill budgets and owner read counts
+        run: node --test tests/skill-budget/skill-budget.test.mjs
+
       - name: Run the shipped comparator from the plugin tree
         run: node --experimental-strip-types website-design-ultra/templates/runtime/compare-baselines.mjs --help
 
