@@ -35,10 +35,19 @@ test('every declared asset carries the contract fields and exists on disk', () =
   }
 })
 
-test('the header mark and the two poster variants are the declared runtime assets', () => {
+test('the manifest declares the model, HDRI, decoder, brand mark, and poster assets', () => {
   assert.deepEqual(
     manifest.assets.map((asset) => asset.id).sort(),
-    ['brand-mark', 'poster-desktop', 'poster-portrait'],
+    [
+      'brand-mark',
+      'crystal-model',
+      'draco-decoder-js',
+      'draco-decoder-wasm',
+      'draco-decoder-wrapper',
+      'poster-desktop',
+      'poster-portrait',
+      'studio-small-08-hdri',
+    ],
     'changing the declared asset set is an intentional manifest change',
   )
   const page = readFileSync(join(root, 'app', 'page.tsx'), 'utf8')

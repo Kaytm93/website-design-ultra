@@ -1,9 +1,21 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import { useFrame, useThree } from '@react-three/fiber'
-import { Vector3, type Mesh, type MeshStandardMaterial } from 'three'
+import { useEffect, useMemo, useRef } from 'react'
+import { useFrame, useLoader, useThree } from '@react-three/fiber'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import {
+  EquirectangularReflectionMapping,
+  Group,
+  Mesh,
+  MeshPhysicalMaterial,
+  Vector3,
+  type Material,
+} from 'three'
+import {
+  HDRI_ASSET_URL,
+  MODEL_ASSET_URL,
   heroRotationY,
   POINTER_ANCHOR_LOCAL,
   POINTER_HOVER_EMISSIVE,
@@ -14,36 +26,92 @@ import {
 } from '../lib/scene-config.ts'
 import { useSceneRuntime } from './SceneRuntime.tsx'
 
+type CrystalScene = {
+  scene: Group
+  materials: MeshPhysicalMaterial[]
+}
+
 /**
- * Pointer-interaction state machine (IP-06A). The state is written
- * synchronously in the pointer event handler — ref first, then the capture
- * attribute, then the capture-state invalidation, then the React state that
- * re-renders the canvas once. Because the deterministic clock stays frozen
- * and the pose deltas are instantaneous, the captured hover/pressed/recovered
- * poses are pure functions of the declared interaction state, byte-identical
- * across runs regardless of which frame the input landed on.
+ * The procedural-crystal hero (J-C1). The optimized GLB is the output of the
+ * existing procedural-crystal inspect/validate/optimize handoff. The source
+ * GLTF materials are replaced on an owned clone with physical materials so
+ * the cached loader result remains safe across context-loss remounts.
  *
- * The pose deltas are the signature behaviour the checkpoints photograph:
- * a hover lifts the subject, a press compresses it. Live mode behaves the
- * same; the deterministic capture just declares the state instead of hoping
- * input timing repeats.
+ * DRACOLoader and RGBELoader both point at committed local files. The HDRI is
+ * the CC0 Studio Small 08 template copied from website-design-ultra/templates/assets;
+ * it supplies restrained reflections while the key light describes the crystal
+ * facets and owns the only dynamic shadow map.
  */
 export function HeroObject() {
-  const { clock, heroMotion, motion, invalidateCaptureState, timelineEvaluationRef, loadingHold } = useSceneRuntime()
+  const {
+    clock,
+    heroMotion,
+    motion,
+    invalidateCaptureState,
+    markAssetsReady,
+    timelineEvaluationRef,
+    loadingHold,
+  } = useSceneRuntime()
   const camera = useThree((state) => state.camera)
+  const scene = useThree((state) => state.scene)
   const invalidate = useThree((state) => state.invalidate)
   const gl = useThree((state) => state.gl)
-  const meshRef = useRef<Mesh>(null)
-  const materialRef = useRef<MeshStandardMaterial>(null)
+  const groupRef = useRef<Group>(null)
+  const materialRef = useRef<MeshPhysicalMaterial>(null)
   const phaseRef = useRef<number | null>(null)
   const pointerRef = useRef<PointerState>('idle')
   const anchorVector = useRef<Vector3 | null>(null)
   const lastAnchorRef = useRef<{ x: string; y: string } | null>(null)
+
+  const gltf = useLoader(GLTFLoader, MODEL_ASSET_URL, (loader) => {
+    const draco = new DRACOLoader()
+    draco.setDecoderPath('/draco/')
+    loader.setDRACOLoader(draco)
+  })
+  const hdri = useLoader(RGBELoader, HDRI_ASSET_URL)
+
+  const crystal = useMemo<CrystalScene>(() => {
+    const ownedScene = gltf.scene.clone(true)
+    const materials: MeshPhysicalMaterial[] = []
+
+    ownedScene.traverse((object) => {
+      if (!(object as Mesh).isMesh) return
+      const mesh = object as Mesh
+      const sourceMaterial: Material | undefined = Array.isArray(mesh.material)
+        ? mesh.material[0]
+        : mesh.material
+      const tip = sourceMaterial?.name.includes('Tip') || mesh.name.includes('014')
+      const material = new MeshPhysicalMaterial({
+        color: tip ? '#c8b5ff' : '#6f98e8',
+        roughness: tip ? 0.2 : 0.28,
+        metalness: 0.08,
+        clearcoat: 0.35,
+        clearcoatRoughness: 0.18,
+        envMapIntensity: 0.85,
+        emissive: '#000000',
+        emissiveIntensity: 0.2,
+      })
+      material.name = tip
+        ? 'WDU_Crystal_Tip_PhysicalMaterial'
+        : 'WDU_Crystal_PhysicalMaterial'
+      mesh.geometry = mesh.geometry.clone()
+      mesh.material = material
+      mesh.castShadow = true
+      mesh.receiveShadow = true
+      materials.push(material)
+    })
+
+    return { scene: ownedScene, materials }
+  }, [gltf])
+
   if (phaseRef.current === null) {
     phaseRef.current = heroMotion.next() * Math.PI * 2
   }
   if (anchorVector.current === null) {
     anchorVector.current = new Vector3()
+  }
+  if (materialRef.current === null) {
+    materialRef.current = crystal.materials[0] ?? null
   }
 
   const setPointer = (next: PointerState) => {
@@ -51,59 +119,57 @@ export function HeroObject() {
     pointerRef.current = next
     document.documentElement.setAttribute('data-wdu-pointer', next)
     invalidateCaptureState()
-    // One flushed render (R3F invalidate works with frameloop 'never'): the
-    // pose subscriber reads the ref, the frame renders, and the ready marker
-    // re-sets — all in one deterministic step.
     invalidate()
   }
 
-  // Priority 0: within the pre-render subscriber pass, SceneRuntime's clock
-  // tick (priority -1) has already run, so this frame's motion reads this
-  // frame's time. Speed is per-second, not per-frame, so it is frame-rate
-  // independent.
-  //
-  // NOTE: the priority must never be positive. R3F treats a subscriber with
-  // priority > 0 as a manual render owner and switches off its automatic
-  // gl.render call, which would leave the canvas blank (tests/structure.test.mjs
-  // guards this).
+  useEffect(() => {
+    hdri.mapping = EquirectangularReflectionMapping
+    const previousEnvironment = scene.environment
+    scene.environment = hdri
+    return () => {
+      if (scene.environment === hdri) scene.environment = previousEnvironment
+    }
+  }, [hdri, scene])
+
   useFrame(() => {
-    const mesh = meshRef.current
-    if (!mesh) return
+    const group = groupRef.current
+    if (!group) return
     const state = pointerRef.current
     const evaluation = timelineEvaluationRef.current
-    const timelineRot = !loadingHold && motion === 'full' && evaluation ? evaluation['scene.hero.rotationY'] : 0
+    const timelineRot =
+      !loadingHold && motion === 'full' && evaluation
+        ? evaluation['scene.hero.rotationY']
+        : 0
     const baseRot = heroRotationY(phaseRef.current ?? 0, clock.elapsed, motion)
-    mesh.rotation.y = baseRot + (typeof timelineRot === 'number' ? timelineRot : 0)
+    group.rotation.y = baseRot + (typeof timelineRot === 'number' ? timelineRot : 0)
     const scale =
       state === 'pressed'
         ? POINTER_PRESSED_SCALE
         : state === 'hover'
           ? POINTER_HOVER_SCALE
           : 1
-    mesh.scale.setScalar(scale)
-    const material = materialRef.current
-    if (material) {
+    group.scale.setScalar(scale)
+
+    for (const material of crystal.materials) {
       if (state === 'pressed') {
         material.emissive.setHex(POINTER_PRESSED_EMISSIVE)
       } else if (state === 'hover') {
         material.emissive.setHex(POINTER_HOVER_EMISSIVE)
       } else {
-        const timelineEmissive = !loadingHold && motion === 'full' && evaluation ? evaluation['material.hero.emissive'] : 0
-        // Timeline emissive lift is a subtle 0..0.75 scalar; map >0.35 to the warm lift, otherwise black.
-        if (typeof timelineEmissive === 'number' && timelineEmissive > 0.35) {
-          material.emissive.setHex(POINTER_HOVER_EMISSIVE)
-        } else {
-          material.emissive.setHex(0x000000)
-        }
+        const timelineEmissive =
+          !loadingHold && motion === 'full' && evaluation
+            ? evaluation['material.hero.emissive']
+            : 0
+        material.emissive.setHex(
+          typeof timelineEmissive === 'number' && timelineEmissive > 0.35
+            ? POINTER_HOVER_EMISSIVE
+            : 0x000000,
+        )
       }
     }
 
-    // The deterministic pointer target: project the anchor point on the tube
-    // into normalized device coordinates and record them on the canvas
-    // element, where the DOM capture anchor (PointerTargetAnchor) reads them.
-    // The frozen camera and pose make this a stable pure function of the
-    // capture contract. The write is deduplicated so the live loop does not
-    // dirty the DOM every frame.
+    // Project a stable point on the crystal into the DOM capture anchor. The
+    // frozen camera and pose make this a pure function of the capture state.
     const anchor = anchorVector.current
     if (anchor) {
       anchor.set(
@@ -111,10 +177,8 @@ export function HeroObject() {
         POINTER_ANCHOR_LOCAL[1],
         POINTER_ANCHOR_LOCAL[2],
       )
-      // Update the world matrix from the pose applied above in this same
-      // subscriber pass, so the anchor is exact for the frame being rendered.
-      mesh.updateWorldMatrix(true, false)
-      mesh.localToWorld(anchor)
+      group.updateWorldMatrix(true, false)
+      group.localToWorld(anchor)
       anchor.project(camera)
       const x = String(anchor.x)
       const y = String(anchor.y)
@@ -127,9 +191,6 @@ export function HeroObject() {
     }
   }, 0)
 
-  // The capture attribute and its cleanup. The attribute is written by
-  // setPointer for transitions; this effect seeds the boot state and removes
-  // the attribute on unmount so it never points at a dead scene.
   useEffect(() => {
     document.documentElement.setAttribute('data-wdu-pointer', pointerRef.current)
     return () => {
@@ -137,11 +198,6 @@ export function HeroObject() {
     }
   }, [])
 
-  // Keyboard and touch activation bridge (IP-06B). The DOM activation
-  // control dispatches press-start/press-end; both map onto the same pointer
-  // state machine, so keyboard and touch reach the identical product outcome
-  // (the declared pressed pose) as pointer input on the canvas. The handlers
-  // are captured once: setPointer reads only refs, and invalidate is stable.
   useEffect(() => {
     const start = () => setPointer('pressed')
     const end = () => setPointer('idle')
@@ -154,42 +210,37 @@ export function HeroObject() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Explicit disposal (IP-05C): the geometry and material are released when
-  // the scene unmounts, so repeated mount/unmount cycles (route transitions,
-  // restore after context loss) return the renderer's resource counters to
-  // the same baseline. React Three Fiber also disposes declarative resources
-  // on unmount; dispose() is idempotent, and this call is the documented
-  // contract the lifecycle assertions read.
+  useEffect(() => {
+    markAssetsReady()
+  }, [markAssetsReady])
+
   useEffect(() => {
     return () => {
-      const mesh = meshRef.current
-      mesh?.geometry.dispose()
-      const material = mesh?.material
-      if (material && 'dispose' in material) material.dispose()
+      crystal.scene.traverse((object) => {
+        if (!(object as Mesh).isMesh) return
+        const mesh = object as Mesh
+        mesh.geometry.dispose()
+        const material = mesh.material
+        if (Array.isArray(material)) {
+          for (const entry of material) entry.dispose()
+        } else {
+          material.dispose()
+        }
+      })
     }
-  }, [])
+  }, [crystal])
 
   return (
-    <group>
-      <mesh
-        ref={meshRef}
-        onPointerOver={() => setPointer('hover')}
-        onPointerOut={() => setPointer('idle')}
-        onPointerDown={() => setPointer('pressed')}
-        onPointerUp={() => setPointer('hover')}
-      >
-        <torusKnotGeometry args={[0.85, 0.26, 220, 32]} />
-        <meshStandardMaterial
-          ref={materialRef}
-          color="#d8c9a3"
-          roughness={0.55}
-          metalness={0.15}
-        />
-      </mesh>
-      <mesh position={[0, -1.35, 0]}>
-        <cylinderGeometry args={[1.5, 1.7, 0.35, 48]} />
-        <meshStandardMaterial color="#23262e" roughness={0.85} metalness={0.05} />
-      </mesh>
+    <group
+      ref={groupRef}
+      position={[0, -1.1, 0]}
+      scale={1.05}
+      onPointerOver={() => setPointer('hover')}
+      onPointerOut={() => setPointer('idle')}
+      onPointerDown={() => setPointer('pressed')}
+      onPointerUp={() => setPointer('hover')}
+    >
+      <primitive object={crystal.scene} />
     </group>
   )
 }

@@ -40,10 +40,10 @@ export default function Page() {
         <h1 id="page-title">One server-rendered page around one client canvas.</h1>
         <p className="lead">
           This starter scaffolds a cinematic 3D hero for website-design-ultra.
-          Next.js renders the copy below as HTML; a client-only canvas leaf runs
-          the three.js scene. The scene is procedural geometry with no network
-          assets, so a fresh checkout installs and builds offline, and the page
-          renders without further fetches.
+          Next.js renders the copy below as HTML; a client-only canvas leaf loads
+          the committed procedural-crystal GLB and its local Draco decoder. A
+          CC0 HDRI supplies the crystal reflections without a CDN or runtime
+          fetch to an undeclared host.
         </p>
       </section>
 
@@ -92,11 +92,12 @@ export default function Page() {
           <div>
             <dt>Art-directed poster</dt>
             <dd>
-              Two composed SVG variants, desktop and portrait, mirror the live
-              composition: the matte torus knot on its pedestal, the same
-              palette, the same accent light. The poster is the fallback behind
-              loading, the poster quality tier, and context loss — never a
-              blank frame.
+              Two captures of this scene, desktop and portrait, each taken from
+              the camera station that composes for its crop and rendered through
+              the deterministic entry point. The poster is the fallback behind
+              loading, the poster quality tier, and context loss — never a blank
+              frame, and never a drawing of a scene that has since moved on.
+              <code>npm run capture:poster</code> regenerates both.
             </dd>
           </div>
           <div>
@@ -138,10 +139,12 @@ export default function Page() {
       <section aria-labelledby="scene-heading">
         <h2 id="scene-heading">The scene</h2>
         <p>
-          The subject is a matte torus knot on a pedestal. Its rotation phase
-          comes from the seeded hero-motion stream; reduced motion holds that
-          static pose while full motion advances it from the injected clock, so
-          the same commit, seed, station, and motion capture identical frames.
+          The subject is a faceted procedural crystal grown from a seeded
+          crystal-growth fixture and delivered as a Draco-compressed GLB. Its
+          reflection comes from the local CC0 Studio Small 08 HDRI; a single
+          warm key light reveals the facets and casts the stage shadow. The
+          seeded hero-motion stream and injected clock keep full motion
+          reproducible, while reduced motion holds the same static composition.
         </p>
         <SceneClient mode={mode} stationId={stationId} motion={motion} />
       </section>

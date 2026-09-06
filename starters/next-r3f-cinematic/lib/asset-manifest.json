@@ -1,7 +1,10 @@
 {
   "schema": 1,
-  "description": "The single asset manifest for next-r3f-cinematic. Every runtime asset is listed here; the scene loads no network asset, so a fresh checkout renders offline.",
-  "buckets": ["critical", "progressive"],
+  "description": "The single asset manifest for next-r3f-cinematic. Every runtime asset is listed here; the scene loads only committed local files and renders offline.",
+  "buckets": [
+    "critical",
+    "progressive"
+  ],
   "assets": [
     {
       "id": "brand-mark",
@@ -13,16 +16,72 @@
     {
       "id": "poster-desktop",
       "kind": "image",
-      "url": "/poster-desktop.svg",
+      "url": "/poster-desktop.png",
       "bucket": "critical",
-      "purpose": "Art-directed desktop poster fallback (16:9), composed from the live scene's palette, subject, and accent light (IP-05C)."
+      "purpose": "Desktop poster fallback: a capture of this scene from the hero-wide station, sized to the frame a desktop and tablet layout gives it. Regenerate with `npm run capture:poster`.",
+      "sha256": "a3b14d12da8edc074aa1a8b6a2d77c03340c753d30d2be2b951975d1adc56815",
+      "capture": {
+        "station": "hero-wide",
+        "width": 1200,
+        "height": 676,
+        "browser": "Chromium 152.0.0.0 headless",
+        "motion": "full",
+        "command": "npm run capture:poster"
+      }
     },
     {
       "id": "poster-portrait",
       "kind": "image",
-      "url": "/poster-portrait.svg",
+      "url": "/poster-portrait.png",
       "bucket": "critical",
-      "purpose": "Art-directed portrait poster fallback (9:16) for tall viewports, per 3d-art-direction's separate-portrait-poster rule (IP-05C)."
+      "purpose": "Portrait poster fallback: a capture of this scene from the hero-portrait station, sized square to match the near-square frame a portrait phone gives it. Regenerate with `npm run capture:poster`.",
+      "sha256": "eb37377c6c3afe68deea7b50fe2f5f0a138f98e6a83434dcad5577d7918cb67a",
+      "capture": {
+        "station": "hero-portrait",
+        "width": 1000,
+        "height": 1001,
+        "browser": "Chromium 152.0.0.0 headless",
+        "motion": "full",
+        "command": "npm run capture:poster"
+      }
+    },
+    {
+      "id": "crystal-model",
+      "kind": "model",
+      "url": "/model/procedural-crystal.glb",
+      "bucket": "progressive",
+      "purpose": "The optimized procedural-crystal GLB produced by the existing inspect/validate/optimize handoff; it uses the local Draco decoder."
+    },
+    {
+      "id": "studio-small-08-hdri",
+      "kind": "hdri",
+      "url": "/assets/studio_small_08_1k.hdr",
+      "bucket": "critical",
+      "license": "CC0",
+      "source": "https://polyhaven.com/a/studio_small_08",
+      "sha256": "f6a989f89432eb4eee3191364a9c1ceed195c4ec3544173a3c04fd96cb91d0ba",
+      "purpose": "Poly Haven Studio Small 08 1k environment for restrained crystal reflections; copied from website-design-ultra/templates/assets/."
+    },
+    {
+      "id": "draco-decoder-wasm",
+      "kind": "decoder",
+      "url": "/draco/draco_decoder.wasm",
+      "bucket": "critical",
+      "purpose": "Local Draco WASM decoder for the manifest-declared crystal model."
+    },
+    {
+      "id": "draco-decoder-wrapper",
+      "kind": "decoder",
+      "url": "/draco/draco_wasm_wrapper.js",
+      "bucket": "critical",
+      "purpose": "Local Draco decoder wrapper for the manifest-declared crystal model."
+    },
+    {
+      "id": "draco-decoder-js",
+      "kind": "decoder",
+      "url": "/draco/draco_decoder.js",
+      "bucket": "critical",
+      "purpose": "Local Draco JavaScript fallback decoder for the manifest-declared crystal model."
     }
   ]
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { Canvas } from '@react-three/fiber'
+import { ACESFilmicToneMapping, SRGBColorSpace } from 'three'
 import { CameraRig } from './CameraRig.tsx'
 import { CinematicTimeline } from './CinematicTimeline.tsx'
 import { ContextLossGate } from './ContextLossGate.tsx'
@@ -27,14 +28,9 @@ interface SceneCanvasProps {
 }
 
 /**
- * The client-only canvas leaf. This component never renders on the server
- * (SceneClient loads it with ssr: false); the page around it stays a server
- * component. The canvas is decorative: every semantic surface lives in the
- * DOM outside it.
- *
- * There is deliberately no `dpr` prop on the Canvas: the quality controller
- * (IP-05B) is the one owner of pixel ratio and applies it imperatively in
- * QualityRuntime.
+ * The client-only canvas leaf. The scene uses one WebGL renderer, one physical
+ * key-light shadow owner, and one local HDRI loaded by HeroObject. Tone mapping
+ * and exposure are fixed here instead of changing with quality tiers.
  */
 export function SceneCanvas({
   mode,
@@ -46,14 +42,38 @@ export function SceneCanvas({
 }: SceneCanvasProps) {
   return (
     <Canvas
+      shadows
       gl={{ antialias: true, powerPreference: 'high-performance' }}
-      camera={{ fov: 35, near: 0.1, far: 100, position: [0, 1.1, 4.6] }}
+      camera={{ fov: 34, near: 0.1, far: 20, position: [0, 0.8, 4.6] }}
+      onCreated={({ gl }) => {
+        gl.toneMapping = ACESFilmicToneMapping
+        gl.toneMappingExposure = 1.05
+        gl.outputColorSpace = SRGBColorSpace
+      }}
       className="scene-canvas"
       aria-hidden="true"
     >
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[3, 4, 2]} intensity={1.6} />
-      <pointLight position={[-3, 1, -2]} intensity={12} color="#ffb86b" />
+      <color attach="background" args={['#0a0d12']} />
+      <ambientLight intensity={0.24} />
+      <directionalLight
+        castShadow
+        position={[-3.5, 5, 4]}
+        intensity={3.2}
+        color="#fff4df"
+        shadow-mapSize={[512, 512]}
+        shadow-camera-near={0.1}
+        shadow-camera-far={14}
+        shadow-camera-left={-4}
+        shadow-camera-right={4}
+        shadow-camera-top={4}
+        shadow-camera-bottom={-4}
+      />
+      <directionalLight position={[4, 1.2, -2]} intensity={0.55} color="#7288c7" />
+      <pointLight position={[-3, 0.7, 2]} intensity={4} color="#7aa2f7" />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.23, 0]} receiveShadow>
+        <circleGeometry args={[2.4, 64]} />
+        <meshStandardMaterial color="#131923" roughness={0.8} metalness={0.05} />
+      </mesh>
       <SceneRuntime
         mode={mode}
         stationId={stationId}

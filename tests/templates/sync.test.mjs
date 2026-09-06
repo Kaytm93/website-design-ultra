@@ -15,6 +15,7 @@
 
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -27,6 +28,9 @@ const templatesRoot = path.join(repoRoot, 'website-design-ultra', 'templates')
 /**
  * source: repository-root relative — the file the repository maintains.
  * target: templates-relative — the copy an installation actually reads.
+ * binary: compare the bytes rather than the decoded text. A UTF-8 read folds
+ *   every invalid sequence onto U+FFFD, so two binaries that differ can decode
+ *   to the same string and pass a text comparison that means nothing.
  */
 export const mirroredFiles = [
   { source: 'references/quality-controller.ts', target: 'runtime/quality-controller.ts' },
@@ -64,10 +68,27 @@ export const mirroredFiles = [
   { source: 'lab/src/experiments/shaders/particle-toy-update.frag', target: 'shaders/particle-toy-update.frag' },
   { source: 'lab/src/experiments/shader-fullscreen.frag', target: 'shaders/shader-fullscreen.frag' },
   { source: 'lab/src/experiments/shader-fullscreen.vert', target: 'shaders/shader-fullscreen.vert' },
+  // The one asset under templates/. It is committed twice on purpose: the
+  // plugin ships it so a marketplace installation has a licensed environment
+  // without a checkout, and the starter ships it so `next build` and the
+  // deterministic capture stay offline. Two commits of one asset is exactly
+  // the drift risk this file exists to close, so the pair is declared and
+  // asserted like any other. `J-D8` (automation/website-design-ultra-2.1-2.3/
+  // QUEUE.md) replaces both commits with a hash-checked fetch; until then this
+  // assertion is what keeps them one asset instead of two.
+  {
+    source: 'starters/next-r3f-cinematic/public/assets/studio_small_08_1k.hdr',
+    target: 'assets/studio_small_08_1k.hdr',
+    binary: true,
+  },
 ]
 
-/** Files the plugin owns outright: they document the tree, they do not mirror it. */
-const pluginOwnedTemplates = new Set(['README.md'])
+/**
+ * Files the plugin owns outright: they document the tree, they do not mirror
+ * it. `assets/README.md` is the licence trail for the redistributed CC0 HDRI —
+ * publisher, upstream URL and source hash — and has no counterpart to mirror.
+ */
+const pluginOwnedTemplates = new Set(['README.md', 'assets/README.md'])
 
 function readSource(entry) {
   const absolute = path.join(repoRoot, entry.source)
@@ -97,6 +118,17 @@ test('every mirrored template matches its repository source', () => {
   for (const entry of mirroredFiles) {
     const target = path.join(templatesRoot, entry.target)
     assert.ok(fs.existsSync(target), `templates/${entry.target}: missing copy of ${entry.source}`)
+
+    if (entry.binary) {
+      assert.ok(!entry.rewrites, `${entry.source}: a binary pair cannot declare rewrites`)
+      const digest = (file) => createHash('sha256').update(fs.readFileSync(file)).digest('hex')
+      assert.equal(
+        digest(target),
+        digest(path.join(repoRoot, entry.source)),
+        `templates/${entry.target} is not byte-identical to ${entry.source}`,
+      )
+      continue
+    }
 
     const expected = readSource(entry)
     const actual = fs.readFileSync(target, 'utf8')

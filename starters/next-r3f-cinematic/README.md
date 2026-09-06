@@ -69,6 +69,41 @@ The page is `force-dynamic` so the mode is never baked into a static page at
 build time; the copy is still server-rendered into the initial HTML on every
 request.
 
+## Posters
+
+The poster is what a visitor sees while the canvas loads, at the poster quality
+tier, and after a lost WebGL context. It is a capture of this scene, taken
+through the capture entry point above — not a drawing of it:
+
+```bash
+npm run capture:poster
+```
+
+The script builds the starter, serves it once per variant with
+`WDU_DETERMINISTIC=1` and that variant's `WDU_STATION`, waits for
+`html[data-wdu-ready="true"]`, screenshots the canvas, and writes each file's
+SHA-256 and capture record into `lib/asset-manifest.json`. `npm test` compares
+the declared hash against the bytes on disk, so a poster edited by hand fails
+rather than drifts.
+
+| Variant | Station | Size | Why that size |
+| --- | --- | --- | --- |
+| `poster-desktop.png` | `hero-wide` | 1200x676 | `.scene-frame` is 1104x560 on a desktop and 720x399 on a tablet; 16:9 covers both. |
+| `poster-portrait.png` | `hero-portrait` | 1000x1001 | On a phone the frame is 342x320 — very nearly square. "Portrait" names the device, not the shape. |
+
+`.scene-poster` fills the frame with `object-fit: cover`, so a poster whose
+aspect ratio disagrees with the frame is simply cropped away.
+
+Pass `--skip-build` to reuse an existing `.next`. The script needs a Playwright
+CLI: `WDU_PLAYWRIGHT_CLI`, one on `PATH`, or `npx`. Without one it reports
+`CAPTURE_POSTER: UNAVAILABLE` and exits 2, leaving the committed posters alone —
+an unavailable browser is not a reason to ship a blank frame.
+
+The bytes are not reproducible across machines. A GPU renders them, and a macOS
+Metal backend, a CI software rasterizer, and the next Chromium release disagree
+about antialiasing edges. The poster is therefore a committed artifact with a
+recorded provenance, on the same footing as any other rendered asset here.
+
 ## Interaction checkpoints (IP-06A)
 
 The project owns its interaction capture declaration:
@@ -79,7 +114,7 @@ validator: `references/interaction-checkpoints.ts`, copied byte-identical into
 
 - hover before/during/after and click before/peak/recovered on the hero, driven
   through a deterministic pointer target (`[data-wdu-pointer-target]`, a 2x2 px
-  capture anchor projected onto the torus-knot tube),
+  capture anchor projected near the crystal's front-facing lower facet),
 - scroll at declared normalized progress (0, 0.5, 1),
 - loading (`?wdu-loading=1`, the declared loading capture state that holds
   asset readiness so the composed poster surface stays visible
@@ -148,8 +183,8 @@ contract, not conventions:
   stable-frame marker after the visible render (priority -1). Scene code
   contains no `performance.now()` or `Date.now()` path.
 - **One asset manifest.** `lib/asset-manifest.json` is the single declared
-  list of runtime assets. The header mark is the only entry; the scene is
-  procedural geometry and loads nothing over the network.
+  list of runtime assets. It includes the header mark, both posters, the
+  procedural crystal model, the local HDRI, and the local Draco decoder files.
 - **Wired determinism.** `lib/determinism-runtime.ts` is a byte-identical copy
   of the repository reference `references/determinism-runtime.ts` (IP-02B) and
   `tests/runtime.test.mjs` fails if the copies drift. The root seed is
@@ -190,7 +225,7 @@ This is the IP-05A/IP-05B/IP-05C scaffold plus the IP-06A/IP-06B/IP-06C
 interaction-capture and comparison layers. The quality controller
 (Poster/Low/Medium/High, IP-05B) is implemented and wired as the single
 quality owner. The fallback and lifecycle contracts (IP-05C) are implemented
-in this tree: the art-directed desktop and portrait posters, the visible
+in this tree: the desktop and portrait posters captured from the scene, the
 motion control with WDU_REDUCED_MOTION capture state, context-loss recovery
 through a DOM restore action, the named hero-portrait station, and disposal
 wiring with a diagnostic handle (`globalThis.__WDU_CINEMATIC__`) for
