@@ -33,11 +33,10 @@ Select exactly one implementation layer only when writing code:
 | Inside a React or Next tree | `r3f-patterns` (R3F + drei) |
 | Plain HTML, embed, single file, non-React host | `vanilla-three-production` |
 
-The criterion is the host, not the ambition. Both layers are production paths and
-both starters pass the same gate; a scene is never "too complex for vanilla", it
-is either inside a React tree or it is not. WebGL is the mature default; use
-WebGPU only for a concrete TSL/compute benefit and preserve the compatible
-WebGL2 fallback.
+The criterion is the host, not the ambition: both are production paths, both
+starters pass the same gate, and a scene is either inside a React tree or it is
+not. WebGL is the mature default; use WebGPU only for a concrete TSL/compute
+benefit and keep the compatible WebGL2 fallback.
 
 ### Budget class
 
@@ -56,12 +55,12 @@ not activation and add-ons are not a checklist:
 - passes read earlier buffers or ordered effects exceed two → `render-graph`;
 - staged assets or an art-directed arrival → `loading-choreography`;
 - sound ships → `spatial-audio`;
-- a public live 3D reference URL is supplied and runtime reconnaissance is
-  explicitly requested → `site-reconnaissance`; a screenshot alone does not;
+- a live 3D reference URL plus an explicit reconnaissance request →
+  `site-reconnaissance`; a screenshot alone does not;
 - thousands of particles with persistent state, field, trails, or morph →
   `gpu-particle-systems`;
-- parameter-generated or algorithmically grown geometry → `procedural-3d`,
-  then `3d-asset-pipeline`.
+- geometry generated from parameters or grown → `procedural-3d`, then
+  `3d-asset-pipeline`.
 
 ## Budget and anti-slop
 

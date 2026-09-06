@@ -128,8 +128,8 @@ const skillDirectories = fs
   .readdirSync(skillsRoot, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
 
-if (skillDirectories.length !== 25) {
-  fail(`expected 25 skills, found ${skillDirectories.length}`)
+if (skillDirectories.length !== 26) {
+  fail(`expected 26 skills, found ${skillDirectories.length}`)
 }
 
 for (const directory of skillDirectories) {
