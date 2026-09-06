@@ -46,7 +46,7 @@ jobs:
           node --test tests/immersive/site-reconnaissance/site-reconnaissance.test.mjs
 
       - name: Test immersive telemetry calculations and status handling
-        run: node --test tests/immersive/telemetry/telemetry-schema.test.mjs tests/immersive/telemetry/performance-summary.test.mjs tests/immersive/telemetry/ip-03c-status.test.mjs
+        run: node --test tests/immersive/telemetry/telemetry-schema.test.mjs tests/immersive/telemetry/performance-summary.test.mjs tests/immersive/telemetry/ip-03c-status.test.mjs tests/immersive/telemetry/capture-ip-02c.test.mjs
 
       # Offline half of the implementation evaluation, including the guard that
       # the shard matrix still lists every fixture the runner knows about. It

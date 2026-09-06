@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:,">
     <title>WDU deterministic capture fixture</title>
     <style>
       html,
@@ -30,6 +31,14 @@
       const requestedMode = __WDU_MODE_INPUT_JSON__
       if (requestedMode !== 'WDU_DETERMINISTIC=1') {
         throw new Error('deterministic fixture received the wrong mode input')
+      }
+
+      // The telemetry runner supplies one controlled same-origin resource.
+      // Await it before the visible marker; an incidental favicon is not a probe.
+      if (expected.telemetry.transferProbeUrl) {
+        const response = await fetch(expected.telemetry.transferProbeUrl, { cache: 'no-store' })
+        if (!response.ok) throw new Error('telemetry transfer probe failed')
+        await response.arrayBuffer()
       }
 
       const canvas = document.querySelector('[data-capture-root]')
@@ -138,6 +147,9 @@
       }
 
       const telemetryDocument = structuredClone(expected.telemetry.document)
+      if (expected.telemetry.transferProbeUrl) {
+        telemetryDocument.runtime.frame.firstMeaningfulFrame.observed.value = performance.now()
+      }
       window.__WDU_IMMERSIVE_TELEMETRY__ = {
         rendererInfo: structuredClone(expected.telemetry.rendererInfo),
         read() {

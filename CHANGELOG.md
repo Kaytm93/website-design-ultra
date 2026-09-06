@@ -1,5 +1,19 @@
 # website-design-ultra
 
+## Unreleased — Controlled telemetry transfer capture (2026-09-06)
+
+Main run `34021010338` failed because IP-02C expected 300 transferred bytes
+from an incidental favicon request before a synthetic 1180 ms marker. That
+request could finish later. The fixture now suppresses favicon fetches, awaits
+a successful uncached 64-byte probe, and records its actual ready time. The
+Chromium capture must observe exactly 364 transferred bytes and one resource;
+all performance ceilings stay unchanged. The warm-frame samples remain an
+explicit synthetic verifier fixture, not a scene-performance benchmark.
+
+Validation: 32 telemetry/capture unit tests, plugin content validation and two
+fresh browser captures pass. Deterministic clean captures and CI follow the
+committed change. No release or model-acceptance claim is made.
+
 ## Unreleased — Wait for the settled scene before capture (2026-09-05)
 
 Main run `33989821430` caught a procedural-crystal reduced-motion capture
