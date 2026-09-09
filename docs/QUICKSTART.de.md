@@ -4,26 +4,54 @@ Voraussetzungen: Git und Node.js ab 22.18. Für die KI-Workflows brauchst du
 Codex oder Claude Code mit deinem eigenen angemeldeten Konto. Figma, Blender
 und kostenpflichtige Designtools sind für den Einstieg nicht erforderlich.
 
-## Plugin installieren
+## Überarbeiteten Stand vorbereiten
 
-Codex CLI:
+Der Produktionscheck liegt lokal im Branch
+`codex/production-readiness-2026-09-09`. Der GitHub-Schreibzugriff wurde mit HTTP
+403 abgewiesen; der Branch ist deshalb noch nicht auf GitHub veröffentlicht.
+Eine Installation von `main` enthält diese Änderungen noch nicht.
+
+Das beigefügte Paket `website-design-ultra-production.zip` entpacken. Neben
+dem entpackten Verzeichnis einen frischen Checkout erstellen:
 
 ```bash
-codex plugin marketplace add Kaytm93/website-design-ultra --ref main
+git clone https://github.com/Kaytm93/website-design-ultra.git
+cd website-design-ultra
+git switch -c codex/production-readiness-2026-09-09 6ba9a0977fe1de3007b1824ebe7d9970ee71c382
+git am ../website-design-ultra-production/production-readiness.patch
+```
+
+Git braucht dafür deinen eingerichteten Namen und deine E-Mail-Adresse.
+Die Patch-Serie enthält alle Änderungen seit dem genannten Ausgangscommit.
+Bereits vorhandene Checkouts und laufende eigene Arbeiten brauchen nicht
+überschrieben zu werden. Die folgenden Schritte verwenden diesen neuen Checkout.
+
+## Plugin aus diesem Checkout installieren
+
+Codex CLI, im Repository-Verzeichnis:
+
+```bash
+codex plugin marketplace add .
 codex plugin add website-design-ultra@kay-design
 ```
 
-Claude Code, in einer Sitzung:
+Die lokale Marketplace-Quelle wird von `codex plugin marketplace add --help`
+ausdrücklich unterstützt. Falls `kay-design` bereits installiert ist, vorher
+die bestehende Quelle und Version in der Plugin-Verwaltung prüfen; für diesen
+Stand muss sie auf den neuen lokalen Checkout zeigen. Nach Änderungen eine neue
+Sitzung öffnen. Das Laden des Plugins mit einer angemeldeten Modell-CLI ist in
+dieser Arbeitsumgebung noch nicht live abgenommen.
 
-```text
-/plugin marketplace add Kaytm93/website-design-ultra
-/plugin install website-design-ultra@kay-design
+Claude Code kann das Plugin für eine lokale Sitzung direkt laden, ebenfalls aus
+dem Repository-Verzeichnis:
+
+```bash
+claude --plugin-dir ./website-design-ultra
 ```
 
-Nach Änderungen eine neue Sitzung öffnen. `main` ist der Entwicklungsbranch.
-Für reproduzierbare Projekte Plugin und Starter vom selben geprüften Commit
-verwenden. Die Änderungen dieses Produktionschecks liegen zunächst im Branch
-`codex/production-readiness-2026-09-09`; sie gehören erst nach dem Merge zu `main`.
+Die regulären GitHub-Marketplace-Kommandos stehen in der Root-README. Sie sind
+für den auf GitHub veröffentlichten Stand gedacht. Für reproduzierbare Projekte
+Plugin und Starter vom selben geprüften Commit verwenden.
 
 Das Plugin stellt Anweisungen, Referenzen und Prüfwerkzeuge bereit. Dein
 Website-Projekt, dessen Inhalte und die zum Auftrag passenden Assets bleiben
@@ -31,9 +59,9 @@ separat. Eine Marketplace-Installation installiert keine Website-Abhängigkeiten
 
 ## Eigenständiges 3D-Projekt erstellen
 
+Im so vorbereiteten Repository:
+
 ```bash
-git clone --branch codex/production-readiness-2026-09-09 https://github.com/Kaytm93/website-design-ultra.git
-cd website-design-ultra
 node scripts/create-project.mjs --starter next --out ../meine-website
 cd ../meine-website
 npm ci

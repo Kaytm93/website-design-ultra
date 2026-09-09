@@ -58,16 +58,48 @@ zum Prüfzeitpunkt und keine Garantie gegen zukünftige Schwachstellen.
 
 ## Verifikation
 
-Die abschließenden Ergebnisse werden nach dem Integrationslauf hier ergänzt.
-Die CI prüft neue Exporte außerhalb des Checkouts einschließlich Installation,
-Typprüfung, Tests, Build und Chromium. Der Browserlauf verlangt eine tatsächlich
-verfügbare WebGL-Implementierung; ein fehlender Browser oder GPU ist kein PASS.
+| Prüfung | Lokales Ergebnis |
+|---|---|
+| Root-Suites | 164 Tests bestanden |
+| Next/R3F-Starter | 74 Tests bestanden; Typprüfung und Produktionsbuild erfolgreich |
+| Vite/Three-Starter | 34 Tests bestanden; Typprüfung und Produktionsbuild erfolgreich |
+| Labor | 151 Tests bestanden; Typprüfung und Produktionsbuild erfolgreich |
+| Queue-Driver / Volume Research | 13 / 12 Python-Tests bestanden |
+| Dependency-Audit | 6 Lockfiles, jeweils 0 bekannte Schwachstellen |
+| Plugin-Validierung | 26 Skills; Referenzpfade, Kontrast- und Copy-Regressionsprüfungen bestanden |
+| Forward-Dry-Run | Vertragsprüfung und historische Trace-Replays bestanden; kein Live-Modelllauf |
+
+Damit sind 423 Node-Tests und 25 Python-Tests ohne Fehler nachgewiesen; die
+Node-Suites haben keine übersprungenen Tests. Die Protokolle liegen zusätzlich
+im übertragbaren Änderungspaket. Der erneut gestartete Gesamtprozess lieferte
+nur ein unvollständiges Log bis zur Next-Seitengenerierung; die nachfolgenden
+Starter-/Labor-Prüfungen und Produktionsbuilds wurden deshalb separat bestätigt.
+
+Die neue CI-Konfiguration prüft Exporte außerhalb des Checkouts einschließlich
+Installation, Typprüfung, Tests, Build und Chromium. Dieser geänderte Workflow
+ist noch nicht auf GitHub gelaufen. Der lokale Playwright-Versuch scheiterte
+vor dem Seitenstart an der fehlenden Chromium-Datei; die Installation endete
+mit Download-Timeouts. Der zusätzliche Cloud-Browser-Versuch brach beim Öffnen
+der lokalen Seite mit einem Verbindungsfehler ab. Deshalb sind Browser/GPU,
+visuelle Qualität und echte Geräteperformance für diesen Stand **UNVERIFIED**.
+Ein fehlender Browser oder GPU ist kein PASS.
+
+## Übertragung
+
+Die Änderungen sind lokal versioniert. Git-Push konnte keine GitHub-Anmeldung
+verwenden; der Schreibversuch über die verbundene GitHub-Integration wurde mit
+HTTP 403 (`Resource not accessible by integration`) abgewiesen. Es wurden kein
+Remote-Branch und kein Pull Request angelegt. Das Änderungspaket enthält eine
+Git-Patch-Serie, die sich auf den oben genannten Ausgangscommit anwenden lässt.
+Die Startanleitung beschreibt diesen Weg ausdrücklich.
 
 ## Noch offene Freigabe und Erweiterungen
 
-- Wiederholte Live-Forward-Abnahme auf dem endgültigen Plugin-Baum. Lokal war
-  weder eine Codex- noch eine Claude-CLI auf PATH verfügbar. Der Dry-Run führt
-  ausschließlich Vertragsprüfung und historische Trace-Replays aus.
+- Wiederholte Live-Forward-Abnahme auf dem endgültigen Plugin-Baum. Codex und
+  Claude waren zunächst nicht auf PATH verfügbar. Später ließ sich eine Codex-
+  CLI unter `/opt/codex/bin/codex` mit erfolgreichem Anmeldestatus erreichen;
+  das ist noch kein Nachweis eines erfolgreichen Modelllaufs. Der Dry-Run
+  führt ausschließlich Vertragsprüfung und historische Trace-Replays aus.
 - Kein neues Release-Tag: das bestehende Manifest bezeichnet weiterhin 2.0.1;
   dieser Branch ist ein überprüfbarer Entwicklungskandidat.
 - Die zusätzlichen 2.2/2.3-Roadmapziele bleiben eigenständige Arbeit: drei
