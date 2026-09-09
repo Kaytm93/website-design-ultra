@@ -472,7 +472,7 @@ test('CI installs the pinned browser and runs the deterministic gate', () => {
   assert.doesNotMatch(workflow, /uses:\s+actions\/[\w-]+@v\d/)
   for (const [action, expectedPin] of expectedActionPins) {
     const uses = actionUses.filter((entry) => entry.action === action)
-    assert.equal(uses.length, expectedPin.occurrences, `${action} occurrence count`)
+    assert.ok(uses.length >= expectedPin.occurrences, `${action}: required CI coverage missing`)
     for (const use of uses) {
       assert.match(use.revision, /^[a-f0-9]{40}$/)
       assert.equal(use.revision, expectedPin.revision)

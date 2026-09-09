@@ -52,5 +52,5 @@ export const QUALITY_CONFIG: Omit<QualityControllerConfig, 'now'> = {
   dprStep: 0.25,
   dprFloor: 1,
   sampleWindowFrames: 120,
-  persistenceKey: 'wdu.next-r3f-cinematic.quality',
+  persistenceKey: 'wdu.vite-three-canvas.quality',
 }

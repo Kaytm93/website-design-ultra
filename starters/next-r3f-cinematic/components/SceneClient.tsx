@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { supportsWebGL2 } from '../lib/webgl-capability.ts'
 import { ActivationControl } from './ActivationControl.tsx'
 import { MotionControl } from './MotionControl.tsx'
 import { PointerTargetAnchor } from './PointerTargetAnchor.tsx'
@@ -76,6 +77,8 @@ function usePortrait(): boolean {
  */
 export function SceneClient({ mode, stationId: initialStationId, motion: initialMotion }: SceneClientProps) {
   const portrait = usePortrait()
+  const [webglAvailable, setWebglAvailable] = useState<boolean | null>(null)
+  useEffect(() => { setWebglAvailable(supportsWebGL2(() => document.createElement('canvas'))) }, [])
   const [stationId, setStationId] = useState(initialStationId)
   const [motion, setMotion] = useState<MotionPreference>(initialMotion)
   const [quality, setQuality] = useState<QualityTelemetryState | null>(null)
@@ -217,7 +220,7 @@ export function SceneClient({ mode, stationId: initialStationId, motion: initial
       </div>
       <div className="scene-frame">
         <Poster variant={portrait ? 'portrait' : 'desktop'} visible={posterVisible} />
-        <SceneCanvas
+        {webglAvailable === true ? <SceneCanvas
           key={mountKey}
           mode={mode}
           stationId={stationId}
@@ -225,8 +228,9 @@ export function SceneClient({ mode, stationId: initialStationId, motion: initial
           loadingHold={loadingHold}
           onQualityChange={onQualityChange}
           onContextLost={onContextLost}
-        />
+        /> : null}
         <PointerTargetAnchor />
+        {webglAvailable === false ? <p className="context-panel" role="status">The 3D view is unavailable. The image and page content remain available.</p> : null}
         {contextLost ? (
           <div className="context-panel" role="alert">
             <h3>Scene context lost</h3>

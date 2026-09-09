@@ -33,7 +33,9 @@
         height: 100%;
         display: block;
       }
-      [data-scene-poster] {
+      [data-scene-poster] img {
+        width: 100%;
+        height: 100%;
         object-fit: cover;
         background: var(--ground);
       }
@@ -88,11 +90,13 @@
     -->
     <main class="stage" data-scene-root data-scene-state="poster">
       <canvas data-scene-canvas aria-hidden="true"></canvas>
+      <picture data-scene-poster>
+      <source media="(orientation: portrait)" srcset="./poster-portrait.png" />
       <img
-        data-scene-poster
         src="./poster-desktop.png"
         alt="A cluster of faceted shards lit from the upper left against a dark ground."
       />
+      </picture>
 
       <div class="copy">
         <h1>Seeded shards, one renderer, no framework</h1>
@@ -111,7 +115,7 @@
       <div class="controls">
         <span>Camera</span>
         <span data-station-controls></span>
-        <button type="button" data-motion-toggle aria-pressed="false">Motion: full</button>
+        <button type="button" data-motion-toggle aria-pressed="false" disabled>Motion: full</button>
       </div>
     </main>
 

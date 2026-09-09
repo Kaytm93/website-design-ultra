@@ -128,6 +128,7 @@ function createBootstrap(mode: RuntimeMode): SceneBootstrap {
   // clock and the declared frame-time input — same run, same tier, same DPR.
   const quality = createQualityController({
     ...QUALITY_CONFIG,
+    ...(mode === 'deterministic' ? { storage: null } : {}),
     now: () => clock.elapsed * 1000,
   })
   const streams = createRandomStreams(ROOT_SEED)
@@ -190,6 +191,7 @@ export function SceneRuntime({
     cameraAppliedRef.current = true
     cameraApplyCountRef.current += 1
     camWritesRef.current.push(`apply@${frameCountRef.current}`)
+    if (camWritesRef.current.length > 64) camWritesRef.current.shift()
   }, [])
 
   const invalidateReady = useCallback(() => {

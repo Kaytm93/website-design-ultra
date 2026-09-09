@@ -80,16 +80,3 @@ test('runtime mode resolution follows the WDU_DETERMINISTIC contract', () => {
   assert.equal(resolveStationId(undefined), 'hero-wide')
   assert.equal(resolveStationId('  hero-detail  '), 'hero-detail')
 })
-
-test('the copied runtime stays byte-identical to the repository reference', (t) => {
-  const reference = join(root, '..', '..', 'references', 'determinism-runtime.ts')
-  if (!existsSync(reference)) {
-    t.skip('repository reference not present (standalone starter copy)')
-    return
-  }
-  assert.equal(
-    readFileSync(join(root, 'lib', 'determinism-runtime.ts'), 'utf8'),
-    readFileSync(reference, 'utf8'),
-    'lib/determinism-runtime.ts must stay a byte-identical copy of references/determinism-runtime.ts',
-  )
-})

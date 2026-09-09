@@ -1,0 +1,17 @@
+{
+  "name": "website-design-ultra-repository",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "engines": { "node": ">=22.18.0" },
+  "scripts": {
+    "setup": "node scripts/project.mjs setup",
+    "verify": "node scripts/project.mjs verify",
+    "test": "node scripts/project.mjs test",
+    "create": "node scripts/create-project.mjs",
+    "doctor": "node scripts/doctor.mjs",
+    "test:browser": "playwright test --config tests/starter-browser/playwright.config.mjs",
+    "audit:dependencies": "node scripts/project.mjs audit"
+  },
+  "devDependencies": { "@playwright/test": "1.62.1" }
+}

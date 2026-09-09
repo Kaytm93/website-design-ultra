@@ -1,5 +1,19 @@
 # website-design-ultra
 
+## Unreleased — production hardening
+
+- Fix independent visibility conditions, blocked storage and observer re-attachment.
+- Add cancellable vanilla rendering, still-frame invalidation, context recovery,
+  portrait posters, page-cache lifecycle and complete teardown.
+- Probe Next WebGL support before canvas startup; isolate deterministic quality.
+- Export standalone starters with tests, licenses and complete browser-verifier dependencies.
+- Run portable production browser checks and dependency audits in CI; include lab build/typecheck.
+- Pin corrected Vite, PostCSS and sharp dependencies; add German setup instructions.
+- Carry the scoped plan-routing correction from PR #42 without raising budgets.
+
+Validation scope and remaining release gates: `docs/audits/2026-09-09-production.md`.
+No new release tag or live-model acceptance is claimed.
+
 ## Unreleased — Controlled telemetry transfer capture (2026-09-06)
 
 Main run `34021010338` failed because IP-02C expected 300 transferred bytes

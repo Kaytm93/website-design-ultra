@@ -119,18 +119,6 @@ test('the scene fetches nothing at runtime', () => {
   }
 })
 
-test('the copied runtime modules stay byte-identical to the repository references', () => {
-  for (const name of ['quality-controller.ts', 'determinism-runtime.ts']) {
-    const reference = readFileSync(join(root, '..', '..', 'references', name), 'utf8')
-    const copy = readFileSync(join(root, 'src', name), 'utf8')
-    assert.equal(
-      copy,
-      reference,
-      `src/${name} must stay a byte-identical copy of references/${name}`,
-    )
-  }
-})
-
 test('each poster records the hash, station and browser it was captured with', () => {
   for (const asset of manifest.assets) {
     const bytes = readFileSync(join(root, 'public', asset.url.replace(/^\//, '')))

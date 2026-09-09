@@ -152,9 +152,9 @@ jobs:
         working-directory: lab
         run: npm ci
 
-      - name: Lab suite
+      - name: Lab typecheck, tests and production build
         working-directory: lab
-        run: npm test
+        run: npm run verify
 
   starter:
     runs-on: ubuntu-latest
@@ -200,6 +200,55 @@ jobs:
       - name: Typecheck, test, build
         working-directory: starters/vite-three-canvas
         run: npm run verify
+
+  portable-starter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        starter: [next, vanilla]
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22
+      - name: Install pinned browser test runner
+        run: npm ci
+      - name: Export into a directory outside the repository
+        run: node scripts/create-project.mjs --starter "${{ matrix.starter }}" --out "${{ runner.temp }}/wdu-site"
+      - name: Fresh standalone install, tests and build
+        working-directory: ${{ runner.temp }}/wdu-site
+        run: |
+          npm ci
+          npm run verify
+      - name: Install test browser
+        run: npx --no-install playwright install --with-deps chromium
+      - name: Test the exported production site in Chromium
+        env:
+          WDU_TEST_STARTER: ${{ matrix.starter }}
+          WDU_TEST_PROJECT: ${{ runner.temp }}/wdu-site
+        run: npm run test:browser
+      - name: Archive starter browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: portable-starter-${{ matrix.starter }}
+          path: output/starter-browser
+          if-no-files-found: warn
+
+  distribution-and-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22
+      - name: Test standalone packaging and source synchronization
+        run: node --test tests/distribution/distribution.test.mjs
+      - name: Audit all application lockfiles
+        run: npm run audit:dependencies
 
   deterministic-capture:
     runs-on: ubuntu-latest

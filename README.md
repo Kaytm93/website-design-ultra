@@ -1,13 +1,24 @@
 # Website Design Ultra
 
 Website and 3D design skills for Codex and Claude Code. The plugin contains
-24 skills, six Claude commands, a copy linter, runtime templates and browser
+26 skills, six Claude commands, a copy linter, runtime templates and browser
 verification tools. The version lives in the
 [plugin manifest](website-design-ultra/.codex-plugin/plugin.json).
 
 The 2.1 release is in preparation. Its repeated live-model acceptance remains
 open; a green build alone does not complete it. See the
 [implementation queue](automation/website-design-ultra-2.1-2.3/QUEUE.md).
+
+German setup and project export: [Startanleitung](docs/QUICKSTART.de.md).
+
+Create an independent starter without copying build output:
+
+```bash
+npm run create -- --starter next --out ../my-site
+# or: --starter vanilla
+```
+
+Repository checks: `npm ci`, `npm run setup`, then `npm run verify`.
 
 ## Install
 
@@ -67,8 +78,8 @@ npm run dev
 ```
 
 The [starter guide](starters/next-r3f-cinematic/README.md) documents capture flags,
-interaction checkpoints and quality ownership. The current torus hero remains a
-scaffold; the distinctive replacement and reference scenes are 2.2 work.
+interaction checkpoints and quality ownership. Both starters ship seeded crystal geometry and scene posters. Further reference
+scenes remain tracked in the implementation queue.
 
 ## Check the result
 

@@ -407,7 +407,17 @@ export function createQualityController(config: QualityControllerConfig): Qualit
 
   let visibilityHandler: (() => void) | null = null
   let visibilityObserver: IntersectionObserver | null = null
-  let disposed = false
+  let visibilityDocument: Document | null = null
+
+  function detachVisibility(): void {
+    if (visibilityHandler !== null) {
+      visibilityDocument?.removeEventListener('visibilitychange', visibilityHandler)
+    }
+    visibilityObserver?.disconnect()
+    visibilityHandler = null
+    visibilityObserver = null
+    visibilityDocument = null
+  }
 
   function logDecision(from: QualityTier, to: QualityTier, reason: string, note?: string): void {
     decisions.push({ at: now(), from, to, dpr, reason, ...(note !== undefined ? { note } : {}) })
@@ -660,43 +670,45 @@ export function createQualityController(config: QualityControllerConfig): Qualit
     },
 
     attachVisibility(target: Element): void {
-      if (disposed) return
+      // Effect cleanup/re-attachment (including React Strict Mode) must not
+      // leave stale observers or permanently disable visibility tracking.
+      detachVisibility()
       if (typeof document === 'undefined') return
+      const owner = target.ownerDocument ?? document
+      visibilityDocument = owner
+      let intersecting = true
+      const sync = () => setVisibility(intersecting && owner.visibilityState === 'visible')
       visibilityHandler = () => {
-        setVisibility(document.visibilityState === 'visible')
+        sync()
       }
-      document.addEventListener('visibilitychange', visibilityHandler)
+      owner.addEventListener('visibilitychange', visibilityHandler)
       if (typeof IntersectionObserver !== 'undefined') {
         visibilityObserver = new IntersectionObserver(
           (entries) => {
             for (const entry of entries) {
-              setVisibility(
-                entry.isIntersecting && document.visibilityState === 'visible',
-              )
+              intersecting = entry.isIntersecting
+              sync()
             }
           },
           { threshold: 0 },
         )
         visibilityObserver.observe(target)
       }
+      sync()
     },
 
     dispose(): void {
-      disposed = true
-      if (visibilityHandler !== null && typeof document !== 'undefined') {
-        document.removeEventListener('visibilitychange', visibilityHandler)
-        visibilityHandler = null
-      }
-      if (visibilityObserver !== null) {
-        visibilityObserver.disconnect()
-        visibilityObserver = null
-      }
+      detachVisibility()
     },
   }
 }
 
 /** sessionStorage when it exists; persistence is disabled where it does not. */
 function defaultStorage(): QualityStorage | null {
-  if (typeof globalThis.sessionStorage === 'undefined') return null
-  return globalThis.sessionStorage
+  try {
+    return globalThis.sessionStorage ?? null
+  } catch {
+    // Sandboxed embeds and privacy settings can throw on the getter itself.
+    return null
+  }
 }

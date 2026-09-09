@@ -35,6 +35,7 @@ import { ROOT_SEED, STABLE_FRAME, STEP_SECONDS, dprCeiling, heroRotationY } from
 export interface SceneHandle {
   readonly renderer: WebGLRenderer
   readonly marker: StableFrameMarker
+  readonly clock: SceneClock
   /** Advance and draw exactly one frame. */
   renderFrame(): void
   applyStation(id: StationId): void
@@ -160,6 +161,7 @@ export function createScene(options: SceneOptions): SceneHandle {
 
   let motion: MotionPreference = options.motion
   let stationApplied = false
+  let stableFrameReached = false
   const target = new Vector3()
 
   const applyStation = (id: StationId) => {
@@ -175,12 +177,14 @@ export function createScene(options: SceneOptions): SceneHandle {
 
   const setDpr = (dpr: number) => {
     renderer.setPixelRatio(Math.min(dpr, dprCeiling(options.coarsePointer)))
+    marker.invalidate()
   }
 
   const resize = (width: number, height: number) => {
     camera.aspect = width / height
     camera.updateProjectionMatrix()
     renderer.setSize(width, height, false)
+    marker.invalidate()
   }
 
   applyStation(options.station)
@@ -190,21 +194,23 @@ export function createScene(options: SceneOptions): SceneHandle {
   return {
     renderer,
     marker,
+    clock,
     renderFrame() {
       // A deterministic capture must photograph one defined frame, so the clock
       // stops advancing once the marker is up. Without this the pose depends on
       // how many frames elapsed before the screenshot, which is wall-clock
       // timing wearing a deterministic label.
       if (options.deterministic && marker.ready) return
-      clock.tick()
+      if (!options.deterministic || !stableFrameReached) clock.tick()
       hero.rotation.y = heroRotationY(STATIC_PHASE, clock.elapsed, motion)
       renderer.render(scene, camera)
-      marker.afterVisibleRender({
+      const ready = marker.afterVisibleRender({
         frame: clock.frame,
         assetsReady: true,
         cameraStationApplied: stationApplied,
         streamsInitialized: true,
       })
+      if (ready) stableFrameReached = true
     },
     applyStation,
     setMotion(next: MotionPreference) {
@@ -214,6 +220,7 @@ export function createScene(options: SceneOptions): SceneHandle {
     setDpr,
     resize,
     dispose() {
+      marker.invalidate()
       geometry.dispose()
       material.dispose()
       ground.geometry.dispose()

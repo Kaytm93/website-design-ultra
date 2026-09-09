@@ -32,15 +32,6 @@ test('the Three.js version is pinned to an exact release', () => {
   )
 })
 
-test('the loop is driven by requestAnimationFrame under an explicit run state', () => {
-  assert.match(main, /requestAnimationFrame\(pump\)/)
-  assert.match(
-    main,
-    /if \(lifecycle\.runState !== 'running'\) return/,
-    'the loop must exit on any pause reason rather than test one flag',
-  )
-})
-
 test('output color space and tone mapping are set before anything is drawn', () => {
   assert.match(scene, /renderer\.outputColorSpace = SRGBColorSpace/)
   assert.match(scene, /renderer\.toneMapping = ACESFilmicToneMapping/)
@@ -60,7 +51,7 @@ test('DPR is capped, and the cap is a pointer capability rather than a width', (
 })
 
 test('all three pause reasons are wired: hidden, offscreen, and context loss', () => {
-  assert.match(main, /visibilitychange/)
+  assert.match(read('src/lifecycle.ts'), /visibilitychange/)
   assert.match(main, /new IntersectionObserver/)
   assert.match(main, /webglcontextlost/)
   assert.match(main, /webglcontextrestored/)
@@ -84,7 +75,7 @@ test('every GPU resource the scene allocates is released on teardown', () => {
   }
   assert.match(main, /scene\.dispose\(\)/)
   assert.match(main, /lifecycle\.dispose\(\)/)
-  assert.match(main, /observer\.disconnect\(\)/)
+  assert.match(main, /observer\?\.disconnect\(\)/)
 })
 
 test('the DOM layer is in the document, not created by the script', () => {

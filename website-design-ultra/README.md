@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 2.0.1 contains 25 skills and 6 Claude commands. It enforces anti-slop
+Version 2.0.1 contains 26 skills and 6 Claude commands. It enforces anti-slop
 rules on generated copy and on visual defaults, with a deterministic English and
 German copy linter that reads a whole repository at one register per file. It
 carries evidence-led content, a declared 2D composition contract, per-direction
@@ -24,7 +24,7 @@ Copy quality is enforced deterministically, not by self-report.
 
 ## Structure
 
-25 skills under `skills/`, 6 commands under `commands/`, the validators and the
+26 skills under `skills/`, 6 commands under `commands/`, the validators and the
 browser adapter under `scripts/`, and the files a project copies under
 `templates/`. Each skill is one `SKILL.md` plus one level of `references/`.
 

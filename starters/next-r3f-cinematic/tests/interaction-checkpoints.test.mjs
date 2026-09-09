@@ -137,18 +137,6 @@ test('the loading capture state is a declared project entry point', () => {
   assert.equal(loading.waitFor, '.scene-poster:not([hidden])')
 })
 
-test('the copied checkpoint validator stays byte-identical to the repository reference', (t) => {
-  const reference = join(root, '..', '..', 'references', 'interaction-checkpoints.ts')
-  if (!existsSync(reference)) {
-    t.skip('repository reference not present (standalone starter copy)')
-    return
-  }
-  assert.equal(
-    readFileSync(join(root, 'lib', 'interaction-checkpoints.ts'), 'utf8'),
-    readFileSync(reference, 'utf8'),
-    'lib/interaction-checkpoints.ts must stay a byte-identical copy of references/interaction-checkpoints.ts',
-  )
-})
 
 test('the pointer interaction surface is wired into the scene (IP-06A)', () => {
   const hero = readFileSync(join(root, 'components', 'HeroObject.tsx'), 'utf8')

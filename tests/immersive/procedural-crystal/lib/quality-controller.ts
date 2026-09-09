@@ -673,6 +673,7 @@ export function createQualityController(config: QualityControllerConfig): Qualit
 
     attachVisibility(target: Element | (() => boolean)): () => void {
       if (disposed) return () => {}
+      detach()
       if (typeof document === 'undefined' && typeof target !== 'function') return () => {}
       const scheduler = config.scheduler ?? {
         setInterval: (handle: () => void, ms: number) => setInterval(handle, ms),
@@ -696,23 +697,23 @@ export function createQualityController(config: QualityControllerConfig): Qualit
       }
       // Element form: the production path that watches document visibility
       // plus an IntersectionObserver on the canvas element.
-      visibilityHandler = () => {
-        setVisibility(document.visibilityState === 'visible')
-      }
+      let intersecting = true
+      const sync = () => setVisibility(intersecting && document.visibilityState === 'visible')
+      visibilityHandler = sync
       document.addEventListener('visibilitychange', visibilityHandler)
       if (typeof IntersectionObserver !== 'undefined') {
         visibilityObserver = new IntersectionObserver(
           (entries) => {
             for (const entry of entries) {
-              setVisibility(
-                entry.isIntersecting && document.visibilityState === 'visible',
-              )
+              intersecting = entry.isIntersecting
+              sync()
             }
           },
           { threshold: 0 },
         )
         visibilityObserver.observe(target)
       }
+      sync()
       detach = () => {
         if (visibilityHandler !== null && typeof document !== 'undefined') {
           document.removeEventListener('visibilitychange', visibilityHandler)
@@ -734,6 +735,9 @@ export function createQualityController(config: QualityControllerConfig): Qualit
 
 /** sessionStorage when it exists; persistence is disabled where it does not. */
 function defaultStorage(): QualityStorage | null {
-  if (typeof globalThis.sessionStorage === 'undefined') return null
-  return globalThis.sessionStorage
+  try {
+    return globalThis.sessionStorage ?? null
+  } catch {
+    return null
+  }
 }

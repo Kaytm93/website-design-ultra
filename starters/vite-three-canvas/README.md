@@ -7,13 +7,13 @@ It exists because the plugin routes plain-HTML and embed work to a vanilla path,
 and a path with no runnable reference is a path nobody can check. The claim
 `immersive-3d` makes — that the vanilla layer is a production peer of R3F rather
 than a lesser option — is only worth making if both starters pass the same
-gates. They do, and the differences below are the ones the stacks actually
-force.
+gates. The shared static gate runs in CI. The portable-starter job separately checks
+real Chromium rendering of freshly exported projects.
 
 ## Run it
 
 ```bash
-npm install
+npm ci
 npm run dev            # http://localhost:5173
 npm run verify         # typecheck + tests + build, the gate CI runs
 npm run capture:poster # re-render both posters from the scene
@@ -90,3 +90,11 @@ Not in rigor. In three things the stacks genuinely force:
 `src/quality-controller.ts` and `src/determinism-runtime.ts` are byte-identical
 copies of the repository references, asserted by the test suite in both
 starters. The mechanism is shared; only the mounting differs.
+
+## Runtime lifecycle
+
+`src/frame-loop.ts` cancels queued frames on pause and schedules one frame at a
+time. Reduced motion and deterministic mode stop scheduling after readiness;
+resize and explicit controls invalidate the image. Context restoration draws
+again before the poster is hidden. Page-cache suspension preserves the scene;
+final teardown removes all owned listeners and observers.

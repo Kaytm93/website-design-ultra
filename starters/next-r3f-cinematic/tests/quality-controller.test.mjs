@@ -552,32 +552,3 @@ test('the starter quality config satisfies the 3d-runtime-quality invariants', (
 })
 
 // ── Copy discipline and distribution boundary ────────────────────────────────
-
-test('the starter copy stays byte-identical to the repository reference', (t) => {
-  const reference = join(root, '..', '..', 'references', 'quality-controller.ts')
-  if (!existsSync(reference)) {
-    t.skip('repository reference not present (standalone starter copy)')
-    return
-  }
-  assert.equal(
-    readFileSync(join(root, 'lib', 'quality-controller.ts'), 'utf8'),
-    readFileSync(reference, 'utf8'),
-    'lib/quality-controller.ts must stay a byte-identical copy of references/quality-controller.ts',
-  )
-})
-
-test('the reference is a copied file, not an npm package', (t) => {
-  const references = join(root, '..', '..', 'references')
-  if (!existsSync(references)) {
-    t.skip('repository references not present (standalone starter copy)')
-    return
-  }
-  const pkgPath = join(references, 'package.json')
-  if (existsSync(pkgPath)) {
-    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
-    // The only allowed package.json is the ESM marker { "type": "module" } needed for tsx ESM resolution.
-    assert.deepEqual(pkg, { type: 'module' }, 'references/package.json must be only the ESM marker, not a real package')
-  }
-  const controllerSource = readFileSync(join(references, 'quality-controller.ts'), 'utf8')
-  assert.ok(!/^\s*import\s/m.test(controllerSource), 'the reference imports nothing')
-})

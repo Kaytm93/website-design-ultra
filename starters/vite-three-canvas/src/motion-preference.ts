@@ -20,7 +20,7 @@
 export type MotionPreference = 'full' | 'reduced'
 
 /** Session persistence key for the explicit user choice. */
-export const MOTION_STORAGE_KEY = 'wdu.next-r3f-cinematic.motion'
+export const MOTION_STORAGE_KEY = 'wdu.vite-three-canvas.motion'
 
 export function resolveMotionPreference(raw: string | undefined): MotionPreference {
   return raw === '1' ? 'reduced' : 'full'
@@ -30,8 +30,12 @@ export function readStoredMotionPreference(
   storage: { getItem(key: string): string | null } | null,
 ): MotionPreference | null {
   if (!storage) return null
-  const value = storage.getItem(MOTION_STORAGE_KEY)
-  return value === 'reduced' || value === 'full' ? value : null
+  try {
+    const value = storage.getItem(MOTION_STORAGE_KEY)
+    return value === 'reduced' || value === 'full' ? value : null
+  } catch {
+    return null
+  }
 }
 
 export function writeStoredMotionPreference(
@@ -39,7 +43,11 @@ export function writeStoredMotionPreference(
   preference: MotionPreference,
 ): void {
   if (!storage) return
-  storage.setItem(MOTION_STORAGE_KEY, preference)
+  try {
+    storage.setItem(MOTION_STORAGE_KEY, preference)
+  } catch {
+    // Motion remains usable when storage is blocked or full.
+  }
 }
 
 export function systemPrefersReducedMotion(): boolean {
