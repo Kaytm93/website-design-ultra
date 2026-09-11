@@ -3,6 +3,10 @@
 Files a project copies. Everything here exists inside an installed plugin, so a
 skill can name a path the reader can actually open.
 
+These are technical building blocks. Repository proof pages and starter scenes
+are retained test fixtures, not design templates or visual-quality endorsements.
+Choose the new project's layout, copy, subject and look from its brief and assets.
+
 - `runtime/` — zero-dependency TypeScript references: the telemetry surface, the
   quality controller, the determinism runtime, interaction checkpoints, the
   baseline-comparison contract, and the cinematic timeline. It also holds two

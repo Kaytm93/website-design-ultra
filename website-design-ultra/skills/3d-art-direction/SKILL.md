@@ -9,6 +9,10 @@ Define a reproducible image before choosing technique. `immersive-3d` owns
 justification/budget, `3d-runtime-quality` owns runtime tiers, and
 `reference-intake` is the evidence predecessor when its gate fired.
 
+Repository proof pages, starter heroes and posters are technical fixtures, not
+visual defaults or look-loop targets. Reuse runtime mechanisms; design the page,
+subject, camera and materials from the brief, project assets and chosen references.
+
 ## Art-direction contract
 
 Fix these decisions before scene code. This is the schema, not a set of defaults;

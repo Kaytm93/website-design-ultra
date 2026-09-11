@@ -1,5 +1,10 @@
 # WDU shader / particle lab
 
+The existing demo scenes are retained technical fixtures. Showcase work and
+visual refinement are paused. Their screenshots are regression evidence, not
+design references for new sites; runtime modules and technical tests remain
+maintained.
+
 `lab/` is the root-only IP-08A experiment harness. It is intentionally outside
 `website-design-ultra/`: the lab owns its Vite dependencies and lockfile, while
 `references/determinism-runtime.ts` remains a copyable zero-dependency runtime

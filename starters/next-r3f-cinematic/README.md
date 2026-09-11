@@ -1,9 +1,12 @@
 # next-r3f-cinematic
 
-The website-design-ultra cinematic starter: a server-rendered Next.js page
-around a client-only React Three Fiber canvas leaf. It scaffolds the shape a
-cinematic product hero takes in this plugin, with every ownership boundary
-declared before scene code.
+A technical fixture: a server-rendered Next.js page around a client-only React
+Three Fiber canvas leaf, with explicit runtime ownership boundaries.
+
+Visual development is paused. The page, crystal, lighting and posters are test
+inputs, not design examples for new websites. Reuse technical mechanisms as
+needed and derive new visuals from the project's brief. Functional, accessibility,
+fallback and performance maintenance continues.
 
 This project lives outside the installed plugin payload by design
 (`docs/adr/ADR-011-immersive-production-distribution.md`): skills reference it

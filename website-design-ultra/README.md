@@ -2,7 +2,7 @@
 
 Token-efficient website and immersive-3D design guidance for Claude Code and Codex.
 
-Version 2.0.1 contains 26 skills and 6 Claude commands. It enforces anti-slop
+Version 2.0.2 contains 26 skills and 6 Claude commands. It enforces anti-slop
 rules on generated copy and on visual defaults, with a deterministic English and
 German copy linter that reads a whole repository at one register per file. It
 carries evidence-led content, a declared 2D composition contract, per-direction
@@ -21,6 +21,13 @@ frames, while `site-reconnaissance` is gated on a public URL plus runtime
 evidence. Needing one says nothing about the others.
 
 Copy quality is enforced deterministically, not by self-report.
+
+This is a development candidate. Repository proof websites remain technical
+fixtures; their visual development is paused. Their layouts, copy, hero objects,
+materials and posters are excluded from new-site design references. Select
+visual direction from the brief, project assets and chosen references; reuse
+runtime modules where useful. Build, browser, accessibility, fallback and
+performance checks remain active, including review of each actual project.
 
 ## Structure
 
@@ -198,7 +205,7 @@ manifest still read 1.6.0. Each fixture is bound to its recorded tree digest and
 replays its exact accessed and forbidden files.
 
 Those snapshots exercise the Claude trace parser and document those two attempts
-only. They do not establish current 2.0.1 routing, the other five cases, routing
+only. They do not establish current routing, the other five cases, routing
 stability, or Codex behavior. `--dry-run` prints this historical inventory before
 the current case contracts so the local evidence boundary stays visible.
 

@@ -6,25 +6,23 @@ und kostenpflichtige Designtools sind für den Einstieg nicht erforderlich.
 
 ## Überarbeiteten Stand vorbereiten
 
-Der Produktionscheck liegt lokal im Branch
-`codex/production-readiness-2026-09-09`. Der GitHub-Schreibzugriff wurde mit HTTP
-403 abgewiesen; der Branch ist deshalb noch nicht auf GitHub veröffentlicht.
-Eine Installation von `main` enthält diese Änderungen noch nicht.
+Der Produktionscheck liegt inzwischen in PR #47. Die hier beschriebene Fassung
+baut darauf auf und ist der Entwicklungskandidat mit pausierten Proof-Websites.
+Die neue Fassung wurde wegen fehlendem GitHub-Schreibzugriff als übertragbares
+Git-Paket vorbereitet. Eine Installation von `main` enthält sie noch nicht.
 
-Das beigefügte Paket `website-design-ultra-production.zip` entpacken. Neben
-dem entpackten Verzeichnis einen frischen Checkout erstellen:
+Das Paket `website-design-ultra-2.0.2-candidate.zip` entpacken. Im entpackten
+Paketverzeichnis einen neuen Checkout aus der enthaltenen Git-Historie erstellen:
 
 ```bash
-git clone https://github.com/Kaytm93/website-design-ultra.git
-cd website-design-ultra
-git switch -c codex/production-readiness-2026-09-09 6ba9a0977fe1de3007b1824ebe7d9970ee71c382
-git am ../website-design-ultra-production/production-readiness.patch
+git clone --branch codex/design-without-proof-examples repository.bundle ../wdu-candidate
+cd ../wdu-candidate
+git remote set-url origin https://github.com/Kaytm93/website-design-ultra.git
 ```
 
-Git braucht dafür deinen eingerichteten Namen und deine E-Mail-Adresse.
-Die Patch-Serie enthält alle Änderungen seit dem genannten Ausgangscommit.
-Bereits vorhandene Checkouts und laufende eigene Arbeiten brauchen nicht
-überschrieben zu werden. Die folgenden Schritte verwenden diesen neuen Checkout.
+Der Checkout enthält die neue Fassung und die vorherige Referenzversion in
+separaten Branches. Die Paket-Anleitung erklärt deren Wiederherstellung und
+den späteren Upload. Die folgenden Schritte verwenden diesen neuen Checkout.
 
 ## Plugin aus diesem Checkout installieren
 
@@ -57,7 +55,12 @@ Das Plugin stellt Anweisungen, Referenzen und Prüfwerkzeuge bereit. Dein
 Website-Projekt, dessen Inhalte und die zum Auftrag passenden Assets bleiben
 separat. Eine Marketplace-Installation installiert keine Website-Abhängigkeiten.
 
-## Eigenständiges 3D-Projekt erstellen
+## Optional: technische 3D-Ausgangsbasis exportieren
+
+Neue Websites erhalten ihre Gestaltung aus dem Briefing, Projektinhalten und
+gewählten Referenzen. Die vorhandenen Proof-Seiten dienen als technische
+Fixtures; ihre visuelle Weiterentwicklung ist pausiert. Details und Sicherung:
+[Proof-Websites](PROOF-WEBSITES.de.md).
 
 Im so vorbereiteten Repository:
 
@@ -81,8 +84,9 @@ Abhängigkeiten und Build-Ausgaben werden nicht mitkopiert.
 
 `npm run preview` dient beim Vite-Starter zur lokalen Prüfung des Builds.
 Vor Veröffentlichung Inhalte, Seitentitel, Metadaten, Modelle, Markenassets und
-Links anpassen. Die Ausgangsszenen demonstrieren Technik und Gestaltung; sie
-enthalten keine Informationen über dein eigenes Angebot.
+Links anpassen. Die Ausgangsszenen prüfen technische Mechanismen. Ihr Layout,
+Kristallmotiv, Licht und ihre Poster sind keine gestalterischen Vorgaben für
+deine Website.
 
 Ein passender Auftrag im neuen Projekt:
 
@@ -90,6 +94,8 @@ Ein passender Auftrag im neuen Projekt:
 > Projekt. Gestalte es für [Angebot], [Zielgruppe] und [Hauptaktion]. Verwende
 > meine Inhalte und Assets, markiere unbekannte Angaben und prüfe Desktop,
 > Hochformat, Tastatur, Reduced Motion und den Ausfall von WebGL.
+> Übernimm aus den Proof-Seiten nur benötigte technische Mechanismen;
+> entwickle die Gestaltung aus meinem Briefing und meinen Referenzen.
 
 ## Browserprüfung
 

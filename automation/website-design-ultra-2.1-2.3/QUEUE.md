@@ -13,6 +13,20 @@ maschinenlesbar wie `automation/immersive-production-v2/QUEUE.md`:
 
 Die Baseline-Belege liegen in `BEWERTUNG-website-design-ultra-2.0.1.md`.
 
+## Aktiver Umfang ab 2026-09-11
+
+Die bisherigen Proof-Websites sind technische Fixtures. Ihre visuelle
+Weiterentwicklung und neue Showcase-Seiten sind auf Nutzerwunsch pausiert.
+Insbesondere J-C3 wird vorerst nicht ausgeführt. Abgeschlossene Jobs bleiben
+historisch dokumentiert; ihre Szenen sind keine Designreferenzen für neue Sites.
+Technische Wartung, Sicherheitsupdates, Barrierefreiheit, Performance und alle
+bisherigen Prüfungen bleiben aktiv. Neue Kundenprojekte erhalten eine eigene
+Gestaltung aus Briefing, Markenassets und gewählten Referenzen.
+
+Der Entwicklungskandidat mit dieser Eingrenzung erfüllt nicht automatisch die
+historische Definition of done für 2.3. Die Freigabe eines Showcases ist kein
+Ziel dieses Kandidaten. Details: `docs/PROOF-WEBSITES.de.md`.
+
 ## Integrationsstand 2026-09-05
 
 PR #38 ist in `main` an `c09f63d` integriert. Main-CI `33988137459`:
@@ -108,6 +122,7 @@ auf diesem korrigierten Baum. Veröffentlichung und 2.2/2.3 bleiben offen.
   - **Verify:** `tests/immersive/look-loop/look-loop.test.mjs`, Forward `3d-hero` verlangt Iteration.
 
 - [ ] `J-C3` **Drei Referenz-Szenen im Lab** — XL
+  - **Status:** PAUSIERT auf Nutzerwunsch; erst nach ausdrücklicher Wiederaufnahme.
   - **Depends on:** J-A4, J-C2
   - **Deliver:** `ref-ice-block`, `ref-volume`, `ref-particle-morph`, je Poster, Capture, Telemetrie-Budget, Look-Loop-Log und Screenshot unter `lab/reference/`.
   - **Acceptance:** alle drei Gates pro Device-Profil; ≥ 5 Look-Loop-Runden mit sinkendem Score.

@@ -1,5 +1,9 @@
 # wdu-product-hero
 
+Retained technical fixture; visual development is paused. Its layout, product
+appearance and captures are not design references for new websites. Runtime,
+accessibility, fallback and performance checks remain active.
+
 The website-design-ultra immersive evaluation fixture (IP-07A): an R3F
 product hero that installs, builds, and loads offline, exercising one
 optimized model, semantic DOM copy, portrait reframe, poster, reduced motion,

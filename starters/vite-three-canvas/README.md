@@ -3,6 +3,11 @@
 A Vite + Three.js scene held to the same budget, fallback and lifecycle contract
 as `next-r3f-cinematic`, with no framework between the DOM and the renderer.
 
+Visual development is paused. This is a technical fixture; its layout, copy,
+crystal and posters are not design examples for new websites. Reuse needed
+runtime mechanisms and design each project from its own brief. Functional,
+accessibility, fallback and performance maintenance continues.
+
 It exists because the plugin routes plain-HTML and embed work to a vanilla path,
 and a path with no runnable reference is a path nobody can check. The claim
 `immersive-3d` makes — that the vanilla layer is a production peer of R3F rather

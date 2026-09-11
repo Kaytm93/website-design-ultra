@@ -1,7 +1,10 @@
 # The vanilla production modules
 
-Each module in `starters/vite-three-canvas/src/` and the one thing that breaks
-when it is dropped. Copy them; do not re-derive them.
+Technical modules in `starters/vite-three-canvas/src/` and their responsibilities.
+Reuse the mechanisms needed by the project. The fixture's page, crystal, camera
+values and posters are retained test inputs, not a visual template. Replace
+scene-specific choices with the current art-direction contract; preserve the
+runtime, capture and lifecycle responsibilities described below.
 
 ## `lifecycle.ts` — the state machine
 

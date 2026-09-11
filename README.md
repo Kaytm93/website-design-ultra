@@ -11,7 +11,13 @@ open; a green build alone does not complete it. See the
 
 German setup and project export: [Startanleitung](docs/QUICKSTART.de.md).
 
-Create an independent starter without copying build output:
+Repository proof websites are retained as technical fixtures. Their visual
+development is paused; their layouts, subjects and posters are not design
+references for new sites. Build visual direction from each project's brief,
+brand and chosen references. Runtime, accessibility and performance checks remain
+active. Scope and the preserved source: [Proof-Websites](docs/PROOF-WEBSITES.de.md).
+
+For an explicitly requested technical starter export, without build output:
 
 ```bash
 npm run create -- --starter next --out ../my-site
@@ -78,8 +84,9 @@ npm run dev
 ```
 
 The [starter guide](starters/next-r3f-cinematic/README.md) documents capture flags,
-interaction checkpoints and quality ownership. Both starters ship seeded crystal geometry and scene posters. Further reference
-scenes remain tracked in the implementation queue.
+interaction checkpoints and quality ownership. Its crystal and posters remain
+test inputs. New showcase scenes are paused in the implementation queue;
+project-specific design work and technical verification continue.
 
 ## Check the result
 

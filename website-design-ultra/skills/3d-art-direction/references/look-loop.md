@@ -5,6 +5,12 @@ turns a look claim into a measured distance. It is read when a scene has been
 implemented and its image is being corrected, not when the poster is first
 composed.
 
+Choose the target for the current project's brief and art direction. Repository
+proof screenshots and starter posters are retained for regression checks, not
+as design targets for another site. A matching fixture proves reproducibility;
+it does not establish visual quality. Inspect the actual project as well as its
+comparison score.
+
 ## The loop
 
 1. Capture the live hero frame in the declared desktop shot, with the same

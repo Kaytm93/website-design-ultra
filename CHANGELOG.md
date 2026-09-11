@@ -1,5 +1,22 @@
 # website-design-ultra
 
+## 2.0.2 — Proof websites retained as technical fixtures (development candidate)
+
+Release-Tag: candidate/2.0.2-proof-policy-2026-09-11 — source checkpoint, not a published release
+
+- Preserve the previous complete source, including proof websites, at
+  `archive/proof-websites-2026-09-11` (commit `99510869de2512ddedd29bd6947c4333ac9455db`).
+- Pause visual refinement of the existing proof pages and new showcase scenes.
+- Exclude fixture layouts, copy, hero subjects, materials and posters from
+  new-site design references; retain reusable runtime mechanisms.
+- Keep technical CI, accessibility, fallback, performance and project-specific
+  visual checks active. Existing fixture pixels and runtime code are preserved.
+- Label technical exports and document the new scope in `docs/PROOF-WEBSITES.de.md`.
+
+This candidate includes the preceding production-hardening commits from PR #47.
+Its CI context-setup timeout and repeated live-model acceptance remain open.
+No successful GitHub publication or full release acceptance is claimed.
+
 ## Unreleased — production hardening
 
 - Fix independent visibility conditions, blocked storage and observer re-attachment.

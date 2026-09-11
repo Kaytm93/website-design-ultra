@@ -1,5 +1,9 @@
 # wdu-procedural-crystal — IP-10C fixture
 
+Retained technical fixture; visual development is paused. Its layout, crystal
+appearance and captures are not design references for new websites. Runtime,
+accessibility, fallback and performance checks remain active.
+
 The second immersive-evaluation fixture for the website-design-ultra production
 layer. It proves that the IP-10B procedural crystal (Blender Python,
 crystal-growth) passes through the IP-10C existing `3d-asset-pipeline`

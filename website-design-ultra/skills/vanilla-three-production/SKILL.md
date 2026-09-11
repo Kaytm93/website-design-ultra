@@ -26,13 +26,16 @@ Collapsing the pause reasons into one boolean is the failure that ships: a scene
 returning from a hidden tab resumes while still scrolled out of view. One state,
 three reasons, and only the absence of all three resumes.
 
-## Copy, do not rewrite
+## Reuse technical wiring
 
-`repo:starters/vite-three-canvas/` is the runnable baseline and passes the same
-CI gate as the R3F starter. Start with
+`repo:starters/vite-three-canvas/` is a runnable technical fixture, held to the
+same CI gate as the R3F starter. Reuse needed runtime modules, starting with
 `repo:starters/vite-three-canvas/src/lifecycle.ts`: every browser API it needs
 is injected, so the state machine is verifiable in Node without a browser, and
 its cases are already written.
+
+Its page layout, copy, crystal, materials and posters are not design defaults.
+Build those from the current brief; use a full fixture export only when requested.
 
 `references/production-modules.md` names each module, what it owns, and the one
 thing that goes wrong when it is dropped.

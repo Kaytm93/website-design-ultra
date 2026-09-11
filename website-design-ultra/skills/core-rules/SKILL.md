@@ -20,9 +20,10 @@ correctness, accessibility and the brief. Visual defaults live in
 
 ## 2. Reconnaissance
 
-Identify audience, verified claims, primary action and devices. Before code,
-inspect `package.json`, versions, tokens, `DESIGN.md`, assets and conventions.
-Preserve functionality/content; use the existing direction or choose from evidence.
+Identify audience, verified claims, primary action and devices. Before code read
+`package.json`, versions, tokens, `DESIGN.md`, assets and conventions.
+Preserve project content, behavior and direction. Repository proof pages are
+technical fixtures, not design references; derive new visuals from project evidence.
 
 ## 3. Minimal skill routing
 
@@ -56,10 +57,9 @@ reference intake.
 
 ### Routing protocol
 
-Cross-skill mentions are pointers, not recursive dependencies. Read each selected
-SKILL.md once, then relevant references only. Never reload owners or siblings for
-context. Read owner references directly. Keep a file ledger; provider access traces,
-not self-declared routes, prove reads.
+Cross-skill mentions are pointers, not recursive. Read selected SKILL.md files
+once and owner references directly; never reload owners or siblings. Keep a file ledger;
+provider access traces, not self-declared routes, prove reads.
 Target four domain skills and one reference per family in 2D; independent
 requirements justify more. 3D follows its master.
 
@@ -83,13 +83,13 @@ requirements justify more. 3D follows its master.
 
 ## 7. Pre-flight and output
 
-Use the already-read rules; this check does not trigger another read.
+Reuse loaded rules without another read.
 
 - [ ] Stack, system, tokens and content were inspected before code changes.
 - [ ] Each loaded skill maps to a fired gate and each fired gate was handled.
 - [ ] Direction exceptions override defaults only, with a reason stated once.
 - [ ] Applicable checks of the selected skills passed; fix failed items.
 
-Builds deliver rationale, needed installs, code, states/accessibility and useful
-customization hooks. Audits report evidence; plans report decisions. Status:
+Builds deliver rationale, installs, code, states/accessibility and customization
+hooks. Audits report evidence; plans report decisions. Status:
 `references/verification-status.md`.
