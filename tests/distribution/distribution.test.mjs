@@ -33,8 +33,12 @@ for (const starter of ['next', 'vanilla']) {
     const help = spawnSync(process.execPath, ['scripts/verify-browser.mjs', '--help'], { cwd: out, encoding: 'utf8' })
     assert.equal(help.status, 0, help.stderr)
     const checks = starter === 'next' ? ['tests/cinematic-timeline.test.mjs', 'tests/runtime.test.mjs',
-      'tests/interaction-checkpoints.test.mjs', 'tests/quality-controller.test.mjs'] : ['tests/scene-contract.test.mjs']
-    const run = spawnSync(process.execPath, ['--test', ...checks], { cwd: out, encoding: 'utf8' })
+      'tests/interaction-checkpoints.test.mjs', 'tests/quality-controller.test.mjs', 'tests/jc1-hero.test.mjs'] : ['tests/scene-contract.test.mjs']
+    // Drop the inherited NODE_TEST_CONTEXT: with it, the nested runner reports to
+    // this process instead of exiting non-zero, so failures would pass silently.
+    const env = { ...process.env }
+    delete env.NODE_TEST_CONTEXT
+    const run = spawnSync(process.execPath, ['--test', ...checks], { cwd: out, encoding: 'utf8', env })
     assert.equal(run.status, 0, run.stderr || run.stdout)
     assert.doesNotMatch(run.stdout, /# SKIP/)
     // A second invocation must never overwrite project work.

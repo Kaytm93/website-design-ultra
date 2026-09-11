@@ -57,7 +57,11 @@ test('J-C1 loads the procedural crystal GLB with physical materials and local HD
   assert.equal(hdri?.license, 'CC0')
   assert.ok(existsSync(join(root, 'public', model.url.slice(1))))
   assert.ok(existsSync(join(root, 'public', hdri.url.slice(1))))
-  assert.ok(existsSync(join(pluginRoot, 'templates', 'assets', 'studio_small_08_1k.hdr')))
+  // A standalone export (marked by wdu-source.json) has no plugin tree next to
+  // it; there the repository's own tests/templates/sync.test.mjs owns this copy.
+  if (!existsSync(join(root, 'wdu-source.json'))) {
+    assert.ok(existsSync(join(pluginRoot, 'templates', 'assets', 'studio_small_08_1k.hdr')))
+  }
 })
 
 /**
