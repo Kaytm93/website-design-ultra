@@ -1,0 +1,980 @@
+{
+  "generatedAt": "2026-09-12T09:09:15.984Z",
+  "provider": "codex",
+  "providerStatus": {
+    "status": "AVAILABLE",
+    "cliVersion": "codex-cli 0.153.4",
+    "executable": "/Applications/ChatGPT.app/Contents/Resources/codex"
+  },
+  "model": "gpt-5.5",
+  "effort": "medium",
+  "plugin": {
+    "name": "website-design-ultra",
+    "version": "2.0.2"
+  },
+  "provenance": {
+    "repository": true,
+    "commit": "e61da40cb2b95a50b91e0c93fd4216350d4ccbaf",
+    "tag": null,
+    "branch": "HEAD",
+    "clean": true,
+    "tree": {
+      "fileCount": 181,
+      "sha256": "b20c32d33cded3322ef727cb4e81a5f0bdf5515c79fdb4ef07483a479459b196"
+    }
+  },
+  "selfTest": {
+    "replayed": 2,
+    "fixtures": [
+      {
+        "file": "claude-dashboard.jsonl",
+        "provider": "claude",
+        "case": "dashboard",
+        "pluginVersion": "1.5.1",
+        "treeSha256": "9f381e25130ebc701feacff7296d8ba38e3e71d31242acf462ccdb9e21a93e21",
+        "accessedFileCount": 10
+      },
+      {
+        "file": "claude-slop.jsonl",
+        "provider": "claude",
+        "case": "slop",
+        "pluginVersion": "1.6.0",
+        "treeSha256": "845c1bd7b38d38eda573dc298d897ef70aca844db16a5de9ef86428d64e0ef19",
+        "accessedFileCount": 6
+      }
+    ]
+  },
+  "repeat": 5,
+  "minPassRate": 0.6,
+  "summary": [
+    {
+      "id": "saas",
+      "attempts": 5,
+      "scored": 3,
+      "errored": 2,
+      "passed": 3,
+      "passRate": 1,
+      "meetsThreshold": true,
+      "failureCounts": {}
+    },
+    {
+      "id": "editorial",
+      "attempts": 5,
+      "scored": 0,
+      "errored": 5,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {}
+    },
+    {
+      "id": "dashboard",
+      "attempts": 5,
+      "scored": 0,
+      "errored": 5,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {}
+    },
+    {
+      "id": "3d-hero",
+      "attempts": 5,
+      "scored": 0,
+      "errored": 5,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {}
+    },
+    {
+      "id": "named-direction-no-references",
+      "attempts": 5,
+      "scored": 0,
+      "errored": 5,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {}
+    },
+    {
+      "id": "configurator",
+      "attempts": 5,
+      "scored": 0,
+      "errored": 5,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {}
+    },
+    {
+      "id": "slop",
+      "attempts": 5,
+      "scored": 0,
+      "errored": 5,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {}
+    }
+  ],
+  "results": [
+    {
+      "id": "saas",
+      "attempt": 1,
+      "status": "passed",
+      "failures": [],
+      "result": {
+        "caseId": "saas",
+        "skills": [
+          "core-rules",
+          "content-design",
+          "anti-slop"
+        ],
+        "direction": "Chosen direction: an operations-first landing page centered on a reconciliation worksheet, not a generic SaaS hero. Rejected variant 1: a CFO risk-control page, because it would need metrics, controls, and audit claims not supplied. Rejected variant 2: an automation/integrations page, because no integrations or automation scope has been verified.",
+        "content": {
+          "hierarchy": [
+            "Audience: finance and operations teams handling invoice reconciliation from CSV files.",
+            "Promise: find invoice rows that do not match before payment review.",
+            "Mechanism: import CSV files, review unmatched invoice rows, export unmatched rows for follow-up.",
+            "Evidence: only inspectable product behavior may be shown: CSV import and unmatched-row export.",
+            "Objection handling: explicitly avoid claims about customers, metrics, certifications, integrations, pricing, launch timing, matching accuracy, or accounting-system support.",
+            "Primary CTA: Request a CSV reconciliation walkthrough.",
+            "Secondary CTA: Export unmatched rows, only if it opens or demonstrates the verified export path.",
+            "Page order: hero promise and CTA; CSV-to-unmatched-row workflow; narrow capability ledger; constraints/unknowns; final CTA."
+          ],
+          "claims": [
+            {
+              "text": "The product supports CSV import.",
+              "status": "verified",
+              "evidence": "User supplied as verified capability."
+            },
+            {
+              "text": "The product can export unmatched rows.",
+              "status": "verified",
+              "evidence": "User supplied as verified capability."
+            },
+            {
+              "text": "The product is for B2B invoice reconciliation.",
+              "status": "qualified",
+              "evidence": "User brief describes the category; exact buyer segment and workflow depth are not supplied."
+            },
+            {
+              "text": "The product reduces manual work, improves accuracy, integrates with finance tools, or has proven adoption.",
+              "status": "unknown",
+              "evidence": "No metrics, integrations, customer names, or proof supplied."
+            },
+            {
+              "text": "Any demo table, row names, invoice IDs, amounts, or supplier labels are illustrative.",
+              "status": "illustrative",
+              "evidence": "No real dataset supplied."
+            }
+          ],
+          "unknowns": [
+            "Customer names and permission to use them.",
+            "Measured reconciliation accuracy, time saved, or processing volume.",
+            "Matching rules, duplicate handling, validation behavior, and error states.",
+            "Security, compliance, certifications, retention policy, and access controls.",
+            "Accounting, ERP, storage, or payment integrations.",
+            "Pricing, trial terms, availability, and launch date."
+          ],
+          "primaryAction": "Request a CSV reconciliation walkthrough.",
+          "localization": [
+            "English source copy only.",
+            "Leave 30-40% expansion room for German or other longer locales.",
+            "Avoid idioms and visual-only meaning in row states or CTA labels."
+          ]
+        },
+        "copy": {
+          "lines": [
+            "Find invoice rows that do not match before payment review.",
+            "Import CSV files, review unmatched invoice rows, and export the rows that need follow-up.",
+            "Request a CSV reconciliation walkthrough",
+            "Export unmatched rows",
+            "No customers, certifications, integrations, pricing, or launch date have been verified yet."
+          ],
+          "slopChecks": [
+            "Mode: rewrite/planning copy.",
+            "Specificity floor: each hero or CTA line names audience context, mechanism, or product object.",
+            "Tier 1 structural tells: 0 found by linter.",
+            "Tier 2 vocabulary: 0 found by linter.",
+            "Tier 3 copy budget breaches: 0 found by linter.",
+            "Linter command: printf planned copy lines | node scripts/lint-copy.mjs --stdin --profile marketing.",
+            "Linter result: PASS — 1 file, locale auto → en, profile marketing, tier1 0, tier2 0, tier3 0.",
+            "Human checks: no fake testimonials, no invented metrics, no badge-over-H1, no rhetorical question CTA, no unsupported trust copy."
+          ]
+        },
+        "responsive": {
+          "wide": "Hero uses a 7/5 split: left column has H1, subhead, primary CTA, and explicit unknown-proof note; right side shows a worksheet-style reconciliation surface with CSV rows and an unmatched export tray. Focal element occupies about 55% of the first viewport.",
+          "portrait": "Stack promise first, worksheet second, CTA still visible before scroll. The worksheet becomes a cropped vertical panel emphasizing unmatched rows and export action rather than a dense table.",
+          "narrow": "Single-column flow: H1, mechanism sentence, primary CTA, compact three-step workflow, then a simplified unmatched-row list. Dense columns are replaced by row summaries with field labels.",
+          "recomposition": [
+            "Reorder promise, action, and proof so mobile users do not need the table to understand the offer.",
+            "Promote the verified capability ledger above any objection or trust section.",
+            "Replace desktop table density with labeled row summaries on narrow screens.",
+            "Reduce decorative UI chrome and keep only CSV import, unmatched status, and export affordance.",
+            "Regroup unknown proof areas into a plain constraints block instead of empty logo, metric, or integration sections."
+          ],
+          "sourceOrder": "DOM order follows reading order: promise, CTA, verified workflow proof, capability ledger, unknowns, final CTA. Visual table placement must not move focus order ahead of the hero copy."
+        },
+        "accessibility": {
+          "contrastStates": [
+            "Normal text must meet at least 4.5:1 contrast.",
+            "Large text and meaningful UI boundaries must meet at least 3:1 contrast.",
+            "Focus indicator must meet at least 3:1 against every crossed surface.",
+            "Unmatched-row state must use text and/or icon labels, not color alone."
+          ],
+          "inputParity": [
+            "All CTA, import-demo, export-demo, tab, disclosure, and table controls require keyboard access.",
+            "Visible label and accessible name must match for CTAs and export controls.",
+            "Touch targets should be about 44x44 CSS px where possible.",
+            "Hover-only row details need click/focus alternatives."
+          ],
+          "reducedMotion": "No motion is required. If row highlighting or export-tray animation is later added, respect prefers-reduced-motion and provide an immediate static state."
+        },
+        "immersive": {
+          "justified": null,
+          "artDirection": null,
+          "qualityTiers": [],
+          "fallback": null,
+          "touch": []
+        }
+      },
+      "trace": {
+        "accessedFiles": [
+          "commands/design.md",
+          "skills/anti-slop/SKILL.md",
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/content-design/SKILL.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/SKILL.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/composition-contract.md",
+          "skills/core-rules/references/responsive-recomposition.md"
+        ],
+        "skillFiles": [
+          "skills/anti-slop/SKILL.md",
+          "skills/content-design/SKILL.md",
+          "skills/core-rules/SKILL.md"
+        ],
+        "referenceFiles": [
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/composition-contract.md",
+          "skills/core-rules/references/responsive-recomposition.md"
+        ],
+        "commandFiles": [
+          "commands/design.md"
+        ],
+        "broadReads": [],
+        "offRootReads": [],
+        "missingFiles": [],
+        "foreignSkills": [],
+        "observedBytes": 53819,
+        "readCounts": {
+          "commands/design.md": 1,
+          "skills/anti-slop/SKILL.md": 1,
+          "skills/anti-slop/references/design-tells.md": 1,
+          "skills/anti-slop/references/prose-tells.md": 1,
+          "skills/content-design/SKILL.md": 1,
+          "skills/content-design/references/claims-and-proof.md": 1,
+          "skills/content-design/references/microcopy.md": 1,
+          "skills/core-rules/SKILL.md": 1,
+          "skills/core-rules/references/accessibility.md": 1,
+          "skills/core-rules/references/composition-contract.md": 1,
+          "skills/core-rules/references/responsive-recomposition.md": 1
+        },
+        "repeatedReads": [],
+        "estimatedPluginTokens": 13455,
+        "providerUsage": {
+          "input_tokens": 267907,
+          "cached_input_tokens": 228480,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 5820,
+          "reasoning_output_tokens": 1233
+        }
+      },
+      "tracePath": "traces/codex-saas-01.jsonl"
+    },
+    {
+      "id": "saas",
+      "attempt": 2,
+      "status": "passed",
+      "failures": [],
+      "result": {
+        "caseId": "saas",
+        "skills": [
+          "core-rules",
+          "content-design",
+          "anti-slop"
+        ],
+        "direction": "Chosen direction: operations-first reconciliation page with a restrained product-workflow focus. Rejected variants: an evidence-heavy enterprise trust page would invent proof the brief does not supply; a polished product-launch page would imply maturity, integrations, dates, or metrics that are unknown.",
+        "content": {
+          "hierarchy": [
+            "Audience: finance, accounting, or operations teams reconciling invoice data from CSV files.",
+            "Job: import an invoice CSV, review rows that remain unmatched, export those unmatched rows for follow-up.",
+            "Hero: clear promise plus bounded mechanism, with one primary CTA.",
+            "Mechanism: CSV import -> unmatched row review -> export unmatched rows.",
+            "Proof area: only verified capabilities, shown as product-behavior statements rather than metrics or logos.",
+            "Objection area: explicitly list unavailable proof categories as unknown, not hidden gaps.",
+            "Action: request a CSV reconciliation demo or start a CSV import flow, depending on product availability."
+          ],
+          "claims": [
+            {
+              "text": "CSV import is available.",
+              "status": "verified",
+              "evidence": "User supplied this as a verified capability."
+            },
+            {
+              "text": "Export of unmatched rows is available.",
+              "status": "verified",
+              "evidence": "User supplied this as a verified capability."
+            },
+            {
+              "text": "The product supports invoice reconciliation workflows.",
+              "status": "qualified",
+              "evidence": "User described the product category as a B2B invoice-reconciliation SaaS; no deeper workflow claims supplied."
+            },
+            {
+              "text": "The system can identify unmatched rows for export.",
+              "status": "qualified",
+              "evidence": "Export of unmatched rows is verified; matching method, accuracy, and review model are not supplied."
+            },
+            {
+              "text": "Customer names, metrics, certifications, integrations, pricing, and launch date are not available for copy.",
+              "status": "verified",
+              "evidence": "User explicitly stated these have not been supplied."
+            }
+          ],
+          "unknowns": [
+            "Customer names or testimonials.",
+            "Performance, accuracy, time-saved, volume, or ROI metrics.",
+            "Security, compliance, audit, or certification claims.",
+            "Accounting, ERP, storage, or payment integrations.",
+            "Pricing model, trial availability, and packaging.",
+            "Launch date, availability status, and market maturity.",
+            "Supported CSV schema, file size limits, matching rules, permissions, and data retention."
+          ],
+          "primaryAction": "Request a CSV reconciliation demo",
+          "localization": [
+            "English source copy only.",
+            "Keep labels outcome-based so they translate without idioms: Import CSV, Review unmatched rows, Export unmatched rows.",
+            "Allow expansion for German or other locales; do not rely on tight pill labels for unknown-length strings."
+          ]
+        },
+        "copy": {
+          "lines": [
+            "Reconcile invoice CSVs by finding rows that still need review.",
+            "Import a CSV, inspect the rows the system cannot match, and export those unmatched rows for follow-up.",
+            "Import CSV",
+            "Export unmatched rows",
+            "Review unmatched rows",
+            "CSV import",
+            "Bring in the invoice file your team already has.",
+            "Unmatched-row export",
+            "Download the rows that remain unresolved after matching.",
+            "What is verified",
+            "CSV import is available.",
+            "Export of unmatched rows is available.",
+            "What still needs proof",
+            "Customer names, metrics, certifications, integrations, pricing, and launch date are not supplied.",
+            "Request a CSV reconciliation demo"
+          ],
+          "slopChecks": [
+            "Mode: rewrite.",
+            "Specificity floor: hero names audience object and mechanism: invoice CSVs, unmatched rows, export.",
+            "Tier-1 manual check: no rhetorical question, badge-above-H1 copy, negative parallelism, vague attribution, fake testimonial, or invented concept label.",
+            "Tier-2 check: no cluster and no Tier-2 hit in H1/H2.",
+            "Tier-3 linter command: printf planned copy lines | node scripts/lint-copy.mjs --stdin --json.",
+            "Tier-3 linter result: PASS; tier1=0, tier2=0, tier3=0, advisory=0; profile auto -> marketing 1; locale=en; words=90; emDashes=0; triplets=1/1; sentenceVariation=0.448.",
+            "Visual slop constraints: no fake logo strip, no metric banner, no equal three-card feature row, no generic badge above H1, no decorative colored card strips."
+          ]
+        },
+        "responsive": {
+          "wide": "Asymmetrical 7/5 layout: left side carries H1, subhead, and primary CTA; right side shows a static product-proof panel representing imported CSV rows and unmatched-row export. Focal element occupies about 58% of the first viewport. Proof visible before scroll: verified capability list, not logos or metrics.",
+          "portrait": "Stack promise, CTA, and a compact proof panel in that order. The proof panel becomes a cropped table summary with two visible states: imported CSV and unmatched rows. Secondary unknowns move below the fold but remain in normal source order.",
+          "narrow": "Single-column flow: H1, mechanism sentence, primary CTA, compact verified-capability block, then unknowns. Replace dense table visuals with a short row-count-free checklist: import CSV, review unmatched rows, export unmatched rows.",
+          "recomposition": [
+            "Reorder: keep promise, action, and proof before exploratory detail on narrow screens.",
+            "Promote: verified capabilities appear before objections on all viewports.",
+            "Reduce: remove decorative dashboard chrome and any nonessential columns from the product panel on narrow screens.",
+            "Regroup: unknown proof categories become a compact disclosure or list, not a trust section.",
+            "Change interaction: no hover-only explanations; any details use keyboard- and touch-safe disclosure controls."
+          ],
+          "sourceOrder": "H1 -> subhead -> primary CTA -> verified proof -> mechanism detail -> unknowns -> secondary action. Visual order and focus order must match."
+        },
+        "accessibility": {
+          "contrastStates": [
+            "Normal text at least 4.5:1.",
+            "Large text at least 3:1.",
+            "Focus indicator at least 3:1 against adjacent colors on every surface it crosses.",
+            "Meaningful row states, table boundaries, icons, and error/warning states at least 3:1 and never color-only.",
+            "Disabled states should target 3:1 where possible and include a non-color affordance."
+          ],
+          "inputParity": [
+            "Primary CTA visible label and accessible name match: Request a CSV reconciliation demo.",
+            "Any import/export controls use real buttons or links with keyboard focus states.",
+            "Disclosure controls for unknowns or proof details must support Enter, Space, Escape where applicable, and visible focus.",
+            "No essential explanation depends on hover, crop, animation, or image-only content.",
+            "Touch targets should be approximately 44 by 44 CSS pixels where possible."
+          ],
+          "reducedMotion": "Non-3D, non-motion plan. If later motion is added, respect prefers-reduced-motion, remove parallax or persistent animation, and keep the reconciliation proof understandable as static DOM content."
+        },
+        "immersive": {
+          "justified": null,
+          "artDirection": null,
+          "qualityTiers": [],
+          "fallback": null,
+          "touch": []
+        }
+      },
+      "trace": {
+        "accessedFiles": [
+          "commands/design.md",
+          "skills/anti-slop/SKILL.md",
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/operations.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/content-design/SKILL.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/SKILL.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/composition-contract.md",
+          "skills/core-rules/references/responsive-recomposition.md"
+        ],
+        "skillFiles": [
+          "skills/anti-slop/SKILL.md",
+          "skills/content-design/SKILL.md",
+          "skills/core-rules/SKILL.md"
+        ],
+        "referenceFiles": [
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/operations.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/composition-contract.md",
+          "skills/core-rules/references/responsive-recomposition.md"
+        ],
+        "commandFiles": [
+          "commands/design.md"
+        ],
+        "broadReads": [],
+        "offRootReads": [],
+        "missingFiles": [],
+        "foreignSkills": [],
+        "observedBytes": 61595,
+        "readCounts": {
+          "commands/design.md": 1,
+          "skills/anti-slop/SKILL.md": 1,
+          "skills/anti-slop/references/design-tells.md": 1,
+          "skills/anti-slop/references/operations.md": 1,
+          "skills/anti-slop/references/prose-tells.md": 1,
+          "skills/content-design/SKILL.md": 1,
+          "skills/content-design/references/claims-and-proof.md": 1,
+          "skills/content-design/references/microcopy.md": 1,
+          "skills/core-rules/SKILL.md": 1,
+          "skills/core-rules/references/accessibility.md": 1,
+          "skills/core-rules/references/composition-contract.md": 1,
+          "skills/core-rules/references/responsive-recomposition.md": 1
+        },
+        "repeatedReads": [],
+        "estimatedPluginTokens": 15399,
+        "providerUsage": {
+          "input_tokens": 197550,
+          "cached_input_tokens": 158720,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 5579,
+          "reasoning_output_tokens": 1043
+        }
+      },
+      "tracePath": "traces/codex-saas-02.jsonl"
+    },
+    {
+      "id": "saas",
+      "attempt": 3,
+      "status": "passed",
+      "failures": [],
+      "result": {
+        "caseId": "saas",
+        "skills": [
+          "core-rules",
+          "content-design",
+          "anti-slop"
+        ],
+        "direction": "Chosen direction: restrained B2B operations page centered on one concrete artifact: a CSV becoming an unmatched-rows export. Variant A, chosen: asymmetric hero with copy on the left and a neutral product-flow mockup on the right; it best fits the thin evidence because the verified workflow is the proof. Variant B, rejected: compliance-heavy trust page; it loses because no certifications, security details, or audit claims were supplied. Variant C, rejected: metric-led automation page; it loses because no accuracy, time-saved, customer, or performance metrics were supplied.",
+        "content": {
+          "hierarchy": [
+            "Hero: state the bounded promise, 'Import invoice CSVs and export unmatched rows for review,' with one primary CTA and one secondary link to the CSV workflow.",
+            "Mechanism: three plain steps: CSV import, unmatched-row identification as a qualified product workflow, and export of unmatched rows. Avoid integrations, automation, AI, ERP sync, or accuracy language.",
+            "Proof/constraints: show an illustrative CSV-to-export interface mockup labeled as illustrative; include a visible 'What is not claimed yet' strip for integrations, pricing, certifications, customer logos, metrics, and launch timing.",
+            "Objections: explain that teams should evaluate file format, matching rules, data handling, and procurement/security requirements once those facts are supplied.",
+            "Action: route interested buyers to a walkthrough focused on their CSV sample and exception-export needs."
+          ],
+          "claims": [
+            {
+              "text": "The product supports CSV import.",
+              "status": "verified",
+              "evidence": "User supplied: 'The only verified capabilities are CSV import...'."
+            },
+            {
+              "text": "The product supports export of unmatched rows.",
+              "status": "verified",
+              "evidence": "User supplied: '...and an export of unmatched rows.'"
+            },
+            {
+              "text": "The product is for B2B invoice reconciliation.",
+              "status": "verified",
+              "evidence": "User brief: 'B2B invoice-reconciliation SaaS.'"
+            },
+            {
+              "text": "The page may describe unmatched rows as requiring review or follow-up.",
+              "status": "qualified",
+              "evidence": "Derived from the verified export of unmatched rows; do not imply automated resolution, accuracy, or root-cause detection."
+            },
+            {
+              "text": "Customer logos, named users, performance numbers, certifications, integrations, pricing, and launch timing exist.",
+              "status": "unknown",
+              "evidence": "User explicitly said these have not been supplied."
+            },
+            {
+              "text": "Any CSV table or row examples shown in the landing page are real customer data.",
+              "status": "unknown",
+              "evidence": "No source data supplied; any mockup must be labeled illustrative."
+            }
+          ],
+          "unknowns": [
+            "Customer names and testimonials.",
+            "Metrics such as match rate, time saved, exception volume, ROI, or processing speed.",
+            "Security controls, certifications, compliance status, data retention, hosting, or audit logging.",
+            "Supported integrations, ERP/accounting systems, APIs, or SSO.",
+            "Pricing, packaging, procurement path, launch date, and availability.",
+            "Exact matching rules, supported CSV schema, file size limits, and export format."
+          ],
+          "primaryAction": "Request a CSV walkthrough",
+          "localization": [
+            "Default locale: English.",
+            "Avoid idioms and metaphor in core claims so later localization preserves legal and product meaning.",
+            "Stress strings for responsive copy: 'Unmatched-row export', 'Request a CSV walkthrough', '[verified security statement needed]'."
+          ]
+        },
+        "copy": {
+          "lines": [
+            "H1: Import invoice CSVs and export unmatched rows for review.",
+            "Subhead: Bring in a CSV, find the rows that still need attention, and export those rows for follow-up.",
+            "Primary CTA: Request a CSV walkthrough",
+            "Secondary CTA: See the CSV workflow",
+            "Feature label: CSV import",
+            "Feature blurb: Upload invoice data from a spreadsheet file.",
+            "Feature label: Unmatched-row review",
+            "Feature blurb: Show rows that need a decision without claiming why they failed.",
+            "Feature label: Export unmatched rows",
+            "Feature blurb: Download the remaining exceptions as a file for follow-up.",
+            "Constraint line: No integrations, pricing, launch date, certifications, customers, or metrics are listed until supplied.",
+            "Placeholder: [verified security statement needed]",
+            "Placeholder: [verified pricing model needed]"
+          ],
+          "slopChecks": [
+            "Mode: rewrite/planning contract.",
+            "Deterministic lint command: printf planned copy lines | node scripts/lint-copy.mjs --stdin --profile marketing",
+            "Lint result: PASS; locale auto -> en; profile marketing; tier1 0; tier2 0; tier3 0.",
+            "Manual Tier-1 check: no rhetorical question, negative parallelism, fake proof, stat banner, badge-above-H1, or invented concept label.",
+            "Specificity floor: headline and feature blurbs name the audience situation or mechanism: CSV import and unmatched-row export.",
+            "Claim safety: unknown facts remain placeholders or explicit exclusions rather than polished claims.",
+            "Visual anti-slop: avoid centered generic hero, equal three-card feature row, fake testimonials, metric strips, generic purple gradients, and decorative badges."
+          ]
+        },
+        "responsive": {
+          "wide": "1440px and up: left column carries H1, subhead, CTA pair, and constraint line; right side is the focal mockup showing a CSV import panel connected to an unmatched-row export panel. Focal element occupancy: about 55% of first viewport. Proof visible before scroll: the export artifact, not logos or metrics.",
+          "portrait": "Tablet/portrait: stack promise first, then a cropped product-flow mockup with only the CSV input and unmatched export labels visible. Promote the constraint line immediately below CTAs so missing proof is not hidden below the fold.",
+          "narrow": "Phone: single-column flow with H1, subhead, primary CTA, compact two-step artifact, then constraints. Replace dense table mockup with a small row-count-free exception-list representation labeled illustrative.",
+          "recomposition": [
+            "Reorder: keep promise, action, proof, and constraints in that order on narrow screens.",
+            "Reduce: remove decorative grid detail and secondary annotations before reducing the verified CSV/export content.",
+            "Replace: wide mock table becomes a narrow exception-list preview; do not shrink a dense table until it becomes unreadable.",
+            "Regroup: mechanism steps become short chapters rather than identical cards.",
+            "Change interaction: no hover-only product callouts; any details open by click, tap, and keyboard."
+          ],
+          "sourceOrder": "H1, subhead, primary action, secondary action, verified workflow proof, constraints/unknowns, mechanism details, objection handling, final action. DOM order must match this reading order across breakpoints."
+        },
+        "accessibility": {
+          "contrastStates": [
+            "Normal text minimum 4.5:1; large hero text minimum 3:1.",
+            "Focus indicators minimum 3:1 against every hero, mockup, and CTA background.",
+            "Do not use color alone to mark unmatched rows; pair color with text labels or row status text.",
+            "Illustrative mockup needs accessible text summary, not screenshot-only proof."
+          ],
+          "inputParity": [
+            "Primary and secondary CTAs have visible labels matching accessible names.",
+            "Any workflow tabs, disclosures, or mockup callouts must be reachable by keyboard and operable with click, tap, Enter, and Space.",
+            "Touch targets should be about 44x44 CSS px where possible.",
+            "Visual order and focus order stay aligned after responsive reordering."
+          ],
+          "reducedMotion": "No motion is required. If row-highlighting or import-to-export transitions are added later, reduce them to instant state changes under prefers-reduced-motion and keep the workflow understandable without animation."
+        },
+        "immersive": {
+          "justified": null,
+          "artDirection": null,
+          "qualityTiers": [],
+          "fallback": null,
+          "touch": []
+        }
+      },
+      "trace": {
+        "accessedFiles": [
+          "commands/design.md",
+          "skills/anti-slop/SKILL.md",
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/content-design/SKILL.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/SKILL.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/composition-contract.md",
+          "skills/core-rules/references/responsive-recomposition.md"
+        ],
+        "skillFiles": [
+          "skills/anti-slop/SKILL.md",
+          "skills/content-design/SKILL.md",
+          "skills/core-rules/SKILL.md"
+        ],
+        "referenceFiles": [
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/composition-contract.md",
+          "skills/core-rules/references/responsive-recomposition.md"
+        ],
+        "commandFiles": [
+          "commands/design.md"
+        ],
+        "broadReads": [],
+        "offRootReads": [],
+        "missingFiles": [],
+        "foreignSkills": [],
+        "observedBytes": 53819,
+        "readCounts": {
+          "commands/design.md": 1,
+          "skills/anti-slop/SKILL.md": 1,
+          "skills/anti-slop/references/design-tells.md": 1,
+          "skills/anti-slop/references/prose-tells.md": 1,
+          "skills/content-design/SKILL.md": 1,
+          "skills/content-design/references/claims-and-proof.md": 1,
+          "skills/content-design/references/microcopy.md": 1,
+          "skills/core-rules/SKILL.md": 1,
+          "skills/core-rules/references/accessibility.md": 1,
+          "skills/core-rules/references/composition-contract.md": 1,
+          "skills/core-rules/references/responsive-recomposition.md": 1
+        },
+        "repeatedReads": [],
+        "estimatedPluginTokens": 13455,
+        "providerUsage": {
+          "input_tokens": 192098,
+          "cached_input_tokens": 154624,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 5521,
+          "reasoning_output_tokens": 1409
+        }
+      },
+      "tracePath": "traces/codex-saas-03.jsonl"
+    },
+    {
+      "id": "saas",
+      "attempt": 4,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:06:31.603733Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back"
+      ],
+      "tracePath": "traces/codex-saas-04.jsonl"
+    },
+    {
+      "id": "saas",
+      "attempt": 5,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:07:42.857406Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:07:44.018704Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-saas-05.jsonl"
+    },
+    {
+      "id": "editorial",
+      "attempt": 1,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:07:45.775151Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:07:47.047742Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-editorial-01.jsonl"
+    },
+    {
+      "id": "editorial",
+      "attempt": 2,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:07:49.010277Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:07:50.242607Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-editorial-02.jsonl"
+    },
+    {
+      "id": "editorial",
+      "attempt": 3,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:07:51.859809Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:07:53.211089Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-editorial-03.jsonl"
+    },
+    {
+      "id": "editorial",
+      "attempt": 4,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:07:55.087141Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:07:56.138472Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-editorial-04.jsonl"
+    },
+    {
+      "id": "editorial",
+      "attempt": 5,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:07:57.846630Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:07:59.154998Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-editorial-05.jsonl"
+    },
+    {
+      "id": "dashboard",
+      "attempt": 1,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:01.213858Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:02.529145Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-dashboard-01.jsonl"
+    },
+    {
+      "id": "dashboard",
+      "attempt": 2,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:04.279240Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:05.412055Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-dashboard-02.jsonl"
+    },
+    {
+      "id": "dashboard",
+      "attempt": 3,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:07.337742Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:08.363691Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-dashboard-03.jsonl"
+    },
+    {
+      "id": "dashboard",
+      "attempt": 4,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:10.123387Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:11.230268Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-dashboard-04.jsonl"
+    },
+    {
+      "id": "dashboard",
+      "attempt": 5,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:12.810107Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:13.905773Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-dashboard-05.jsonl"
+    },
+    {
+      "id": "3d-hero",
+      "attempt": 1,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:15.769274Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:16.932410Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-3d-hero-01.jsonl"
+    },
+    {
+      "id": "3d-hero",
+      "attempt": 2,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:19.300163Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:20.383504Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-3d-hero-02.jsonl"
+    },
+    {
+      "id": "3d-hero",
+      "attempt": 3,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:22.203473Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:23.333095Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-3d-hero-03.jsonl"
+    },
+    {
+      "id": "3d-hero",
+      "attempt": 4,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:25.072085Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:26.240705Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-3d-hero-04.jsonl"
+    },
+    {
+      "id": "3d-hero",
+      "attempt": 5,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:28.296758Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:29.461638Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-3d-hero-05.jsonl"
+    },
+    {
+      "id": "named-direction-no-references",
+      "attempt": 1,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:31.204931Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:32.355615Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-named-direction-no-references-01.jsonl"
+    },
+    {
+      "id": "named-direction-no-references",
+      "attempt": 2,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:34.197074Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:35.682551Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-named-direction-no-references-02.jsonl"
+    },
+    {
+      "id": "named-direction-no-references",
+      "attempt": 3,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:37.260294Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:38.381093Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-named-direction-no-references-03.jsonl"
+    },
+    {
+      "id": "named-direction-no-references",
+      "attempt": 4,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:40.167609Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:41.497378Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-named-direction-no-references-04.jsonl"
+    },
+    {
+      "id": "named-direction-no-references",
+      "attempt": 5,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:43.451188Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:44.585254Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-named-direction-no-references-05.jsonl"
+    },
+    {
+      "id": "configurator",
+      "attempt": 1,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:46.297152Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:47.419033Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-configurator-01.jsonl"
+    },
+    {
+      "id": "configurator",
+      "attempt": 2,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:49.306807Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:50.373161Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-configurator-02.jsonl"
+    },
+    {
+      "id": "configurator",
+      "attempt": 3,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:52.124411Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:53.424082Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-configurator-03.jsonl"
+    },
+    {
+      "id": "configurator",
+      "attempt": 4,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:55.257040Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:56.346938Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-configurator-04.jsonl"
+    },
+    {
+      "id": "configurator",
+      "attempt": 5,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:08:58.096068Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:08:59.353290Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-configurator-05.jsonl"
+    },
+    {
+      "id": "slop",
+      "attempt": 1,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:09:01.032152Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:09:02.241882Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-slop-01.jsonl"
+    },
+    {
+      "id": "slop",
+      "attempt": 2,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:09:04.378734Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:09:05.469350Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-slop-02.jsonl"
+    },
+    {
+      "id": "slop",
+      "attempt": 3,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:09:07.136218Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:09:08.456553Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-slop-03.jsonl"
+    },
+    {
+      "id": "slop",
+      "attempt": 4,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:09:10.158147Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:09:11.236973Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-slop-04.jsonl"
+    },
+    {
+      "id": "slop",
+      "attempt": 5,
+      "status": "provider-error",
+      "failures": [
+        "You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.\n\nDiagnostics:\nReading additional input from stdin...\n2026-09-12T09:09:13.079418Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-12T09:09:14.317350Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM."
+      ],
+      "tracePath": "traces/codex-slop-05.jsonl"
+    }
+  ]
+}

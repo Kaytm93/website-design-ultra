@@ -10,7 +10,7 @@
     "test": "node scripts/project.mjs test",
     "create": "node scripts/create-project.mjs",
     "doctor": "node scripts/doctor.mjs",
-    "test:browser": "playwright test --config tests/starter-browser/playwright.config.mjs",
+    "test:browser": "node tests/starter-browser/run.mjs",
     "audit:dependencies": "node scripts/project.mjs audit"
   },
   "devDependencies": { "@playwright/test": "1.62.1" }

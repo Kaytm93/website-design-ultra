@@ -1,19 +1,25 @@
 # Proof-Websites: gesicherter Stand und neue Rolle
 
-Stand: 11. September 2026. Entwicklungskandidat für Plugin 2.0.2.
+Stand: 12. September 2026. Entwicklungskandidat für Plugin 2.0.2.
 
 ## Gesicherte Version
 
-`archive/proof-websites-2026-09-11` zeigt auf den unveränderten Commit
+[`archive/proof-websites-2026-09-11`](https://github.com/Kaytm93/website-design-ultra/tree/archive/proof-websites-2026-09-11) zeigt auf den unveränderten Commit
 `99510869de2512ddedd29bd6947c4333ac9455db` aus PR #47. Er enthält das gesamte
 Plugin einschließlich aller damaligen Test-Websites, Assets und Prüfungen.
 Dieser Archiv-Branch wird nicht weiterentwickelt.
 
-Die neue Fassung liegt in `codex/design-without-proof-examples`. Der lokale
-Quellstand wird durch `candidate/2.0.2-proof-policy-2026-09-11` markiert. Das ist
-ein Entwicklungskandidat, keine veröffentlichte oder vollständig abgenommene
-Produktionsversion. Die Referenzen werden zusammen mit der Git-Historie im
-Übertragungspaket gesichert; GitHub hat den Schreibversuch mit HTTP 403 abgewiesen.
+Der ursprüngliche Entwicklungskandidat ist unter
+[`codex/design-without-proof-examples`](https://github.com/Kaytm93/website-design-ultra/tree/codex/design-without-proof-examples)
+auf Commit `6a9db978cd0dd72318fe0c89c66a2774026d1896` gesichert. Beide Branches
+wurden am 12. September 2026 erfolgreich gepusht und mit `git ls-remote`
+gegen die genannten vollständigen Commit-IDs geprüft. Der frühere HTTP-403-
+Schreibfehler ist damit behoben.
+
+Die Weiterentwicklung läuft auf dem GitHub-Default-Branch
+[`main-without-proof-examples`](https://github.com/Kaytm93/website-design-ultra/tree/main-without-proof-examples).
+Die Archivierung allein ist keine Release-Abnahme; `v2.0.2` wird erst nach den
+Browser- und Live-Modell-Gates auf dem Merge-Commit gesetzt.
 
 ## Was pausiert
 
@@ -63,7 +69,15 @@ Passender Auftrag:
 ## Verifikationsgrenzen
 
 Die vorherige CI von PR #47 scheiterte beim Anlegen eines Playwright-Kontexts
-für den Next-Hochformattest. Diese Änderung behebt diesen Browser-Hänger nicht.
-Auch eine wiederholte aktuelle Live-Modellabnahme steht aus. Die vorhandene
-technische Evidenz und die historischen Ziele für 2.1 bis 2.3 werden dadurch
-nicht zu einem vollständigen Freigabenachweis für diesen Kandidaten.
+für den Next-Hochformattest. Die Reparatur erzeugt pro Test einen eigenen
+Chromium-Prozess und den Kontext mit dem gewünschten Viewport in zwei
+zeitlich begrenzten Versuchen. Fehlende Browser-Evidenz endet mit Exit 2.
+Der vollständige [Validate-Lauf 34684501373](https://github.com/Kaytm93/website-design-ultra/actions/runs/34684501373)
+ist auf Commit `e61da40cb2b95a50b91e0c93fd4216350d4ccbaf` grün.
+
+Die aktuelle Live-Prüfung deckt alle sieben Forward-Fälle ab, zeigt aber vier
+Fälle mit Vertragsfehlern. Die wiederholte Abnahme ist nicht abgeschlossen;
+`v2.0.2` bleibt ungesetzt. Details und Rohtraces stehen im
+[Audit vom 12. September](audits/2026-09-12-release-gates.md). Die historischen
+Ziele für 2.1 bis 2.3 und die pausierten Showcase-Szenen bleiben eigenständige
+Arbeit und werden durch technische CI nicht als abgeschlossen behauptet.

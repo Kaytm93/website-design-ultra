@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures.mjs'
 const vanilla = (process.env.WDU_TEST_STARTER ?? 'vanilla') === 'vanilla'
 const canvasSelector = vanilla ? '[data-scene-canvas]' : '.scene-canvas canvas'
 const ready = async page => expect(page.locator('html')).toHaveAttribute('data-wdu-ready', 'true', { timeout: 30_000 })
@@ -19,15 +19,17 @@ test('production page renders a real GPU frame with usable DOM and no browser er
   expect(errors).toEqual([])
 })
 
-test('portrait composition, keyboard focus and motion controls work', async ({ page }, testInfo) => {
-  await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto('/')
-  await ready(page)
-  await expect(page.locator('html')).toHaveAttribute('data-wdu-station', 'hero-portrait')
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-  await page.keyboard.press('Tab')
-  expect(await page.evaluate(() => document.activeElement?.matches(':focus-visible'))).toBe(true)
-  await page.screenshot({ path: testInfo.outputPath('portrait.png') })
+test.describe('portrait viewport', () => {
+  test.use({ viewport: { width: 390, height: 844 } })
+  test('portrait composition, keyboard focus and motion controls work', async ({ page }, testInfo) => {
+    await page.goto('/')
+    await ready(page)
+    await expect(page.locator('html')).toHaveAttribute('data-wdu-station', 'hero-portrait')
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+    await page.keyboard.press('Tab')
+    expect(await page.evaluate(() => document.activeElement?.matches(':focus-visible'))).toBe(true)
+    await page.screenshot({ path: testInfo.outputPath('portrait.png') })
+  })
 })
 
 test('blocked browser storage does not break scene startup', async ({ page }) => {

@@ -27,6 +27,44 @@ Der Entwicklungskandidat mit dieser Eingrenzung erfüllt nicht automatisch die
 historische Definition of done für 2.3. Die Freigabe eines Showcases ist kein
 Ziel dieses Kandidaten. Details: `docs/PROOF-WEBSITES.de.md`.
 
+## Freigabeprüfung 2026-09-12 — 2.0.2 bleibt Kandidat
+
+- GitHub-Default: `main-without-proof-examples`. Die beiden dokumentierten
+  Archiv-/Kandidatenbranches sind remote auf `99510869` und `6a9db978` gesichert.
+- Browser-Reparatur `e61da40`, PR #48: eigener Chromium-Prozess pro Prüfung;
+  `newContext` mit Ziel-Viewport, zwei begrenzte Versuche und Exit 2 bei
+  UNAVAILABLE. Vollständiger Validate-Lauf `34684501373`: 24 Jobs PASS.
+- Alle sieben Forward-Fälle haben jetzt echte Modellantworten auf dem sauberen
+  Plugin-Digest `b20c32d33cded3322ef727cb4e81a5f0bdf5515c79fdb4ef07483a479459b196`
+  (`codex`, `gpt-5.5`, `medium`).
+
+| Fall | PASS / gewertet | Beobachteter Fehler |
+|---|---:|---|
+| `saas` | 3 / 3 | — |
+| `editorial` | 0 / 1 | zusätzliche Claims-/Proof-Referenz |
+| `dashboard` | 1 / 1 | — |
+| `3d-hero` | 0 / 1 | zusätzliche Interaktionsregeln, 21.161 > 15.000 Tokens, `iteration` fehlt |
+| `named-direction-no-references` | 0 / 1 | unerlaubte Farbpalette/-Referenz |
+| `configurator` | 1 / 1 | — |
+| `slop` | 0 / 1 | weniger als drei `content.unknowns` |
+
+Die initialen 35 Claude-Authfehler und 32 Codex-Kontolimitfehler sind separat
+archiviert und keine gewerteten Modellantworten. Die Fortsetzung nach Reset
+lieferte Antworten für alle zuvor fehlenden Fälle, ohne Providerfehler.
+
+**J-B5 bleibt offen.** Vollständige Fallabdeckung ist erreicht; die Live-Abnahme
+ist wegen vier beobachteter Vertragsabweichungen nicht bestanden. Fünf
+gewertete Versuche je Fall mit Schwelle 0,6 sind weiterhin nicht vollständig
+nachgewiesen. Budgets und Assertions wurden nicht geändert. `v2.0.2` wird vor
+erfolgreicher Abnahme nicht gesetzt.
+
+Nächste Schritte: die vier Abweichungen im Plan-/Referenzrouting und
+Antwortvertrag bearbeiten, danach die vollständige wiederholte Suite auf dem
+endgültigen Plugin-Baum abnehmen. Die pausierten Showcase-Szenen bleiben pausiert.
+
+Nachweise: [Audit](../../docs/audits/2026-09-12-release-gates.md),
+[maschinelle Auswertung](../../docs/audits/2026-09-12-release-gates/live-summary.json).
+
 ## Integrationsstand 2026-09-05
 
 PR #38 ist in `main` an `c09f63d` integriert. Main-CI `33988137459`:

@@ -7,7 +7,7 @@ const port = starter === 'next' ? 4320 : 4321
 export default defineConfig({
   testDir: '.', testMatch: 'starter.spec.mjs', workers: 1, retries: 0, timeout: 45_000,
   outputDir: '../../output/starter-browser',
-  reporter: [['list'], ['json', { outputFile: 'output/starter-browser/results.json' }]],
+  reporter: [['list'], ['json', { outputFile: 'output/starter-browser/results.json' }], ['./status-reporter.mjs']],
   use: { baseURL: `http://127.0.0.1:${port}`, viewport: { width: 1280, height: 720 },
     trace: 'retain-on-failure', screenshot: 'only-on-failure',
     launchOptions: { args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] },

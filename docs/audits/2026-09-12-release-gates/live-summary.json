@@ -1,0 +1,190 @@
+{
+  "status": "FAIL",
+  "releaseEligible": false,
+  "provider": "codex",
+  "model": "gpt-5.5",
+  "effort": "medium",
+  "provenance": {
+    "repository": true,
+    "commit": "e61da40cb2b95a50b91e0c93fd4216350d4ccbaf",
+    "tag": null,
+    "branch": "HEAD",
+    "clean": true,
+    "tree": {
+      "fileCount": 181,
+      "sha256": "b20c32d33cded3322ef727cb4e81a5f0bdf5515c79fdb4ef07483a479459b196"
+    }
+  },
+  "sources": [
+    "codex-initial/report.json",
+    "codex-coverage/report.json"
+  ],
+  "fullCaseCoverage": true,
+  "scoredAttempts": 9,
+  "plannedRepeatedAcceptance": {
+    "scoredAttemptsPerCase": 5,
+    "minPassRate": 0.6,
+    "status": "INCOMPLETE"
+  },
+  "summary": [
+    {
+      "id": "saas",
+      "attempts": 5,
+      "scored": 3,
+      "passed": 3,
+      "providerErrors": 2,
+      "passRate": 1,
+      "fullRepeatCompleted": false,
+      "meetsRepeatedAcceptance": false,
+      "failures": [],
+      "evidence": [
+        {
+          "source": "codex-initial/report.json",
+          "attempt": 1,
+          "status": "passed",
+          "tracePath": "traces/codex-saas-01.jsonl"
+        },
+        {
+          "source": "codex-initial/report.json",
+          "attempt": 2,
+          "status": "passed",
+          "tracePath": "traces/codex-saas-02.jsonl"
+        },
+        {
+          "source": "codex-initial/report.json",
+          "attempt": 3,
+          "status": "passed",
+          "tracePath": "traces/codex-saas-03.jsonl"
+        }
+      ]
+    },
+    {
+      "id": "editorial",
+      "attempts": 6,
+      "scored": 1,
+      "passed": 0,
+      "providerErrors": 5,
+      "passRate": 0,
+      "fullRepeatCompleted": false,
+      "meetsRepeatedAcceptance": false,
+      "failures": [
+        "trace observed unexpected reference \"skills/content-design/references/claims-and-proof.md\""
+      ],
+      "evidence": [
+        {
+          "source": "codex-coverage/report.json",
+          "attempt": 1,
+          "status": "failed",
+          "tracePath": "traces/codex-editorial.jsonl"
+        }
+      ]
+    },
+    {
+      "id": "dashboard",
+      "attempts": 6,
+      "scored": 1,
+      "passed": 1,
+      "providerErrors": 5,
+      "passRate": 1,
+      "fullRepeatCompleted": false,
+      "meetsRepeatedAcceptance": false,
+      "failures": [],
+      "evidence": [
+        {
+          "source": "codex-coverage/report.json",
+          "attempt": 1,
+          "status": "passed",
+          "tracePath": "traces/codex-dashboard.jsonl"
+        }
+      ]
+    },
+    {
+      "id": "3d-hero",
+      "attempts": 6,
+      "scored": 1,
+      "passed": 0,
+      "providerErrors": 5,
+      "passRate": 0,
+      "fullRepeatCompleted": false,
+      "meetsRepeatedAcceptance": false,
+      "failures": [
+        "missing signal /iteration/i",
+        "trace observed forbidden file \"skills/r3f-interaction/references/touch-and-gestures.md\"",
+        "trace observed unexpected skill \"r3f-interaction\"",
+        "trace observed unexpected reference \"skills/r3f-interaction/references/touch-and-gestures.md\"",
+        "trace estimate 21161 plugin tokens exceeds 15000"
+      ],
+      "evidence": [
+        {
+          "source": "codex-coverage/report.json",
+          "attempt": 1,
+          "status": "failed",
+          "tracePath": "traces/codex-3d-hero.jsonl"
+        }
+      ]
+    },
+    {
+      "id": "named-direction-no-references",
+      "attempts": 6,
+      "scored": 1,
+      "passed": 0,
+      "providerErrors": 5,
+      "passRate": 0,
+      "fullRepeatCompleted": false,
+      "meetsRepeatedAcceptance": false,
+      "failures": [
+        "trace observed forbidden file \"skills/color-palettes/references/neutral-product.md\"",
+        "trace observed unexpected skill \"color-palettes\"",
+        "trace observed unexpected reference \"skills/color-palettes/references/neutral-product.md\""
+      ],
+      "evidence": [
+        {
+          "source": "codex-coverage/report.json",
+          "attempt": 1,
+          "status": "failed",
+          "tracePath": "traces/codex-named-direction-no-references.jsonl"
+        }
+      ]
+    },
+    {
+      "id": "configurator",
+      "attempts": 6,
+      "scored": 1,
+      "passed": 1,
+      "providerErrors": 5,
+      "passRate": 1,
+      "fullRepeatCompleted": false,
+      "meetsRepeatedAcceptance": false,
+      "failures": [],
+      "evidence": [
+        {
+          "source": "codex-coverage/report.json",
+          "attempt": 1,
+          "status": "passed",
+          "tracePath": "traces/codex-configurator.jsonl"
+        }
+      ]
+    },
+    {
+      "id": "slop",
+      "attempts": 6,
+      "scored": 1,
+      "passed": 0,
+      "providerErrors": 5,
+      "passRate": 0,
+      "fullRepeatCompleted": false,
+      "meetsRepeatedAcceptance": false,
+      "failures": [
+        "content.unknowns needs at least 3 entries"
+      ],
+      "evidence": [
+        {
+          "source": "codex-coverage/report.json",
+          "attempt": 1,
+          "status": "failed",
+          "tracePath": "traces/codex-slop.jsonl"
+        }
+      ]
+    }
+  ]
+}

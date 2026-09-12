@@ -1,0 +1,6 @@
+tweak: 2 files (existing design; no new font, motion or headline contract)
+Plugin path: 7968 bytes <= 8000: PASS
+Estimated plugin tokens: 1992
+- 2409 commands/tweak.md
+- 5559 skills/core-rules/SKILL.md
+Conditional domain reads add to this baseline; linter execution does not read its source into context.

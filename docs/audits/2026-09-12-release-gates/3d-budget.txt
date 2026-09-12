@@ -1,0 +1,14 @@
+3d-hero: 11 files
+Minimum path: 51,092 bytes (51.09 KB) <= 57 KB: PASS
+Estimated plugin tokens: 12,773 <= 15,000: PASS
+-  4953 skills/3d-art-direction/SKILL.md
+-  3800 skills/3d-art-direction/references/camera-and-composition.md
+-  3553 skills/3d-runtime-quality/SKILL.md
+-  3270 skills/3d-runtime-quality/references/tier-matrix.md
+- 10168 skills/anti-slop/SKILL.md
+-  7057 skills/anti-slop/references/prose-tells.md
+-  3245 skills/content-design/SKILL.md
+-  2124 skills/content-design/references/claims-and-proof.md
+-  5559 skills/core-rules/SKILL.md
+-  2875 skills/core-rules/references/responsive-recomposition.md
+-  4488 skills/immersive-3d/SKILL.md
