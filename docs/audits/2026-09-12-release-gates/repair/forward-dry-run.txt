@@ -1,0 +1,11 @@
+Forward fixture validation passed: 7 cases, 2 recorded traces replayed; no model behavior was tested
+- historical claude/dashboard: plugin 1.5.1, tree 9f381e25130e, 10 files
+- historical claude/slop: plugin 1.6.0, tree 845c1bd7b38d, 6 files
+Current case contracts:
+- saas: /website-design-ultra:design
+- editorial: /website-design-ultra:design
+- dashboard: /website-design-ultra:design
+- 3d-hero: /website-design-ultra:immersive
+- named-direction-no-references: /website-design-ultra:immersive
+- configurator: /website-design-ultra:immersive
+- slop: /website-design-ultra:design

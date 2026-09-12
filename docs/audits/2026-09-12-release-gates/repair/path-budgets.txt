@@ -1,0 +1,8 @@
+case                             required  instructed  declared  verdict
+saas                                 9298       17126     17126  PASS
+editorial                           13352       21163     21163  PASS
+dashboard                           11912       19651     19651  PASS
+3d-hero                             13045       22951     22951  PASS
+named-direction-no-references       13045       22951     22951  PASS
+configurator                        13928       26145     26145  PASS
+slop                                 7172       16226     16226  PASS

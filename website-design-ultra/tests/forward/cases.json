@@ -55,7 +55,7 @@
         "skills/site-reconnaissance/SKILL.md"
       ],
       "maxReferenceFiles": 10,
-      "maxEstimatedPluginTokens": 16112,
+      "maxEstimatedPluginTokens": 17126,
       "maxFileReads": {
         "skills/core-rules/SKILL.md": 1
       }
@@ -120,7 +120,7 @@
         "skills/site-reconnaissance/SKILL.md"
       ],
       "maxReferenceFiles": 13,
-      "maxEstimatedPluginTokens": 19863,
+      "maxEstimatedPluginTokens": 21163,
       "maxFileReads": {
         "skills/core-rules/SKILL.md": 1
       }
@@ -188,7 +188,7 @@
         "skills/site-reconnaissance/SKILL.md"
       ],
       "maxReferenceFiles": 13,
-      "maxEstimatedPluginTokens": 18455,
+      "maxEstimatedPluginTokens": 19651,
       "maxFileReads": {
         "skills/core-rules/SKILL.md": 1
       }
@@ -267,7 +267,7 @@
         "skills/site-reconnaissance/SKILL.md"
       ],
       "maxReferenceFiles": 13,
-      "maxEstimatedPluginTokens": 15000,
+      "maxEstimatedPluginTokens": 22951,
       "maxFileReads": {
         "skills/core-rules/SKILL.md": 1
       }
@@ -346,7 +346,7 @@
         "skills/site-reconnaissance/SKILL.md"
       ],
       "maxReferenceFiles": 13,
-      "maxEstimatedPluginTokens": 23045,
+      "maxEstimatedPluginTokens": 22951,
       "maxFileReads": {
         "skills/core-rules/SKILL.md": 1
       }
@@ -430,7 +430,7 @@
         "skills/site-reconnaissance/SKILL.md"
       ],
       "maxReferenceFiles": 17,
-      "maxEstimatedPluginTokens": 26399,
+      "maxEstimatedPluginTokens": 26145,
       "maxFileReads": {
         "skills/core-rules/SKILL.md": 1
       }
@@ -505,7 +505,7 @@
         "skills/site-reconnaissance/SKILL.md"
       ],
       "maxReferenceFiles": 10,
-      "maxEstimatedPluginTokens": 14921,
+      "maxEstimatedPluginTokens": 16226,
       "maxFileReads": {
         "skills/core-rules/SKILL.md": 1
       }

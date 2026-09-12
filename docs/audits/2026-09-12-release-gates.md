@@ -118,13 +118,80 @@ werden ausschließlich die `tracePath`-Felder auf relative, neben dem Report
 auflösbare Pfade umgestellt. [SHA256SUMS](2026-09-12-release-gates/SHA256SUMS)
 prüft die abgelegten Artefakte.
 
+## Reparatur der vier Vertragsfehler
+
+Nachtrag vom 12. September 2026, nach der oben dokumentierten Live-Serie. Die
+vier Befunde sind bearbeitet. Keiner wurde durch eine gelockerte Assertion
+geschlossen; in allen vier Fällen wies der Trace auf eine Anweisung des Plugins
+selbst, nicht auf ein Modellversagen.
+
+| Fall | Ursache im Plugin | Reparatur |
+|---|---|---|
+| Editorial | `content-design` verlangte das Claim-Ledger unbedingt, und nur die Claims-Zeile der Routingtabelle zeigte auf `claims-and-proof.md` | Ledger und Referenz getrennt: jede Antwort liefert das Ledger, nur das Abwägen eines Claims öffnet die Datei |
+| 3D-Hero | Add-on-Gate lautete „click, hover, inspection, or configuration“; ein Scharnier, das „in motion“ verständlich wird, erfüllt „inspection“ | Gate benennt jetzt die Eingabe des Besuchers; eine Szene, die nur betrachtet wird, lädt `r3f-interaction` nicht |
+| Named Direction | Für „Museum Monolith“ existiert kein Material; das Modell nahm die nächstgelegene Palette | `immersive-3d` erklärt Szenenfarbe und Tone Mapping zur Art Direction und eine unbekannte Richtung zum Unknown |
+| Slop | Nichts forderte einen Eintrag pro fehlender Tatsache | Ledger fordert einen Eintrag je fehlender Tatsache; ein Satz mit sechs Unknowns ist ein Eintrag |
+| 3D-Hero, Signal `iteration` | Plan-only war vom Look-Loop ausgenommen | Plan-only benennt Poster-Target und die erste zu messende Iteration |
+
+Jede Reparatur blieb innerhalb ihres deklarierten Byte-Budgets und musste dafür
+Prosa an anderer Stelle bezahlen: `commands/immersive.md` 4.094 / 4.096,
+`immersive-3d` 4.995 / 5.000, `3d-art-direction` 4.999 / 5.000 bei unverändertem
+YAML- und Checklisten-Hash. Der Farbschutz sitzt in `immersive-3d` statt in
+`core-rules`, weil `core-rules` sein 8.000-Byte-Budget mit `commands/tweak.md`
+teilt und 32 Bytes frei hatte.
+
 ## Budgets und Freigabegrenze
 
+Der Tokenbudget-Befund des 3D-Hero-Falls war kein Modellfehler, sondern ein
+Messfehler. `measure-path.mjs` summierte `requiredSkills` und `requiredFiles`,
+also elf Dateien. `forward-trace.mjs` berechnet einen Live-Lauf über jede
+geöffnete Plugin-Datei, für diesen Brief zwanzig. Die neun erlaubten Referenzen
+und die Command-Datei dazwischen lagen innerhalb des Vertrags und außerhalb der
+Messung. Damit konnte das Budget offline nicht scheitern und live nicht bestehen.
+
+`measure-path.mjs` misst jetzt beide Pfade und benennt sie. Der *erforderliche*
+Pfad behält die 57-KB-Byte-Grenze; er ist ein Kompressionsziel. Der
+*angewiesene* Pfad — Command, erlaubte Skills, erlaubte Referenzen — trägt
+`maxEstimatedPluginTokens`, weil genau diese Menge live bewertet wird.
+
+| Fall | Erforderlich | Angewiesen | Deklariert vorher | Deklariert jetzt |
+|---|---:|---:|---:|---:|
+| `saas` | 9.298 | 17.126 | 16.112 | 17.126 |
+| `editorial` | 13.352 | 21.163 | 19.863 | 21.163 |
+| `dashboard` | 11.912 | 19.651 | 18.455 | 19.651 |
+| `3d-hero` | 13.045 | 22.951 | 15.000 | 22.951 |
+| `named-direction-no-references` | 13.045 | 22.951 | 23.045 | 22.951 |
+| `configurator` | 13.928 | 26.145 | 26.399 | 26.145 |
+| `slop` | 7.172 | 16.226 | 14.921 | 16.226 |
+
+Zwei der sieben Budgets sinken. `3d-hero` steigt am stärksten. Die verlassenen
+15.000 waren ein in `e54d047` gesetztes Kompressionsziel, gemessen an der
+erforderlichen Teilmenge, nie eine Messung des gerouteten Pfads. Sie zu halten
+hätte bedeutet, rund 18 KB aus `anti-slop/SKILL.md`, `design-tells.md` und
+`prose-tells.md` zu schneiden — Tell-Katalog, Dichtebudgets und Linterregeln,
+die alle sieben Fälle lesen — für eine Zahl, die den Pfad nie beschrieben hat.
+Der baugleiche Nachbarfall deklarierte für dieselben Dateien immer 22.951.
+
+Drei Prüfungen halten das, jede durch absichtliches Brechen kontrolliert: der
+Validator berechnet den angewiesenen Pfad selbst und verlangt Gleichheit;
+`measure-path.mjs` sagt es aus eigenem Lauf ein zweites Mal und endet in beiden
+Richtungen mit Exit 1; `tests/skill-budget` fixiert ein Budget einen Token zu
+niedrig und einen Token zu hoch und prüft zusätzlich, dass der angewiesene Pfad
+jedes Falls echt breiter ist als sein erforderlicher.
+
 - [Tweak-Pfad](2026-09-12-release-gates/tweak-budget.txt): 7.968 / 8.000 Bytes, PASS.
-- [3D-Pfad](2026-09-12-release-gates/3d-budget.txt): 51.092 / 57.000 Bytes und
-  12.773 / 15.000 geschätzte Plugin-Tokens, PASS.
-- Keine Fallassertion, keine Pass-Schwelle und kein Plugin-Budget wurde gelockert.
-- J-B5 und `v2.0.2` bleiben wegen der vier beobachteten Vertragsfehler und der
-  fehlenden vollständigen Mehrfachabnahme offen. Kein Release-Tag wurde gesetzt.
+- 3D-Pfad nach der Reparatur: 52.179 / 57.000 Bytes erforderlich, PASS;
+  22.951 angewiesene Tokens, deklariert 22.951, PASS. Die archivierte
+  [3D-Budget-Notiz](2026-09-12-release-gates/3d-budget.txt) hält den Messstand
+  vor der Korrektur fest und wird nicht umgeschrieben.
+- Keine Fallassertion und keine Pass-Schwelle wurde gelockert. Ein Tokenbudget
+  wurde korrigiert, nicht gelockert: es ist jetzt die gemessene Größe der
+  Menge, die der Vertrag erlaubt.
+- **Die Live-Abnahme bleibt offen.** Die Reparaturen sind offline geprüft;
+  offline geprüft heißt nicht geroutet. Ein aufgezeichneter Trace routet nicht,
+  also beweist der Dry-Run keine Routingänderung. Es fehlen weiterhin fünf
+  gewertete Versuche je Fall bei `--min-pass-rate 0.6`, also mindestens 26
+  weitere gewertete Antworten auf dem reparierten Baum.
+- J-B5 und `v2.0.2` bleiben offen. Kein Release-Tag wurde gesetzt.
 - Die pausierten Showcase-Szenen und sonstigen 2.2-/2.3-Ziele gehören nicht
   zu dieser technischen Freigabe und werden nicht als erledigt behauptet.

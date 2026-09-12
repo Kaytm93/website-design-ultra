@@ -55,15 +55,43 @@ lieferte Antworten für alle zuvor fehlenden Fälle, ohne Providerfehler.
 **J-B5 bleibt offen.** Vollständige Fallabdeckung ist erreicht; die Live-Abnahme
 ist wegen vier beobachteter Vertragsabweichungen nicht bestanden. Fünf
 gewertete Versuche je Fall mit Schwelle 0,6 sind weiterhin nicht vollständig
-nachgewiesen. Budgets und Assertions wurden nicht geändert. `v2.0.2` wird vor
-erfolgreicher Abnahme nicht gesetzt.
+nachgewiesen. `v2.0.2` wird vor erfolgreicher Abnahme nicht gesetzt.
 
-Nächste Schritte: die vier Abweichungen im Plan-/Referenzrouting und
-Antwortvertrag bearbeiten, danach die vollständige wiederholte Suite auf dem
-endgültigen Plugin-Baum abnehmen. Die pausierten Showcase-Szenen bleiben pausiert.
+### Reparatur 2026-09-12 — alle vier Abweichungen bearbeitet, Abnahme offen
+
+Die vier Befunde sind repariert. In allen vier Fällen wies der Trace auf eine
+Anweisung des Plugins selbst; keine Assertion und keine Pass-Schwelle wurde
+gelockert.
+
+| Fall | Reparatur | Ort |
+|---|---|---|
+| `editorial` | Ledger liefert jede Antwort, nur das Abwägen eines Claims öffnet die Referenz | `content-design/SKILL.md` |
+| `3d-hero` | Add-on-Gate benennt die Eingabe des Besuchers statt „inspection“ | `immersive-3d/SKILL.md` |
+| `named-direction-no-references` | Szenenfarbe und Tone Mapping sind Art Direction; unbekannte Richtung ist ein Unknown | `immersive-3d/SKILL.md` |
+| `slop` | ein Ledger-Eintrag je fehlender Tatsache | `content-design/SKILL.md` |
+| `3d-hero`, Signal `iteration` | Plan-only benennt Poster-Target und erste Iteration | `commands/immersive.md`, `3d-art-direction/SKILL.md` |
+
+Der Tokenbefund war ein Messfehler: `measure-path.mjs` summierte elf Dateien,
+`forward-trace.mjs` berechnet zwanzig. `maxEstimatedPluginTokens` trägt jetzt den
+angewiesenen Pfad — Command, erlaubte Skills, erlaubte Referenzen. Zwei der
+sieben Budgets sinken, fünf steigen; `3d-hero` 15.000 → 22.951, der baugleiche
+Nachbarfall 23.045 → 22.951.
+
+Offline geprüft: 245 Root-Tests, `validate-content`, `lint-copy --self`,
+Forward-Dry-Run, `measure-path --all`. Jede neue Prüfung wurde durch
+absichtliches Brechen kontrolliert.
+
+**Offline geprüft heißt nicht geroutet.** Ein aufgezeichneter Trace routet nicht,
+also zeigt der Dry-Run keine Routingänderung. Offen bleiben mindestens 26
+weitere gewertete Antworten auf dem reparierten Baum.
+
+Nächste Schritte: je reparierte Route ein einzelner echter Forward-Lauf und
+Traceprüfung, danach die vollständige Serie mit `--repeat 5 --min-pass-rate 0.6`.
+Die pausierten Showcase-Szenen bleiben pausiert.
 
 Nachweise: [Audit](../../docs/audits/2026-09-12-release-gates.md),
-[maschinelle Auswertung](../../docs/audits/2026-09-12-release-gates/live-summary.json).
+[maschinelle Auswertung](../../docs/audits/2026-09-12-release-gates/live-summary.json),
+[Reparaturmessungen](../../docs/audits/2026-09-12-release-gates/repair/).
 
 ## Integrationsstand 2026-09-05
 
@@ -76,7 +104,9 @@ plus zwei ausführbare Regressionen. Lokal: Typprüfung, 69 Tests und Build PASS
 J-B4-Prosa und Budgets sind integriert; das Häkchen bleibt bis zur wiederholten
 Live-Abnahme offen. J-B5 ist implementiert und in Live-Prüfung: `core-rules`
 5.497 Bytes, `/tweak`-Basis 7.906 Bytes, minimaler `3d-hero`-Pfad 49.504 Bytes /
-12.376 geschätzte Plugin-Tokens. Die maximale Fallgrenze bleibt 15.000.
+12.376 geschätzte Plugin-Tokens. Die damals genannte Fallgrenze 15.000 galt für
+diesen minimalen Pfad; sie wurde am 2026-09-12 durch das Budget des angewiesenen
+Pfads ersetzt, siehe Reparaturabschnitt oben.
 Ein erster Slop-Lauf lud fälschlich `ui-states` für reine Empty-State-Copy;
 Task-Gates unterscheiden jetzt Copy von Verhaltensänderungen. Die Abnahme läuft
 auf diesem korrigierten Baum. Veröffentlichung und 2.2/2.3 bleiben offen.
