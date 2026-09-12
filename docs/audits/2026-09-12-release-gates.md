@@ -120,6 +120,13 @@ prüft die abgelegten Artefakte.
 
 ## Reparatur der vier Vertragsfehler
 
+Integriert als [PR #49](https://github.com/Kaytm93/website-design-ultra/pull/49),
+Merge-Commit `a5b141aa52a4b46c648a1c9f793b5020171b560c` auf
+`main-without-proof-examples`. Der Tree des Merge-Commits ist byte-identisch mit
+dem geprüften PR-Head `45c4d04`. Validate-Lauf auf dem Merge-Commit
+[`34714324993`](https://github.com/Kaytm93/website-design-ultra/actions/runs/34714324993):
+24 Jobs `success`, `release-provenance` vor dem Tag übersprungen, keine Fehler.
+
 Nachtrag vom 12. September 2026, nach der oben dokumentierten Live-Serie. Die
 vier Befunde sind bearbeitet. Keiner wurde durch eine gelockerte Assertion
 geschlossen; in allen vier Fällen wies der Trace auf eine Anweisung des Plugins

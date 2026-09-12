@@ -43,6 +43,12 @@ development candidate, not a published release
   cost. Two of the seven budgets fall, five rise. No case assertion, forbidden
   file, required file or pass threshold changed.
 
+The repair is integrated as PR #49, merge commit
+`a5b141aa52a4b46c648a1c9f793b5020171b560c`, whose tree is byte-identical to the
+reviewed head `45c4d04`. Validate run `34714324993` on that merge commit passes
+all 24 applicable jobs, with `release-provenance` skipped before the tag as
+expected.
+
 This candidate includes the preceding production-hardening commits from PR #47.
 Its CI context-setup timeout is fixed: Validate run `34684501373` passes all
 applicable jobs on `e61da40`, including both standalone browser suites.

@@ -59,6 +59,13 @@ nachgewiesen. `v2.0.2` wird vor erfolgreicher Abnahme nicht gesetzt.
 
 ### Reparatur 2026-09-12 — alle vier Abweichungen bearbeitet, Abnahme offen
 
+Integriert als PR #49, Merge-Commit `a5b141a` auf `main-without-proof-examples`;
+Tree identisch zum geprüften PR-Head `45c4d04`. Validate-Lauf `34714324993` auf
+dem Merge-Commit: 24 Jobs PASS, `release-provenance` vor dem Tag übersprungen.
+`main` steht weiterhin auf `84d3e50`. Der Branch
+`codex/design-without-proof-examples` ist remote entfernt; sein Commit
+`6a9db978` bleibt aus `main` und dem Default-Branch erreichbar.
+
 Die vier Befunde sind repariert. In allen vier Fällen wies der Trace auf eine
 Anweisung des Plugins selbst; keine Assertion und keine Pass-Schwelle wurde
 gelockert.

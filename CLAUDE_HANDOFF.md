@@ -8,17 +8,24 @@ nächste Instanz. Sie ersetzt die Fassung vom ersten Durchgang.
 ```bash
 cd "/Users/kaygewinner/Desktop/Claude code/website-design-ultra"
 git fetch origin --prune
-git switch fix/v2.0.2-forward-contracts
+git switch main-without-proof-examples
+git pull --ff-only origin main-without-proof-examples
 git status --short --branch
 ```
 
-Der GitHub-Default-Branch ist `main-without-proof-examples`. Er steht auf
-`84d3e50e6179a52297d97a66f0e770e10f8c8966`; der Merge-Commit von PR #48 ist
-`e14b477a7d0e9b6db6d076a7ef103f84fcc930e1`.
+Der GitHub-Default-Branch ist `main-without-proof-examples` und steht auf dem
+Merge-Commit von PR #49, `a5b141aa52a4b46c648a1c9f793b5020171b560c`. Der
+Validate-Lauf darauf ist vollständig grün: 24 Jobs `success`, `release-provenance`
+vor dem Tag erwartungsgemäß übersprungen, Lauf `34714324993`. Der Tree des
+Merge-Commits ist byte-identisch mit dem geprüften PR-Head `45c4d04`.
 
-Der Arbeitsbranch dieses Durchgangs ist `fix/v2.0.2-forward-contracts`, abgezweigt
-von `84d3e50`. Er enthält die Reparatur der vier Vertragsfehler und die Korrektur
-der Pfadmessung:
+`main` steht weiterhin auf `84d3e50e6179a52297d97a66f0e770e10f8c8966` und ist
+damit hinter dem Default-Branch. Beide waren zuvor bewusst synchron; ob `main`
+nachgezogen wird, ist offen.
+
+Die Reparatur dieses Durchgangs liegt in PR #49, dessen Arbeitsbranch
+`fix/v2.0.2-forward-contracts` nach dem Merge entfernt wurde. Die vier Commits
+sind über den Merge-Commit erreichbar:
 
 - `ee605a95f0258f53684524c4c737122bb247d37f` — Routing der vier Live-Befunde
 - `6a3eac09181e0d3dcd1e6058a3d6cd8838f4342a` — angewiesener Pfad statt Teilmenge
@@ -197,9 +204,16 @@ gelockert — wer es weiter senken will, muss Prosa kürzen, nicht die Zahl.
 - Reparaturmessungen: `docs/audits/2026-09-12-release-gates/repair/`
 - Eingefrorene Live-Evidenz: `docs/audits/2026-09-12-release-gates/`
 - Queue: `automation/website-design-ultra-2.1-2.3/QUEUE.md`
+- PR dieses Durchgangs: https://github.com/Kaytm93/website-design-ultra/pull/49,
+  gemergt als `a5b141a`; grüner Lauf auf dem Merge-Commit:
+  https://github.com/Kaytm93/website-design-ultra/actions/runs/34714324993
 - PR des ersten Durchgangs: https://github.com/Kaytm93/website-design-ultra/pull/48
 - Grüner CI-Lauf des ersten Durchgangs:
   https://github.com/Kaytm93/website-design-ultra/actions/runs/34700006026
+- Der dokumentierte Branch `codex/design-without-proof-examples` ist remote
+  entfernt. Sein Commit `6a9db978cd0dd72318fe0c89c66a2774026d1896` bleibt aus
+  `main` und aus dem Default-Branch erreichbar; verloren ist nur das Label.
+  `archive/proof-websites-2026-09-11` auf `99510869` besteht unverändert.
 
 ## Aufwandsschätzung
 
