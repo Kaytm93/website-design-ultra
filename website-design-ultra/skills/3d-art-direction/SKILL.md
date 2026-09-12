@@ -11,7 +11,8 @@ justification/budget, `3d-runtime-quality` owns runtime tiers, and
 
 Repository proof pages, starter heroes and posters are technical fixtures, not
 visual defaults or look-loop targets. Reuse runtime mechanisms; design the page,
-subject, camera and materials from the brief, project assets and references.
+subject, camera and materials from the brief, project assets and chosen
+references.
 
 ## Art-direction contract
 
@@ -70,7 +71,7 @@ An implemented scene cannot finish with an unmeasured look claim. `/immersive`
 ends with the comparison artifact, or with `NOT_APPLICABLE` and a concrete
 plan-only or out-of-scope reason — a plan still names its poster target and the
 first iteration the build will measure. Ordinary 2D work and an ordinary 3D hero
-do not load an advanced module merely because this procedure exists.
+do not load an advanced module because this procedure exists.
 
 ## Invariants and output
 
