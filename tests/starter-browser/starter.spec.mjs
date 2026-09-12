@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { createBrowserContext, closeContext, withTimeout } from '../../starters/next-r3f-cinematic/scripts/browser-context.mjs'
+import { BrowserUnavailableError, createBrowserContext, closeContext, withTimeout } from '../../starters/next-r3f-cinematic/scripts/browser-context.mjs'
 const vanilla = (process.env.WDU_TEST_STARTER ?? 'vanilla') === 'vanilla'
 const canvasSelector = vanilla ? '[data-scene-canvas]' : '.scene-canvas canvas'
 const ready = async page => expect(page.locator('html')).toHaveAttribute('data-wdu-ready', 'true', { timeout: 30_000 })
@@ -20,11 +20,16 @@ test('production page renders a real GPU frame with usable DOM and no browser er
   expect(errors).toEqual([])
 })
 
-test('portrait composition, keyboard focus and motion controls work', async ({ browser, baseURL }, testInfo) => {
-  test.setTimeout(60_000) // context retries + page startup + the unchanged 30s readiness gate
+test('portrait composition, keyboard focus and motion controls work', async ({ playwright, launchOptions, baseURL }, testInfo) => {
+  test.setTimeout(60_000) // bounded browser/context startup + the unchanged 30s readiness gate
   // Bypass the implicit page/context fixture: PR #47 hung before the test body.
-  const context = await createBrowserContext(browser, { baseURL, viewport: { width: 390, height: 844 } })
+  // A separate process also avoids reusing the preceding GPU test's transport.
+  const browser = await playwright.chromium.launch({ ...launchOptions, timeout: 10_000 }).catch(error => {
+    throw new BrowserUnavailableError(`Chromium launch: ${error.message}`)
+  })
+  let context
   try {
+    context = await createBrowserContext(browser, { baseURL, viewport: { width: 390, height: 844 } })
     const page = await withTimeout(() => context.newPage(), 5_000, 'context.newPage')
     await page.goto('/')
     await ready(page)
@@ -34,7 +39,8 @@ test('portrait composition, keyboard focus and motion controls work', async ({ b
     expect(await page.evaluate(() => document.activeElement?.matches(':focus-visible'))).toBe(true)
     await page.screenshot({ path: testInfo.outputPath('portrait.png') })
   } finally {
-    await closeContext(context)
+    if (context) await closeContext(context)
+    try { await withTimeout(() => browser.close(), 2_000, 'browser.close') } catch {}
   }
 })
 
