@@ -1,0 +1,9 @@
+FAIL editorial: trace observed unexpected reference "skills/content-design/references/claims-and-proof.md"
+PASS dashboard (16 plugin files, ~16682 plugin tokens)
+FAIL 3d-hero: missing signal /iteration/i; trace observed forbidden file "skills/r3f-interaction/references/touch-and-gestures.md"; trace observed unexpected skill "r3f-interaction"; trace observed unexpected reference "skills/r3f-interaction/references/touch-and-gestures.md"; trace estimate 21161 plugin tokens exceeds 15000
+FAIL named-direction-no-references: trace observed forbidden file "skills/color-palettes/references/neutral-product.md"; trace observed unexpected skill "color-palettes"; trace observed unexpected reference "skills/color-palettes/references/neutral-product.md"
+PASS configurator (22 plugin files, ~22161 plugin tokens)
+FAIL slop: content.unknowns needs at least 3 entries
+Report: /Users/kaygewinner/Documents/Codex/2026-09-12/kannst-du-bitte-auf-das-repo/work/live-resume/coverage.json
+
+Forward tests below threshold: 4/6 case(s) under 1 (editorial 0/1, 3d-hero 0/1, named-direction-no-references 0/1, slop 0/1)

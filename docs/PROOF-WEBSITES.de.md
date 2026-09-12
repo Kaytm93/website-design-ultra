@@ -75,6 +75,9 @@ zeitlich begrenzten Versuchen. Fehlende Browser-Evidenz endet mit Exit 2.
 Der vollständige [Validate-Lauf 34684501373](https://github.com/Kaytm93/website-design-ultra/actions/runs/34684501373)
 ist auf Commit `e61da40cb2b95a50b91e0c93fd4216350d4ccbaf` grün.
 
-Die wiederholte Live-Modellabnahme wird separat dokumentiert. Die historischen
+Die aktuelle Live-Prüfung deckt alle sieben Forward-Fälle ab, zeigt aber vier
+Fälle mit Vertragsfehlern. Die wiederholte Abnahme ist nicht abgeschlossen;
+`v2.0.2` bleibt ungesetzt. Details und Rohtraces stehen im
+[Audit vom 12. September](audits/2026-09-12-release-gates.md). Die historischen
 Ziele für 2.1 bis 2.3 und die pausierten Showcase-Szenen bleiben eigenständige
 Arbeit und werden durch technische CI nicht als abgeschlossen behauptet.

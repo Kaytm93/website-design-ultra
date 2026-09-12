@@ -1,0 +1,1345 @@
+{
+  "generatedAt": "2026-09-12T14:34:11.571Z",
+  "provider": "codex",
+  "providerStatus": {
+    "status": "AVAILABLE",
+    "cliVersion": "codex-cli 0.153.4",
+    "executable": "/Applications/ChatGPT.app/Contents/Resources/codex"
+  },
+  "model": "gpt-5.5",
+  "effort": "medium",
+  "plugin": {
+    "name": "website-design-ultra",
+    "version": "2.0.2"
+  },
+  "provenance": {
+    "repository": true,
+    "commit": "e61da40cb2b95a50b91e0c93fd4216350d4ccbaf",
+    "tag": null,
+    "branch": "HEAD",
+    "clean": true,
+    "tree": {
+      "fileCount": 181,
+      "sha256": "b20c32d33cded3322ef727cb4e81a5f0bdf5515c79fdb4ef07483a479459b196"
+    }
+  },
+  "selfTest": {
+    "replayed": 2,
+    "fixtures": [
+      {
+        "file": "claude-dashboard.jsonl",
+        "provider": "claude",
+        "case": "dashboard",
+        "pluginVersion": "1.5.1",
+        "treeSha256": "9f381e25130ebc701feacff7296d8ba38e3e71d31242acf462ccdb9e21a93e21",
+        "accessedFileCount": 10
+      },
+      {
+        "file": "claude-slop.jsonl",
+        "provider": "claude",
+        "case": "slop",
+        "pluginVersion": "1.6.0",
+        "treeSha256": "845c1bd7b38d38eda573dc298d897ef70aca844db16a5de9ef86428d64e0ef19",
+        "accessedFileCount": 6
+      }
+    ]
+  },
+  "repeat": 1,
+  "minPassRate": 1,
+  "summary": [
+    {
+      "id": "editorial",
+      "attempts": 1,
+      "scored": 1,
+      "errored": 0,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {
+        "trace observed unexpected reference \"skills/content-design/references/claims-and-proof.md\"": 1
+      }
+    },
+    {
+      "id": "dashboard",
+      "attempts": 1,
+      "scored": 1,
+      "errored": 0,
+      "passed": 1,
+      "passRate": 1,
+      "meetsThreshold": true,
+      "failureCounts": {}
+    },
+    {
+      "id": "3d-hero",
+      "attempts": 1,
+      "scored": 1,
+      "errored": 0,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {
+        "missing signal /iteration/i": 1,
+        "trace observed forbidden file \"skills/r3f-interaction/references/touch-and-gestures.md\"": 1,
+        "trace observed unexpected skill \"r3f-interaction\"": 1,
+        "trace observed unexpected reference \"skills/r3f-interaction/references/touch-and-gestures.md\"": 1,
+        "trace estimate 21161 plugin tokens exceeds 15000": 1
+      }
+    },
+    {
+      "id": "named-direction-no-references",
+      "attempts": 1,
+      "scored": 1,
+      "errored": 0,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {
+        "trace observed forbidden file \"skills/color-palettes/references/neutral-product.md\"": 1,
+        "trace observed unexpected skill \"color-palettes\"": 1,
+        "trace observed unexpected reference \"skills/color-palettes/references/neutral-product.md\"": 1
+      }
+    },
+    {
+      "id": "configurator",
+      "attempts": 1,
+      "scored": 1,
+      "errored": 0,
+      "passed": 1,
+      "passRate": 1,
+      "meetsThreshold": true,
+      "failureCounts": {}
+    },
+    {
+      "id": "slop",
+      "attempts": 1,
+      "scored": 1,
+      "errored": 0,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {
+        "content.unknowns needs at least 3 entries": 1
+      }
+    }
+  ],
+  "results": [
+    {
+      "id": "editorial",
+      "attempt": 1,
+      "status": "failed",
+      "failures": [
+        "trace observed unexpected reference \"skills/content-design/references/claims-and-proof.md\""
+      ],
+      "result": {
+        "caseId": "editorial",
+        "skills": [
+          "core-rules",
+          "content-design",
+          "anti-slop",
+          "typography"
+        ],
+        "direction": "Editorial magazine feature. Three variants considered: 1. Broadsheet Lead: oversized bilingual headline, annotated image, subscription rail; strongest for launch authority. 2. Archive Desk: article index first, cover image secondary; loses the decisive first-screen feature moment. 3. Critic's Notebook: dense text-led essay opening; loses image-caption rhythm and subscription visibility. Chosen: Broadsheet Lead because the brief needs long titles, captions, metadata, and one subscription action to feel like a real magazine launch feature.",
+        "content": {
+          "hierarchy": [
+            "Visual thesis: an independent architecture magazine launches through one composed feature spread, not a marketing hero.",
+            "First screen: magazine masthead, language toggle, long feature title, deck, author/date metadata, lead image with caption, and one subscription action.",
+            "Feature stream: lead article, two secondary article teasers, image captions, issue note, then subscription action repeated once at the natural end if needed.",
+            "Composition contract: focal element is the long bilingual title paired with the lead image/caption; first-screen occupancy about 65%; asymmetry is 7/5 with text dominant and image bleeding to one edge; dominant contrast is type size and editorial measure; quiet zone sits below the lead image before secondary stories."
+          ],
+          "claims": [
+            {
+              "text": "The magazine is independent.",
+              "status": "qualified",
+              "evidence": "Provided by the brief; no publisher ownership, funding, or editorial-policy evidence supplied."
+            },
+            {
+              "text": "The feature is a launch feature.",
+              "status": "verified",
+              "evidence": "Provided by the brief as the requested page scenario."
+            },
+            {
+              "text": "Article titles, captions, authors, and dates are sample launch copy, not verified published articles.",
+              "status": "illustrative",
+              "evidence": "No source articles or contributor roster supplied; keep visibly editorial but avoid pretending publication history."
+            },
+            {
+              "text": "No paid font license is available.",
+              "status": "verified",
+              "evidence": "Provided by the brief; choose OFL families only."
+            }
+          ],
+          "unknowns": [
+            "Magazine name, masthead assets, and issue theme are not supplied.",
+            "Real contributors and publication dates are not supplied.",
+            "Real photography, image rights, building names, locations, and caption sources are not supplied.",
+            "Subscription price, cadence, privacy terms, and newsletter/platform behavior are not supplied."
+          ],
+          "primaryAction": "Subscribe to the launch issue",
+          "localization": [
+            "Use separate English and German message IDs; do not concatenate translated fragments.",
+            "German copy uses „…“ quotation marks, real umlauts, and spaced en dashes rather than English em dashes.",
+            "Choose formal-neutral editorial German without mixing du/Sie; subscription action can avoid direct address: „Launch-Ausgabe abonnieren“.",
+            "Expect 30-50% German expansion in navigation, buttons, captions, and metadata; mobile must allow two-line titles and buttons without clipping."
+          ]
+        },
+        "copy": {
+          "lines": [
+            "EN title: Inside the Cooperative Housing Block Where the Staircase Became the City's Smallest Public Room",
+            "DE title: Im genossenschaftlichen Wohnblock, in dem das Treppenhaus zum kleinsten öffentlichen Raum der Stadt wurde",
+            "EN caption: Morning light crosses the shared landing before residents open the ground-floor workshop.",
+            "DE caption: Morgenlicht fällt über den gemeinsamen Treppenabsatz, bevor im Erdgeschoss die Werkstatt öffnet.",
+            "EN metadata: By [confirmed author], 12 September 2026",
+            "DE metadata: Von [bestätigte Autorin/bestätigter Autor], 12. September 2026",
+            "EN secondary title: A Library Extension That Keeps the Old Facade in Charge While Letting the Reading Rooms Breathe",
+            "DE secondary title: Eine Bibliothekserweiterung, die der alten Fassade den Vorrang lässt und den Lesesälen Luft gibt",
+            "EN secondary title: What Temporary Pavilions Reveal About the Permanent Politics of a Waterfront",
+            "DE secondary title: Was temporäre Pavillons über die dauerhafte Politik einer Uferkante verraten",
+            "CTA EN: Subscribe to the launch issue",
+            "CTA DE: Launch-Ausgabe abonnieren"
+          ],
+          "slopChecks": [
+            "Mode: rewrite/planning copy.",
+            "Tier 1 structural tells: 0 identified in the proposed lines; no rhetorical questions, negative parallelism, badge-above-H1 language, fake summary, or vague authority.",
+            "Tier 2 vocabulary clusters: 0; avoids default words such as seamless, unlock, transform, revolutionieren, Potenzial, and nahtlos.",
+            "Tier 3 editorial rhythm: no em dash in headlines; German uses date and punctuation conventions; long titles are content-bearing rather than triplet rhythm.",
+            "Specificity floor: each title names a concrete editorial object or place condition; unknown facts remain placeholders.",
+            "Linter not run because no shipped copy tree or source path exists for this no-code planning contract. Command that would apply to a project artifact: node <plugin-root>/scripts/lint-copy.mjs --path <copy-source> --protect .anti-slop-protect.json"
+          ]
+        },
+        "responsive": {
+          "wide": "Desktop/wide shot: use a broadsheet grid with the long headline occupying the left majority, metadata directly under it, lead image and caption on the right edge, and the subscription action in a narrow rail aligned to the headline baseline. Body measure stays around 60-70ch; secondary stories begin low enough that the lead spread remains the focal point.",
+          "portrait": "Tablet/portrait shot: preserve headline, deck, image, caption, and metadata as one editorial unit. The subscription action moves below metadata before the image; secondary article teasers become a two-item stack with captions kept attached to their images.",
+          "narrow": "Phone/narrow shot: single reading stream in source order: masthead, language control, headline, deck, metadata, CTA, image, caption, article teasers. The long title wraps naturally without manual language-specific line breaks; captions remain near images and use smaller but readable type.",
+          "recomposition": [
+            "Reorder action before image on narrow so subscription remains visible without detaching caption from media.",
+            "Promote metadata on mobile because author/date credibility replaces desktop spatial authority.",
+            "Reframe images to keep architectural detail and caption relationship, not generic full-bleed atmosphere.",
+            "Reduce decorative rules and side rails on narrow; retain the masthead, title scale contrast, and caption rhythm."
+          ],
+          "sourceOrder": "Masthead, language control, feature headline, deck, metadata, primary subscription action, lead image, caption, article body/teasers, supporting captions, final subscription action only if the page is long enough."
+        },
+        "accessibility": {
+          "contrastStates": [
+            "Normal article text at least 4.5:1; large display title at least 3:1.",
+            "Caption, metadata, date, and subscription helper text must also meet normal text contrast, not fade into decorative grey.",
+            "Focus indicator for language toggle and subscription action must be at least 3:1 against both page background and image-adjacent surfaces."
+          ],
+          "inputParity": [
+            "Language switch and subscription action are keyboard reachable in visual order.",
+            "Subscription visible label and accessible name match in each locale.",
+            "Touch target for subscription and language controls is approximately 44x44 CSS px where possible.",
+            "No hover-only caption reveal; captions are visible text."
+          ],
+          "reducedMotion": "No motion is required. If subtle editorial transitions are later added, reduced motion should remove parallax, long fades, and scroll-tied movement while keeping content order unchanged."
+        },
+        "immersive": {
+          "justified": null,
+          "artDirection": null,
+          "qualityTiers": [],
+          "fallback": null,
+          "touch": []
+        }
+      },
+      "trace": {
+        "accessedFiles": [
+          "commands/design.md",
+          "skills/anti-slop/SKILL.md",
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/locale-de.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/content-design/SKILL.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/content-design/references/localization.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/SKILL.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/composition-contract.md",
+          "skills/core-rules/references/responsive-recomposition.md",
+          "skills/typography/SKILL.md",
+          "skills/typography/references/hierarchy-and-loading.md",
+          "skills/typography/references/licensing-and-alternatives.md",
+          "skills/typography/references/pairings-and-roles.md"
+        ],
+        "skillFiles": [
+          "skills/anti-slop/SKILL.md",
+          "skills/content-design/SKILL.md",
+          "skills/core-rules/SKILL.md",
+          "skills/typography/SKILL.md"
+        ],
+        "referenceFiles": [
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/locale-de.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/content-design/references/localization.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/composition-contract.md",
+          "skills/core-rules/references/responsive-recomposition.md",
+          "skills/typography/references/hierarchy-and-loading.md",
+          "skills/typography/references/licensing-and-alternatives.md",
+          "skills/typography/references/pairings-and-roles.md"
+        ],
+        "commandFiles": [
+          "commands/design.md"
+        ],
+        "broadReads": [],
+        "offRootReads": [],
+        "missingFiles": [],
+        "foreignSkills": [],
+        "observedBytes": 77019,
+        "readCounts": {
+          "commands/design.md": 1,
+          "skills/anti-slop/SKILL.md": 1,
+          "skills/anti-slop/references/design-tells.md": 1,
+          "skills/anti-slop/references/locale-de.md": 1,
+          "skills/anti-slop/references/prose-tells.md": 1,
+          "skills/content-design/SKILL.md": 1,
+          "skills/content-design/references/claims-and-proof.md": 1,
+          "skills/content-design/references/localization.md": 1,
+          "skills/content-design/references/microcopy.md": 1,
+          "skills/core-rules/SKILL.md": 1,
+          "skills/core-rules/references/accessibility.md": 1,
+          "skills/core-rules/references/composition-contract.md": 1,
+          "skills/core-rules/references/responsive-recomposition.md": 1,
+          "skills/typography/SKILL.md": 1,
+          "skills/typography/references/hierarchy-and-loading.md": 1,
+          "skills/typography/references/licensing-and-alternatives.md": 1,
+          "skills/typography/references/pairings-and-roles.md": 1
+        },
+        "repeatedReads": [],
+        "estimatedPluginTokens": 19255,
+        "providerUsage": {
+          "input_tokens": 198878,
+          "cached_input_tokens": 157696,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 5521,
+          "reasoning_output_tokens": 1119
+        }
+      },
+      "tracePath": "traces/codex-editorial.jsonl"
+    },
+    {
+      "id": "dashboard",
+      "attempt": 1,
+      "status": "passed",
+      "failures": [],
+      "result": {
+        "caseId": "dashboard",
+        "skills": [
+          "core-rules",
+          "content-design",
+          "anti-slop",
+          "color-palettes",
+          "ui-states"
+        ],
+        "direction": "Chosen direction: dark neutral operations console using the Linear Mono neutral-product palette, because warehouse supervision is repeated exception triage under low-glare conditions. Rejected variants: metric-led command center, which would over-prioritize summary cards over work; Kanban incident board, which would hide last-update urgency behind columns. Semantic tokens: --color-bg #0a0a0a; --color-surface #171717; --color-border #a1a1aa; --color-divider #2e2e2e; --color-text #fafafa; --color-text-muted #a1a1aa; --color-action #10b981; --color-on-action #052e24; --color-focus #10b981; --color-danger #ff8a80; --color-on-danger #000000; --color-warning #fbbf24; --color-on-warning #111111; --color-disabled #a1a1aa. Translucent summary panel: rgba(23,23,23,.72) over bg, composited as #131313.",
+        "content": {
+          "hierarchy": [
+            "Phone first: exception queue title, active filters, urgent exception summary, first queue item with severity, owner, last update, retry action, and validation error if present.",
+            "Wide screen: left rail filters, central exception queue table, right translucent summary panel with grouped counts only when real data is supplied by the product.",
+            "Queue row anatomy: severity marker with text label, exception title from source system, owner, last update timestamp, status/validation message, retry action.",
+            "Primary supervisor action: Retry the selected exception when retry is available; otherwise show the disabled prerequisite in adjacent text.",
+            "No invented live data: use field labels, placeholders, and empty/loading/error contracts rather than fabricated counts, owners, timestamps, or warehouse events."
+          ],
+          "claims": [
+            {
+              "text": "The dashboard is for warehouse exception supervision.",
+              "status": "verified",
+              "evidence": "User brief names warehouse exceptions and supervisor priorities."
+            },
+            {
+              "text": "The interface needs queue, severity, owner, last update, retry, validation error, disabled action, keyboard focus, and translucent summary panel.",
+              "status": "verified",
+              "evidence": "Directly specified in the brief."
+            },
+            {
+              "text": "Dark neutral palette is appropriate for this plan.",
+              "status": "qualified",
+              "evidence": "Requested by user; anti-slop dark-mode check is satisfied by tying it to operational scanning and measured contrast."
+            },
+            {
+              "text": "Any queue contents, counts, owners, timestamps, or exception names are unknown until connected to product data.",
+              "status": "unknown",
+              "evidence": "User explicitly requested no invented live data."
+            },
+            {
+              "text": "Palette contrast is measured, not visually estimated.",
+              "status": "verified",
+              "evidence": "Inline contrast calculation: text/bg 18.97, text/surface 17.18, muted/bg 7.72, on-action/action 5.82, border/surface 7.00, focus/bg 7.80, focus/surface 7.07, danger/bg 8.67, danger/surface 7.85, on-danger/danger 9.20, warning/bg 11.86, translucent text/glass 17.80."
+            }
+          ],
+          "unknowns": [
+            "Actual exception taxonomy and severity labels.",
+            "Whether retry is always safe or requires confirmation for some exception types.",
+            "Real owner model: person, team, shift, or automation queue.",
+            "Timestamp format and timezone required by the warehouse operation.",
+            "Whether summary panel metrics are live, stale, filtered, or permission-limited."
+          ],
+          "primaryAction": "Retry exception",
+          "localization": [
+            "Use short, concrete labels that survive text expansion: Severity, Owner, Last update, Retry, Retry unavailable, Validation error.",
+            "Do not encode severity only by color; pair color with text and icon/shape.",
+            "Dates and times need absolute or relative format rules from product locale requirements."
+          ]
+        },
+        "copy": {
+          "lines": [
+            "Warehouse exceptions",
+            "Retry exception",
+            "Retrying exception",
+            "Retry unavailable until the validation error is fixed.",
+            "Validation error: [source-provided correction].",
+            "No exceptions match the current filters.",
+            "Exception data could not refresh. Existing rows remain visible; try again.",
+            "Last update",
+            "Owner",
+            "Severity"
+          ],
+          "slopChecks": [
+            "Mode: rewrite/planning copy.",
+            "Tier 1 structural tells: 0 planned lines use negative parallelism, rhetorical questions, faux-insight setup, fake urgency, or invented proof.",
+            "Tier 2 vocabulary cluster: 0 planned hits in the listed UI copy.",
+            "Tier 3 copy checks: no em dash, no emoji labels, no ornamental arrows, no all-caps micro-label pattern.",
+            "Specificity floor: labels name task objects from the brief; unknown facts remain placeholders.",
+            "Linter not run on generated files because this is a read-only plan and no implementation files were created."
+          ]
+        },
+        "responsive": {
+          "wide": "Three-zone operations layout: filters or saved views at left, dense queue/table in the center, translucent summary panel at right. The queue is the focal element, not the summary panel. Columns visible: severity, exception, owner, last update, state, retry.",
+          "portrait": "Two-pane priority stack: compact summary strip above queue, filters as a reachable disclosure, rows become structured list items. Owner and last update remain visible; lower-priority metadata moves into row expansion.",
+          "narrow": "Supervisor phone view prioritizes immediate triage: active severity/filter summary, first urgent queue item, owner, last update, validation error, and retry state. Summary panel becomes a translucent top sheet or collapsible section after the queue header, never a blocking overlay.",
+          "recomposition": [
+            "Promote urgent queue items over aggregate summaries on phones.",
+            "Demote wide-only filter chrome into a disclosure while preserving source and tab order.",
+            "Replace dense table columns with labeled row fields on narrow screens.",
+            "Keep retry action adjacent to the exception it affects.",
+            "Preserve stale useful queue content during refresh failures."
+          ],
+          "sourceOrder": "Header, filters summary, queue, selected row details, summary panel, secondary filters. Visual order must match focus order at each viewport."
+        },
+        "accessibility": {
+          "contrastStates": [
+            "text/bg 18.97:1; text/surface 17.18:1; muted/bg 7.72:1.",
+            "on-action/action 5.82:1 for retry buttons.",
+            "danger/surface 7.85:1 and on-danger/danger 9.20:1 for validation errors.",
+            "warning/bg 11.86:1 for severity warning semantics.",
+            "focus ring #10b981 is 7.80:1 on bg and 7.07:1 on surface.",
+            "disabled text/icon #a1a1aa is 7.00:1 on surface; disabled state also needs disabled attribute or aria-disabled explanation, not opacity alone.",
+            "Translucent summary panel composites to #131313; text/glass 17.80:1 and muted/glass 7.25:1."
+          ],
+          "inputParity": [
+            "Every retry action is a real button reachable by keyboard.",
+            "Disabled retry uses native disabled only when the reason is visible elsewhere; use aria-disabled when the disabled control must remain focusable for explanation.",
+            "Validation error is associated with affected control or row via aria-describedby and aria-invalid where applicable.",
+            "Async queue refresh sets aria-busy on the queue region, not the whole page.",
+            "Routine retry success uses polite status; urgent validation failure may use an inline alert only when immediate action is required.",
+            "Touch targets for retry, row expansion, filters, and dismiss controls target about 44x44 CSS px."
+          ],
+          "reducedMotion": "No motion is required. Skeleton shimmer, if used, becomes a static tonal placeholder under prefers-reduced-motion; persistent animations are avoided."
+        },
+        "immersive": {
+          "justified": null,
+          "artDirection": null,
+          "qualityTiers": [],
+          "fallback": null,
+          "touch": []
+        }
+      },
+      "trace": {
+        "accessedFiles": [
+          "commands/design.md",
+          "skills/anti-slop/SKILL.md",
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/color-palettes/SKILL.md",
+          "skills/color-palettes/references/neutral-product.md",
+          "skills/content-design/SKILL.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/SKILL.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/composition-contract.md",
+          "skills/core-rules/references/responsive-recomposition.md",
+          "skills/ui-states/SKILL.md",
+          "skills/ui-states/references/accessibility.md",
+          "skills/ui-states/references/async-data.md",
+          "skills/ui-states/references/forms-and-feedback.md"
+        ],
+        "skillFiles": [
+          "skills/anti-slop/SKILL.md",
+          "skills/color-palettes/SKILL.md",
+          "skills/content-design/SKILL.md",
+          "skills/core-rules/SKILL.md",
+          "skills/ui-states/SKILL.md"
+        ],
+        "referenceFiles": [
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/color-palettes/references/neutral-product.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/composition-contract.md",
+          "skills/core-rules/references/responsive-recomposition.md",
+          "skills/ui-states/references/accessibility.md",
+          "skills/ui-states/references/async-data.md",
+          "skills/ui-states/references/forms-and-feedback.md"
+        ],
+        "commandFiles": [
+          "commands/design.md"
+        ],
+        "broadReads": [],
+        "offRootReads": [],
+        "missingFiles": [],
+        "foreignSkills": [],
+        "observedBytes": 66726,
+        "readCounts": {
+          "commands/design.md": 1,
+          "skills/anti-slop/SKILL.md": 1,
+          "skills/anti-slop/references/design-tells.md": 1,
+          "skills/anti-slop/references/prose-tells.md": 1,
+          "skills/color-palettes/SKILL.md": 1,
+          "skills/color-palettes/references/neutral-product.md": 1,
+          "skills/content-design/SKILL.md": 1,
+          "skills/content-design/references/microcopy.md": 1,
+          "skills/core-rules/SKILL.md": 1,
+          "skills/core-rules/references/accessibility.md": 1,
+          "skills/core-rules/references/composition-contract.md": 1,
+          "skills/core-rules/references/responsive-recomposition.md": 1,
+          "skills/ui-states/SKILL.md": 1,
+          "skills/ui-states/references/accessibility.md": 1,
+          "skills/ui-states/references/async-data.md": 1,
+          "skills/ui-states/references/forms-and-feedback.md": 1
+        },
+        "repeatedReads": [],
+        "estimatedPluginTokens": 16682,
+        "providerUsage": {
+          "input_tokens": 242366,
+          "cached_input_tokens": 200064,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 6809,
+          "reasoning_output_tokens": 731
+        }
+      },
+      "tracePath": "traces/codex-dashboard.jsonl"
+    },
+    {
+      "id": "3d-hero",
+      "attempt": 1,
+      "status": "failed",
+      "failures": [
+        "missing signal /iteration/i",
+        "trace observed forbidden file \"skills/r3f-interaction/references/touch-and-gestures.md\"",
+        "trace observed unexpected skill \"r3f-interaction\"",
+        "trace observed unexpected reference \"skills/r3f-interaction/references/touch-and-gestures.md\"",
+        "trace estimate 21161 plugin tokens exceeds 15000"
+      ],
+      "result": {
+        "caseId": "3d-hero",
+        "skills": [
+          "core-rules",
+          "immersive-3d",
+          "3d-art-direction",
+          "content-design",
+          "anti-slop",
+          "3d-runtime-quality",
+          "r3f-interaction"
+        ],
+        "direction": "Plan-only immersive 3D product hero contract for a modular desk lamp.",
+        "content": {
+          "hierarchy": [
+            "Promise: show how the lamp changes through its three verified hinge positions and light direction.",
+            "Mechanism: the 3D hero animates the hinge through the three positions while the light cone updates with each pose.",
+            "Evidence: only user-provided verified facts are used: three hinge positions and a replaceable shade.",
+            "Objection handling: no energy savings, awards, certifications, durability, brightness, or compatibility claims appear without evidence.",
+            "Action: compare hinge positions first; shade replacement is secondary."
+          ],
+          "claims": [
+            {
+              "text": "The desk lamp has three hinge positions.",
+              "status": "verified",
+              "evidence": "User brief states the verified facts are three hinge positions."
+            },
+            {
+              "text": "The lamp has a replaceable shade.",
+              "status": "verified",
+              "evidence": "User brief states the verified facts include a replaceable shade."
+            },
+            {
+              "text": "The hero can show hinge and light direction more clearly in motion than a static image.",
+              "status": "qualified",
+              "evidence": "Planning inference from the user brief: the hinge and light direction are easier to understand in motion."
+            },
+            {
+              "text": "The lamp saves energy.",
+              "status": "unknown",
+              "evidence": "User brief says no energy savings are known."
+            },
+            {
+              "text": "The lamp has won awards.",
+              "status": "unknown",
+              "evidence": "User brief says no awards are known."
+            }
+          ],
+          "unknowns": [
+            "Exact product dimensions, materials, colors, brand name, price, brightness, shade variants, hinge angle values, and energy performance are unknown.",
+            "No runnable target exists, so verification status is NOT_APPLICABLE (plan-only)."
+          ],
+          "primaryAction": "Compare the three hinge positions.",
+          "localization": [
+            "Keep copy short enough for 30-40 percent text expansion in German or other supported locales.",
+            "Avoid idioms; hinge position, shade, and light direction should remain literal terms."
+          ]
+        },
+        "copy": {
+          "lines": [
+            "Modular desk lamp with visible hinge motion.",
+            "Compare the three hinge positions.",
+            "Watch the light direction change as the hinge moves.",
+            "Replaceable shade, shown as a separate part."
+          ],
+          "slopChecks": [
+            "Anti-slop mode: rewrite/planning copy.",
+            "No energy savings, awards, ratings, or unsupported performance claims added.",
+            "No rhetorical question, badge above H1, negative parallelism, fake testimonial, or generic transformation claim.",
+            "Specificity floor passed: each line names the lamp, hinge positions, light direction, or replaceable shade.",
+            "Verification/linter status: NOT_APPLICABLE (plan-only); no shipped copy tree exists to lint."
+          ]
+        },
+        "responsive": {
+          "wide": "Desktop wide: DOM claim and CTA occupy a protected left safe area of about 38-42 percent. The 3D lamp anchors right-center, medium-close, with the hinge, shade edge, and light cone visible. Motion cycles through position 1, 2, and 3 only after first meaningful frame, then pauses on the selected state.",
+          "portrait": "Portrait/tablet: headline and action move above the scene in normal DOM flow. Camera reframes to a closer vertical shot centered on hinge and shade, cropping base detail if needed. Controls become larger stacked buttons for Position 1, Position 2, Position 3, and Shade.",
+          "narrow": "Narrow phone: no text overlays the canvas. The scene shows one selected hinge position at a time with a compact light cone and DOM state label below. Shade replacement becomes a secondary still/detail toggle rather than simultaneous spatial annotation.",
+          "recomposition": [
+            "Reframe: desktop side hero becomes a portrait hinge close-up.",
+            "Reorder: promise, proof, and action appear before the canvas on narrow viewports.",
+            "Reduce: remove decorative environment depth and idle camera drift on narrow and reduced-motion states.",
+            "Change interaction: replace hover hints with tap/focusable DOM controls.",
+            "Replace: if the canvas is unavailable, use desktop and portrait poster images that preserve the same hinge/light thesis."
+          ],
+          "sourceOrder": "DOM order stays headline, supporting line, primary controls, canvas/poster, secondary shade detail. Visual order matches source order on portrait and narrow layouts."
+        },
+        "accessibility": {
+          "contrastStates": [
+            "Normal text minimum 4.5:1 against its actual background.",
+            "Large hero text minimum 3:1.",
+            "Focus ring minimum 3:1 against both canvas/poster edge and page surface.",
+            "Light cone color is not the only state cue; selected hinge state also has text and pressed control state."
+          ],
+          "inputParity": [
+            "Canvas hinge selection and DOM buttons share one selected-position state.",
+            "Keyboard users can select Position 1, Position 2, Position 3, and Shade without entering the canvas.",
+            "Canvas hover highlights are enhancement only; tap and focus reveal the same state.",
+            "Canvas has an adjacent concise DOM description of the lamp, hinge positions, light direction, and shade."
+          ],
+          "reducedMotion": "Disable idle orbit, auto hinge cycling, light sweep, parallax, and camera travel. Show the strongest static selected pose with DOM controls for all three positions and shade detail; state changes should switch directly or crossfade minimally."
+        },
+        "immersive": {
+          "justified": true,
+          "artDirection": "Visual thesis: motion makes the hinge positions and resulting light direction legible. Hero subject: modular desk lamp with recognizable hinge, shade, base, and cone of light. Camera: natural product perspective, medium-close, FOV about 38-42 degrees, target on the hinge, near/far kept tight to the product stage. Composition: lamp anchored right-center on wide screens with left DOM safe area; portrait shot centers hinge and shade. Lighting: soft top-left key to define the shade and hinge, restrained fill for readable hardware, subtle rim for silhouette separation, one shadow owner at most. Materials: lamp body and hinge lead, shade secondary, light cone/accent tertiary, matte stage last. Color pipeline: Linear-sRGB work, sRGB output, fixed tone mapping and exposure. Spatial type: meaningful text remains DOM-first; any world label is decorative or duplicated in DOM. Poster: desktop and portrait posters match the selected live camera and show hinge plus light direction.",
+          "qualityTiers": [
+            "Poster: canvas not mounted or stopped; responsive poster at CSS resolution; baked shadow and light direction; DOM controls remain usable.",
+            "Low: DPR 1.0; lowest acceptable lamp LOD; blob/contact shadow only; no PostFX; minimal or no idle motion; hinge changes can step between verified poses.",
+            "Medium: DPR 1.0-1.5; medium LOD; one tight 1024 key shadow; only motivated light-cone effect; core hinge animation allowed when visible.",
+            "High: DPR capped at 2.0; high foreground LOD under 500k desktop visible triangles and under 100 draw calls; one tight 2048 key shadow; selective renderer-compatible PostFX only if frame budget holds.",
+            "Adaptation: start at Medium, degrade after roughly 2 seconds above 1.25x target frame time, upgrade only after roughly 8 seconds below 0.8x target, with 10 second cooldown and one central quality owner.",
+            "Pause: render loop, controls, mixers, animation, and measurement pause when offscreen or document-hidden."
+          ],
+          "fallback": "GPU/WebGL unavailable, repeated context loss, Save-Data/low-end failure, or persistently unusable frame time shows the art-directed poster tier with the same DOM heading, copy, CTA, hinge-position controls, and shade detail. Loading must reserve layout and avoid a white flash. Verification status remains NOT_APPLICABLE (plan-only); first runnable build should capture wide, portrait, narrow, reduced-motion, poster, and GPU-fallback states.",
+          "touch": [
+            "Surface: embedded hero, so `touch-action: pan-y`; vertical page scroll remains native.",
+            "Gesture role: tap selects hinge positions; optional horizontal drag may scrub between the three positions but must snap to verified states.",
+            "Thresholds: touch drag starts after about 10-12 CSS pixels; taps commit only when distance and duration stay below project limits.",
+            "Pointer capture: capture on valid pointerdown, commit on pointerup, and treat pointercancel, lostpointercapture, blur, and visibilitychange as aborts.",
+            "Pinch/zoom: no required pinch in the hero; provide DOM view controls instead of depending on multipoint gestures.",
+            "Hover fallback: hover highlights only on fine pointers; coarse pointers and keyboard focus use the same DOM-selected state with visible pressed controls."
+          ]
+        }
+      },
+      "trace": {
+        "accessedFiles": [
+          "commands/immersive.md",
+          "skills/3d-art-direction/SKILL.md",
+          "skills/3d-art-direction/references/camera-and-composition.md",
+          "skills/3d-art-direction/references/light-material-and-tone.md",
+          "skills/3d-art-direction/references/spatial-typography.md",
+          "skills/3d-runtime-quality/SKILL.md",
+          "skills/3d-runtime-quality/references/adaptive-runtime.md",
+          "skills/3d-runtime-quality/references/tier-matrix.md",
+          "skills/anti-slop/SKILL.md",
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/content-design/SKILL.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/core-rules/SKILL.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/responsive-recomposition.md",
+          "skills/core-rules/references/verification-status.md",
+          "skills/immersive-3d/SKILL.md",
+          "skills/r3f-interaction/SKILL.md",
+          "skills/r3f-interaction/references/touch-and-gestures.md"
+        ],
+        "skillFiles": [
+          "skills/3d-art-direction/SKILL.md",
+          "skills/3d-runtime-quality/SKILL.md",
+          "skills/anti-slop/SKILL.md",
+          "skills/content-design/SKILL.md",
+          "skills/core-rules/SKILL.md",
+          "skills/immersive-3d/SKILL.md",
+          "skills/r3f-interaction/SKILL.md"
+        ],
+        "referenceFiles": [
+          "skills/3d-art-direction/references/camera-and-composition.md",
+          "skills/3d-art-direction/references/light-material-and-tone.md",
+          "skills/3d-art-direction/references/spatial-typography.md",
+          "skills/3d-runtime-quality/references/adaptive-runtime.md",
+          "skills/3d-runtime-quality/references/tier-matrix.md",
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/responsive-recomposition.md",
+          "skills/core-rules/references/verification-status.md",
+          "skills/r3f-interaction/references/touch-and-gestures.md"
+        ],
+        "commandFiles": [
+          "commands/immersive.md"
+        ],
+        "broadReads": [],
+        "offRootReads": [],
+        "missingFiles": [],
+        "foreignSkills": [],
+        "observedBytes": 84641,
+        "readCounts": {
+          "commands/immersive.md": 1,
+          "skills/3d-art-direction/SKILL.md": 1,
+          "skills/3d-art-direction/references/camera-and-composition.md": 1,
+          "skills/3d-art-direction/references/light-material-and-tone.md": 1,
+          "skills/3d-art-direction/references/spatial-typography.md": 1,
+          "skills/3d-runtime-quality/SKILL.md": 1,
+          "skills/3d-runtime-quality/references/adaptive-runtime.md": 1,
+          "skills/3d-runtime-quality/references/tier-matrix.md": 1,
+          "skills/anti-slop/SKILL.md": 1,
+          "skills/anti-slop/references/design-tells.md": 1,
+          "skills/anti-slop/references/prose-tells.md": 1,
+          "skills/content-design/SKILL.md": 1,
+          "skills/content-design/references/claims-and-proof.md": 1,
+          "skills/core-rules/SKILL.md": 1,
+          "skills/core-rules/references/accessibility.md": 1,
+          "skills/core-rules/references/responsive-recomposition.md": 1,
+          "skills/core-rules/references/verification-status.md": 1,
+          "skills/immersive-3d/SKILL.md": 1,
+          "skills/r3f-interaction/SKILL.md": 1,
+          "skills/r3f-interaction/references/touch-and-gestures.md": 1
+        },
+        "repeatedReads": [],
+        "estimatedPluginTokens": 21161,
+        "providerUsage": {
+          "input_tokens": 280967,
+          "cached_input_tokens": 235264,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 10140,
+          "reasoning_output_tokens": 1095
+        }
+      },
+      "tracePath": "traces/codex-3d-hero.jsonl"
+    },
+    {
+      "id": "named-direction-no-references",
+      "attempt": 1,
+      "status": "failed",
+      "failures": [
+        "trace observed forbidden file \"skills/color-palettes/references/neutral-product.md\"",
+        "trace observed unexpected skill \"color-palettes\"",
+        "trace observed unexpected reference \"skills/color-palettes/references/neutral-product.md\""
+      ],
+      "result": {
+        "caseId": "named-direction-no-references",
+        "skills": [
+          "core-rules",
+          "immersive-3d",
+          "3d-art-direction",
+          "content-design",
+          "anti-slop",
+          "3d-runtime-quality",
+          "color-palettes"
+        ],
+        "direction": "Museum Monolith",
+        "content": {
+          "hierarchy": [
+            "Promise: a cast-aluminum task light presented as a calm, gallery-scale object.",
+            "Mechanism: two hinge positions and a replaceable shade are the only product capabilities named.",
+            "Evidence: show the hinge positions and shade separation visually; do not add metrics, customer proof, pricing, availability, or sustainability language.",
+            "Objection: product details beyond the three verified facts remain unknown and must not be implied.",
+            "Action: inspect the hinge positions and replaceable shade."
+          ],
+          "claims": [
+            {
+              "text": "The product is a cast-aluminum task light.",
+              "status": "verified",
+              "evidence": "User-supplied verified product fact."
+            },
+            {
+              "text": "The light has two hinge positions.",
+              "status": "verified",
+              "evidence": "User-supplied verified product fact."
+            },
+            {
+              "text": "The shade is replaceable.",
+              "status": "verified",
+              "evidence": "User-supplied verified product fact."
+            },
+            {
+              "text": "Any performance, durability, customer, pricing, availability, or sustainability claim.",
+              "status": "unknown",
+              "evidence": "Explicitly not supplied."
+            }
+          ],
+          "unknowns": [
+            "Exact product name or brand.",
+            "Dimensions, weight, finish options, lumen output, bulb or LED details, price, availability, certifications, sustainability data, customer proof, and warranty.",
+            "Exact replaceable shade variants, if any."
+          ],
+          "primaryAction": "Inspect the hinge positions and replaceable shade.",
+          "localization": [
+            "Keep copy factual and noun-led so translation does not require idiom.",
+            "Allow expansion for German and other longer locales; avoid text baked into the canvas.",
+            "Do not translate unknown product claims into confident local-market language."
+          ]
+        },
+        "copy": {
+          "lines": [
+            "Cast-aluminum task light",
+            "Two hinge positions. Replaceable shade.",
+            "Inspect the hinge positions"
+          ],
+          "slopChecks": [
+            "Anti-slop mode: rewrite/planning, not linted because no files were produced.",
+            "No badge above H1, no rhetorical question, no negative parallelism, no fake proof, no testimonial, no metric.",
+            "Specificity floor passes: each line names a verified object or mechanism.",
+            "Primary CTA predicts the next action instead of using generic 'Get started' copy."
+          ]
+        },
+        "responsive": {
+          "wide": "Desktop: text occupies a protected left safe area of roughly 38-42%; the 3D task light sits right-center as a compressed, museum-plinth silhouette. Camera uses an iconic 28-35 degree feel, showing cast body, hinge line, and shade as the visual hierarchy.",
+          "portrait": "Portrait: treat as a new shot, not a scaled desktop crop. Stack DOM copy before or beside the canvas depending on height; center the lamp vertically, crop closer to the shade and hinge assembly, and remove nonessential depth staging.",
+          "narrow": "Narrow/mobile: headline, one factual deck line, and action appear in normal DOM flow. The canvas/poster follows as a close product study; decorative world labels are removed, and any hinge/shade notes become DOM text.",
+          "recomposition": [
+            "Reframe camera and object pose per viewport.",
+            "Reduce background depth and secondary surfaces on portrait/narrow.",
+            "Promote verified facts over visual atmosphere.",
+            "Replace any hover-dependent cues with static DOM labels if labels are needed.",
+            "Keep source order aligned with visual order: headline, verified support line, action, product visual, factual detail."
+          ],
+          "sourceOrder": "DOM-first: H1, support copy, primary action, canvas/poster with accessible description, then factual detail list."
+        },
+        "accessibility": {
+          "contrastStates": [
+            "Palette direction: neutral product/gallery palette, closest to Swiss International or Platinum Enterprise; action color must remain singular and pass on-action/action contrast.",
+            "Text/background must meet at least 4.5:1; large display text at least 3:1.",
+            "Focus ring must meet 3:1 against page background, surface, and any poster/canvas overlap.",
+            "Meaningful boundaries use border tokens that meet 3:1; decorative dividers may be quieter.",
+            "Danger, disabled, and form states are not part of this hero plan unless later UI adds them."
+          ],
+          "inputParity": [
+            "No essential information may require WebGL, hover, orbit, or drag.",
+            "Canvas receives an equivalent DOM description naming the cast-aluminum task light, two hinge positions, and replaceable shade.",
+            "If later inspection controls are added, they need keyboard controls and matching DOM buttons before launch."
+          ],
+          "reducedMotion": "Show the strongest static desktop or portrait shot. Disable automatic camera drift, parallax, scrub, idle rotation, and persistent material animation; keep the same DOM copy and action available."
+        },
+        "immersive": {
+          "justified": true,
+          "artDirection": "Museum Monolith: a restrained gallery-product hero where the task light reads like a cast object on a quiet plinth. Visual thesis: the hinge and shade system are the product story. Hero subject: cast-aluminum task light with visible hinge geometry and a distinct replaceable shade. Camera: compressed iconic product view, medium-close, target on hinge/shade junction, tight near/far range. Composition: product right-center on desktop with left DOM safe area; portrait uses a closer vertical crop. Lighting: soft top-left key, low fill, narrow rim for aluminum edge separation, at most one dynamic shadow owner. Materials: cast aluminum is the hero surface; hinge/shade separation is secondary; environment stays matte and quiet. Tone/color: Linear-sRGB work, sRGB output, single locked exposure; no recoloring between quality tiers. Spatial type: meaningful text stays in DOM; decorative world text is optional and removable. Poster: separate desktop and portrait poster frames with the same silhouette and factual message.",
+          "qualityTiers": [
+            "Poster: no canvas mounted or stopped; desktop and portrait poster assets from the declared shots; DOM copy/action remains live.",
+            "Low: active canvas at DPR 1.0; baked/blob shadow only; lowest acceptable LOD; no postprocessing; no idle motion beyond a possible single demand-render state.",
+            "Medium: initial target tier; DPR 1.0-1.5; one tight 1024 key shadow; medium LOD; minimal motivated post effect only if it preserves aluminum form.",
+            "High: DPR capped at 2.0; one tight 2048 key shadow; foreground high LOD; selective renderer-compatible post chain only if frame budget holds.",
+            "Budget: stay under 100 desktop / 50 mobile draw calls, under 500k / 150k visible triangles, textures <= 2048px, HDRI <= 2k, capped DPR, and display-matched frame target such as 16.7 ms.",
+            "Adaptation: one quality owner, degrade after sustained slow frames, upgrade more slowly, cooldown between tier changes, pause offscreen and when document is hidden.",
+            "Verification: NOT_APPLICABLE (plan-only); first runnable build must capture desktop, portrait, reduced-motion, poster, and GPU-fallback states."
+          ],
+          "fallback": "GPU/WebGL unavailable, context loss, repeated crashes, or persistently unusable frame time falls back to the art-directed poster tier. The fallback keeps the same DOM heading, support line, action, accessible product description, reserved aspect ratio, and no white flash.",
+          "touch": []
+        }
+      },
+      "trace": {
+        "accessedFiles": [
+          "commands/immersive.md",
+          "skills/3d-art-direction/SKILL.md",
+          "skills/3d-art-direction/references/camera-and-composition.md",
+          "skills/3d-art-direction/references/light-material-and-tone.md",
+          "skills/3d-art-direction/references/spatial-typography.md",
+          "skills/3d-runtime-quality/SKILL.md",
+          "skills/3d-runtime-quality/references/adaptive-runtime.md",
+          "skills/3d-runtime-quality/references/tier-matrix.md",
+          "skills/anti-slop/SKILL.md",
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/color-palettes/SKILL.md",
+          "skills/color-palettes/references/neutral-product.md",
+          "skills/content-design/SKILL.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/core-rules/SKILL.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/responsive-recomposition.md",
+          "skills/core-rules/references/verification-status.md",
+          "skills/immersive-3d/SKILL.md"
+        ],
+        "skillFiles": [
+          "skills/3d-art-direction/SKILL.md",
+          "skills/3d-runtime-quality/SKILL.md",
+          "skills/anti-slop/SKILL.md",
+          "skills/color-palettes/SKILL.md",
+          "skills/content-design/SKILL.md",
+          "skills/core-rules/SKILL.md",
+          "skills/immersive-3d/SKILL.md"
+        ],
+        "referenceFiles": [
+          "skills/3d-art-direction/references/camera-and-composition.md",
+          "skills/3d-art-direction/references/light-material-and-tone.md",
+          "skills/3d-art-direction/references/spatial-typography.md",
+          "skills/3d-runtime-quality/references/adaptive-runtime.md",
+          "skills/3d-runtime-quality/references/tier-matrix.md",
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/color-palettes/references/neutral-product.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/responsive-recomposition.md",
+          "skills/core-rules/references/verification-status.md"
+        ],
+        "commandFiles": [
+          "commands/immersive.md"
+        ],
+        "broadReads": [],
+        "offRootReads": [],
+        "missingFiles": [],
+        "foreignSkills": [],
+        "observedBytes": 84563,
+        "readCounts": {
+          "commands/immersive.md": 1,
+          "skills/3d-art-direction/SKILL.md": 1,
+          "skills/3d-art-direction/references/camera-and-composition.md": 1,
+          "skills/3d-art-direction/references/light-material-and-tone.md": 1,
+          "skills/3d-art-direction/references/spatial-typography.md": 1,
+          "skills/3d-runtime-quality/SKILL.md": 1,
+          "skills/3d-runtime-quality/references/adaptive-runtime.md": 1,
+          "skills/3d-runtime-quality/references/tier-matrix.md": 1,
+          "skills/anti-slop/SKILL.md": 1,
+          "skills/anti-slop/references/design-tells.md": 1,
+          "skills/anti-slop/references/prose-tells.md": 1,
+          "skills/color-palettes/SKILL.md": 1,
+          "skills/color-palettes/references/neutral-product.md": 1,
+          "skills/content-design/SKILL.md": 1,
+          "skills/content-design/references/claims-and-proof.md": 1,
+          "skills/core-rules/SKILL.md": 1,
+          "skills/core-rules/references/accessibility.md": 1,
+          "skills/core-rules/references/responsive-recomposition.md": 1,
+          "skills/core-rules/references/verification-status.md": 1,
+          "skills/immersive-3d/SKILL.md": 1
+        },
+        "repeatedReads": [],
+        "estimatedPluginTokens": 21141,
+        "providerUsage": {
+          "input_tokens": 451375,
+          "cached_input_tokens": 404096,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 6561,
+          "reasoning_output_tokens": 1046
+        }
+      },
+      "tracePath": "traces/codex-named-direction-no-references.jsonl"
+    },
+    {
+      "id": "configurator",
+      "attempt": 1,
+      "status": "passed",
+      "failures": [],
+      "result": {
+        "caseId": "configurator",
+        "skills": [
+          "core-rules",
+          "immersive-3d",
+          "3d-art-direction",
+          "content-design",
+          "anti-slop",
+          "3d-runtime-quality",
+          "r3f-interaction"
+        ],
+        "direction": "Accessible product-inspection configurator: 3D is justified because front/back inspection, material hotspot placement, and fabric comparison benefit from a graspable spatial backpack model, while all essential choices and actions remain in semantic DOM controls.",
+        "content": {
+          "hierarchy": [
+            "Heading: Backpack configurator",
+            "Verified fabric selector with exactly three supplied catalog colors; no invented color names",
+            "Front/back inspection controls with current view state",
+            "Material information hotspot mirrored by a DOM details panel",
+            "Canvas enhancement or poster viewer",
+            "Primary action: Add to shortlist",
+            "Status feedback for selected configuration and shortlist action"
+          ],
+          "claims": [
+            {
+              "text": "The configurator offers three fabric color choices.",
+              "status": "verified",
+              "evidence": "User brief requires three verified fabric colors; exact color names must come from supplied product data."
+            },
+            {
+              "text": "Users can inspect the backpack front and back.",
+              "status": "verified",
+              "evidence": "User brief requires front/back inspection."
+            },
+            {
+              "text": "A material information hotspot is available.",
+              "status": "qualified",
+              "evidence": "Only the presence of a hotspot is specified; material facts shown inside it require supplied product data."
+            },
+            {
+              "text": "Users can add the current configuration to a shortlist.",
+              "status": "verified",
+              "evidence": "User brief requires an Add to shortlist action."
+            },
+            {
+              "text": "Stock, price, discounts, environmental impact, recycled content, or sustainability benefits are available.",
+              "status": "unknown",
+              "evidence": "No supporting product, inventory, pricing, or sustainability source was provided."
+            }
+          ],
+          "unknowns": [
+            "Exact verified fabric color names and swatches",
+            "Verified material composition or care information for the hotspot",
+            "Backpack model dimensions, asset source, and texture availability",
+            "Whether shortlist persists locally, in account state, or server-side",
+            "Host app stack; no package.json was found at the plugin source root"
+          ],
+          "primaryAction": "Add to shortlist",
+          "localization": [
+            "Base copy should be plain English with no idioms or wordplay.",
+            "Fabric color names should come from the verified product catalog and retain catalog/legal naming rules.",
+            "Allow longer translated labels for view controls and shortlist status without truncation.",
+            "Do not translate material composition in a way that changes legal meaning."
+          ]
+        },
+        "copy": {
+          "lines": [
+            "Backpack configurator",
+            "Choose fabric color",
+            "[Verified fabric color 1]",
+            "[Verified fabric color 2]",
+            "[Verified fabric color 3]",
+            "Inspect front",
+            "Inspect back",
+            "Material information",
+            "Add to shortlist",
+            "Added to shortlist",
+            "3D view unavailable; use the controls below to review the same options."
+          ],
+          "slopChecks": [
+            "Rewrite mode; copy is outcome-led and interface-specific.",
+            "No Tier-1 structures: no rhetorical question, badge-over-headline, colon reveal, fake contrast, or summary recap.",
+            "No invented stock, price, discount, customer, award, metric, or sustainability claim.",
+            "Specificity comes from the named object and actions: backpack, fabric color, front/back view, material information, shortlist.",
+            "CTA names the immediate outcome instead of generic continue/get started copy.",
+            "Visual plan avoids generic centered marketing hero, decorative cards around every block, arbitrary glass panels, and color-as-only state."
+          ]
+        },
+        "responsive": {
+          "wide": "Two-column product workspace: DOM controls and material panel on the left, canvas or poster on the right with the backpack anchored right-center. Front/back buttons, three fabric swatches, and Add to shortlist remain visible without entering the canvas.",
+          "portrait": "Recompose into a normal reading stream: heading, fabric selector, front/back segmented control, canvas/poster portrait shot, material details panel, then Add to shortlist. Camera moves closer and prioritizes the selected side; hotspot labels become numbered markers plus DOM detail text.",
+          "narrow": "Single-column task flow with larger controls before the viewer: color selector, front/back controls, material disclosure, shortlist action, then optional canvas/poster. The 3D shot drops secondary depth, limits orbit, and uses a stable portrait poster if WebGL or motion is unavailable.",
+          "recomposition": [
+            "Reorder controls before the canvas on narrow viewports while preserving matching source, visual, and tab order.",
+            "Reframe desktop side-view composition into a portrait product shot; do not merely scale the canvas.",
+            "Replace hover hotspot behavior with tap/focus selection and a DOM details panel on coarse pointers.",
+            "Reduce orbit range and remove idle motion on narrow or reduced-motion contexts.",
+            "Keep Add to shortlist reachable after a color/view selection and not hidden behind sticky UI.",
+            "Cancellation: drag or pinch that crosses threshold never commits a color, view, hotspot, or shortlist action; pointercancel, lostpointercapture, blur, visibilitychange, and leaving the surface abort transient gestures and restore the last committed state."
+          ],
+          "sourceOrder": "h1, fabric radio group, front/back view radio group, material information disclosure, Add to shortlist button, status region, canvas/poster enhancement"
+        },
+        "accessibility": {
+          "contrastStates": [
+            "Normal text minimum 4.5:1; large text minimum 3:1.",
+            "Focus indicator minimum 3:1 against each crossed background with 2px outline and offset.",
+            "Selected color/view state uses aria-pressed or radio checked state plus visible label, not color alone.",
+            "Hotspot marker and material panel boundary meet 3:1 for meaningful UI graphics.",
+            "Disabled or pending shortlist state keeps visible text and a non-color affordance."
+          ],
+          "inputParity": [
+            "Mouse: click swatches, front/back controls, hotspot, and Add to shortlist; drag/orbit is enhancement only.",
+            "Touch: tap swatches and controls; tap hotspot marker opens the same DOM material panel; gestures commit only on pointerup.",
+            "Keyboard: Tab reaches fabric choices, view choices, material disclosure, and Add to shortlist; arrow keys move within radio groups; Enter/Space activates buttons.",
+            "Canvas: every canvas action shares state with DOM controls; no essential control is canvas-only.",
+            "Screen reader: canvas has a concise adjacent description; current color, view, hotspot state, and shortlist result are announced through one polite status region.",
+            "Without WebGL: poster and DOM controls provide the same selectable colors, front/back inspection states, material information, and shortlist action."
+          ],
+          "reducedMotion": "Disable automatic orbit, camera travel, parallax, and idle clips. Switching front/back or colors updates directly or with near-instant opacity only; poster tier remains fully functional."
+        },
+        "immersive": {
+          "justified": true,
+          "artDirection": "Visual thesis: compare a backpack as a physical object before saving it. Hero subject: recognizable backpack silhouette with front panel, straps, zipper/pocket structure, and fabric surface readable. Camera: natural product-view FOV around 35-42 degrees, medium framing, target on the upper front pocket for front view and strap plane for back view, tight near/far bounds. Composition: wide subject anchor right-center with left DOM safe area; portrait subject centered below controls. Lighting: soft top-left key, restrained fill, subtle rim for strap separation, at most one dynamic key shadow. Materials: fabric body is hero surface; straps, zipper, pull tabs, and hardware are secondary; selected hotspot is the only accent. Color output: Linear-sRGB work and sRGB output; tone mapping and exposure owned once. Spatial type: meaningful labels in DOM or Html hotspot only; no essential Text3D. Poster: separate front/back desktop and portrait stills matching the live view.",
+          "qualityTiers": [
+            "Poster: no canvas mounted or stopped; responsive front/back poster images; DOM controls and shortlist remain active.",
+            "Low: active canvas at DPR 1; lowest acceptable LOD; baked/blob shadow; no postprocessing; limited or no idle motion.",
+            "Medium: initial tier; DPR 1 to 1.5; medium LOD; one tight 1024 key shadow; minimal motivated post/output pass only.",
+            "High: DPR capped at 2; foreground high LOD; one tight 2048 key shadow; selective postprocessing only if frame budget holds.",
+            "Budget: under 100 desktop and 50 mobile draw calls, under 500k desktop and 150k mobile visible triangles, textures no larger than 2048px, mobile DPR capped around 1.5, target 16.7ms frame time with degradation after sustained slow frames.",
+            "Adaptation: one quality owner controls DPR, LOD, shadows, postprocessing, idle loop, and poster fallback with hysteresis; pause render, controls, animation, and measurement when offscreen or document-hidden."
+          ],
+          "fallback": "No WebGL, context loss, repeated crashes, reduced capability, or persistent unusable frame time switches to an art-directed poster tier. The semantic DOM still exposes the three fabric choices, front/back inspection, material information, Add to shortlist, and status feedback.",
+          "touch": [
+            "Surface: embedded configurator section uses touch-action: pan-y so vertical page scroll remains native; scene drag is optional enhancement.",
+            "Thresholds: touch drag starts after roughly 10-12 CSS px; mouse/pen after roughly 6 CSS px; taps only commit when time and movement stay below limits.",
+            "Pointer capture: capture on permitted pointerdown, update during move, commit tap/selection only on pointerup, then release and clean up stored pointers.",
+            "Pinch/zoom: optional only if visible DOM zoom/reset controls also exist; clamp distance, keep the backpack inside the declared shot, and ignore synthetic clicks after pinch.",
+            "Hover fallback: hover can reveal emphasis only for fine pointers; tap and keyboard focus open the same material information panel.",
+            "Cancellation: pointercancel, lostpointercapture, window blur, tab switch, second-pointer interruption, or diagonal scroll aborts transient drag/pinch and never triggers Add to shortlist or changes committed selection."
+          ]
+        }
+      },
+      "trace": {
+        "accessedFiles": [
+          "commands/immersive.md",
+          "skills/3d-art-direction/SKILL.md",
+          "skills/3d-art-direction/references/camera-and-composition.md",
+          "skills/3d-art-direction/references/light-material-and-tone.md",
+          "skills/3d-art-direction/references/spatial-typography.md",
+          "skills/3d-runtime-quality/SKILL.md",
+          "skills/3d-runtime-quality/references/adaptive-runtime.md",
+          "skills/3d-runtime-quality/references/tier-matrix.md",
+          "skills/anti-slop/SKILL.md",
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/content-design/SKILL.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/SKILL.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/responsive-recomposition.md",
+          "skills/immersive-3d/SKILL.md",
+          "skills/r3f-interaction/SKILL.md",
+          "skills/r3f-interaction/references/configurator-animation.md",
+          "skills/r3f-interaction/references/hotspots-camera-text.md",
+          "skills/r3f-interaction/references/touch-and-gestures.md"
+        ],
+        "skillFiles": [
+          "skills/3d-art-direction/SKILL.md",
+          "skills/3d-runtime-quality/SKILL.md",
+          "skills/anti-slop/SKILL.md",
+          "skills/content-design/SKILL.md",
+          "skills/core-rules/SKILL.md",
+          "skills/immersive-3d/SKILL.md",
+          "skills/r3f-interaction/SKILL.md"
+        ],
+        "referenceFiles": [
+          "skills/3d-art-direction/references/camera-and-composition.md",
+          "skills/3d-art-direction/references/light-material-and-tone.md",
+          "skills/3d-art-direction/references/spatial-typography.md",
+          "skills/3d-runtime-quality/references/adaptive-runtime.md",
+          "skills/3d-runtime-quality/references/tier-matrix.md",
+          "skills/anti-slop/references/design-tells.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/references/accessibility.md",
+          "skills/core-rules/references/responsive-recomposition.md",
+          "skills/r3f-interaction/references/configurator-animation.md",
+          "skills/r3f-interaction/references/hotspots-camera-text.md",
+          "skills/r3f-interaction/references/touch-and-gestures.md"
+        ],
+        "commandFiles": [
+          "commands/immersive.md"
+        ],
+        "broadReads": [],
+        "offRootReads": [],
+        "missingFiles": [],
+        "foreignSkills": [],
+        "observedBytes": 88643,
+        "readCounts": {
+          "commands/immersive.md": 1,
+          "skills/3d-art-direction/SKILL.md": 1,
+          "skills/3d-art-direction/references/camera-and-composition.md": 1,
+          "skills/3d-art-direction/references/light-material-and-tone.md": 1,
+          "skills/3d-art-direction/references/spatial-typography.md": 1,
+          "skills/3d-runtime-quality/SKILL.md": 1,
+          "skills/3d-runtime-quality/references/adaptive-runtime.md": 1,
+          "skills/3d-runtime-quality/references/tier-matrix.md": 1,
+          "skills/anti-slop/SKILL.md": 1,
+          "skills/anti-slop/references/design-tells.md": 1,
+          "skills/anti-slop/references/prose-tells.md": 1,
+          "skills/content-design/SKILL.md": 1,
+          "skills/content-design/references/claims-and-proof.md": 1,
+          "skills/content-design/references/microcopy.md": 1,
+          "skills/core-rules/SKILL.md": 1,
+          "skills/core-rules/references/accessibility.md": 1,
+          "skills/core-rules/references/responsive-recomposition.md": 1,
+          "skills/immersive-3d/SKILL.md": 1,
+          "skills/r3f-interaction/SKILL.md": 1,
+          "skills/r3f-interaction/references/configurator-animation.md": 1,
+          "skills/r3f-interaction/references/hotspots-camera-text.md": 1,
+          "skills/r3f-interaction/references/touch-and-gestures.md": 1
+        },
+        "repeatedReads": [],
+        "estimatedPluginTokens": 22161,
+        "providerUsage": {
+          "input_tokens": 237243,
+          "cached_input_tokens": 206848,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 6314,
+          "reasoning_output_tokens": 892
+        }
+      },
+      "tracePath": "traces/codex-configurator.jsonl"
+    },
+    {
+      "id": "slop",
+      "attempt": 1,
+      "status": "failed",
+      "failures": [
+        "content.unknowns needs at least 3 entries"
+      ],
+      "result": {
+        "caseId": "slop",
+        "skills": [
+          "core-rules",
+          "content-design",
+          "anti-slop"
+        ],
+        "direction": "Copy-only planning contract for a premium but evidence-led meeting-notes tool. Visual style, palette, typography, motion, state behavior, and 3D routes were not activated.",
+        "content": {
+          "hierarchy": [
+            "Hero headline: one concrete promise tied to an uploaded meeting recording.",
+            "Hero subhead: mechanism and supported outputs, naming German or English transcription and Markdown export with action items.",
+            "Feature blurb, CTA, and empty state: reinforce the workflow without adding unsupported proof."
+          ],
+          "claims": [
+            {
+              "text": "The tool transcribes an uploaded recording in German or English.",
+              "status": "verified",
+              "evidence": "User-provided verified capability."
+            },
+            {
+              "text": "The tool exports to a Markdown file with action items.",
+              "status": "verified",
+              "evidence": "User-provided verified capability."
+            },
+            {
+              "text": "The product sounds premium and innovative.",
+              "status": "qualified",
+              "evidence": "Founder tone request only; no external proof or capability claim."
+            }
+          ],
+          "unknowns": [
+            "No customers, metrics, funding, certifications, integrations, or launch date exist and none are claimed."
+          ],
+          "primaryAction": "Upload a recording",
+          "localization": [
+            "Shipping copy is English.",
+            "German is mentioned only as a supported transcription language."
+          ]
+        },
+        "copy": {
+          "lines": [
+            "Turn your meeting recording into notes you can ship",
+            "Upload a German or English recording, review the transcript, and export a Markdown file with action items.",
+            "Transcription keeps the source conversation close; Markdown export gives every action item a place to move next.",
+            "Upload a recording",
+            "No recordings yet. Upload a German or English meeting recording to create your first transcript and Markdown action list."
+          ],
+          "slopChecks": [
+            "Mode: rewrite.",
+            "Tier 1 structural findings: 0.",
+            "Tier 2 vocabulary findings: 0.",
+            "Tier 3 density findings: 0.",
+            "Specificity floor: headline, subhead, feature blurb, CTA, and empty state each name a mechanism, object, action, or observable output.",
+            "Linter command: printf draft lines | node scripts/lint-copy.mjs --stdin --locale en --profile marketing.",
+            "Linter result: PASS, tier1 0, tier2 0, tier3 0."
+          ]
+        },
+        "responsive": {
+          "wide": "Use the headline as the focal element, with subhead and primary CTA grouped beside or below it; feature blurb can sit adjacent as a secondary mechanism proof.",
+          "portrait": "Keep headline, subhead, and CTA as the first reading group; move the feature blurb below the action so the primary workflow remains obvious.",
+          "narrow": "Single column order: headline, subhead, CTA, feature blurb, then empty state when applicable. Do not truncate German or English, Markdown, or action items.",
+          "recomposition": [
+            "Reorder secondary feature copy after the CTA on smaller viewports.",
+            "Reduce decorative or explanatory copy before removing any verified capability.",
+            "Keep visual order, DOM order, and focus order aligned."
+          ],
+          "sourceOrder": "headline -> subhead -> primary CTA -> feature blurb -> empty state"
+        },
+        "accessibility": {
+          "contrastStates": [
+            "CTA visible label and accessible name must match: Upload a recording.",
+            "Empty state must remain understandable without icon, color, animation, or placeholder artwork."
+          ],
+          "inputParity": [
+            "Upload action must be reachable by keyboard and pointer with the same label.",
+            "Empty state action should target the same upload control."
+          ],
+          "reducedMotion": "No motion-dependent meaning in the copy contract."
+        },
+        "immersive": {
+          "justified": null,
+          "artDirection": null,
+          "qualityTiers": [],
+          "fallback": null,
+          "touch": []
+        }
+      },
+      "trace": {
+        "accessedFiles": [
+          "commands/design.md",
+          "skills/anti-slop/SKILL.md",
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/content-design/SKILL.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/SKILL.md",
+          "skills/core-rules/references/composition-contract.md",
+          "skills/core-rules/references/responsive-recomposition.md"
+        ],
+        "skillFiles": [
+          "skills/anti-slop/SKILL.md",
+          "skills/content-design/SKILL.md",
+          "skills/core-rules/SKILL.md"
+        ],
+        "referenceFiles": [
+          "skills/anti-slop/references/prose-tells.md",
+          "skills/content-design/references/claims-and-proof.md",
+          "skills/content-design/references/microcopy.md",
+          "skills/core-rules/references/composition-contract.md",
+          "skills/core-rules/references/responsive-recomposition.md"
+        ],
+        "commandFiles": [
+          "commands/design.md"
+        ],
+        "broadReads": [],
+        "offRootReads": [],
+        "missingFiles": [],
+        "foreignSkills": [],
+        "observedBytes": 42487,
+        "readCounts": {
+          "commands/design.md": 1,
+          "skills/anti-slop/SKILL.md": 1,
+          "skills/anti-slop/references/prose-tells.md": 1,
+          "skills/content-design/SKILL.md": 1,
+          "skills/content-design/references/claims-and-proof.md": 1,
+          "skills/content-design/references/microcopy.md": 1,
+          "skills/core-rules/SKILL.md": 1,
+          "skills/core-rules/references/composition-contract.md": 1,
+          "skills/core-rules/references/responsive-recomposition.md": 1
+        },
+        "repeatedReads": [],
+        "estimatedPluginTokens": 10622,
+        "providerUsage": {
+          "input_tokens": 190433,
+          "cached_input_tokens": 167552,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 3982,
+          "reasoning_output_tokens": 603
+        }
+      },
+      "tracePath": "traces/codex-slop.jsonl"
+    }
+  ]
+}

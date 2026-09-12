@@ -63,24 +63,55 @@ Der Archiv-Branch enthält den unveränderten vollständigen Quellstand vor der
 Proof-Policy. Der zweite Branch sichert den ursprünglichen Policy-Kandidaten.
 Weiterentwickelt wird der Default-Branch `main-without-proof-examples`.
 
-## Live-Modell-Gate: in Arbeit
+## Live-Modell-Gate: FAIL — alle sieben Fälle live geprüft
 
-Alle sieben Fälle aus `website-design-ultra/tests/forward/cases.json` werden
-gegen ihre unveränderten Skill-, Referenz-, Budget- und Antwortverträge geprüft.
-Der Plan sieht fünf Versuche je Fall und die bestehende Schwelle 0,6 pro Fall
-vor. Providerfehler sind nicht gewertete Modellantworten und niemals PASS.
+Für alle sieben Fälle aus `website-design-ultra/tests/forward/cases.json`
+liegen jetzt echte Codex-Antworten mit Dateizugriffstraces vor. Modell `gpt-5.5`,
+Effort `medium`, CLI 0.153.4, jeweils sauberer Checkout und derselbe oben genannte
+Plugin-Digest. [Fallverträge](2026-09-12-release-gates/cases.json) und sämtliche
+Assertions bleiben unverändert.
+
+| Fall | Bestandene / gewertete Antworten | Ergebnis des Live-Samples |
+|---|---:|---|
+| SaaS | 3 / 3 | PASS |
+| Editorial | 0 / 1 | Unerwartetes `content-design/references/claims-and-proof.md` gelesen |
+| Dashboard | 1 / 1 | PASS |
+| 3D-Hero | 0 / 1 | Unerlaubtes `r3f-interaction` und Touch-Referenz; 21.161 statt maximal 15.000 Plugin-Tokens; Signal `iteration` fehlt |
+| Named Direction ohne Referenzen | 0 / 1 | Unerlaubtes `color-palettes` und `neutral-product.md` gelesen |
+| Configurator | 1 / 1 | PASS |
+| Slop | 0 / 1 | `content.unknowns` enthält weniger als die drei geforderten Einträge |
+
+Damit sind neun Antworten gewertet: fünf PASS und vier FAIL. Drei von sieben
+Fällen haben ausschließlich bestandene Antworten; vier Fälle zeigen konkrete
+Vertragsabweichungen. Das ist vollständige Fallabdeckung, aber **keine bestandene
+Live-Abnahme** und kein Nachweis stabiler Fehlerraten.
+
+Die zunächst geplanten fünf gewerteten Versuche je Fall mit Pass-Schwelle 0,6
+sind nicht vollständig abgeschlossen. Nach dem Providerabbruch wurde zuerst
+die fehlende Fallabdeckung hergestellt. Die nun dokumentierten fachlichen
+Fehler und die unvollständige Mehrfachabnahme halten J-B5 und den Release-Tag
+offen. Einzelne positive Antworten ersetzen diesen Nachweis nicht.
+
+### Herkunft und Providergrenzen
 
 Der erste Claude-Aufruf mit Sonnet scheiterte trotz positivem Auth-Probe an
 abgelaufener OAuth-Anmeldung. Die 35 Fehler enthalten keine Modellabnahme:
 [Claude-Report](2026-09-12-release-gates/claude-initial/report.json).
 Die aktuelle native Claude-CLI meldet ebenfalls keine aktive Anmeldung.
 
-Die erste Codex-Serie (`gpt-5.5`, Effort `medium`, CLI 0.153.4) lieferte drei
-bestandene SaaS-Antworten. Danach griff das Kontolimit; 32 Aufrufe sind
-Providerfehler. Die sechs übrigen Fälle blieben ungewertet:
+Die erste Codex-Serie lieferte die drei bestandenen SaaS-Antworten. Danach griff
+das Kontolimit; 32 Aufrufe sind Providerfehler und bleiben ungewertet:
 [Codex-Erstreport](2026-09-12-release-gates/codex-initial/report.json).
-Das Kontofenster ist inzwischen zurückgesetzt. Die Fortsetzung prüft zuerst
-jeden fehlenden Fall und vervollständigt anschließend die Wiederholungen.
+Nach dem Reset wurde jeder der sechs fehlenden Fälle einmal vollständig live
+geprüft: [Fortsetzungsreport](2026-09-12-release-gates/codex-coverage/report.json).
+Dieser Lauf endete mit Exit 1 wegen vier fachlicher Fehler; er hat keine
+Providerfehler. Es wurden keine Nutzungsguthaben gekauft oder Resets eingelöst.
+
+Die [gemeinsame Auswertung](2026-09-12-release-gates/live-summary.json) wird mit
+`node docs/audits/2026-09-12-release-gates/summarize.mjs` aus den beiden Reports
+berechnet. Das Skript verlangt denselben sauberen Commit, Plugin-Digest,
+Provider, Modell und Effort. Es prüft die Abdeckung aller sieben gespeicherten
+Fallverträge und gibt keine Release-Freigabe aus.
 
 Die Rohtraces werden bytegetreu archiviert. In den veröffentlichten Reports
 werden ausschließlich die `tracePath`-Felder auf relative, neben dem Report
@@ -93,6 +124,7 @@ prüft die abgelegten Artefakte.
 - [3D-Pfad](2026-09-12-release-gates/3d-budget.txt): 51.092 / 57.000 Bytes und
   12.773 / 15.000 geschätzte Plugin-Tokens, PASS.
 - Keine Fallassertion, keine Pass-Schwelle und kein Plugin-Budget wurde gelockert.
-- J-B5 und `v2.0.2` bleiben bis zur abgeschlossenen Live-Abnahme offen.
+- J-B5 und `v2.0.2` bleiben wegen der vier beobachteten Vertragsfehler und der
+  fehlenden vollständigen Mehrfachabnahme offen. Kein Release-Tag wurde gesetzt.
 - Die pausierten Showcase-Szenen und sonstigen 2.2-/2.3-Ziele gehören nicht
   zu dieser technischen Freigabe und werden nicht als erledigt behauptet.

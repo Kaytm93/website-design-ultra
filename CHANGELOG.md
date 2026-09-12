@@ -2,7 +2,8 @@
 
 ## 2.0.2 — Proof websites retained as technical fixtures (development candidate)
 
-Release-Tag: candidate/2.0.2-proof-policy-2026-09-11 — source checkpoint, not a published release
+Release-Tag: pending — development candidate, not a published release
+Source-Checkpoint: 6a9db978cd0dd72318fe0c89c66a2774026d1896
 
 development candidate, not a published release
 
@@ -25,7 +26,11 @@ development candidate, not a published release
 This candidate includes the preceding production-hardening commits from PR #47.
 Its CI context-setup timeout is fixed: Validate run `34684501373` passes all
 applicable jobs on `e61da40`, including both standalone browser suites.
-Repeated live-model acceptance remains in progress. No published release is claimed.
+All seven Forward cases now have current live responses on the same clean
+plugin digest: SaaS, dashboard and configurator pass their observed samples;
+editorial, 3d-hero, named-direction and slop fail contracts. Full repeated
+acceptance remains open. No release tag is set. Evidence and provider-error
+accounting: `docs/audits/2026-09-12-release-gates.md`.
 
 ## Unreleased — production hardening
 
