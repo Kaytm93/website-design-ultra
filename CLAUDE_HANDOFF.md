@@ -13,8 +13,9 @@ git status --short --branch
 ```
 
 Der GitHub-Default-Branch ist `main-without-proof-examples`. `main` und der
-Default-Branch zeigen derzeit beide auf den Merge-Commit
-`e14b477a7d0e9b6db6d076a7ef103f84fcc930e1` (PR #48). Der Arbeitsbranch
+Default-Branch zeigen derzeit beide auf den Handoff-Commit
+`5fc84b9883413bb120f2538cd24a0cc3c9e10e95`; der Merge-Commit von PR #48 ist
+`e14b477a7d0e9b6db6d076a7ef103f84fcc930e1`. Der Arbeitsbranch
 `fix/v2.0.2-release-gates` zeigt auf den PR-Head
 `68a4f29fcae691728d415c131e54d49813773216`.
 
