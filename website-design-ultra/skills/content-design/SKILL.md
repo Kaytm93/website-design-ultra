@@ -11,11 +11,17 @@ Make the interface’s promise, proof, and next action understandable before pol
 
 | Need | Read |
 |---|---|
-| Claims, evidence, proof hierarchy, testimonials, metrics | [references/claims-and-proof.md](references/claims-and-proof.md) |
+| Claims to weigh: evidence, proof hierarchy, testimonials, metrics | [references/claims-and-proof.md](references/claims-and-proof.md) |
 | Buttons, forms, errors, empty states, consent, status copy | [references/microcopy.md](references/microcopy.md) |
 | Multiple locales, translation, transcreation, expansion, formats | [references/localization.md](references/localization.md) |
 
 Load multiple references only when the deliverable genuinely crosses those concerns.
+
+Every deliverable returns the ledger; only weighing a claim opens its reference.
+Facts to rank, prove, qualify or attribute — metrics, customers, certifications,
+integrations, or an instruction not to invent them — read that file. Titles,
+captions, author metadata and navigation weigh nothing: record the ledger from
+the brief, mark it empty, leave the file shut.
 
 This skill owns whether a sentence is *true and useful*. Whether its form is the
 average machine choice is owned by `anti-slop`, which holds the tell catalogue,
@@ -36,6 +42,8 @@ evidence yields fluent invention.
 
 - Never invent customers, testimonials, awards, security/compliance status, integrations, performance numbers, prices, dates, or product capabilities.
 - Keep unknown facts as explicit placeholders such as `[verified metric needed]`; do not turn them into plausible prose.
+- One ledger entry per missing fact, naming the fact and its placeholder. A
+  sentence listing six unknowns is one entry and hides five.
 - Distinguish real product data from illustrative demo content in the interface.
 - Keep the accessible name and visible label aligned.
 - State errors in task language and provide a possible next step when one exists.
@@ -47,7 +55,7 @@ evidence yields fluent invention.
 Return:
 
 1. content hierarchy and primary action,
-2. a claim/proof ledger with unknowns,
+2. a claim/proof ledger with one entry per unknown fact,
 3. final copy or clearly marked placeholders,
 4. applicable state microcopy,
 5. localization notes and stress strings when relevant.

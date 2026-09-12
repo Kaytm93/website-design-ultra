@@ -50,7 +50,11 @@ not activation and add-ons are not a checklist:
 
 - custom material, deformation, or node look → `shaders-tsl`;
 - scroll is the story → `scroll-immersion`;
-- click, hover, inspection, or configuration → `r3f-interaction`;
+- the visitor clicks, hovers, drags, or configures the scene →
+  `r3f-interaction`. A scene the visitor only watches loads none of it, however
+  much it moves or however many states it has: motion that explains a mechanism
+  is art direction, and a hinge with three positions is a subject, not a control.
+  Autoplay, scrub and a reduced-motion still take no input;
 - custom model/texture preparation → `3d-asset-pipeline`;
 - passes read earlier buffers or ordered effects exceed two → `render-graph`;
 - staged assets or an art-directed arrival → `loading-choreography`;
@@ -85,7 +89,10 @@ CTA, and states remain available. Lazy-load the canvas with viewport detection.
 Read the Vanilla baseline reference for non-React wiring.
 
 Route camera/light/material/type to `3d-art-direction`, tiers/DPR/LOD/PostFX and
-pause to `3d-runtime-quality`. Apply the already-read `core-rules` §3/§4
+pause to `3d-runtime-quality`. Scene color output and tone mapping are art
+direction, not a palette: a direction this plugin does not define is an unknown
+to record, never a reason to load `color-palettes` or hunt for substitute
+material. Apply the already-read `core-rules` §3/§4
 without reloading that owner; check selected contracts and the capability-checked `scripts/verify-browser.mjs` launch gate. Report why 3D is
 justified, the selected layer, contract, budget/tier matrix, fallback, and
 verification status (`PASS`, `FAIL`, `UNAVAILABLE`, or `NOT_APPLICABLE`).
