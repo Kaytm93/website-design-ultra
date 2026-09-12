@@ -4,6 +4,12 @@
 
 Release-Tag: candidate/2.0.2-proof-policy-2026-09-11 — source checkpoint, not a published release
 
+development candidate, not a published release
+
+- Bound portrait browser-context creation with two timed attempts, dispose late
+  contexts, and report unavailable execution as exit 2 without masking assertions.
+- Run push validation on the new default branch `main-without-proof-examples`.
+
 - Preserve the previous complete source, including proof websites, at
   `archive/proof-websites-2026-09-11` (commit `99510869de2512ddedd29bd6947c4333ac9455db`).
 - Pause visual refinement of the existing proof pages and new showcase scenes.

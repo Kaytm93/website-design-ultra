@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { createBrowserContext, closeContext, withTimeout } from '../../starters/next-r3f-cinematic/scripts/browser-context.mjs'
 const vanilla = (process.env.WDU_TEST_STARTER ?? 'vanilla') === 'vanilla'
 const canvasSelector = vanilla ? '[data-scene-canvas]' : '.scene-canvas canvas'
 const ready = async page => expect(page.locator('html')).toHaveAttribute('data-wdu-ready', 'true', { timeout: 30_000 })
@@ -19,15 +20,22 @@ test('production page renders a real GPU frame with usable DOM and no browser er
   expect(errors).toEqual([])
 })
 
-test('portrait composition, keyboard focus and motion controls work', async ({ page }, testInfo) => {
-  await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto('/')
-  await ready(page)
-  await expect(page.locator('html')).toHaveAttribute('data-wdu-station', 'hero-portrait')
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-  await page.keyboard.press('Tab')
-  expect(await page.evaluate(() => document.activeElement?.matches(':focus-visible'))).toBe(true)
-  await page.screenshot({ path: testInfo.outputPath('portrait.png') })
+test('portrait composition, keyboard focus and motion controls work', async ({ browser, baseURL }, testInfo) => {
+  test.setTimeout(60_000) // context retries + page startup + the unchanged 30s readiness gate
+  // Bypass the implicit page/context fixture: PR #47 hung before the test body.
+  const context = await createBrowserContext(browser, { baseURL, viewport: { width: 390, height: 844 } })
+  try {
+    const page = await withTimeout(() => context.newPage(), 5_000, 'context.newPage')
+    await page.goto('/')
+    await ready(page)
+    await expect(page.locator('html')).toHaveAttribute('data-wdu-station', 'hero-portrait')
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+    await page.keyboard.press('Tab')
+    expect(await page.evaluate(() => document.activeElement?.matches(':focus-visible'))).toBe(true)
+    await page.screenshot({ path: testInfo.outputPath('portrait.png') })
+  } finally {
+    await closeContext(context)
+  }
 })
 
 test('blocked browser storage does not break scene startup', async ({ page }) => {

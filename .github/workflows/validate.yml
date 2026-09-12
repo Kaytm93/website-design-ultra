@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - main-without-proof-examples
     tags:
       - "v*"
   workflow_dispatch:
@@ -56,6 +57,9 @@ jobs:
 
       - name: Test checkpoint browser lifecycle
         run: node --test tests/immersive/interaction-capture/checkpoint-session-lifecycle.test.mjs
+
+      - name: Test bounded starter context and unavailable exit status
+        run: node --test tests/starter-browser/browser-context.test.mjs
 
       - name: Test plugin template sync
         run: node --test tests/templates/sync.test.mjs
