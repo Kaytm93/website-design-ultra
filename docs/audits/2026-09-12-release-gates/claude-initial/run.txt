@@ -1,0 +1,47 @@
+FAIL saas [1/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL saas [2/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL saas [3/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL saas [4/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL saas [5/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL editorial [1/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL editorial [2/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL editorial [3/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL editorial [4/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL editorial [5/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL dashboard [1/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL dashboard [2/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL dashboard [3/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL dashboard [4/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL dashboard [5/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL 3d-hero [1/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL 3d-hero [2/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL 3d-hero [3/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL 3d-hero [4/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL 3d-hero [5/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL named-direction-no-references [1/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL named-direction-no-references [2/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL named-direction-no-references [3/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL named-direction-no-references [4/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL named-direction-no-references [5/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL configurator [1/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL configurator [2/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL configurator [3/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL configurator [4/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL configurator [5/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL slop [1/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL slop [2/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL slop [3/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL slop [4/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+FAIL slop [5/5]: Failed to authenticate: OAuth session expired and could not be refreshed
+Report: /Users/kaygewinner/Documents/Codex/2026-09-12/kannst-du-bitte-auf-das-repo/work/live-forward/report.json
+
+Pass rate over 5 attempts (threshold 0.6):
+  NONE  saas             0/0  0%  (5 provider error(s) excluded)
+  NONE  editorial        0/0  0%  (5 provider error(s) excluded)
+  NONE  dashboard        0/0  0%  (5 provider error(s) excluded)
+  NONE  3d-hero          0/0  0%  (5 provider error(s) excluded)
+  NONE  named-direction-no-references   0/0  0%  (5 provider error(s) excluded)
+  NONE  configurator     0/0  0%  (5 provider error(s) excluded)
+  NONE  slop             0/0  0%  (5 provider error(s) excluded)
+
+Forward tests below threshold: 7/7 case(s) under 0.6 (saas 0/0, editorial 0/0, dashboard 0/0, 3d-hero 0/0, named-direction-no-references 0/0, configurator 0/0, slop 0/0)

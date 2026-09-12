@@ -6,9 +6,12 @@ Release-Tag: candidate/2.0.2-proof-policy-2026-09-11 — source checkpoint, not 
 
 development candidate, not a published release
 
-- Bound portrait browser-context creation with two timed attempts, dispose late
-  contexts, and report unavailable execution as exit 2 without masking assertions.
+- Create every starter browser capture in its own Chromium process, including
+  the portrait viewport at context creation. Retry context creation twice with
+  5-second deadlines, dispose late contexts, and bound cleanup. Report
+  unavailable execution as exit 2 without masking assertion failures (exit 1).
 - Run push validation on the new default branch `main-without-proof-examples`.
+- Publish and verify both documented archive/source branches on GitHub.
 
 - Preserve the previous complete source, including proof websites, at
   `archive/proof-websites-2026-09-11` (commit `99510869de2512ddedd29bd6947c4333ac9455db`).
@@ -20,8 +23,9 @@ development candidate, not a published release
 - Label technical exports and document the new scope in `docs/PROOF-WEBSITES.de.md`.
 
 This candidate includes the preceding production-hardening commits from PR #47.
-Its CI context-setup timeout and repeated live-model acceptance remain open.
-No successful GitHub publication or full release acceptance is claimed.
+Its CI context-setup timeout is fixed: Validate run `34684501373` passes all
+applicable jobs on `e61da40`, including both standalone browser suites.
+Repeated live-model acceptance remains in progress. No published release is claimed.
 
 ## Unreleased — production hardening
 

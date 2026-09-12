@@ -1,0 +1,439 @@
+{
+  "generatedAt": "2026-09-12T08:59:31.615Z",
+  "provider": "claude",
+  "providerStatus": {
+    "status": "AVAILABLE",
+    "cliVersion": "2.1.220 (Claude Code)",
+    "authMethod": "claude.ai",
+    "executable": "/Users/kaygewinner/.nvm/versions/node/v22.23.2/bin/claude"
+  },
+  "model": "sonnet",
+  "effort": "medium",
+  "plugin": {
+    "name": "website-design-ultra",
+    "version": "2.0.2"
+  },
+  "provenance": {
+    "repository": true,
+    "commit": "e61da40cb2b95a50b91e0c93fd4216350d4ccbaf",
+    "tag": null,
+    "branch": "fix/v2.0.2-release-gates",
+    "clean": true,
+    "tree": {
+      "fileCount": 181,
+      "sha256": "b20c32d33cded3322ef727cb4e81a5f0bdf5515c79fdb4ef07483a479459b196"
+    }
+  },
+  "selfTest": {
+    "replayed": 2,
+    "fixtures": [
+      {
+        "file": "claude-dashboard.jsonl",
+        "provider": "claude",
+        "case": "dashboard",
+        "pluginVersion": "1.5.1",
+        "treeSha256": "9f381e25130ebc701feacff7296d8ba38e3e71d31242acf462ccdb9e21a93e21",
+        "accessedFileCount": 10
+      },
+      {
+        "file": "claude-slop.jsonl",
+        "provider": "claude",
+        "case": "slop",
+        "pluginVersion": "1.6.0",
+        "treeSha256": "845c1bd7b38d38eda573dc298d897ef70aca844db16a5de9ef86428d64e0ef19",
+        "accessedFileCount": 6
+      }
+    ]
+  },
+  "repeat": 5,
+  "minPassRate": 0.6,
+  "summary": [
+    {
+      "id": "saas",
+      "attempts": 5,
+      "scored": 0,
+      "errored": 5,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {}
+    },
+    {
+      "id": "editorial",
+      "attempts": 5,
+      "scored": 0,
+      "errored": 5,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {}
+    },
+    {
+      "id": "dashboard",
+      "attempts": 5,
+      "scored": 0,
+      "errored": 5,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {}
+    },
+    {
+      "id": "3d-hero",
+      "attempts": 5,
+      "scored": 0,
+      "errored": 5,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {}
+    },
+    {
+      "id": "named-direction-no-references",
+      "attempts": 5,
+      "scored": 0,
+      "errored": 5,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {}
+    },
+    {
+      "id": "configurator",
+      "attempts": 5,
+      "scored": 0,
+      "errored": 5,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {}
+    },
+    {
+      "id": "slop",
+      "attempts": 5,
+      "scored": 0,
+      "errored": 5,
+      "passed": 0,
+      "passRate": 0,
+      "meetsThreshold": false,
+      "failureCounts": {}
+    }
+  ],
+  "results": [
+    {
+      "id": "saas",
+      "attempt": 1,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-saas-01.jsonl"
+    },
+    {
+      "id": "saas",
+      "attempt": 2,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-saas-02.jsonl"
+    },
+    {
+      "id": "saas",
+      "attempt": 3,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-saas-03.jsonl"
+    },
+    {
+      "id": "saas",
+      "attempt": 4,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-saas-04.jsonl"
+    },
+    {
+      "id": "saas",
+      "attempt": 5,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-saas-05.jsonl"
+    },
+    {
+      "id": "editorial",
+      "attempt": 1,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-editorial-01.jsonl"
+    },
+    {
+      "id": "editorial",
+      "attempt": 2,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-editorial-02.jsonl"
+    },
+    {
+      "id": "editorial",
+      "attempt": 3,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-editorial-03.jsonl"
+    },
+    {
+      "id": "editorial",
+      "attempt": 4,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-editorial-04.jsonl"
+    },
+    {
+      "id": "editorial",
+      "attempt": 5,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-editorial-05.jsonl"
+    },
+    {
+      "id": "dashboard",
+      "attempt": 1,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-dashboard-01.jsonl"
+    },
+    {
+      "id": "dashboard",
+      "attempt": 2,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-dashboard-02.jsonl"
+    },
+    {
+      "id": "dashboard",
+      "attempt": 3,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-dashboard-03.jsonl"
+    },
+    {
+      "id": "dashboard",
+      "attempt": 4,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-dashboard-04.jsonl"
+    },
+    {
+      "id": "dashboard",
+      "attempt": 5,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-dashboard-05.jsonl"
+    },
+    {
+      "id": "3d-hero",
+      "attempt": 1,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-3d-hero-01.jsonl"
+    },
+    {
+      "id": "3d-hero",
+      "attempt": 2,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-3d-hero-02.jsonl"
+    },
+    {
+      "id": "3d-hero",
+      "attempt": 3,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-3d-hero-03.jsonl"
+    },
+    {
+      "id": "3d-hero",
+      "attempt": 4,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-3d-hero-04.jsonl"
+    },
+    {
+      "id": "3d-hero",
+      "attempt": 5,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-3d-hero-05.jsonl"
+    },
+    {
+      "id": "named-direction-no-references",
+      "attempt": 1,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-named-direction-no-references-01.jsonl"
+    },
+    {
+      "id": "named-direction-no-references",
+      "attempt": 2,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-named-direction-no-references-02.jsonl"
+    },
+    {
+      "id": "named-direction-no-references",
+      "attempt": 3,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-named-direction-no-references-03.jsonl"
+    },
+    {
+      "id": "named-direction-no-references",
+      "attempt": 4,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-named-direction-no-references-04.jsonl"
+    },
+    {
+      "id": "named-direction-no-references",
+      "attempt": 5,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-named-direction-no-references-05.jsonl"
+    },
+    {
+      "id": "configurator",
+      "attempt": 1,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-configurator-01.jsonl"
+    },
+    {
+      "id": "configurator",
+      "attempt": 2,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-configurator-02.jsonl"
+    },
+    {
+      "id": "configurator",
+      "attempt": 3,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-configurator-03.jsonl"
+    },
+    {
+      "id": "configurator",
+      "attempt": 4,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-configurator-04.jsonl"
+    },
+    {
+      "id": "configurator",
+      "attempt": 5,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-configurator-05.jsonl"
+    },
+    {
+      "id": "slop",
+      "attempt": 1,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-slop-01.jsonl"
+    },
+    {
+      "id": "slop",
+      "attempt": 2,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-slop-02.jsonl"
+    },
+    {
+      "id": "slop",
+      "attempt": 3,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-slop-03.jsonl"
+    },
+    {
+      "id": "slop",
+      "attempt": 4,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-slop-04.jsonl"
+    },
+    {
+      "id": "slop",
+      "attempt": 5,
+      "status": "provider-error",
+      "failures": [
+        "Failed to authenticate: OAuth session expired and could not be refreshed"
+      ],
+      "tracePath": "traces/claude-slop-05.jsonl"
+    }
+  ]
+}

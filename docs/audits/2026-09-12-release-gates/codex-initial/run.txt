@@ -1,0 +1,206 @@
+PASS saas [1/5] (11 plugin files, ~13455 plugin tokens)
+PASS saas [2/5] (12 plugin files, ~15399 plugin tokens)
+PASS saas [3/5] (11 plugin files, ~13455 plugin tokens)
+FAIL saas [4/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:06:31.603733Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+FAIL saas [5/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:07:42.857406Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:07:44.018704Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL editorial [1/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:07:45.775151Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:07:47.047742Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL editorial [2/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:07:49.010277Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:07:50.242607Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL editorial [3/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:07:51.859809Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:07:53.211089Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL editorial [4/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:07:55.087141Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:07:56.138472Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL editorial [5/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:07:57.846630Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:07:59.154998Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL dashboard [1/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:01.213858Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:02.529145Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL dashboard [2/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:04.279240Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:05.412055Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL dashboard [3/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:07.337742Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:08.363691Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL dashboard [4/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:10.123387Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:11.230268Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL dashboard [5/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:12.810107Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:13.905773Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL 3d-hero [1/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:15.769274Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:16.932410Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL 3d-hero [2/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:19.300163Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:20.383504Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL 3d-hero [3/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:22.203473Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:23.333095Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL 3d-hero [4/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:25.072085Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:26.240705Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL 3d-hero [5/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:28.296758Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:29.461638Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL named-direction-no-references [1/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:31.204931Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:32.355615Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL named-direction-no-references [2/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:34.197074Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:35.682551Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL named-direction-no-references [3/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:37.260294Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:38.381093Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL named-direction-no-references [4/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:40.167609Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:41.497378Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL named-direction-no-references [5/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:43.451188Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:44.585254Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL configurator [1/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:46.297152Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:47.419033Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL configurator [2/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:49.306807Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:50.373161Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL configurator [3/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:52.124411Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:53.424082Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL configurator [4/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:55.257040Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:56.346938Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL configurator [5/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:08:58.096068Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:08:59.353290Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL slop [1/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:09:01.032152Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:09:02.241882Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL slop [2/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:09:04.378734Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:09:05.469350Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL slop [3/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:09:07.136218Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:09:08.456553Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL slop [4/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:09:10.158147Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:09:11.236973Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+FAIL slop [5/5]: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+
+Diagnostics:
+Reading additional input from stdin...
+2026-09-12T09:09:13.079418Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-12T09:09:14.317350Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 3:38 PM.
+Report: /Users/kaygewinner/Documents/Codex/2026-09-12/kannst-du-bitte-auf-das-repo/work/live-codex/report.json
+
+Pass rate over 5 attempts (threshold 0.6):
+  ok   saas             3/3  100%  (2 provider error(s) excluded)
+  NONE  editorial        0/0  0%  (5 provider error(s) excluded)
+  NONE  dashboard        0/0  0%  (5 provider error(s) excluded)
+  NONE  3d-hero          0/0  0%  (5 provider error(s) excluded)
+  NONE  named-direction-no-references   0/0  0%  (5 provider error(s) excluded)
+  NONE  configurator     0/0  0%  (5 provider error(s) excluded)
+  NONE  slop             0/0  0%  (5 provider error(s) excluded)
+
+Forward tests below threshold: 6/7 case(s) under 0.6 (editorial 0/0, dashboard 0/0, 3d-hero 0/0, named-direction-no-references 0/0, configurator 0/0, slop 0/0)
