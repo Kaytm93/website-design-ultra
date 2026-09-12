@@ -456,6 +456,77 @@ for (const [file, markers] of hardeningContracts) {
 }
 
 /**
+ * The four contract failures of the 2026-09-12 live run.
+ *
+ * Each was the plugin instructing a read its own case forbade, or leaving a
+ * required entry unspecified. Offline replay could not see any of them: the
+ * fixtures replay recorded traces, and a recorded trace cannot route. These
+ * markers are what each repair rests on, so a later compression pass that
+ * deletes the sentence fails here rather than in the next live run.
+ *
+ * A marker is the cheapest possible proof and it is not a strong one — it says
+ * the sentence is present, not that a model obeyed it. Only the live series
+ * says that. What it does buy is that the repair cannot vanish silently.
+ */
+const liveRoutingContracts = [
+  [
+    // `editorial` read claims-and-proof.md because the skill demanded a claim
+    // ledger unconditionally and only that row mentioned claims.
+    'skills/content-design/SKILL.md',
+    [
+      'only weighing a claim opens its reference',
+      'mark it empty, leave the file shut',
+      'one ledger entry per missing fact',
+    ],
+  ],
+  [
+    // `3d-hero` loaded r3f-interaction on "inspection", and took a palette
+    // reference as substitute material for a direction name nothing defines.
+    'skills/immersive-3d/SKILL.md',
+    [
+      'the visitor clicks, hovers, drags, or configures the scene',
+      'a scene the visitor only watches loads none of it',
+      'is a subject, not a control',
+      'scene color output and tone mapping are art',
+      'never a reason to load `color-palettes`',
+    ],
+  ],
+  [
+    // `3d-hero` missed the `iteration` signal because plan-only runs were
+    // exempted from the look-loop rather than asked to plan one.
+    'commands/immersive.md',
+    [
+      'a scene the visitor only watches skips this step',
+      'the first look-loop iteration the build will measure',
+    ],
+  ],
+  [
+    'skills/3d-art-direction/SKILL.md',
+    ['a plan still names its poster target and the'],
+  ],
+]
+
+// These markers are sentences, and a sentence in this plugin wraps at 80
+// columns. Matching the raw bytes would make every reflow a failure and would
+// tempt the next author to shorten the rule to fit one line, so collapse
+// whitespace on both sides and compare the words.
+const flatten = (value) => value.replace(/\s+/g, ' ').trim().toLowerCase()
+
+for (const [file, markers] of liveRoutingContracts) {
+  const fullPath = path.join(pluginRoot, file)
+  if (!fs.existsSync(fullPath)) {
+    fail(`${file}: missing live-routing artifact`)
+    continue
+  }
+  const content = flatten(read(fullPath))
+  for (const marker of markers) {
+    if (!content.includes(flatten(marker))) {
+      fail(`${file}: missing live-routing marker "${marker}"`)
+    }
+  }
+}
+
+/**
  * Comparable scene captures require one contract to bind time, random streams,
  * camera position, and readiness. Keep its activation narrow: normal design and
  * 3D planning do not need this leaf unless reproducible runtime evidence is in
@@ -1630,6 +1701,36 @@ for (const testCase of forwardCases) {
   if (!testCase.trace.allowedReferences.includes(STATUS_REFERENCE)) {
     fail(
       `tests/forward/cases.json: ${testCase.id} does not allow ${STATUS_REFERENCE}, which core-rules instructs`,
+    )
+  }
+  // The same rule as maxReferenceFiles, applied to the tokens rather than the
+  // count: the budget describes the allowed set, so it is that set's measured
+  // size. `forward-trace.mjs` charges a live run for every plugin file it
+  // opened, so a budget measured over a narrower set than the one the plugin
+  // permits is a gate that cannot fail offline and cannot pass live. That is
+  // exactly how 3d-hero carried 15,000 while its own allowed set cost 22,951.
+  // measure-path.mjs states this a second time from its own walk; this copy is
+  // here so the rule sits beside the contract it constrains.
+  const instructed = [
+    `commands/${testCase.command}.md`,
+    ...testCase.trace.allowedSkills.map((skill) => `skills/${skill}/SKILL.md`),
+    ...testCase.trace.allowedReferences,
+  ]
+  let instructedBytes = 0
+  for (const relative of [...new Set(instructed)]) {
+    const absolute = path.join(pluginRoot, relative)
+    if (!fs.existsSync(absolute)) {
+      fail(`tests/forward/cases.json: ${testCase.id} allows ${relative}, which does not exist`)
+      continue
+    }
+    instructedBytes += fs.statSync(absolute).size
+  }
+  const instructedTokens = Math.ceil(instructedBytes / 4)
+  if (testCase.trace.maxEstimatedPluginTokens !== instructedTokens) {
+    fail(
+      `tests/forward/cases.json: ${testCase.id} maxEstimatedPluginTokens ` +
+        `${testCase.trace.maxEstimatedPluginTokens} does not match the ${instructedTokens} ` +
+        'tokens its command, allowed skills and allowed references measure',
     )
   }
 }

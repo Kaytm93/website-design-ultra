@@ -133,8 +133,93 @@ test('the path measurement command enforces the 3D hero bounds', () => {
   })
   assert.equal(result.status, 0, result.stderr || result.stdout)
   assert.match(result.stdout, /3d-hero/)
+  // The byte cap is a compression target over the prose the case cannot finish
+  // without. It is deliberately not the token budget, which covers every file
+  // the plugin permits for the brief.
   assert.match(result.stdout, /57,?000|57 KB/i)
-  assert.match(result.stdout, /15,?000|15 KB/i)
+  assert.match(result.stdout, /Minimum path: [\d,]+ bytes/)
+  assert.match(result.stdout, /Instructed path: [\d,]+ bytes/)
+  assert.match(result.stdout, /maxEstimatedPluginTokens [\d,]+ == instructed [\d,]+: PASS/)
+})
+
+/**
+ * The gate this suite could not see before 2026-09-12.
+ *
+ * `3d-hero` declared 15,000 tokens and measured 12,773, so every offline check
+ * passed; the live run opened nine more allowed references plus the command and
+ * cost 21,161. The measurement, not the routing, was wrong. These cases pin the
+ * repaired rule from both directions: the declared number is the measured cost
+ * of the allowed set, and a number that drifts either way fails.
+ */
+test('every declared token budget equals its measured instructed path', () => {
+  const result = spawnSync(process.execPath, ['scripts/measure-path.mjs', '--all'], {
+    cwd: pluginRoot,
+    encoding: 'utf8',
+  })
+  assert.equal(result.status, 0, result.stderr || result.stdout)
+  const cases = JSON.parse(fs.readFileSync(path.join(pluginRoot, 'tests/forward/cases.json'), 'utf8'))
+  assert.ok(cases.length >= 7, 'the case file lost a case')
+  for (const testCase of cases) {
+    const instructed = [
+      `commands/${testCase.command}.md`,
+      ...testCase.trace.allowedSkills.map((skill) => `skills/${skill}/SKILL.md`),
+      ...testCase.trace.allowedReferences,
+    ]
+    let bytes = 0
+    for (const relative of new Set(instructed)) {
+      bytes += fs.statSync(path.join(pluginRoot, relative)).size
+    }
+    assert.equal(
+      testCase.trace.maxEstimatedPluginTokens,
+      Math.ceil(bytes / 4),
+      `${testCase.id} budget does not match its instructed path`,
+    )
+    // A budget measured over the required subset alone is the defect that
+    // shipped. Every case must sit strictly above it, or the number is not
+    // describing the allowed set.
+    let requiredBytes = 0
+    for (const relative of new Set([
+      ...testCase.requiredSkills.map((skill) => `skills/${skill}/SKILL.md`),
+      ...testCase.trace.requiredFiles,
+    ])) {
+      requiredBytes += fs.statSync(path.join(pluginRoot, relative)).size
+    }
+    assert.ok(
+      Math.ceil(bytes / 4) > Math.ceil(requiredBytes / 4),
+      `${testCase.id} instructed path is not wider than its required path`,
+    )
+  }
+})
+
+test('a budget below its instructed path fails the measurement', () => {
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'wdu-instructed-budget-'))
+  try {
+    for (const relative of ['scripts/measure-path.mjs', 'tests/forward/cases.json']) {
+      const destination = path.join(temporary, relative)
+      fs.mkdirSync(path.dirname(destination), { recursive: true })
+      fs.copyFileSync(path.join(pluginRoot, relative), destination)
+    }
+    // Copy only the tree the measurement walks, then shrink one declared number.
+    for (const directory of ['commands', 'skills']) {
+      fs.cpSync(path.join(pluginRoot, directory), path.join(temporary, directory), { recursive: true })
+    }
+    const casesPath = path.join(temporary, 'tests/forward/cases.json')
+    const cases = JSON.parse(fs.readFileSync(casesPath, 'utf8'))
+    const target = cases.find((candidate) => candidate.id === '3d-hero')
+    const honest = target.trace.maxEstimatedPluginTokens
+    const run = () => spawnSync(process.execPath, ['scripts/measure-path.mjs', '--case', '3d-hero'], {
+      cwd: temporary, encoding: 'utf8',
+    })
+    assert.equal(run().status, 0, 'the copied tree should measure clean')
+    target.trace.maxEstimatedPluginTokens = honest - 1
+    fs.writeFileSync(casesPath, JSON.stringify(cases, null, 2))
+    assert.equal(run().status, 1, 'a budget one token short must fail')
+    target.trace.maxEstimatedPluginTokens = honest + 1
+    fs.writeFileSync(casesPath, JSON.stringify(cases, null, 2))
+    assert.equal(run().status, 1, 'headroom for a file nothing names must fail too')
+  } finally {
+    fs.rmSync(temporary, { recursive: true, force: true })
+  }
 })
 
 test('content validation binds each declared path budget', () => {
