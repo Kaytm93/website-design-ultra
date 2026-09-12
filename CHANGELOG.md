@@ -23,14 +23,39 @@ development candidate, not a published release
   visual checks active. Existing fixture pixels and runtime code are preserved.
 - Label technical exports and document the new scope in `docs/PROOF-WEBSITES.de.md`.
 
+- Route the four observed live contract failures back to their owners. Separate
+  the claim ledger every deliverable returns from the reference only weighing a
+  claim opens, so `editorial` stops reading `claims-and-proof.md`. Gate
+  `r3f-interaction` on the visitor's input rather than the scene's behaviour, so
+  a hero the visitor only watches stops loading it while the configurator still
+  does. Declare scene color output and tone mapping art direction, and a
+  direction this plugin does not define an unknown, so a named direction with no
+  reference material stops reaching for the nearest palette. Require one ledger
+  entry per missing fact. Ask plan-only immersive output for its poster target
+  and first look-loop iteration instead of exempting it from the look-loop.
+- Measure the path the plugin instructs rather than the subset a case requires.
+  `measure-path.mjs` reported eleven files where a live run is charged for
+  twenty; the command file and every allowed-but-optional reference sat inside
+  the contract and outside the measurement, so `3d-hero` could declare 15,000
+  tokens, measure 12,773 offline and cost 21,161 live. The required path keeps
+  its 57 KB byte cap as a compression target; `maxEstimatedPluginTokens` now
+  carries the instructed path, and every case's number is that path's measured
+  cost. Two of the seven budgets fall, five rise. No case assertion, forbidden
+  file, required file or pass threshold changed.
+
 This candidate includes the preceding production-hardening commits from PR #47.
 Its CI context-setup timeout is fixed: Validate run `34684501373` passes all
 applicable jobs on `e61da40`, including both standalone browser suites.
-All seven Forward cases now have current live responses on the same clean
-plugin digest: SaaS, dashboard and configurator pass their observed samples;
-editorial, 3d-hero, named-direction and slop fail contracts. Full repeated
-acceptance remains open. No release tag is set. Evidence and provider-error
-accounting: `docs/audits/2026-09-12-release-gates.md`.
+All seven Forward cases have live responses on the pre-repair plugin digest:
+SaaS, dashboard and configurator pass their observed samples; editorial,
+3d-hero, named-direction and slop failed contracts, and those four failures are
+now repaired. The repairs are verified offline only. Offline verification does
+not route: a recorded trace replays, so the dry-run cannot show a routing
+change. Full repeated acceptance — five scored attempts per case at a 0.6 pass
+rate, at least 26 further scored answers on the repaired tree — remains open,
+and no release tag is set. Evidence, provider-error accounting and the
+corrected budget table: `docs/audits/2026-09-12-release-gates.md`, with the
+repair's own measurements under `docs/audits/2026-09-12-release-gates/repair/`.
 
 ## Unreleased — production hardening
 

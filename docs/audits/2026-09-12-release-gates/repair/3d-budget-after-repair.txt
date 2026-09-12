@@ -1,0 +1,25 @@
+3d-hero: 11 required files, 20 instructed files
+Minimum path: 52,179 bytes (52.18 KB) <= 57 KB: PASS
+Instructed path: 91,801 bytes, 22,951 estimated plugin tokens
+maxEstimatedPluginTokens 22,951 == instructed 22,951: PASS
+-  4094   commands/immersive.md
+-  4999 * skills/3d-art-direction/SKILL.md
+-  3800 * skills/3d-art-direction/references/camera-and-composition.md
+-  3694   skills/3d-art-direction/references/light-material-and-tone.md
+-  2434   skills/3d-art-direction/references/spatial-typography.md
+-  3553 * skills/3d-runtime-quality/SKILL.md
+-  3220   skills/3d-runtime-quality/references/adaptive-runtime.md
+-  3270 * skills/3d-runtime-quality/references/tier-matrix.md
+- 10168 * skills/anti-slop/SKILL.md
+-  8367   skills/anti-slop/references/design-tells.md
+-  7776   skills/anti-slop/references/operations.md
+-  7057 * skills/anti-slop/references/prose-tells.md
+-  3779 * skills/content-design/SKILL.md
+-  2124 * skills/content-design/references/claims-and-proof.md
+-  5559 * skills/core-rules/SKILL.md
+-  2965   skills/core-rules/references/accessibility.md
+-  5628   skills/core-rules/references/composition-contract.md
+-  2875 * skills/core-rules/references/responsive-recomposition.md
+-  1444   skills/core-rules/references/verification-status.md
+-  4995 * skills/immersive-3d/SKILL.md
+* required; the rest are allowed reads the skills instruct for this brief.
